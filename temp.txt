@@ -1,0 +1,15 @@
+										<div className="p-6 flex-1 flex flex-col justify-between">
+											<div>
+												<h3 className="font-bold text-lg uppercase tracking-tighter leading-tight group-hover:text-primary transition-colors">
+													{article.title}
+												</h3>
+											</div>
+											<div className="flex justify-between items-center mt-6">
+												<span className="text-on-surface-variant text-xs font-bold">
+													{article.created_diff}
+												</span>
+												<span className="material-symbols-outlined text-primary text-sm">
+													article
+												</span>
+											</div>
+										</div>

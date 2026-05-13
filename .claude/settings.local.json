@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm run *)",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/article?page=2&per_page=9\")",
+      "Bash(curl -s \"http://127.0.0.1:3000/artikel\" -o /dev/null -w \"%{http_code}\")",
+      "Bash(npx next *)",
+      "Bash(curl -s \"http://127.0.0.1:3000/artikel\")",
+      "Bash(npx tsc *)",
+      "Bash(curl -s \"http://127.0.0.1:3000\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/article/categories/liga-indonesia\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/article/categories\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/article/categories/football\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/article/categories/football?page=2&per_page=9\")",
+      "Bash(curl -s \"http://127.0.0.1:3000/baggott-ezra-comeback-marc-klok-dikritik\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/article/baggott-ezra-comeback-marc-klok-dikritik\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/article/categories/timnas\")",
+      "mcp__ide__getDiagnostics",
+      "Bash(Search for *)",
+      "Bash(powershell *)",
+      "Bash(python)",
+      "Bash(findstr /i \"authApiClient\")",
+      "Bash(sed -i 's|<div className=\"absolute inset-0 bg-linear-to-r from-\\\\[#0f1412\\\\] via-\\\\[#0f1412\\\\]/40 to-transparent\" />|<div className={`absolute inset-0 bg-linear-to-r ${isDark ? \"from-[#0f1412] via-[#0f1412]/40 to-transparent\" : \"from-[#f5f5f5]/95 via-[#f5f5f5]/60 to-transparent\"}`} />|g' \"components/banner-slider/BannerSlider.tsx\")",
+      "Bash(sed -i 's|<div className=\"absolute inset-0 bg-linear-to-t from-\\\\[#0f1412\\\\] via-transparent to-transparent\" />|<div className={`absolute inset-0 bg-linear-to-t ${isDark ? \"from-[#0f1412] via-transparent to-transparent\" : \"from-[#f5f5f5] via-transparent to-transparent\"}`} />|g' \"components/banner-slider/BannerSlider.tsx\")",
+      "Bash(cat)",
+      "Bash(python /tmp/fix_banner3.py)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://cms.olahbola.com/api/v1/health\")",
+      "Bash(curl -s -I \"https://cms.olahbola.com/sanctum/csrf-cookie\")",
+      "Bash(curl -s -c - \"https://cms.olahbola.com/sanctum/csrf-cookie\" -D -)",
+      "Bash(ls -la \"e:/DEVELOPER/\")",
+      "Read(//e/DEVELOPER/**)",
+      "Bash(xargs grep -l \"Article\\\\|Interview\\\\|Kolaborasi\")",
+      "Bash(ls -la \"F:/DEVELOPER/LARAVEL-PROJECT/OLAHBOLA/olahbola/\")",
+      "Read(//f/DEVELOPER/LARAVEL-PROJECT/OLAHBOLA/olahbola/**)",
+      "Read(//f/DEVELOPER/LARAVEL-PROJECT/OLAHBOLA/olahbola/routes/**)",
+      "Read(//f/DEVELOPER/LARAVEL-PROJECT/OLAHBOLA/olahbola/app/Models/**)",
+      "Read(//f/DEVELOPER/LARAVEL-PROJECT/OLAHBOLA/olahbola/app/Http/Controllers/**)",
+      "Bash(node update_banner.js)"
+    ]
+  }
+}
