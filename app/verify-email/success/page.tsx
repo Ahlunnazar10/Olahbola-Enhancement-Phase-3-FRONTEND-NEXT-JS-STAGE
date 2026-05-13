@@ -276,7 +276,7 @@ function VerifyEmailContent() {
 									<div className="space-y-3">
 										<button
 											onClick={handleResend}
-											disabled={resendMutation.isPendingemail.trim()}
+											disabled={resendMutation.isPending}
 											className={`w-full py-4 rounded-xl font-label-bold uppercase tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${isDark ? "bg-primary text-black neon-glow-btn" : "bg-[#0a7c6e] text-white hover:bg-[#095a50]"}`}
 										>
 											{resendMutation.isPending ? (
