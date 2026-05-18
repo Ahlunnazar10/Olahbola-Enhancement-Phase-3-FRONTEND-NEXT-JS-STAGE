@@ -13,6 +13,7 @@ import {
 	usePopularArticles,
 	useArticleSearch,
 } from "@/hooks/queries/useArticles";
+import { useUIStore } from "@/stores/uiStore";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -21,6 +22,8 @@ function ArtikelContent() {
 	const searchParams = useSearchParams();
 	const categorySlug = searchParams.get("kategori") || "";
 	const searchQuery = searchParams.get("q") || "";
+	const { theme } = useUIStore();
+	const isDark = theme === "dark";
 
 	const [page, setPage] = useState(1);
 	const [displayedArticles, setDisplayedArticles] = useState<any[]>([]);
@@ -243,11 +246,15 @@ function ArtikelContent() {
 	const remainingArticles = displayedArticles.slice(1);
 
 	return (
-		<main className="pt-6 pb-20 px-4 md:px-16 max-w-screen-2xl mx-auto custom-scrollbar">
+		<main
+			className={`pt-6 pb-20 px-4 md:px-16 max-w-screen-2xl mx-auto custom-scrollbar transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
+		>
 			{/* Hero Article - Featured */}
 			{!searchQuery && !categorySlug && featuredArticle && (
 				<section className="mb-0 -mt-6 w-screen left-1/2 -translate-x-1/2 relative">
-					<div className="relative w-full h-179 overflow-hidden group border border-white/10">
+					<div
+						className={`relative w-full h-100 sm:h-120 md:h-150 lg:h-179 overflow-hidden group border ${isDark ? "border-white/10" : "border-[#0a7c6e]/20"}`}
+					>
 						<img
 							className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-100"
 							src={
@@ -259,24 +266,32 @@ function ArtikelContent() {
 							}
 							alt={featuredArticle.title}
 						/>
-						<div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/70 to-transparent"></div>
-						<div className="absolute bottom-30 md:bottom-26 left-0 p-8 md:p-12 w-full md:w-3/4">
-							<div className="flex items-center gap-3 mb-4">
-								<span className="px-3 py-1 bg-primary/20 border border-primary/40 rounded-full text-primary text-xs font-bold uppercase tracking-wider">
+						<div
+							className={`absolute inset-0 ${isDark ? "bg-linear-to-t from-black/90 via-black/60 to-transparent" : "bg-linear-to-t from-black/80 via-black/50 to-transparent"}`}
+						></div>
+						<div className="absolute bottom-24 left-0 p-6 sm:p-8 md:p-12 w-full md:w-4/5 lg:w-3/4">
+							<div className="flex items-center gap-3 mb-3 sm:mb-4">
+								<span
+									className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider ${isDark ? "bg-primary/20 border border-primary/40 text-primary" : "bg-[#0a7c6e]/20 border border-primary/40 text-primary"}`}
+								>
 									{featuredArticle.category?.name || "Article"}
 								</span>
 							</div>
-							<h1 className="text-2xl md:text-5xl uppercase font-bold md:font-semibold tracking-tighter mb-3 md:mb-4 neon-glow leading-[1.2] md:leading-[0.9] text-white">
+							<h1
+								className={`text-xl sm:text-2xl md:text-4xl lg:text-5xl uppercase font-bold tracking-tighter mb-2 sm:mb-3 md:mb-4 leading-tight ${isDark ? "text-white neon-glow" : "text-white"}`}
+							>
 								{featuredArticle.title}
 							</h1>
-							<p className="text-lg max-w-2xl mb-6 text-white/90 line-clamp-2">
+							<p
+								className={`text-sm sm:text-base md:text-lg max-w-xl sm:max-w-2xl mb-4 sm:mb-6 line-clamp-2 ${isDark ? "text-white/90" : "text-white/80"}`}
+							>
 								{featuredArticle.excerpt}
 							</p>
 							<Link
 								href={`/${featuredArticle.slug}`}
-								className="flex items-center gap-3 bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform shadow-[0_0_20px_rgba(67,222,204,0.3)] w-fit"
+								className={`inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 py-2.5 sm:py-4 rounded-full font-bold text-xs sm:text-sm uppercase tracking-widest hover:scale-105 transition-transform ${isDark ? "bg-primary text-on-primary shadow-[0_0_20px_rgba(67,222,204,0.3)]" : "bg-[#0a7c6e] text-white hover:bg-[#095a50] shadow-[0_0_20px_rgba(10,124,110,0.3)]"}`}
 							>
-								Selengkapnya{" "}
+								Selengkapnya
 								<span className="material-symbols-outlined">arrow_forward</span>
 							</Link>
 						</div>
@@ -285,13 +300,17 @@ function ArtikelContent() {
 			)}
 
 			{/* Search & Categories Bar with Glassmorphism */}
-			<section className="flex flex-col md:flex-row gap-6 mt-4 mb-8 items-center bg-white/5 backdrop-blur-xl p-4 rounded-2xl border border-white/5 ">
+			<section
+				className={`flex flex-col md:flex-row gap-6 mt-4 mb-8 items-center p-4 rounded-2xl border ${isDark ? "bg-white/5 backdrop-blur-xl border-white/5" : "bg-white/90 backdrop-blur-md border-[#0a7c6e]/20"}`}
+			>
 				<div className="relative w-full md:w-1/3 group">
-					<span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">
+					<span
+						className={`absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
+					>
 						search
 					</span>
 					<input
-						className="w-full bg-surface-container-highest/20 border border-outline-variant/30 rounded-xl py-4 pl-12 pr-4 font-bold text-sm tracking-widest placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all backdrop-blur-md"
+						className={`w-full border rounded-xl py-4 pl-12 pr-4 font-bold text-sm tracking-widest outline-none transition-all backdrop-blur-md ${isDark ? "bg-surface-container-highest/20 border-outline-variant/30 text-white placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#0a7c6e] focus:ring-1 focus:ring-[#0a7c6e]"}`}
 						placeholder="SEARCH ARCHIVE..."
 						type="text"
 						value={localSearchInput}
@@ -301,8 +320,14 @@ function ArtikelContent() {
 				<div className="flex gap-3 overflow-x-auto pb-2 w-full md:w-2/3 custom-scrollbar">
 					<button
 						onClick={() => handleCategoryClick("")}
-						className={`px-6 py-3 rounded-xl border border-primary bg-primary/10 text-primary font-bold text-sm whitespace-nowrap uppercase tracking-widest ${
-							!categorySlug ? "bg-primary text-on-primary" : ""
+						className={`px-6 py-3 rounded-xl border font-bold text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
+							!categorySlug
+								? isDark
+									? "border-primary bg-primary text-on-primary"
+									: "border-[#0a7c6e] bg-[#0a7c6e] text-white"
+								: isDark
+									? "border-primary bg-primary/10 text-primary hover:border-primary/50"
+									: "border-[#0a7c6e]/30 bg-[#0a7c6e]/10 text-[#0a7c6e] hover:border-[#0a7c6e]/50"
 						}`}
 					>
 						LATEST
@@ -311,10 +336,14 @@ function ArtikelContent() {
 						<button
 							key={cat.id}
 							onClick={() => handleCategoryClick(cat.slug)}
-							className={`px-6 py-3 rounded-xl border border-outline-variant/30 bg-surface-container-low/40 backdrop-blur-sm text-on-surface-variant font-bold text-sm whitespace-nowrap uppercase tracking-widest hover:border-primary/50 transition-colors ${
+							className={`px-6 py-3 rounded-xl border font-bold text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
 								categorySlug === cat.slug
-									? "border-primary bg-primary/10 text-primary"
-									: ""
+									? isDark
+										? "border-primary bg-primary/10 text-primary"
+										: "border-[#0a7c6e] bg-[#0a7c6e]/10 text-[#0a7c6e]"
+									: isDark
+										? "border-outline-variant/30 bg-surface-container-low/40 text-on-surface-variant hover:border-primary/50"
+										: "border-gray-300 bg-gray-100 text-[#5a5a5a] hover:border-[#0a7c6e]/50"
 							}`}
 						>
 							{cat.name}
@@ -328,10 +357,14 @@ function ArtikelContent() {
 				{/* Search Results Header */}
 				{searchQuery && (
 					<div className="lg:col-span-8 mb-6">
-						<h2 className="text-2xl font-bold text-white">
+						<h2
+							className={`text-2xl font-bold ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+						>
 							Hasil pencarian untuk "{searchQuery}"
 						</h2>
-						<p className="text-outline text-sm">
+						<p
+							className={`text-sm ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
+						>
 							{displayedArticles.length} artikel ditemukan
 						</p>
 					</div>
@@ -347,10 +380,12 @@ function ArtikelContent() {
 						</>
 					) : displayedArticles.length === 0 ? (
 						<div className="col-span-full text-center py-20">
-							<h3 className="text-xl font-semibold text-gray-400 mb-2">
+							<h3
+								className={`text-xl font-semibold mb-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}
+							>
 								Tidak ada artikel
 							</h3>
-							<p className="text-gray-500">
+							<p className={isDark ? "text-gray-500" : "text-gray-400"}>
 								{searchQuery
 									? `Tidak ada hasil untuk "${searchQuery}"`
 									: categorySlug
@@ -363,7 +398,9 @@ function ArtikelContent() {
 							{/* Large Card - First article if no hero */}
 							{(!featuredArticle || searchQuery || categorySlug) &&
 								remainingArticles[0] && (
-									<div className="md:col-span-2 glass-card rounded-2xl overflow-hidden group min-h-125">
+									<div
+										className={`md:col-span-2 rounded-2xl overflow-hidden group min-h-125 transition-all duration-300 ${isDark ? "glass-card hover:shadow-[0_0_30px_rgba(67,222,204,0.15)] hover:border-primary/30" : "bg-white shadow-lg border border-gray-200 hover:shadow-xl hover:border-[#0a7c6e]/30"}`}
+									>
 										<Link
 											href={`/${remainingArticles[0].slug}`}
 											className="block"
@@ -382,13 +419,19 @@ function ArtikelContent() {
 												/>
 											</div>
 											<div className="p-8">
-												<span className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-3 block">
+												<span
+													className={`font-bold text-xs uppercase tracking-[0.2em] mb-3 block ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+												>
 													Article
 												</span>
-												<h3 className="text-3xl uppercase leading-tight mb-4">
+												<h3
+													className={`text-3xl uppercase leading-tight mb-4 group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+												>
 													{remainingArticles[0].title}
 												</h3>
-												<p className="text-on-surface-variant line-clamp-2">
+												<p
+													className={`line-clamp-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+												>
 													{remainingArticles[0].excerpt}
 												</p>
 											</div>
@@ -403,7 +446,7 @@ function ArtikelContent() {
 									<Link
 										key={article.id}
 										href={`/${article.slug}`}
-										className="glass-card rounded-2xl overflow-hidden group flex flex-col"
+										className={`rounded-2xl overflow-hidden group flex flex-col transition-all duration-300 ${isDark ? "glass-card hover:shadow-[0_0_25px_rgba(67,222,204,0.15)] hover:border-primary/30" : "bg-white shadow-lg border border-gray-200 hover:shadow-xl hover:border-[#0a7c6e]/30"}`}
 									>
 										<div className="h-48 overflow-hidden">
 											<img
@@ -420,13 +463,17 @@ function ArtikelContent() {
 										</div>
 										<div className="p-6 flex-1 flex flex-col justify-between">
 											<div>
-												<h3 className="font-bold text-lg uppercase tracking-tighter leading-tight group-hover:text-primary transition-colors">
+												<h3
+													className={`font-bold text-lg uppercase tracking-tighter leading-tight group-hover:${isDark ? "text-primary" : "text-primary"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+												>
 													{article.title}
 												</h3>
 												{/* Author Info */}
 												{article.author && (
 													<div className="flex items-center gap-2 mt-3">
-														<div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+														<div
+															className={`w-6 h-6 rounded-full flex items-center justify-center overflow-hidden ${isDark ? "bg-primary/20" : "bg-[#0a7c6e]/20"}`}
+														>
 															{article.author.avatar ? (
 																<img
 																	src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${article.author.avatar}`}
@@ -434,24 +481,32 @@ function ArtikelContent() {
 																	className="w-full h-full object-cover"
 																/>
 															) : (
-																<span className="text-primary text-[10px] font-bold">
+																<span
+																	className={`text-[10px] font-bold ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+																>
 																	{article.author.name
 																		?.charAt(0)
 																		?.toUpperCase() || "A"}
 																</span>
 															)}
 														</div>
-														<span className="text-on-surface-variant text-[11px] font-bold uppercase tracking-wide">
+														<span
+															className={`text-[11px] font-bold uppercase tracking-wide ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+														>
 															{article.author.name || "Author"}
 														</span>
 													</div>
 												)}
 											</div>
 											<div className="flex justify-between items-center mt-4">
-												<span className="text-on-surface-variant text-xs font-bold">
+												<span
+													className={`text-xs font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+												>
 													{article.created_diff}
 												</span>
-												<div className="flex items-center gap-1 text-on-surface-variant text-[11px] font-bold">
+												<div
+													className={`flex items-center gap-1 text-[11px] font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+												>
 													<span className="material-symbols-outlined text-[8px]">
 														visibility
 													</span>
@@ -473,9 +528,15 @@ function ArtikelContent() {
 								disabled={isLoadingMore}
 								className="group relative px-16 py-6 overflow-hidden rounded-2xl"
 							>
-								<div className="absolute inset-0 border border-primary/20 rounded-2xl bg-primary/5 backdrop-blur-md group-hover:border-primary/50 transition-all"></div>
-								<div className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform"></div>
-								<span className="relative font-bold text-sm text-primary tracking-[0.5em] uppercase">
+								<div
+									className={`absolute inset-0 border rounded-2xl backdrop-blur-md group-hover:border-primary/50 transition-all ${isDark ? "border-primary/20 bg-primary/5" : "border-[#0a7c6e]/20 bg-[#0a7c6e]/5"}`}
+								></div>
+								<div
+									className={`absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform ${isDark ? "bg-primary/10" : "bg-[#0a7c6e]/10"}`}
+								></div>
+								<span
+									className={`relative font-bold text-sm tracking-[0.5em] uppercase ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								>
 									{isLoadingMore ? "Loading..." : "Lebih Banyak"}
 								</span>
 							</button>
@@ -484,7 +545,9 @@ function ArtikelContent() {
 
 					{/* End of content */}
 					{!hasMore && displayedArticles.length > 0 && (
-						<div className="col-span-full text-center py-8 text-outline">
+						<div
+							className={`col-span-full text-center py-8 ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
+						>
 							<p>Anda telah melihat semua artikel</p>
 						</div>
 					)}
@@ -493,11 +556,17 @@ function ArtikelContent() {
 				{/* Trending Sidebar with Enhanced Glassmorphism */}
 				<aside className="lg:col-span-4">
 					<div className="sticky top-26 space-y-8">
-						<div className="glass-panel p-8 rounded-2xl border-l-[6px] border-l-primary relative overflow-hidden group/sidebar">
-							<div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/5 blur-[80px] rounded-full group-hover/sidebar:bg-primary/10 transition-all duration-700"></div>
-							<h2 className="text-3xl uppercase tracking-tighter mb-10 flex items-center gap-3 relative z-10">
+						<div
+							className={`p-8 rounded-2xl border-l-[6px] relative overflow-hidden group/sidebar transition-all duration-300 ${isDark ? "glass-panel" : "bg-white shadow-lg border-l-[#0a7c6e] hover:shadow-xl"}`}
+						>
+							<div
+								className={`absolute -right-20 -top-20 w-64 h-64 rounded-full blur-[80px] group-hover/sidebar:opacity-100 transition-all duration-700 ${isDark ? "bg-primary/5 group-hover/sidebar:bg-primary/10" : "bg-[#0a7c6e]/5 group-hover/sidebar:bg-[#0a7c6e]/10"}`}
+							></div>
+							<h2
+								className={`text-3xl uppercase tracking-tighter mb-10 flex items-center gap-3 relative z-10 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+							>
 								<span
-									className="material-symbols-outlined text-primary float-anim"
+									className={`material-symbols-outlined float-anim ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 									style={{ fontVariationSettings: "'FILL' 1" }}
 								>
 									bolt
@@ -519,17 +588,25 @@ function ArtikelContent() {
 												key={article.id}
 												className="flex gap-6 group cursor-pointer"
 											>
-												<span className="text-5xl font-display-xl text-white/10 group-hover:text-primary/40 transition-colors leading-none italic">
+												<span
+													className={`text-5xl font-display-xl transition-colors leading-none italic ${isDark ? "text-white/10 group-hover:text-primary/40" : "text-gray-300 group-hover:text-[#0a7c6e]/40"}`}
+												>
 													{String(index + 1).padStart(2, "0")}
 												</span>
 												<div>
-													<span className="text-xs font-black text-primary uppercase tracking-[0.3em]">
+													<span
+														className={`text-xs font-black uppercase tracking-[0.3em] ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+													>
 														TRENDING
 													</span>
-													<h4 className="font-bold text-md uppercase tracking-tight leading-tight mt-1 group-hover:text-primary transition-colors">
+													<h4
+														className={`font-bold text-md uppercase tracking-tight leading-tight mt-1 group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+													>
 														{article.title}
 													</h4>
-													<div className="flex items-center gap-4 mt-3 text-xs text-outline font-bold">
+													<div
+														className={`flex items-center gap-4 mt-3 text-xs font-bold ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
+													>
 														<span className="flex items-center gap-1">
 															<span className="material-symbols-outlined text-xs">
 																visibility
@@ -546,7 +623,9 @@ function ArtikelContent() {
 						</div>
 
 						{/* Promo Section */}
-						<div className="h-fit rounded-2xl overflow-hidden group shadow-2xl">
+						<div
+							className={`h-fit rounded-2xl overflow-hidden group ${isDark ? "" : "shadow-lg"}`}
+						>
 							<a href="https://www.igvault.id/home">
 								<img
 									className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]"
@@ -571,8 +650,12 @@ function ArtikelLoading() {
 }
 
 export default function ArtikelPage() {
+	const { theme } = useUIStore();
+	const isDark = theme === "dark";
 	return (
-		<div className="min-h-screen bg-background text-on-background font-sans custom-scrollbar">
+		<div
+			className={`min-h-screen font-sans custom-scrollbar transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
+		>
 			<Suspense fallback={<ArtikelLoading />}>
 				<ArtikelContent />
 			</Suspense>

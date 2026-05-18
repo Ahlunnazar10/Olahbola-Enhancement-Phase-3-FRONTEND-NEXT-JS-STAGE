@@ -17,7 +17,7 @@ const navLinks = [
 	{ href: "/interview", label: "Interview" },
 	{ href: "/kolaborasi", label: "Kolaborasi" },
 	// { href: "/quiz", label: "Quiz" },
-	{ href: "/sapa", label: "Sapa" },
+	{ href: "/media-spotlight", label: "Media Spotlight" },
 ];
 
 export function NavigationBar() {

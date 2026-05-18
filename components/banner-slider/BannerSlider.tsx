@@ -112,14 +112,14 @@ export function BannerSlider({
 								/>
 							) : (
 								<div
-									className={`w-full h-full ${isDark ? "bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]" : "bg-linear-to-br from-[#e0e0e0] via-[#f0f0f0] to-[#e8e8e8]"}`}
+									className="w-full h-full bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]"
 								/>
 							)}
 						</div>
 
 						{/* Overlays - CTA: mobile=bottom-to-top, desktop=right-to-left; Article: mobile=bottom-to-top, desktop=left-to-right; Static: left-to-right */}
 						<div
-							className={`absolute inset-0 ${slide.type === "cta" ? (isMobile ? (isDark ? "bg-linear-to-t from-black via-black/60 to-transparent" : "bg-linear-to-t from-black/80 via-black/50 to-transparent") : isDark ? "bg-linear-to-l from-black via-transparent to-transparent" : "bg-linear-to-l from-black/80 via-black/50 to-transparent") : slide.type === "article" ? (isMobile ? (isDark ? "bg-linear-to-t from-black via-black/60 to-transparent" : "bg-linear-to-t from-black/80 via-black/50 to-transparent") : isDark ? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent" : "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent") : `bg-linear-to-r ${isDark ? "from-black via-[#0f1412]/60 to-transparent" : "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"}`}`}
+							className={`absolute inset-0 ${slide.type === "cta" ? (isMobile ? "bg-linear-to-t from-black via-black/60 to-transparent" : "bg-linear-to-l from-black via-transparent to-transparent") : slide.type === "article" ? (isMobile ? (isDark ? "bg-linear-to-t from-black via-black/60 to-transparent" : "bg-linear-to-t from-black/80 via-black/50 to-transparent") : isDark ? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent" : "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent") : `bg-linear-to-r ${isDark ? "from-black via-[#0f1412]/60 to-transparent" : "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"}`}`}
 						/>
 
 						{/* Static Type - Split Layout with justify-between */}
@@ -184,12 +184,8 @@ export function BannerSlider({
 										</h2>
 									)}
 									{slide.ctaSubtitle && (
-										<p
-											className={`text-sm md:text-lg font-semibold leading-relaxed mb-6 md:mb-8 max-w-lg ml-auto`}
-										>
-											<span
-												className={isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}
-											>
+										<p className="text-sm md:text-lg font-semibold leading-relaxed mb-6 md:mb-8 max-w-lg ml-auto">
+											<span className="text-[#43decc]">
 												{slide.ctaSubtitle}
 											</span>
 										</p>
@@ -199,13 +195,7 @@ export function BannerSlider({
 											href={slide.ctaCtaHref}
 											target="_blank"
 											rel="noopener noreferrer"
-											className={cn(
-												"group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-lg font-black uppercase tracking-wide transition-all duration-300 overflow-hidden",
-												"bg-linear-to-r from-[#00c2b1] to-[#00a89a] text-black",
-												"shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)]",
-												"hover:scale-105 active:scale-95",
-												"border border-[#00c2b1]/40",
-											)}
+											className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-lg font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-[#00c2b1] to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-[#00c2b1]/40"
 										>
 											<span className="relative z-10 flex items-center gap-3">
 												<svg
@@ -227,9 +217,7 @@ export function BannerSlider({
 										</a>
 									)}
 									{slide.ctaTerms && (
-										<p
-											className={`text-sm mt-3 ${isDark ? "text-[#ffaa00]" : "text-[#e69500]"}`}
-										>
+										<p className="text-sm mt-3 text-[#ffaa00]">
 											{slide.ctaTerms}
 										</p>
 									)}
@@ -289,17 +277,17 @@ export function BannerSlider({
 				<>
 					<button
 						onClick={() => swiperRef.current?.swiper.slidePrev()}
-						className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:bg-[#43decc]/20 transition-all group"
+						className={`absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all group ${isDark ? "glass-panel hover:bg-[#43decc]/20" : "bg-white/80 hover:bg-white shadow-lg border border-gray-200"}`}
 						aria-label="Previous slide"
 					>
-						<ChevronLeft className="size-5 md:size-6 text-[#43decc] group-hover:scale-110 transition-transform" />
+						<ChevronLeft className={`size-5 md:size-6 group-hover:scale-110 transition-transform ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`} />
 					</button>
 					<button
 						onClick={() => swiperRef.current?.swiper.slideNext()}
-						className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:bg-[#43decc]/20 transition-all group"
+						className={`absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all group ${isDark ? "glass-panel hover:bg-[#43decc]/20" : "bg-white/80 hover:bg-white shadow-lg border border-gray-200"}`}
 						aria-label="Next slide"
 					>
-						<ChevronRight className="size-5 md:size-6 text-[#43decc] group-hover:scale-110 transition-transform" />
+						<ChevronRight className={`size-5 md:size-6 group-hover:scale-110 transition-transform ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`} />
 					</button>
 				</>
 			)}

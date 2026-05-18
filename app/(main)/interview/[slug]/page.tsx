@@ -82,7 +82,7 @@ export default function InterviewDetailPage() {
 
           {/* Content */}
           <div
-            className={`prose prose-lg max-w-none ${isDark ? "prose-invert" : ""}`}
+            className={`max-w-none ${isDark ? "text-white/90 [&_h2]:text-white [&_h3]:text-white [&_p]:text-white/80 [&_a]:text-primary [&_a]:underline [&_ul_li]:text-white/80 [&_ol_li]:text-white/80 [&_strong]:text-white [&_img]:rounded-lg" : "text-[#1a1a1a] [&_h2]:text-[#1a1a1a] [&_h3]:text-[#1a1a1a] [&_p]:text-[#5a5a5a] [&_a]:text-[#0a7c6e] [&_a]:underline [&_ul_li]:text-[#5a5a5a] [&_ol_li]:text-[#5a5a5a] [&_strong]:text-[#1a1a1a] [&_img]:rounded-lg"}`}
             dangerouslySetInnerHTML={{ __html: interview.content }}
           />
 

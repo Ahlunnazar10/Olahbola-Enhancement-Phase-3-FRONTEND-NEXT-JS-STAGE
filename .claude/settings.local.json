@@ -37,7 +37,12 @@
       "Read(//f/DEVELOPER/LARAVEL-PROJECT/OLAHBOLA/olahbola/routes/**)",
       "Read(//f/DEVELOPER/LARAVEL-PROJECT/OLAHBOLA/olahbola/app/Models/**)",
       "Read(//f/DEVELOPER/LARAVEL-PROJECT/OLAHBOLA/olahbola/app/Http/Controllers/**)",
-      "Bash(node update_banner.js)"
+      "Bash(node update_banner.js)",
+      "Bash(Get-ChildItem -Path \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\\\\app\" -Recurse -Filter \"page.tsx\")",
+      "Bash(Select-Object FullName)",
+      "Bash(python3 /tmp/fix_article.py)",
+      "Bash(python3 /tmp/fix_article2.py)",
+      "Bash(python3 /tmp/fix3.py)"
     ]
   }
 }

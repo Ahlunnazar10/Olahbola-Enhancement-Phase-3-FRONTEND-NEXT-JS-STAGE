@@ -9,34 +9,33 @@ import { useUIStore } from "@/stores/uiStore";
 
 const milestones = [
 	{
-		year: "2020",
+		year: "2021",
 		title: "Lahir di Tengah Pandemi",
 		description:
-			"OlahBola memulai perjalanan dari ide sederhana: mengubah cinta pada sepak bola menjadi konten yang hidup dan dekat dengan fans.",
-	},
-	{
-		year: "2021",
-		title: "1 Juta Followers di TikTok",
-		description:
-			"Konten kreator sepak bola terbesar di Indonesia dengan jangkauan jutaan penonton.",
+			"OlahBola bersama ESPL Indonesia menghadirkan OlahBola Esports Series 2021.",
 	},
 	{
 		year: "2022",
-		title: "Partner Brand Besar",
-		description:
-			"Brand-brand seperti Bank Mandiri, AQUA, Oppo, Bundesliga, LaLiga dan Eredivisie Mempercayakan OlahBola.",
+		title: "1 Juta Followers",
+		description: "Pada tahun ini, kami mencapai 1 juta followers di TikTok.",
 	},
 	{
 		year: "2023",
-		title: "Ekspansi Platform",
+		title: "Satu-satunya Media Indonesia di Piala Dunia U-17",
 		description:
-			"Mengembangkan konten di berbagai platform dan menjangkau lebih banyak pecinta bola.",
+			"Menjadi satu-satunya media Indonesia yang meliput langsung persiapan Training Camp Timnas Indonesia U-17 di Jerman menuju Piala Dunia U-17 2023.",
 	},
 	{
 		year: "2024",
-		title: "5 Tahun Berkarya",
+		title: "Mewakili media Asia",
 		description:
-			"Lima tahun menjadi salah satu konten kreator sepak bola terbesar di Indonesia.",
+			"Menjadi satu-satunya media dari Indonesia yang mewakili Asia dalam program media visit LaLiga di Spanyol.",
+	},
+	{
+		year: "2025",
+		title: "Media Pertama dari Indonesia di Bundesliga",
+		description:
+			"Menjadi media pertama dari Indonesia yang diundang langsung oleh Bundesliga untuk mewawancarai Kevin Diks di klub barunya, Borussia Mönchengladbach.",
 	},
 ];
 

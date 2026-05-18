@@ -14,6 +14,8 @@ import {
 	PopularArticleCardSkeleton,
 } from "@/components/article/PopularArticleCard";
 import { useUIStore } from "@/stores/uiStore";
+import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
+import { notFound } from "next/navigation";
 
 export default function ArticleDetailPage() {
 	const params = useParams();
@@ -55,24 +57,8 @@ export default function ArticleDetailPage() {
 	}
 
 	if (error || !article?.data) {
-		return (
-			<div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? "bg-[#0f1412]" : "bg-[#f5f5f5]"}`}>
-				<div className="text-center">
-					<h1 className={`text-2xl font-bold mb-4 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
-						Artikel Tidak Ditemukan
-					</h1>
-					<p className={`mb-6 ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
-						Artikel yang kamu cari mungkin sudah dipindahkan atau dihapus.
-					</p>
-					<Link
-						href="/artikel"
-						className={`inline-block px-6 py-3 rounded-lg font-medium ${isDark ? "bg-[#0D645F] hover:bg-[#0a514d] text-white" : "bg-[#0a7c6e] hover:bg-[#095a50] text-white"}`}
-					>
-						Kembali ke Artikel
-					</Link>
-				</div>
-			</div>
-		);
+		notFound();
+		return null;
 	}
 
 	const articleData = article.data;
@@ -81,9 +67,11 @@ export default function ArticleDetailPage() {
 		: "/placeholder.png";
 
 	return (
-		<div className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-[#0f1412]" : "bg-[#f5f5f5]"}`}>
+		<div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f1412]" : "bg-[#f5f5f5]"}`}>
+			{/* Theme Toggle */}
+			<ThemeToggle />
 			{/* Hero Banner */}
-			<div className="relative h-[300px] md:h-[450px] bg-cover bg-center">
+			<div className={`relative h-64 sm:h-80 md:h-[400px] lg:h-[450px] bg-cover bg-center`}>
 				<div
 					className="absolute inset-0 bg-cover bg-center"
 					style={{ backgroundImage: `url(${fullImageUrl})` }}
@@ -93,7 +81,7 @@ export default function ArticleDetailPage() {
 				{/* Back Button */}
 				<Link
 					href="/artikel"
-					className="absolute top-24 left-4 md:left-8 flex items-center gap-2 text-white/80 hover:text-white transition-colors z-10"
+					className={`absolute top-24 left-4 md:left-8 flex items-center gap-2 transition-colors z-10 ${isDark ? "text-white/80 hover:text-white" : "text-white/90 hover:text-white bg-black/20 hover:bg-black/30 rounded-lg px-2 py-1"}`}
 				>
 					<ArrowLeft className="size-5" />
 					<span>Kembali</span>
@@ -104,12 +92,12 @@ export default function ArticleDetailPage() {
 			<div className="container-custom -mt-20 relative z-10">
 				<div className="flex flex-col lg:flex-row gap-8">
 					{/* Main Content */}
-					<article className={`flex-1 rounded-xl shadow-lg p-6 md:p-10 ${isDark ? "bg-[#1c211e]" : "bg-white"}`}>
+					<article className={`flex-1 rounded-xl shadow-lg p-6 md:p-10 ${isDark ? "bg-[#1c211e]" : "bg-white border border-gray-200"}`}>
 						{/* Category Badge */}
 						{articleData.category_name && (
 							<Link
 								href={`/artikel/kategori/${articleData.category_slug}`}
-								className="inline-block px-4 py-1.5 bg-[#E63946] text-white text-sm font-medium rounded-full mb-4 hover:bg-[#d32f3e] transition-colors"
+								className={`inline-block px-4 py-1.5 text-white text-sm font-medium rounded-full mb-4 transition-colors ${isDark ? "bg-[#E63946] hover:bg-[#d32f3e]" : "bg-[#d32f3e] hover:bg-[#c62828]"}`}
 							>
 								{articleData.category_name}
 							</Link>
@@ -123,7 +111,7 @@ export default function ArticleDetailPage() {
 						{/* Meta Info */}
 						<div className={`flex flex-wrap items-center gap-4 md:gap-6 mb-8 pb-8 border-b ${isDark ? "text-white/60 border-white/10" : "text-[#5a5a5a] border-gray-200"}`}>
 							<div className="flex items-center gap-2">
-								<Calendar className="size-4 text-[#E63946]" />
+								<Calendar className={`size-4 ${isDark ? "text-[#E63946]" : "text-[#d32f3e]"}`} />
 								<span className="text-sm">
 									{articleData.published_at
 										? formatDate(articleData.published_at)
@@ -131,13 +119,13 @@ export default function ArticleDetailPage() {
 								</span>
 							</div>
 							<div className="flex items-center gap-2">
-								<User className="size-4 text-[#E63946]" />
+								<User className={`size-4 ${isDark ? "text-[#E63946]" : "text-[#d32f3e]"}`} />
 								<span className="text-sm notranslate">
 									{articleData.author_name}
 								</span>
 							</div>
 							<div className="flex items-center gap-2">
-								<Eye className="size-4 text-[#E63946]" />
+								<Eye className={`size-4 ${isDark ? "text-[#E63946]" : "text-[#d32f3e]"}`} />
 								<span className="text-sm">{articleData.views} Dibaca</span>
 							</div>
 
@@ -174,7 +162,7 @@ export default function ArticleDetailPage() {
 						</div>
 
 						{/* Featured Image */}
-						<div className="relative w-full h-[300px] md:h-[450px] mb-8 rounded-lg overflow-hidden">
+						<div className={`relative w-full h-[300px] md:h-[450px] mb-8 rounded-lg overflow-hidden ${isDark ? "" : "shadow-lg"}`}>
 							<img
 								src={fullImageUrl}
 								alt={articleData.title}
@@ -184,8 +172,11 @@ export default function ArticleDetailPage() {
 
 						{/* Article Body */}
 						<div
-							className={`prose prose-lg max-w-none ${isDark ? "prose-invert" : ""}`}
+							className={`max-w-none [&_li_p]:!text-base [&_li_p]:!font-normal [&_li_p]:!float-none [&_li_p]:!drop-cap-none prose-li:${isDark ? "text-white/80" : "text-[#5a5a5a]"} [&_h2]:text-white [&_h3]:text-white [&_p]:text-white/80 [&_a]:text-primary [&_a]:underline hover:[&_a]:text-primary/70 [&_ul_li]:text-white/80 [&_ol_li]:text-white/80 [&_strong]:text-white [&_img]:rounded-lg [&_blockquote]:border-l-4 [&_blockquote]:border-primary/50 [&_blockquote]:pl-4 [&_blockquote]:italic prose-li:[&_p]:\!text-base prose-li:[&_p]:\!font-normal prose-li:[&_p]:\!float-none prose-li:[&_p]:\!drop-cap-none prose-p:[&_first-letter]:\!text-base prose-p:[&_first-letter]:\!font-normal prose-p:[&_first-letter]:\!float-none prose-p:[&_first-letter]:\!drop-cap-none prose-li_p:first-letter:\!text-base prose-li_p:first-letter:\!font-normal prose-li_p:first-letter:\!float-none prose-li_p:first-letter:\!drop-cap-none" : "text-[#1a1a1a] [&_h2]:text-[#1a1a1a] [&_h3]:text-[#1a1a1a] [&_p]:text-[#5a5a5a] [&_a]:text-[#0a7c6e] [&_a]:underline hover:[&_a]:text-[#0a7c6e]/70 [&_ul_li]:text-[#5a5a5a] [&_ol_li]:text-[#5a5a5a] [&_strong]:text-[#1a1a1a] [&_img]:rounded-lg [&_blockquote]:border-l-4 [&_blockquote]:border-[#0a7c6e]/50 [&_blockquote]:pl-4 [&_blockquote]:italic prose-li:[&_p]:\!text-base prose-li:[&_p]:\!font-normal prose-li:[&_p]:\!float-none prose-li:[&_p]:\!drop-cap-none prose-p:[&_first-letter]:\!text-base prose-p:[&_first-letter]:\!font-normal prose-p:[&_first-letter]:\!float-none prose-p:[&_first-letter]:\!drop-cap-none prose-li_p:first-letter:\!text-base prose-li_p:first-letter:\!font-normal prose-li_p:first-letter:\!float-none prose-li_p:first-letter:\!drop-cap-none"}`}}
 							dangerouslySetInnerHTML={{ __html: articleData.content }}
+							<style jsx>{`
+								.prose ul li p:first-letter { font-size: inherit !important; font-weight: inherit !important; float: none !important; color: inherit !important; text-shadow: none !important; }
+							`}</style>
 						/>
 
 						{/* Article Footer */}
@@ -195,7 +186,7 @@ export default function ArticleDetailPage() {
 									<img
 										src={articleData.author_avatar || "/default-avatar.png"}
 										alt={articleData.author_name}
-										className="w-12 h-12 rounded-full object-cover"
+										className={`w-12 h-12 rounded-full object-cover ${isDark ? "" : "border-2 border-gray-200"}`}
 									/>
 									<div>
 										<p className={`font-medium notranslate ${isDark ? "text-white" : "text-gray-900"}`}>
@@ -217,7 +208,7 @@ export default function ArticleDetailPage() {
 					{/* Sidebar */}
 					<aside className="w-full lg:w-[350px]">
 						{/* Popular Articles */}
-						<div className={`rounded-xl shadow-lg p-6 sticky top-[100px] ${isDark ? "bg-[#1c211e]" : "bg-white"}`}>
+						<div className={`rounded-xl shadow-lg p-6 sticky top-[100px] ${isDark ? "bg-[#1c211e]" : "bg-white border border-gray-200"}`}>
 							<h2 className={`text-lg font-bold mb-6 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
 								Artikel Populer
 							</h2>

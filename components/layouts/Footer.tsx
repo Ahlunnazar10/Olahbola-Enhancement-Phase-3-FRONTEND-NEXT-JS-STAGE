@@ -8,7 +8,7 @@ const footerLinks = {
 		{ href: "/artikel", label: "Artikel" },
 		{ href: "/interview", label: "Interview" },
 		{ href: "/kolaborasi", label: "Kolaborasi" },
-		{ href: "/quiz", label: "Quiz" },
+		// { href: "/quiz", label: "Quiz" },
 		{ href: "/sapa", label: "Sapa" },
 	],
 	legal: [
@@ -22,6 +22,7 @@ const footerLinks = {
 			label: "Syarat dan Ketentuan Periklanan & Partnership",
 		},
 		{ href: "/kebijakan-hak-cipta", label: "Kebijakan Hak Cipta" },
+		{ href: "/media-spotlight", label: "Media Spotlight" },
 	],
 	social: [
 		{

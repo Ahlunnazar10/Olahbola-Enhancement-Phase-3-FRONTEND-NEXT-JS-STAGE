@@ -88,6 +88,10 @@ export const metadata: Metadata = {
 			"Olahbola adalah platform terbaik untuk penggemar sepak bola. Dapatkan artikel terbaru, highlight, quiz sepak bola dan game seru lainnya di sini.",
 		images: ["/og-image.svg"],
 	},
+	icons: {
+		icon: "/favicon.png",
+		apple: "/favicon.png",
+	},
 	robots: {
 		index: true,
 		follow: true,

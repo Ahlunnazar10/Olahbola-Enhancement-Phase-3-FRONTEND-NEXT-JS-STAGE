@@ -89,7 +89,7 @@ export function getImageUrl(path: string | null | undefined): string {
 }
 
 export function getProfilePictureUrl(path: string | null | undefined): string {
-	if (!path) return "/default-avatar.png";
+	if (!path) return "/icons/football-player.svg";
 	if (path.startsWith("http")) return path;
 	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${path}`;
 }

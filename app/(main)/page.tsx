@@ -14,6 +14,21 @@ import {
 	type BannerSlide,
 } from "@/components/banner-slider/BannerSlider";
 
+interface HeroPlayPlayer {
+	_id: string;
+	user: {
+		_id: string;
+		name: string;
+		city?: string;
+		country?: string;
+		profilePicture: string | null;
+	};
+	totalScore: number;
+	totalSessions: number;
+	lastPlayedAt: string;
+	rank: number;
+}
+
 function useSectionInView(threshold = 0.1) {
 	const { ref, inView } = useInView({ threshold, triggerOnce: true });
 	return { ref, inView };
@@ -55,11 +70,122 @@ export default function HomePage() {
 	const [interviewDisplayCount, setInterviewDisplayCount] = useState(5);
 	const [isMobileView, setIsMobileView] = useState(false);
 
+	// HeroPlay Leaderboard State
+	const [heroPlayLeaderboard, setHeroPlayLeaderboard] = useState<
+		HeroPlayPlayer[]
+	>([]);
+	const [heroPlayLoading, setHeroPlayLoading] = useState(false);
+	const [heroPlayError, setHeroPlayError] = useState<string | null>(null);
+	const [heroPlayBgLoaded, setHeroPlayBgLoaded] = useState(false);
+
 	const { ref: articleRef, inView: articleVisible } = useSectionInView(0.1);
 	const { ref: socmedRef, inView: socmedVisible } = useSectionInView(0.1);
 	const { ref: interviewRef, inView: interviewVisible } = useSectionInView(0.1);
 	const { ref: partnerRef, inView: partnerVisible } = useSectionInView(0.1);
 	const { ref: youtubeRef, inView: youtubeVisible } = useSectionInView(0.1);
+	const { ref: heroPlayRef, inView: heroPlayVisible } = useSectionInView(0.1);
+
+	const fetchHeroPlayLeaderboard = async () => {
+		if (heroPlayLoading) return;
+
+		setHeroPlayLoading(true);
+		setHeroPlayError(null);
+
+		try {
+			// Call API directly from client-side (browser) - CORS allowed from olahbola.com
+			const apiUrl =
+				process.env.NEXT_PUBLIC_HEROPLAY_API_URL || "https://api.mainhero.id";
+			const gameId =
+				process.env.NEXT_PUBLIC_HEROPLAY_GAME_ID || "69eb4ed14f862f8bae6bc7b6";
+
+			const response = await fetch(
+				`${apiUrl}/api/v1/games/${gameId}/leaderboard?limit=10`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Accept: "application/json",
+					},
+				},
+			);
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const data = await response.json();
+
+			if (data.status === "success") {
+				const leaderboardData = data.data?.leaderboard || [];
+				setHeroPlayLeaderboard(leaderboardData);
+				console.log(
+					"Football City Battle Leaderboard loaded:",
+					leaderboardData.length,
+					"players",
+				);
+			} else {
+				throw new Error(data.message || "Failed to fetch leaderboard");
+			}
+		} catch (err) {
+			console.error("Error fetching leaderboard:", err);
+			const errorMessage = err instanceof Error ? err.message : "Unknown error";
+			if (
+				errorMessage.includes("timeout") ||
+				errorMessage.includes("Timeout")
+			) {
+				setHeroPlayError(
+					"Server API sedang tidak dapat dijangkau. Silakan coba lagi nanti.",
+				);
+			} else {
+				setHeroPlayError("Gagal memuat papan skor. Silakan coba lagi nanti.");
+			}
+			setHeroPlayLeaderboard([]);
+		} finally {
+			setHeroPlayLoading(false);
+		}
+	};
+
+	// Preload hero play background
+	useEffect(() => {
+		const img = new window.Image();
+		img.src = "/images/home/leaderboard-bg.webp";
+		img.onload = () => setHeroPlayBgLoaded(true);
+	}, []);
+
+	// Fetch HeroPlay leaderboard when section is visible
+	useEffect(() => {
+		if (heroPlayVisible) {
+			fetchHeroPlayLeaderboard();
+		}
+	}, [heroPlayVisible]);
+
+	const formatScore = (score: number) => {
+		return Number(score).toLocaleString("id-ID");
+	};
+
+	// HeroPlay colors - matching site theme
+	const heroPlayColors = {
+		accent: isDark ? "#43decc" : "#0a7c6e",
+		accentGlow: isDark ? "rgba(67, 222, 204, 0.3)" : "rgba(10, 124, 110, 0.2)",
+		accentLight: isDark ? "#43decc" : "#0a7c6e",
+		gold: "#FFD700",
+		silver: "#C0C0C0",
+		bronze: "#CD7F32",
+		cardBg: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.6)",
+		cardBorder: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)",
+		text: isDark ? "#ffffff" : "#1a1a1a",
+		textSecondary: isDark
+			? "rgba(255, 255, 255, 0.7)"
+			: "rgba(26, 26, 26, 0.7)",
+		textMuted: isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(26, 26, 26, 0.5)",
+		bg: isDark ? "#0f1412" : "#f5f5f5",
+		bgSecondary: isDark ? "#141a17" : "#e8e8e8",
+		gradientBadge: `linear-gradient(135deg, ${isDark ? "#43decc" : "#0a7c6e"} 0%, ${isDark ? "#6ee7df" : "#15a896"} 100%)`,
+		gradientCTA: `linear-gradient(135deg, ${isDark ? "#43decc" : "#0a7c6e"} 0%, ${isDark ? "#6ee7df" : "#15a896"} 100%)`,
+		darkBgOverlay: isDark
+			? "rgba(15, 20, 18, 0.95)"
+			: "rgba(245, 245, 245, 0.95)",
+	};
 
 	// Banner Slides Data - constructed after state declarations
 	const bannerSlides: BannerSlide[] = useMemo(() => {
@@ -107,22 +233,22 @@ export default function HomePage() {
 		}
 
 		// Slide 3: Static Banner - Taktik, Fakta, Semua Ada!
-		slides.push({
-			id: "static-taktik",
-			type: "static" as const,
-			label: "Season Update",
-			labelColor: "season" as const,
-			staticTitle: {
-				parts: [
-					{ text: "Taktik,", color: "primary" as const },
-					{ text: "Fakta,", color: "white" as const },
-					{ text: "Semua Ada!", color: "accent" as const },
-				],
-			},
-			description:
-				" Temukan insight sepak bola yang bikin kamu selangkah lebih tahu… sampai yang bikin kamu bilang, 'lah, baru tau!' ",
-			imageFallback: "/images/home/banner-bg.webp",
-		});
+		// slides.push({
+		// 	id: "static-taktik",
+		// 	type: "static" as const,
+		// 	label: "Season Update",
+		// 	labelColor: "season" as const,
+		// 	staticTitle: {
+		// 		parts: [
+		// 			{ text: "Taktik,", color: "primary" as const },
+		// 			{ text: "Fakta,", color: "white" as const },
+		// 			{ text: "Semua Ada!", color: "accent" as const },
+		// 		],
+		// 	},
+		// 	description:
+		// 		" Temukan insight sepak bola yang bikin kamu selangkah lebih tahu… sampai yang bikin kamu bilang, 'lah, baru tau!' ",
+		// 	imageFallback: "/images/home/banner-bg.webp",
+		// });
 
 		return slides;
 	}, [featuredArticle]);
@@ -268,6 +394,75 @@ export default function HomePage() {
 				.animate-scroll-left:hover {
 					animation-play-state: paused;
 				}
+
+				@keyframes float {
+					0%,
+					100% {
+						transform: translateY(0px);
+					}
+					50% {
+						transform: translateY(-20px);
+					}
+				}
+
+				@keyframes pulse-glow {
+					0%,
+					100% {
+						box-shadow: 0 0 20px rgba(67, 222, 204, 0.3);
+					}
+					50% {
+						box-shadow: 0 0 40px rgba(67, 222, 204, 0.5);
+					}
+				}
+
+				@keyframes shimmer {
+					0% {
+						background-position: -200% 0;
+					}
+					100% {
+						background-position: 200% 0;
+					}
+				}
+
+				@keyframes bounce-subtle {
+					0%,
+					100% {
+						transform: translateY(0);
+					}
+					50% {
+						transform: translateY(-5px);
+					}
+				}
+
+				@keyframes slide-up {
+					0% {
+						opacity: 0;
+						transform: translateY(20px);
+					}
+					100% {
+						opacity: 1;
+						transform: translateY(0);
+					}
+				}
+
+				.animate-slide-up {
+					animation: slide-up 0.6s ease-out forwards;
+				}
+
+				.animate-bounce-subtle {
+					animation: bounce-subtle 2s ease-in-out infinite;
+				}
+
+				.shimmer {
+					background: linear-gradient(
+						90deg,
+						rgba(255, 255, 255, 0.05) 25%,
+						rgba(255, 255, 255, 0.1) 50%,
+						rgba(255, 255, 255, 0.05) 75%
+					);
+					background-size: 200% 100%;
+					animation: shimmer 1.5s infinite;
+				}
 			`}</style>
 
 			{/* Background Pattern */}
@@ -291,6 +486,696 @@ export default function HomePage() {
 						isDark={isDark}
 						isMobile={isMobileView}
 					/>
+				</section>
+
+				{/*  FOOTBALL CITY BATTLE LEADERBOARD  */}
+				<section
+					ref={heroPlayRef}
+					className="relative w-full overflow-hidden"
+					style={{
+						background: heroPlayBgLoaded
+							? "transparent"
+							: `linear-gradient(135deg, ${heroPlayColors.bg} 0%, ${heroPlayColors.bgSecondary} 50%, ${heroPlayColors.bgSecondary} 100%)`,
+					}}
+				>
+					{/* Background Image */}
+					{heroPlayBgLoaded && (
+						<div
+							className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+							style={{
+								backgroundImage: "url(/images/home/leaderboard-bg.webp)",
+							}}
+						/>
+					)}
+
+					{/* Dark Gradient Overlay */}
+					<div
+						className="absolute inset-0 z-10"
+						style={{
+							background: `linear-gradient(180deg, ${heroPlayColors.darkBgOverlay} 0%, ${heroPlayColors.bg}dd 50%, ${heroPlayColors.darkBgOverlay} 100%)`,
+						}}
+					/>
+
+					{/* Animated Background Effects - Gen-Z Style */}
+					<div className="absolute inset-0 z-20 overflow-hidden pointer-events-none">
+						{/* Floating orbs with accent color */}
+						<div
+							className="absolute w-96 h-96 rounded-full"
+							style={{
+								background: `radial-gradient(circle, ${heroPlayColors.accentGlow} 0%, transparent 70%)`,
+								filter: "blur(80px)",
+								top: "10%",
+								left: "10%",
+								animation: "float 12s ease-in-out infinite",
+							}}
+						/>
+						<div
+							className="absolute w-80 h-80 rounded-full"
+							style={{
+								background: `radial-gradient(circle, ${heroPlayColors.accentGlow} 0%, transparent 70%)`,
+								filter: "blur(100px)",
+								bottom: "15%",
+								right: "10%",
+								animation: "float 15s ease-in-out infinite reverse",
+							}}
+						/>
+						<div
+							className="absolute w-64 h-64 rounded-full"
+							style={{
+								background: `radial-gradient(circle, ${heroPlayColors.gold}30 0%, transparent 70%)`,
+								filter: "blur(90px)",
+								top: "50%",
+								left: "50%",
+								transform: "translate(-50%, -50%)",
+								animation: "float 10s ease-in-out infinite",
+							}}
+						/>
+						{/* Subtle grid pattern */}
+						<div
+							className="absolute inset-0 opacity-5"
+							style={{
+								backgroundImage: `linear-gradient(${isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"} 1px, transparent 1px), linear-gradient(90deg, ${isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"} 1px, transparent 1px)`,
+								backgroundSize: "50px 50px",
+							}}
+						/>
+					</div>
+
+					{/* Main Content */}
+					<div className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
+						{/* Header */}
+						<div className="text-center mb-10">
+							{/* Badge */}
+							<div
+								className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold mb-6 shadow-lg"
+								style={{
+									background: heroPlayColors.gradientBadge,
+									color: isDark ? "#003732" : "#ffffff",
+								}}
+							>
+								<span
+									className="material-symbols-outlined text-lg"
+									style={{ fontVariationSettings: "'FILL' 1" }}
+								>
+									sports_soccer
+								</span>
+								<span className="notranslate">LIVE LEADERBOARD</span>
+							</div>
+
+							{/* Title */}
+							<h2
+								className="text-3xl md:text-5xl font-black uppercase mb-3"
+								style={{
+									color: heroPlayColors.accent,
+								}}
+							>
+								FOOTBALL CITY BATTLE
+							</h2>
+							<p
+								className="text-base md:text-lg"
+								style={{ color: heroPlayColors.textSecondary }}
+							>
+								Klasemen Sementara Berdasarkan Peforma Dalam Game
+							</p>
+						</div>
+
+						{/* Loading State */}
+						{heroPlayLoading ? (
+							<div className="max-w-4xl mx-auto">
+								<div
+									className="flex items-center gap-4 p-4 mb-6 rounded-2xl animate-pulse"
+									style={{
+										background: heroPlayColors.cardBg,
+										backdropFilter: "blur(20px)",
+										border: `1px solid ${heroPlayColors.cardBorder}`,
+									}}
+								>
+									<div
+										className="w-14 h-14 rounded-full"
+										style={{ background: `${heroPlayColors.accent}30` }}
+									/>
+									<div className="flex-1 space-y-2">
+										<div
+											className="h-5 rounded w-3/4"
+											style={{ background: `${heroPlayColors.accent}20` }}
+										/>
+										<div
+											className="h-4 rounded w-1/2"
+											style={{ background: `${heroPlayColors.accent}10` }}
+										/>
+									</div>
+									<div
+										className="h-8 rounded-lg w-24"
+										style={{ background: `${heroPlayColors.accent}20` }}
+									/>
+								</div>
+								<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+									{[1, 2, 3].map((i) => (
+										<div
+											key={i}
+											className="h-24 rounded-2xl animate-pulse"
+											style={{
+												background: heroPlayColors.cardBg,
+												backdropFilter: "blur(20px)",
+												border: `1px solid ${heroPlayColors.cardBorder}`,
+											}}
+										/>
+									))}
+								</div>
+							</div>
+						) : heroPlayError ? (
+							<div className="text-center py-12 max-w-md mx-auto">
+								<div
+									className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
+									style={{ background: `${heroPlayColors.accent}15` }}
+								>
+									<span
+										className="material-symbols-outlined text-5xl"
+										style={{ color: heroPlayColors.accent }}
+									>
+										sports_soccer
+									</span>
+								</div>
+								<p
+									className="text-lg mb-4"
+									style={{ color: heroPlayColors.text }}
+								>
+									{heroPlayError}
+								</p>
+								<button
+									onClick={fetchHeroPlayLeaderboard}
+									className="px-6 py-3 font-bold rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
+									style={{
+										background: heroPlayColors.gradientBadge,
+										color: isDark ? "#003732" : "#ffffff",
+									}}
+								>
+									Coba Lagi
+								</button>
+							</div>
+						) : heroPlayLeaderboard.length > 0 ? (
+							<div className="max-w-5xl mx-auto">
+								{/* Top 3 Podium Cards - Desktop - Gen-Z Style */}
+								<div
+									className="hidden md:grid gap-4 mb-8 items-end"
+									style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
+								>
+									{/* Rank 2 */}
+									{heroPlayLeaderboard[1] && (
+										<div
+											className="relative p-5 rounded-3xl text-center order-1 transition-all duration-300 hover:scale-[1.02]"
+											style={{
+												background: `linear-gradient(135deg, ${heroPlayColors.cardBg} 0%, ${heroPlayColors.silver}15 100%)`,
+												backdropFilter: "blur(20px)",
+												border: `1px solid ${heroPlayColors.cardBorder}`,
+												marginBottom: "10px",
+											}}
+										>
+											<div
+												className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg"
+												style={{
+													background: `linear-gradient(135deg, ${heroPlayColors.silver} 0%, #A0A0A0 100%)`,
+													color: isDark ? "#1a1a1a" : "#1a1a1a",
+													boxShadow: `0 0 20px ${heroPlayColors.silver}50`,
+												}}
+											>
+												2
+											</div>
+											<div className="pt-5">
+												{heroPlayLeaderboard[1].user.profilePicture ? (
+													<img
+														src={heroPlayLeaderboard[1].user.profilePicture}
+														alt={heroPlayLeaderboard[1].user.name}
+														className="w-16 h-16 mx-auto rounded-2xl object-cover border-2 shadow-lg mb-3"
+														style={{ borderColor: heroPlayColors.silver }}
+													/>
+												) : (
+													<div className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-3">
+														<img
+															src="/icons/football-player.png"
+															alt="Player Icon"
+														/>
+													</div>
+												)}
+												<h3
+													className="font-bold text-lg truncate"
+													style={{ color: heroPlayColors.text }}
+												>
+													{heroPlayLeaderboard[1].user.name}
+												</h3>
+												<p
+													className="text-sm mb-3"
+													style={{ color: heroPlayColors.textMuted }}
+												>
+													{heroPlayLeaderboard[1].user.city || "-"}
+												</p>
+												<div
+													className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+													style={{ background: `${heroPlayColors.silver}20` }}
+												>
+													<span
+														className="material-symbols-outlined text-sm"
+														style={{
+															color: heroPlayColors.silver,
+															fontVariationSettings: "'FILL' 1",
+														}}
+													>
+														sports_soccer
+													</span>
+													<span
+														className="font-bold text-lg"
+														style={{ color: heroPlayColors.text }}
+													>
+														{formatScore(heroPlayLeaderboard[1].totalScore)}
+													</span>
+												</div>
+											</div>
+										</div>
+									)}
+
+									{/* Rank 1 - Featured - Champion */}
+									{heroPlayLeaderboard[0] && (
+										<div
+											className="relative p-6 rounded-3xl text-center order-2 transition-all duration-300 hover:scale-[1.03]"
+											style={{
+												background: `linear-gradient(135deg, ${heroPlayColors.cardBg} 0%, ${heroPlayColors.gold}25 100%)`,
+												backdropFilter: "blur(20px)",
+												border: `2px solid ${heroPlayColors.gold}50`,
+												boxShadow: `0 0 40px ${heroPlayColors.gold}30`,
+												marginBottom: "20px",
+											}}
+										>
+											<div
+												className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl"
+												style={{
+													background: `linear-gradient(135deg, ${heroPlayColors.gold} 0%, #FFA500 100%)`,
+													boxShadow: `0 0 30px ${heroPlayColors.gold}60`,
+												}}
+											>
+												<span
+													className="text-2xl font-black"
+													style={{ color: isDark ? "#003732" : "#1a1a1a" }}
+												>
+													1
+												</span>
+											</div>
+											<div
+												className="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
+												style={{
+													background: `linear-gradient(135deg, ${heroPlayColors.gold} 0%, #FFA500 100%)`,
+													color: isDark ? "#003732" : "#1a1a1a",
+												}}
+											>
+												Champion
+											</div>
+											<div className="pt-5">
+												{heroPlayLeaderboard[0].user.profilePicture ? (
+													<img
+														src={heroPlayLeaderboard[0].user.profilePicture}
+														alt={heroPlayLeaderboard[0].user.name}
+														className="w-20 h-20 mx-auto rounded-2xl object-cover border-2 shadow-xl mb-4"
+														style={{ borderColor: heroPlayColors.gold }}
+													/>
+												) : (
+													<div className="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-4">
+														<img
+															src="/icons/football-player.png"
+															alt="Player Icon"
+														/>
+													</div>
+												)}
+												<h3
+													className="font-black text-xl mb-1"
+													style={{ color: heroPlayColors.text }}
+												>
+													{heroPlayLeaderboard[0].user.name}
+												</h3>
+												<p
+													className="text-sm mb-4"
+													style={{ color: heroPlayColors.textMuted }}
+												>
+													{heroPlayLeaderboard[0].user.city || "-"}
+												</p>
+												<div
+													className="inline-flex items-center gap-2 px-5 py-3 rounded-full"
+													style={{
+														background: `${heroPlayColors.gold}25`,
+														border: `1px solid ${heroPlayColors.gold}40`,
+													}}
+												>
+													<span
+														className="material-symbols-outlined text-lg"
+														style={{
+															color: heroPlayColors.gold,
+															fontVariationSettings: "'FILL' 1",
+														}}
+													>
+														sports_soccer
+													</span>
+													<span
+														className="font-black text-2xl"
+														style={{ color: heroPlayColors.text }}
+													>
+														{formatScore(heroPlayLeaderboard[0].totalScore)}
+													</span>
+												</div>
+											</div>
+										</div>
+									)}
+
+									{/* Rank 3 */}
+									{heroPlayLeaderboard[2] && (
+										<div
+											className="relative p-5 rounded-3xl text-center order-3 transition-all duration-300 hover:scale-[1.02]"
+											style={{
+												background: `linear-gradient(135deg, ${heroPlayColors.cardBg} 0%, ${heroPlayColors.bronze}15 100%)`,
+												backdropFilter: "blur(20px)",
+												border: `1px solid ${heroPlayColors.cardBorder}`,
+												marginBottom: "10px",
+											}}
+										>
+											<div
+												className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+												style={{
+													background: `linear-gradient(135deg, ${heroPlayColors.bronze} 0%, #A0522D 100%)`,
+													boxShadow: `0 0 15px ${heroPlayColors.bronze}40`,
+												}}
+											>
+												<span
+													className="text-xl font-black"
+													style={{ color: isDark ? "#ffffff" : "#ffffff" }}
+												>
+													3
+												</span>
+											</div>
+											<div className="pt-5">
+												{heroPlayLeaderboard[2].user.profilePicture ? (
+													<img
+														src={heroPlayLeaderboard[2].user.profilePicture}
+														alt={heroPlayLeaderboard[2].user.name}
+														className="w-16 h-16 mx-auto rounded-2xl object-cover border-2 shadow-lg mb-3"
+														style={{ borderColor: heroPlayColors.bronze }}
+													/>
+												) : (
+													<div className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-3">
+														<img
+															src="/icons/football-player.png"
+															alt="Player Icon"
+														/>
+													</div>
+												)}
+												<h3
+													className="font-bold text-lg truncate"
+													style={{ color: heroPlayColors.text }}
+												>
+													{heroPlayLeaderboard[2].user.name}
+												</h3>
+												<p
+													className="text-sm mb-3"
+													style={{ color: heroPlayColors.textMuted }}
+												>
+													{heroPlayLeaderboard[2].user.city || "-"}
+												</p>
+												<div
+													className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+													style={{ background: `${heroPlayColors.bronze}20` }}
+												>
+													<span
+														className="material-symbols-outlined text-sm"
+														style={{
+															color: heroPlayColors.bronze,
+															fontVariationSettings: "'FILL' 1",
+														}}
+													>
+														sports_soccer
+													</span>
+													<span
+														className="font-bold text-lg"
+														style={{ color: heroPlayColors.text }}
+													>
+														{formatScore(heroPlayLeaderboard[2].totalScore)}
+													</span>
+												</div>
+											</div>
+										</div>
+									)}
+								</div>
+
+								{/* Top 3 Mobile Card View - Gen-Z Style */}
+								<div className="md:hidden space-y-4 mb-6">
+									{heroPlayLeaderboard.slice(0, 3).map((player, index) => (
+										<div
+											key={player._id}
+											className="relative flex items-center gap-4 p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
+											style={{
+												background:
+													index === 0
+														? `linear-gradient(135deg, ${heroPlayColors.cardBg} 0%, ${heroPlayColors.gold}20 100%)`
+														: index === 1
+															? `linear-gradient(135deg, ${heroPlayColors.cardBg} 0%, ${heroPlayColors.silver}15 100%)`
+															: `linear-gradient(135deg, ${heroPlayColors.cardBg} 0%, ${heroPlayColors.bronze}15 100%)`,
+												borderColor:
+													index === 0
+														? `${heroPlayColors.gold}40`
+														: index === 1
+															? `${heroPlayColors.silver}30`
+															: `${heroPlayColors.bronze}30`,
+											}}
+										>
+											<div
+												className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-lg"
+												style={{
+													background:
+														index === 0
+															? `linear-gradient(135deg, ${heroPlayColors.gold} 0%, #FFA500 100%)`
+															: index === 1
+																? `linear-gradient(135deg, ${heroPlayColors.silver} 0%, #A0A0A0 100%)`
+																: `linear-gradient(135deg, ${heroPlayColors.bronze} 0%, #A0522D 100%)`,
+													color: isDark ? "#003732" : "#1a1a1a",
+												}}
+											>
+												{index + 1}
+											</div>
+											{player.user.profilePicture ? (
+												<img
+													src={player.user.profilePicture}
+													alt={player.user.name}
+													className="w-12 h-12 rounded-xl object-cover border"
+													style={{
+														borderColor:
+															index === 0
+																? heroPlayColors.gold
+																: index === 1
+																	? heroPlayColors.silver
+																	: heroPlayColors.bronze,
+													}}
+												/>
+											) : (
+												<div className="w-12 h-12 rounded-xl flex items-center justify-center">
+													<img
+														src="/icons/football-player.png"
+														alt="Player Icon"
+													/>
+												</div>
+											)}
+											<div className="flex-1 min-w-0">
+												<h3
+													className="font-bold truncate"
+													style={{ color: heroPlayColors.text }}
+												>
+													{player.user.name}
+												</h3>
+												<p
+													className="text-sm"
+													style={{ color: heroPlayColors.textMuted }}
+												>
+													{player.user.city || "-"}
+												</p>
+											</div>
+											<div
+												className="flex items-center gap-2 px-3 py-2 rounded-full"
+												style={{
+													background: `${heroPlayColors.accent}10`,
+													border: `1px solid ${heroPlayColors.accent}30`,
+												}}
+											>
+												<span
+													className="material-symbols-outlined text-sm"
+													style={{
+														color: heroPlayColors.accent,
+														fontVariationSettings: "'FILL' 1",
+													}}
+												>
+													sports_soccer
+												</span>
+												<span
+													className="font-bold"
+													style={{ color: heroPlayColors.text }}
+												>
+													{formatScore(player.totalScore)}
+												</span>
+											</div>
+										</div>
+									))}
+								</div>
+
+								{/* Rest of Leaderboard (Rank 4+) - Gen-Z Style */}
+								{heroPlayLeaderboard.length > 3 && (
+									<div className="space-y-3">
+										{/* Section Header */}
+										<div className=" items-center gap-3 mb-4 hidden md:flex">
+											<div
+												className="h-px flex-1"
+												style={{ background: heroPlayColors.cardBorder }}
+											/>
+											<span
+												className="text-xs font-bold uppercase tracking-widest"
+												style={{ color: heroPlayColors.textMuted }}
+											>
+												Peringkat Berikutnya
+											</span>
+											<div
+												className="h-px flex-1"
+												style={{ background: heroPlayColors.cardBorder }}
+											/>
+										</div>
+										{heroPlayLeaderboard.slice(3, 10).map((player, index) => (
+											<div
+												key={player._id}
+												className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
+												style={{
+													background: heroPlayColors.cardBg,
+													borderColor: heroPlayColors.cardBorder,
+												}}
+												onMouseEnter={(e) => {
+													(
+														e.currentTarget as HTMLDivElement
+													).style.borderColor = `${heroPlayColors.accent}50`;
+													(e.currentTarget as HTMLDivElement).style.transform =
+														"translateX(4px)";
+												}}
+												onMouseLeave={(e) => {
+													(
+														e.currentTarget as HTMLDivElement
+													).style.borderColor = heroPlayColors.cardBorder;
+													(e.currentTarget as HTMLDivElement).style.transform =
+														"translateX(0)";
+												}}
+											>
+												<div className="flex items-center gap-4">
+													<div
+														className="w-10 h-10 rounded-xl flex items-center justify-center font-bold"
+														style={{
+															background: `${heroPlayColors.accent}15`,
+															color: heroPlayColors.accent,
+														}}
+													>
+														{index + 4}
+													</div>
+													{player.user.profilePicture ? (
+														<img
+															src={player.user.profilePicture}
+															alt={player.user.name}
+															className="w-10 h-10 rounded-xl object-cover"
+														/>
+													) : (
+														<div className="w-10 h-10 rounded-xl flex items-center justify-center">
+															<img
+																src="/icons/football-player.png"
+																alt="Player Icon"
+															/>
+														</div>
+													)}
+													<div>
+														<h4
+															className="font-semibold"
+															style={{ color: heroPlayColors.text }}
+														>
+															{player.user.name}
+														</h4>
+														<p
+															className="text-sm"
+															style={{ color: heroPlayColors.textMuted }}
+														>
+															{player.user.city || "-"}
+														</p>
+													</div>
+												</div>
+												<div
+													className="flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
+													style={{
+														background: `${heroPlayColors.accent}10`,
+														border: `1px solid ${heroPlayColors.accent}30`,
+													}}
+												>
+													<span
+														className="material-symbols-outlined text-sm"
+														style={{
+															color: heroPlayColors.accent,
+															fontVariationSettings: "'FILL' 1",
+														}}
+													>
+														sports_soccer
+													</span>
+													<span
+														className="font-bold"
+														style={{ color: heroPlayColors.text }}
+													>
+														{formatScore(player.totalScore)}
+													</span>
+												</div>
+											</div>
+										))}
+									</div>
+								)}
+
+								{/* CTA Button - Gen-Z Style */}
+								<div className="text-center mt-10">
+									<a
+										href="https://www.mainhero.id"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
+										style={{
+											background: heroPlayColors.gradientCTA,
+											color: isDark ? "#003732" : "#ffffff",
+											boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
+										}}
+									>
+										<span
+											className="material-symbols-outlined text-2xl"
+											style={{ fontVariationSettings: "'FILL' 1" }}
+										>
+											sports_soccer
+										</span>
+										Ikuti Pertandingan Sekarang
+										<span className="material-symbols-outlined text-xl">
+											arrow_forward
+										</span>
+									</a>
+								</div>
+							</div>
+						) : (
+							<div className="text-center py-12">
+								<div
+									className="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center"
+									style={{ background: heroPlayColors.cardBg }}
+								>
+									<span
+										className="material-symbols-outlined text-5xl"
+										style={{ color: heroPlayColors.textMuted }}
+									>
+										sports_soccer
+									</span>
+								</div>
+								<p
+									className="text-lg"
+									style={{ color: heroPlayColors.textMuted }}
+								>
+									Belum ada data papan skor
+								</p>
+							</div>
+						)}
+					</div>
 				</section>
 
 				{/* Article Section - Bento Grid */}
