@@ -338,7 +338,7 @@ export default function LeaderboardPage() {
                       isFirst ? 'bg-yellow-400/20' : isSecond ? 'bg-gray-300/20' : 'bg-amber-600/20'
                     }`}>
                       <img src="/icons/ball.svg" alt="ball" className="w-4 h-4" />
-                      className={`text-xl md:text-2xl font-black ${
+                      <span className={`text-xl md:text-2xl font-black ${
                         isFirst ? 'text-yellow-400' : isSecond ? (isDark ? 'text-gray-300' : 'text-gray-600') : 'text-amber-600'
                       }`}>
                         {entry.points}
