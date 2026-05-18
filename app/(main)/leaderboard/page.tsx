@@ -303,7 +303,8 @@ export default function LeaderboardPage() {
                   <div
                     key={entry.user_id}
                     className={`glass-card rounded-2xl p-4 md:p-6 text-center animate-scale-in hover:scale-105 transition-all duration-300 ${
-                      isFirst ? 'order-2 md:order-2 neon-glow' : isSecond ? 'order-1' : 'order             } ${isFirst ? (isDark ? 'bg-gradient-to-b from-yellow-500/20 to-transparent' : 'bg-gradient-to-b from-yellow-400/20 to-transparent') : ''}`}
+                      isFirst ? 'order-2 md:order-2 neon-glow' : isSecond ? 'order-1' : 'order-3'
+                    } ${isFirst ? (isDark ? 'bg-gradient-to-b from-yellow-500/20 to-transparent' : 'bg-gradient-to-b from-yellow-400/20 to-transparent') : ''}`}
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     {/* Rank Badge */}

@@ -172,12 +172,22 @@ export default function ArticleDetailPage() {
 
 						{/* Article Body */}
 						<div
-							className={`max-w-none [&_li_p]:!text-base [&_li_p]:!font-normal [&_li_p]:!float-none [&_li_p]:!drop-cap-none prose-li:${isDark ? "text-white/80" : "text-[#5a5a5a]"} [&_h2]:text-white [&_h3]:text-white [&_p]:text-white/80 [&_a]:text-primary [&_a]:underline hover:[&_a]:text-primary/70 [&_ul_li]:text-white/80 [&_ol_li]:text-white/80 [&_strong]:text-white [&_img]:rounded-lg [&_blockquote]:border-l-4 [&_blockquote]:border-primary/50 [&_blockquote]:pl-4 [&_blockquote]:italic prose-li:[&_p]:\!text-base prose-li:[&_p]:\!font-normal prose-li:[&_p]:\!float-none prose-li:[&_p]:\!drop-cap-none prose-p:[&_first-letter]:\!text-base prose-p:[&_first-letter]:\!font-normal prose-p:[&_first-letter]:\!float-none prose-p:[&_first-letter]:\!drop-cap-none prose-li_p:first-letter:\!text-base prose-li_p:first-letter:\!font-normal prose-li_p:first-letter:\!float-none prose-li_p:first-letter:\!drop-cap-none" : "text-[#1a1a1a] [&_h2]:text-[#1a1a1a] [&_h3]:text-[#1a1a1a] [&_p]:text-[#5a5a5a] [&_a]:text-[#0a7c6e] [&_a]:underline hover:[&_a]:text-[#0a7c6e]/70 [&_ul_li]:text-[#5a5a5a] [&_ol_li]:text-[#5a5a5a] [&_strong]:text-[#1a1a1a] [&_img]:rounded-lg [&_blockquote]:border-l-4 [&_blockquote]:border-[#0a7c6e]/50 [&_blockquote]:pl-4 [&_blockquote]:italic prose-li:[&_p]:\!text-base prose-li:[&_p]:\!font-normal prose-li:[&_p]:\!float-none prose-li:[&_p]:\!drop-cap-none prose-p:[&_first-letter]:\!text-base prose-p:[&_first-letter]:\!font-normal prose-p:[&_first-letter]:\!float-none prose-p:[&_first-letter]:\!drop-cap-none prose-li_p:first-letter:\!text-base prose-li_p:first-letter:\!font-normal prose-li_p:first-letter:\!float-none prose-li_p:first-letter:\!drop-cap-none"}`}}
+							className={`max-w-none ${
+								isDark
+									? "text-white/80 [&_h2]:text-white [&_h3]:text-white [&_p]:text-white/80 [&_a]:text-primary [&_a]:underline hover:[&_a]:text-primary/70 [&_ul_li]:text-white/80 [&_ol_li]:text-white/80 [&_strong]:text-white [&_img]:rounded-lg [&_blockquote]:border-l-4 [&_blockquote]:border-primary/50 [&_blockquote]:pl-4 [&_blockquote]:italic"
+									: "text-[#1a1a1a] [&_h2]:text-[#1a1a1a] [&_h3]:text-[#1a1a1a] [&_p]:text-[#5a5a5a] [&_a]:text-[#0a7c6e] [&_a]:underline hover:[&_a]:text-[#0a7c6e]/70 [&_ul_li]:text-[#5a5a5a] [&_ol_li]:text-[#5a5a5a] [&_strong]:text-[#1a1a1a] [&_img]:rounded-lg [&_blockquote]:border-l-4 [&_blockquote]:border-[#0a7c6e]/50 [&_blockquote]:pl-4 [&_blockquote]:italic"
+							}`}
 							dangerouslySetInnerHTML={{ __html: articleData.content }}
-							<style jsx>{`
-								.prose ul li p:first-letter { font-size: inherit !important; font-weight: inherit !important; float: none !important; color: inherit !important; text-shadow: none !important; }
-							`}</style>
 						/>
+						<style jsx>{`
+							.prose ul li p:first-letter {
+								font-size: inherit !important;
+								font-weight: inherit !important;
+								float: none !important;
+								color: inherit !important;
+								text-shadow: none !important;
+							}
+						`}</style>
 
 						{/* Article Footer */}
 						<div className={`mt-10 pt-8 border-t ${isDark ? "border-white/10" : "border-gray-200"}`}>
