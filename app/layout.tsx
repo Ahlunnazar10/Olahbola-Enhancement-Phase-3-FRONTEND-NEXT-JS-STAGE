@@ -9,6 +9,7 @@ import { Providers } from "@/components/Providers";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import { GlobalSeoScripts } from "@/components/seo/SeoScriptsServer";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -150,6 +151,9 @@ export default function RootLayout({
 					rel="stylesheet"
 					href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
 				/>
+
+				{/* JSON-LD Structured Data */}
+				<GlobalSeoScripts />
 
 				{/* Google Analytics (GA4) */}
 				<GA4Script />

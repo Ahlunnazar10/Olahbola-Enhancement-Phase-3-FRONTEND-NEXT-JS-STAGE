@@ -41,6 +41,31 @@ export default function InterviewDetailPage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-[#0f1412]" : "bg-[#f5f5f5]"}`}>
+      {/* Video Structured Data - Inline for SSR */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            name: interview.title,
+            description: interview.description || interview.title,
+            thumbnailUrl: `${process.env.NEXT_PUBLIC_API_URL}/storage/${interview.featured_image}`,
+            uploadDate: interview.published_at || interview.created_at,
+            contentUrl: "https://www.olahbola.com",
+            embedUrl: interview.post_url || "https://www.olahbola.com",
+            publisher: {
+              "@type": "Organization",
+              name: "Olahbola",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://www.olahbola.com/favicon.png",
+              },
+            },
+          }),
+        }}
+      />
+
       {/* Hero */}
       <div className="relative h-[300px] md:h-[450px] bg-cover bg-center">
         <div

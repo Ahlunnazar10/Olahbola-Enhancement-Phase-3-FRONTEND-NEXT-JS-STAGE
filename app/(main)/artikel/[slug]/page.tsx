@@ -16,6 +16,7 @@ import {
 import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { notFound } from "next/navigation";
+import SeoHead from "@/components/seo/SeoHead";
 
 export default function ArticleDetailPage() {
 	const params = useParams();
@@ -68,6 +69,61 @@ export default function ArticleDetailPage() {
 
 	return (
 		<div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f1412]" : "bg-[#f5f5f5]"}`}>
+			{/* SEO Head */}
+			<SeoHead
+				title={articleData.title}
+				description={articleData.excerpt || articleData.meta_description || ""}
+				image={fullImageUrl}
+				url={`/artikel/${slug}`}
+				type="article"
+				publishedTime={articleData.published_at || articleData.created_at}
+				author={articleData.author_name}
+				category={articleData.category_name}
+				keywords={articleData.tags}
+			/>
+
+			{/* JSON-LD Structured Data - Inline for SSR */}
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "Article",
+						headline: articleData.title,
+						description: articleData.excerpt || articleData.meta_description || "",
+						url: `https://www.olahbola.com/artikel/${slug}`,
+						datePublished: articleData.published_at || articleData.created_at,
+						dateModified: articleData.published_at || articleData.created_at,
+						author: {
+							"@type": "Person",
+							name: articleData.author_name || "Olahbola",
+						},
+						publisher: {
+							"@type": "Organization",
+							name: "Olahbola",
+							logo: {
+								"@type": "ImageObject",
+								url: "https://www.olahbola.com/favicon.png",
+							},
+						},
+						...(fullImageUrl && fullImageUrl !== "/placeholder.png" && {
+							image: {
+								"@type": "ImageObject",
+								url: fullImageUrl,
+								width: 1200,
+								height: 630,
+							},
+						}),
+						...(articleData.category_name && { articleSection: articleData.category_name }),
+						inLanguage: "id-ID",
+						mainEntityOfPage: {
+							"@type": "WebPage",
+							"@id": `https://www.olahbola.com/artikel/${slug}`,
+						},
+					}),
+				}}
+			/>
+
 			{/* Theme Toggle */}
 			<ThemeToggle />
 			{/* Hero Banner */}

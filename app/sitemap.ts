@@ -81,7 +81,7 @@ async function fetchSitemapData(): Promise<{
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://olahbola.com";
+  const baseUrl = "https://www.olahbola.com";
   const now = new Date();
 
   // Fetch dynamic data from API

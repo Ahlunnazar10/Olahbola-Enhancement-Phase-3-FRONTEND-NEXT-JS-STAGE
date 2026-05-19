@@ -42,7 +42,10 @@
       "Bash(Select-Object FullName)",
       "Bash(python3 /tmp/fix_article.py)",
       "Bash(python3 /tmp/fix_article2.py)",
-      "Bash(python3 /tmp/fix3.py)"
+      "Bash(python3 /tmp/fix3.py)",
+      "Bash(curl -sI \"https://olahbola.com/sitemap.xml\")",
+      "Bash(curl -sI \"https://olahbola.com/robots.txt\")",
+      "Bash(curl -sIL \"https://olahbola.com/sitemap.xml\")"
     ]
   }
 }
