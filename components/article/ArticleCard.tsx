@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, User, Eye } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
 
@@ -36,10 +37,13 @@ export function ArticleCard({ data, index }: ArticleCardProps) {
 		>
 			{/* Image */}
 			<div className="h-48 overflow-hidden relative">
-				<img
+				<Image
 					src={fullImageUrl}
 					alt={data.title}
-					className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+					fill
+					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+					style={{ objectFit: "cover" }}
+					className="group-hover:scale-110 transition-transform duration-500"
 				/>
 			</div>
 

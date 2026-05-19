@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { Calendar, User, Eye, ArrowLeft, Share2, Loader2 } from "lucide-react";
 import {
@@ -219,10 +220,13 @@ export default function ArticleDetailPage() {
 
 						{/* Featured Image */}
 						<div className={`relative w-full h-[300px] md:h-[450px] mb-8 rounded-lg overflow-hidden ${isDark ? "" : "shadow-lg"}`}>
-							<img
+							<Image
 								src={fullImageUrl}
 								alt={articleData.title}
-								className="w-full h-full object-cover"
+								fill
+								sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 1200px"
+								style={{ objectFit: "cover" }}
+								priority
 							/>
 						</div>
 
@@ -249,16 +253,20 @@ export default function ArticleDetailPage() {
 						<div className={`mt-10 pt-8 border-t ${isDark ? "border-white/10" : "border-gray-200"}`}>
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-4">
-									<img
-										src={articleData.author_avatar || "/default-avatar.png"}
-										alt={articleData.author_name}
-										className={`w-12 h-12 rounded-full object-cover ${isDark ? "" : "border-2 border-gray-200"}`}
-									/>
-									<div>
-										<p className={`font-medium notranslate ${isDark ? "text-white" : "text-gray-900"}`}>
-											{articleData.author_name}
-										</p>
-										<p className={`text-sm ${isDark ? "text-white/60" : "text-gray-500"}`}>Author</p>
+									<div className="relative w-12 h-12 rounded-full overflow-hidden">
+										<Image
+											src={articleData.author_avatar || "/default-avatar.png"}
+											alt={articleData.author_name}
+											fill
+											sizes="48px"
+											style={{ objectFit: "cover" }}
+										/>
+									</div>
+										<div>
+											<p className={`font-medium notranslate ${isDark ? "text-white" : "text-gray-900"}`}>
+												{articleData.author_name}
+											</p>
+											<p className={`text-sm ${isDark ? "text-white/60" : "text-gray-500"}`}>Author</p>
 									</div>
 								</div>
 								<Link

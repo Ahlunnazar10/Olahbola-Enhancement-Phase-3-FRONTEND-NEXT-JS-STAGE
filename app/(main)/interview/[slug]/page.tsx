@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, ArrowLeft, ExternalLink } from 'lucide-react';
 import { useInterviewDetail } from '@/hooks/queries/useContent';
@@ -97,11 +98,14 @@ export default function InterviewDetailPage() {
           </div>
 
           {/* Featured Image */}
-          <div className="w-full h-[300px] md:h-[450px] mb-8 rounded-lg overflow-hidden">
-            <img
+          <div className="relative w-full h-[300px] md:h-[450px] mb-8 rounded-lg overflow-hidden">
+            <Image
               src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${interview.featured_image}`}
               alt={interview.title}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 1200px"
+              style={{ objectFit: "cover" }}
+              priority
             />
           </div>
 

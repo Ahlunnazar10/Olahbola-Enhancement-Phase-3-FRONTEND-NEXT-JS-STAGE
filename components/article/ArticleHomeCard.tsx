@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Calendar } from 'lucide-react';
 
 interface ArticleHomeCardProps {
@@ -28,11 +29,16 @@ export function ArticleHomeCard({ data, index }: ArticleHomeCardProps) {
   return (
     <div className="flex flex-col">
       <Link href={`/${data.slug}`} className="block overflow-hidden rounded-lg">
-        <img
-          src={fullImageUrl}
-          alt={data.title}
-          className="w-full h-[300px] object-cover object-top hover:scale-110 transition-transform duration-300"
-        />
+        <div className="relative w-full h-[300px]">
+          <Image
+            src={fullImageUrl}
+            alt={data.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            style={{ objectFit: "cover", objectPosition: "top" }}
+            className="hover:scale-110 transition-transform duration-300"
+          />
+        </div>
       </Link>
 
       <Link href={`/${data.slug}`}>

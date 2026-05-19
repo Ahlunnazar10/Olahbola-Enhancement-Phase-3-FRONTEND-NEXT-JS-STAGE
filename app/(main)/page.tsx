@@ -702,17 +702,26 @@ export default function HomePage() {
 											</div>
 											<div className="pt-5">
 												{heroPlayLeaderboard[1].user.profilePicture ? (
-													<img
-														src={heroPlayLeaderboard[1].user.profilePicture}
-														alt={heroPlayLeaderboard[1].user.name}
-														className="w-16 h-16 mx-auto rounded-2xl object-cover border-2 shadow-lg mb-3"
-														style={{ borderColor: heroPlayColors.silver }}
-													/>
+													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+														<Image
+															src={heroPlayLeaderboard[1].user.profilePicture}
+															alt={heroPlayLeaderboard[1].user.name}
+															fill
+															sizes="64px"
+															style={{
+																objectFit: "cover",
+																borderColor: heroPlayColors.silver,
+															}}
+														/>
+													</div>
 												) : (
-													<div className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-3">
-														<img
+													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+														<Image
 															src="/icons/football-player.png"
 															alt="Player Icon"
+															fill
+															sizes="64px"
+															style={{ objectFit: "cover" }}
 														/>
 													</div>
 												)}
@@ -789,17 +798,26 @@ export default function HomePage() {
 											</div>
 											<div className="pt-5">
 												{heroPlayLeaderboard[0].user.profilePicture ? (
-													<img
-														src={heroPlayLeaderboard[0].user.profilePicture}
-														alt={heroPlayLeaderboard[0].user.name}
-														className="w-20 h-20 mx-auto rounded-2xl object-cover border-2 shadow-xl mb-4"
-														style={{ borderColor: heroPlayColors.gold }}
-													/>
+													<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
+														<Image
+															src={heroPlayLeaderboard[0].user.profilePicture}
+															alt={heroPlayLeaderboard[0].user.name}
+															fill
+															sizes="80px"
+															style={{
+																objectFit: "cover",
+																borderColor: heroPlayColors.gold,
+															}}
+														/>
+													</div>
 												) : (
-													<div className="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-4">
-														<img
+													<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
+														<Image
 															src="/icons/football-player.png"
 															alt="Player Icon"
+															fill
+															sizes="80px"
+															style={{ objectFit: "cover" }}
 														/>
 													</div>
 												)}
@@ -869,17 +887,26 @@ export default function HomePage() {
 											</div>
 											<div className="pt-5">
 												{heroPlayLeaderboard[2].user.profilePicture ? (
-													<img
-														src={heroPlayLeaderboard[2].user.profilePicture}
-														alt={heroPlayLeaderboard[2].user.name}
-														className="w-16 h-16 mx-auto rounded-2xl object-cover border-2 shadow-lg mb-3"
-														style={{ borderColor: heroPlayColors.bronze }}
-													/>
+													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+														<Image
+															src={heroPlayLeaderboard[2].user.profilePicture}
+															alt={heroPlayLeaderboard[2].user.name}
+															fill
+															sizes="64px"
+															style={{
+																objectFit: "cover",
+																borderColor: heroPlayColors.bronze,
+															}}
+														/>
+													</div>
 												) : (
-													<div className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-3">
-														<img
+													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+														<Image
 															src="/icons/football-player.png"
 															alt="Player Icon"
+															fill
+															sizes="64px"
+															style={{ objectFit: "cover" }}
 														/>
 													</div>
 												)}
@@ -956,24 +983,31 @@ export default function HomePage() {
 												{index + 1}
 											</div>
 											{player.user.profilePicture ? (
-												<img
-													src={player.user.profilePicture}
-													alt={player.user.name}
-													className="w-12 h-12 rounded-xl object-cover border"
-													style={{
-														borderColor:
-															index === 0
-																? heroPlayColors.gold
-																: index === 1
-																	? heroPlayColors.silver
-																	: heroPlayColors.bronze,
-													}}
-												/>
+												<div className="relative w-12 h-12 rounded-xl overflow-hidden border">
+													<Image
+														src={player.user.profilePicture}
+														alt={player.user.name}
+														fill
+														sizes="48px"
+														style={{
+															objectFit: "cover",
+															borderColor:
+																index === 0
+																	? heroPlayColors.gold
+																	: index === 1
+																		? heroPlayColors.silver
+																		: heroPlayColors.bronze,
+														}}
+													/>
+												</div>
 											) : (
-												<div className="w-12 h-12 rounded-xl flex items-center justify-center">
-													<img
+												<div className="relative w-12 h-12 rounded-xl overflow-hidden">
+													<Image
 														src="/icons/football-player.png"
 														alt="Player Icon"
+														fill
+														sizes="48px"
+														style={{ objectFit: "cover" }}
 													/>
 												</div>
 											)}
@@ -1072,16 +1106,23 @@ export default function HomePage() {
 														{index + 4}
 													</div>
 													{player.user.profilePicture ? (
-														<img
-															src={player.user.profilePicture}
-															alt={player.user.name}
-															className="w-10 h-10 rounded-xl object-cover"
-														/>
+														<div className="relative w-10 h-10 rounded-xl overflow-hidden">
+															<Image
+																src={player.user.profilePicture}
+																alt={player.user.name}
+																fill
+																sizes="40px"
+																style={{ objectFit: "cover" }}
+															/>
+														</div>
 													) : (
-														<div className="w-10 h-10 rounded-xl flex items-center justify-center">
-															<img
+														<div className="relative w-10 h-10 rounded-xl overflow-hidden">
+															<Image
 																src="/icons/football-player.png"
 																alt="Player Icon"
+																fill
+																sizes="40px"
+																style={{ objectFit: "cover" }}
 															/>
 														</div>
 													)}
@@ -1238,10 +1279,13 @@ export default function HomePage() {
 								className="md:col-span-2 md:row-span-2 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
 							>
 								<div className="absolute inset-0">
-									<img
+									<Image
 										src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${articles[0]?.image}`}
-										alt={articles[0]?.title}
-										className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 "
+										alt={articles[0]?.title || "Featured article"}
+										fill
+										sizes="(max-width: 768px) 100vw, 50vw"
+										style={{ objectFit: "cover" }}
+										className="transition-transform duration-700 group-hover:scale-110"
 									/>
 								</div>
 								<div
@@ -1288,10 +1332,13 @@ export default function HomePage() {
 											</button>
 										</div>
 										<div className="w-1/2 relative overflow-hidden rounded-r-xl">
-											<img
+											<Image
 												src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${articles[1]?.image}`}
-												alt={articles[1]?.title}
-												className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 "
+												alt={articles[1]?.title || "Article image"}
+												fill
+												sizes="(max-width: 768px) 50vw, 25vw"
+												style={{ objectFit: "cover" }}
+												className="transition-transform duration-700 group-hover:scale-110"
 											/>
 										</div>
 									</div>
@@ -1305,10 +1352,13 @@ export default function HomePage() {
 									className="glass-panel relative group h-60 md:h-full overflow-hidden rounded-xl cursor-pointer hover:border-[#43decc]/50 transition-all"
 								>
 									<div className="absolute inset-0">
-										<img
+										<Image
 											src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${articles[2]?.image}`}
-											alt={articles[2]?.title}
-											className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+											alt={articles[2]?.title || "Article image"}
+											fill
+											sizes="(max-width: 768px) 100vw, 25vw"
+											style={{ objectFit: "cover" }}
+											className="transition-transform duration-700 group-hover:scale-110"
 										/>
 									</div>
 									<div
@@ -1333,10 +1383,13 @@ export default function HomePage() {
 									className="glass-panel relative group  h-60 md:h-full overflow-hidden rounded-xl cursor-pointer hover:border-[#43decc]/50 transition-all"
 								>
 									<div className="absolute inset-0">
-										<img
+										<Image
 											src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${articles[3]?.image}`}
-											alt={articles[3]?.title}
-											className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 "
+											alt={articles[3]?.title || "Article image"}
+											fill
+											sizes="(max-width: 768px) 100vw, 25vw"
+											style={{ objectFit: "cover" }}
+											className="transition-transform duration-700 group-hover:scale-110"
 										/>
 									</div>
 									<div
@@ -1368,12 +1421,15 @@ export default function HomePage() {
 						href="https://heroplay.igvault.id/"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="block max-w-480 mx-auto"
+						className="block max-w-480 mx-auto relative h-50"
 					>
-						<img
+						<Image
 							src="/images/home/ads-hz-1.webp"
 							alt="Banner Ads"
-							className="w-full max-h-50 object-contain mx-auto rounded-xl"
+							fill
+							sizes="(max-width: 1920px) 100vw, 1920px"
+							style={{ objectFit: "contain" }}
+							className="rounded-xl"
 						/>
 					</a>
 				</section>
@@ -1553,10 +1609,13 @@ export default function HomePage() {
 											rel="noopener noreferrer"
 											className="aspect-9/16 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
 										>
-											<img
+											<Image
 												src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${interview.image}`}
-												alt={interview.title}
-												className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80"
+												alt={interview.title || "Interview thumbnail"}
+												fill
+												sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+												style={{ objectFit: "cover" }}
+												className="transition-transform duration-700 group-hover:scale-110 opacity-80"
 											/>
 											<div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
 
@@ -1616,11 +1675,17 @@ export default function HomePage() {
 							<div className="relative overflow-hidden">
 								<div className="flex gap-6 md:gap-8 animate-scroll-left">
 									{[...brandLogos, ...brandLogos].map((logo, index) => (
-										<div key={index} className="flex justify-center shrink-0">
-											<img
+										<div
+											key={index}
+											className="flex justify-center shrink-0 relative w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24"
+										>
+											<Image
 												src={logo}
 												alt="Partner Logo"
-												className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain hover:scale-110 transition-transform"
+												fill
+												sizes="96px"
+												style={{ objectFit: "contain" }}
+												className="hover:scale-110 transition-transform"
 											/>
 										</div>
 									))}

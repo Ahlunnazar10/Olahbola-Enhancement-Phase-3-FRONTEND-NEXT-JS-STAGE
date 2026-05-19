@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import {
 	Plus_Jakarta_Sans,
 	Fira_Code,
@@ -12,6 +13,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { GlobalSeoScripts } from "@/components/seo/SeoScriptsServer";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const GTM_ID = "GTM-FC96C4T4";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
 	variable: "--font-plus-jakarta",
@@ -19,6 +21,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 	weight: ["200", "300", "400", "500", "600", "700", "800"],
 	style: ["normal", "italic"],
 	display: "swap",
+	preload: true,
 });
 
 const firaCode = Fira_Code({
@@ -26,6 +29,7 @@ const firaCode = Fira_Code({
 	subsets: ["latin"],
 	weight: ["300", "400", "500", "600", "700"],
 	display: "swap",
+	preload: false,
 });
 
 const spaceGrotesk = Space_Grotesk({
@@ -33,6 +37,7 @@ const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],
 	weight: ["300", "400", "500", "600", "700"],
 	display: "swap",
+	preload: false,
 });
 
 const lexend = Lexend({
@@ -40,6 +45,7 @@ const lexend = Lexend({
 	subsets: ["latin"],
 	weight: ["300", "400", "500", "600", "700"],
 	display: "swap",
+	preload: false,
 });
 
 export const metadata: Metadata = {
@@ -62,14 +68,14 @@ export const metadata: Metadata = {
 	authors: [{ name: "Olahbola" }],
 	creator: "Olahbola",
 	publisher: "Olahbola",
-	metadataBase: new URL("https://olahbola.com"),
+	metadataBase: new URL("https://www.olahbola.com"),
 	alternates: {
 		canonical: "/",
 	},
 	openGraph: {
 		type: "website",
 		locale: "id_ID",
-		url: "https://olahbola.com",
+		url: "https://www.olahbola.com",
 		siteName: "Olahbolacom",
 		title: "Olahbola | Tempatnya Penggila Bola!",
 		description:
@@ -109,33 +115,6 @@ export const metadata: Metadata = {
 	},
 };
 
-// GA4 Configuration Component
-function GA4Script() {
-	if (!GA_ID) return null;
-
-	return (
-		<>
-			<script
-				async
-				src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-			/>
-			<script
-				dangerouslySetInnerHTML={{
-					__html: `
-						window.dataLayer = window.dataLayer || [];
-						function gtag(){dataLayer.push(arguments);}
-						gtag('js', new Date());
-						gtag('config', '${GA_ID}', {
-							page_path: window.location.pathname,
-							Send_Page_view: true,
-						});
-					`,
-				}}
-			/>
-		</>
-	);
-}
-
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -147,34 +126,55 @@ export default function RootLayout({
 			className={`${plusJakartaSans.variable} ${firaCode.variable} ${spaceGrotesk.variable} ${lexend.variable} h-full antialiased`}
 		>
 			<head>
+				{/* Preconnect for external resources */}
+				<link rel="preconnect" href="https://fonts.googleapis.com" />
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+				<link rel="preconnect" href="https://www.googletagmanager.com" />
+
+				{/* Material Symbols Outlined - Fixed URL */}
 				<link
 					rel="stylesheet"
-					href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+					href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
 				/>
 
-				{/* JSON-LD Structured Data */}
+				{/* JSON-LD Structured Data - Server Rendered */}
 				<GlobalSeoScripts />
 
-				{/* Google Analytics (GA4) */}
-				<GA4Script />
+				{/* Google Analytics (GA4) - Load after page is interactive */}
+				{GA_ID && (
+					<>
+						<Script
+							async
+							src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+							strategy="afterInteractive"
+						/>
+						<Script id="ga4-config" strategy="afterInteractive">
+							{`
+								window.dataLayer = window.dataLayer || [];
+								function gtag(){dataLayer.push(arguments);}
+								gtag('js', new Date());
+								gtag('config', '${GA_ID}', { send_page_view: true });
+							`}
+						</Script>
+					</>
+				)}
 
-				{/* Google Tag Manager */}
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+				{/* Google Tag Manager - Load after page is interactive */}
+				<Script id="gtm-script" strategy="afterInteractive">
+					{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 					j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 					'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-					})(window,document,'script','dataLayer','GTM-FC96C4T4');`,
-					}}
-				/>
+					})(window,document,'script','dataLayer','${GTM_ID}');`}
+				</Script>
 			</head>
 			<body className="min-h-full flex flex-col">
 				<Analytics />
-				{/* Google Tag Manager (noscript) */}
+
+				{/* Google Tag Manager (noscript) - above the fold */}
 				<noscript
 					dangerouslySetInnerHTML={{
-						__html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-FC96C4T4"
+						__html: `<iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}"
 					height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
 					}}
 				/>
