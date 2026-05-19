@@ -8,6 +8,9 @@ import {
 import { Providers } from "@/components/Providers";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const plusJakartaSans = Plus_Jakarta_Sans({
 	variable: "--font-plus-jakarta",
@@ -105,6 +108,33 @@ export const metadata: Metadata = {
 	},
 };
 
+// GA4 Configuration Component
+function GA4Script() {
+	if (!GA_ID) return null;
+
+	return (
+		<>
+			<script
+				async
+				src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+			/>
+			<script
+				dangerouslySetInnerHTML={{
+					__html: `
+						window.dataLayer = window.dataLayer || [];
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', '${GA_ID}', {
+							page_path: window.location.pathname,
+							Send_Page_view: true,
+						});
+					`,
+				}}
+			/>
+		</>
+	);
+}
+
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -121,9 +151,12 @@ export default function RootLayout({
 					href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
 				/>
 
+				{/* Google Analytics (GA4) */}
+				<GA4Script />
+
 				{/* Google Tag Manager */}
 				<script
-					 dangerouslySetInnerHTML={{
+					dangerouslySetInnerHTML={{
 						__html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 					j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -133,6 +166,7 @@ export default function RootLayout({
 				/>
 			</head>
 			<body className="min-h-full flex flex-col">
+				<Analytics />
 				{/* Google Tag Manager (noscript) */}
 				<noscript
 					dangerouslySetInnerHTML={{
