@@ -371,8 +371,6 @@ export default function HomePage() {
 					text-shadow: 0 0 10px rgba(67, 222, 204, 0.5);
 				}
 
-				
-
 				@keyframes scroll-left {
 					0% {
 						transform: translateX(0);
@@ -638,7 +636,12 @@ export default function HomePage() {
 									className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
 									style={{ background: `${heroPlayColors.accent}15` }}
 								>
-									<Icon name="sports_soccer" size={20} className="xl" color={heroPlayColors.accent} />
+									<Icon
+										name="sports_soccer"
+										size={20}
+										className="xl"
+										color={heroPlayColors.accent}
+									/>
 								</div>
 								<p
 									className="text-lg mb-4"
@@ -726,7 +729,12 @@ export default function HomePage() {
 													className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
 													style={{ background: `${heroPlayColors.silver}20` }}
 												>
-													<Icon name="sports_soccer" className="text-sm" filled color={heroPlayColors.silver} />
+													<Icon
+														name="sports_soccer"
+														className="text-sm"
+														filled
+														color={heroPlayColors.silver}
+													/>
 													<span
 														className="font-bold text-lg"
 														style={{ color: heroPlayColors.text }}
@@ -817,7 +825,12 @@ export default function HomePage() {
 														border: `1px solid ${heroPlayColors.gold}40`,
 													}}
 												>
-													<Icon name="sports_soccer" className="text-lg" filled color={heroPlayColors.gold} />
+													<Icon
+														name="sports_soccer"
+														className="text-lg"
+														filled
+														color={heroPlayColors.gold}
+													/>
 													<span
 														className="font-black text-2xl"
 														style={{ color: heroPlayColors.text }}
@@ -895,7 +908,12 @@ export default function HomePage() {
 													className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
 													style={{ background: `${heroPlayColors.bronze}20` }}
 												>
-													<Icon name="sports_soccer" className="text-sm" filled color={heroPlayColors.bronze} />
+													<Icon
+														name="sports_soccer"
+														className="text-sm"
+														filled
+														color={heroPlayColors.bronze}
+													/>
 													<span
 														className="font-bold text-lg"
 														style={{ color: heroPlayColors.text }}
@@ -993,7 +1011,12 @@ export default function HomePage() {
 													border: `1px solid ${heroPlayColors.accent}30`,
 												}}
 											>
-												<Icon name="sports_soccer" className="text-sm" filled color={heroPlayColors.accent} />
+												<Icon
+													name="sports_soccer"
+													className="text-sm"
+													filled
+													color={heroPlayColors.accent}
+												/>
 												<span
 													className="font-bold"
 													style={{ color: heroPlayColors.text }}
@@ -1101,7 +1124,12 @@ export default function HomePage() {
 														border: `1px solid ${heroPlayColors.accent}30`,
 													}}
 												>
-													<Icon name="sports_soccer" className="text-sm" filled color={heroPlayColors.accent} />
+													<Icon
+														name="sports_soccer"
+														className="text-sm"
+														filled
+														color={heroPlayColors.accent}
+													/>
 													<span
 														className="font-bold"
 														style={{ color: heroPlayColors.text }}
@@ -1127,7 +1155,6 @@ export default function HomePage() {
 											boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
 										}}
 									>
-										<Icon name="sports_soccer" size={8} className="xl" filled />
 										Ikuti Pertandingan Sekarang
 										<Icon name="arrow_forward" className="text-xl" />
 									</a>
@@ -1139,7 +1166,12 @@ export default function HomePage() {
 									className="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center"
 									style={{ background: heroPlayColors.cardBg }}
 								>
-									<Icon name="sports_soccer" size={20} className="xl" color={heroPlayColors.textMuted} />
+									<Icon
+										name="sports_soccer"
+										size={20}
+										className="xl"
+										color={heroPlayColors.textMuted}
+									/>
 								</div>
 								<p
 									className="text-lg"

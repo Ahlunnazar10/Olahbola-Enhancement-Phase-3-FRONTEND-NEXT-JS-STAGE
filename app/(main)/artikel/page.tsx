@@ -305,7 +305,7 @@ function ArtikelContent() {
 				className={`flex flex-col md:flex-row gap-6 mt-4 mb-8 items-center p-4 rounded-2xl border ${isDark ? "bg-white/5 backdrop-blur-xl border-white/5" : "bg-white/90 backdrop-blur-md border-[#0a7c6e]/20"}`}
 			>
 				<div className="relative w-full md:w-1/3 group">
-					<Icon name="search" />
+					<Icon name="search" size={24} className="absolute left-4 top-1/2 -translate-y-1/2" color={isDark ? undefined : "#5a5a5a"} />
 					<input
 						className={`w-full border rounded-xl py-4 pl-12 pr-4 font-bold text-sm tracking-widest outline-none transition-all backdrop-blur-md ${isDark ? "bg-surface-container-highest/20 border-outline-variant/30 text-white placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#0a7c6e] focus:ring-1 focus:ring-[#0a7c6e]"}`}
 						placeholder="SEARCH ARCHIVE..."
