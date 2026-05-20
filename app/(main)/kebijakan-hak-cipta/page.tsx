@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
+import { Icon } from "@/components/ui/Icon";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { useState } from "react";
 
@@ -547,12 +548,7 @@ export default function KebijakanHakCiptaPage() {
 									}}
 								>
 									<div className="absolute top-0 right-0 opacity-10">
-										<span
-											className="material-symbols-outlined text-[200px]"
-											style={{ fontVariationSettings: "'FILL' 1" }}
-										>
-											mail
-										</span>
+										<Icon name="mail" filled />
 									</div>
 									<div className="relative z-10">
 										<h3

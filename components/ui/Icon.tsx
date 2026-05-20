@@ -1,22 +1,21 @@
 "use client";
 
-import * as LucideIcons from "lucide-react";
-import { getLucideIcon } from "@/lib/icon-mapping";
-import { cn } from "@/lib/utils";
+import * as PhosphorIcons from "phosphor-react";
+import { getPhosphorIcon } from "@/lib/icon-mapping";
 
 interface IconProps {
 	/** Material icon name (e.g., "sports_soccer", "arrow_forward") */
 	name: string;
 	/** Icon size */
-	size?: number;
+	size?: number | string;
 	/** Additional CSS classes */
 	className?: string;
-	/** Fill the icon (stroke = 0) */
+	/** Fill the icon (weight = fill) - alias for weight="fill" */
 	filled?: boolean;
+	/** Icon weight */
+	weight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone";
 	/** Icon color */
 	color?: string;
-	/** Stroke width */
-	strokeWidth?: number;
 	/** Additional inline styles */
 	style?: React.CSSProperties;
 	/** aria-label for accessibility */
@@ -24,7 +23,7 @@ interface IconProps {
 }
 
 /**
- * Material Icon - Drop-in replacement for Material Symbols Outlined
+ * Material Icon - Drop-in replacement for Material Symbols Outlined using Phosphor Icons
  *
  * Usage:
  * <Icon name="sports_soccer" size={24} />
@@ -35,30 +34,29 @@ export function Icon({
 	name,
 	size = 24,
 	className,
-	filled = false,
+	filled,
+	weight = "regular",
 	color,
-	strokeWidth = 2,
 	style,
 	"aria-label": ariaLabel,
 }: IconProps) {
-	// Get the Lucide icon name
-	const lucideName = getLucideIcon(name);
+	// Get the Phosphor icon name
+	const phosphorName = getPhosphorIcon(name);
 
-	// Get the icon component from Lucide
-	// Use 'any' type to avoid TypeScript issues with Lucide icons
-	const iconMap: Record<string, any> = LucideIcons;
-	const IconComponent = iconMap[lucideName];
+	// Get the icon component from Phosphor
+	// Use 'any' type to avoid TypeScript issues with Phosphor icons
+	const iconMap: Record<string, any> = PhosphorIcons;
+	const IconComponent = iconMap[phosphorName];
 
 	// Fallback to Circle if not found
-	const FinalIcon = IconComponent || LucideIcons.Circle;
+	const FinalIcon = IconComponent || PhosphorIcons.Circle;
 
 	return (
 		<FinalIcon
 			size={size}
+			weight={filled ? "fill" : weight}
 			className={className}
 			color={color}
-			strokeWidth={filled ? 0 : strokeWidth}
-			fill={filled ? color || "currentColor" : undefined}
 			style={style}
 			aria-label={ariaLabel}
 		/>
@@ -130,7 +128,7 @@ export const Icons = {
 	Calendar: (props: Omit<IconProps, "name">) => <Icon name="calendar_today" {...props} />,
 
 	// Misc
-	Zap: (props: Omit<IconProps, "name">) => <Icon name="bolt" {...props} />,
+	Lightning: (props: Omit<IconProps, "name">) => <Icon name="bolt" {...props} />,
 	Heart: (props: Omit<IconProps, "name">) => <Icon name="favorite" {...props} />,
 	ChevronRight: (props: Omit<IconProps, "name">) => <Icon name="chevron_right" {...props} />,
 	ChevronLeft: (props: Omit<IconProps, "name">) => <Icon name="chevron_left" {...props} />,

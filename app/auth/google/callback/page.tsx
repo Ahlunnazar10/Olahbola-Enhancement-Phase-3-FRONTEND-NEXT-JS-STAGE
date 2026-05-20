@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
+import { Icon } from "@/components/ui/Icon";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -106,9 +107,7 @@ function GoogleCallbackContent() {
 				{status === "success" && (
 					<>
 						<div className="w-12 h-12 rounded-full bg-green-500 mx-auto mb-4 flex items-center justify-center">
-							<span className="material-symbols-outlined text-white text-2xl">
-								check
-							</span>
+							<Icon name="check" />
 						</div>
 						<h2 className="text-xl font-semibold text-white mb-2">
 							Login Berhasil!
@@ -122,9 +121,7 @@ function GoogleCallbackContent() {
 				{status === "error" && (
 					<>
 						<div className="w-12 h-12 rounded-full bg-red-500 mx-auto mb-4 flex items-center justify-center">
-							<span className="material-symbols-outlined text-white text-2xl">
-								close
-							</span>
+							<Icon name="close" />
 						</div>
 						<h2 className="text-xl font-semibold text-white mb-2">
 							Login Gagal

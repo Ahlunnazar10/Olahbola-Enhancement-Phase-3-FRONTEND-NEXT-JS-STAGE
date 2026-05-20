@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useUIStore } from '@/stores/uiStore';
+import { Icon } from "@/components/ui/Icon";
 
 interface PopularArticleCardProps {
   data: {
@@ -38,7 +39,7 @@ export function PopularArticleCard({ data, index }: PopularArticleCardProps) {
         </h4>
         <div className={`flex items-center gap-4 mt-3 text-xs font-bold ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}>
           <span className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-xs">visibility</span>{' '}
+            <Icon name="visibility" />{' '}
             {data.views}
           </span>
           <span>{data.created_diff}</span>

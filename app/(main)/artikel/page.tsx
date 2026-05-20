@@ -305,11 +305,7 @@ function ArtikelContent() {
 				className={`flex flex-col md:flex-row gap-6 mt-4 mb-8 items-center p-4 rounded-2xl border ${isDark ? "bg-white/5 backdrop-blur-xl border-white/5" : "bg-white/90 backdrop-blur-md border-[#0a7c6e]/20"}`}
 			>
 				<div className="relative w-full md:w-1/3 group">
-					<span
-						className={`absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
-					>
-						search
-					</span>
+					<Icon name="search" />
 					<input
 						className={`w-full border rounded-xl py-4 pl-12 pr-4 font-bold text-sm tracking-widest outline-none transition-all backdrop-blur-md ${isDark ? "bg-surface-container-highest/20 border-outline-variant/30 text-white placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#0a7c6e] focus:ring-1 focus:ring-[#0a7c6e]"}`}
 						placeholder="SEARCH ARCHIVE..."
@@ -564,12 +560,7 @@ function ArtikelContent() {
 							<h2
 								className={`text-3xl uppercase tracking-tighter mb-10 flex items-center gap-3 relative z-10 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 							>
-								<span
-									className={`material-symbols-outlined float-anim ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-									style={{ fontVariationSettings: "'FILL' 1" }}
-								>
-									bolt
-								</span>
+								<Icon name="bolt" filled />
 								TRENDING NOW
 							</h2>
 							<div className="space-y-10 relative z-10">

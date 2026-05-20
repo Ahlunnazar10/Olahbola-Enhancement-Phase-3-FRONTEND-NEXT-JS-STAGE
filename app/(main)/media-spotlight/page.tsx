@@ -1,6 +1,7 @@
 "use client";
 
 import { useUIStore } from "@/stores/uiStore";
+import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
 import { mediaHighlights, getAllHighlights } from "@/src/data/mediaHighlights";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
@@ -156,9 +157,7 @@ export default function MediaSpotlightPage() {
 								style={{ color: colors.primary }}
 							>
 								Baca Selengkapnya
-								<span className="material-symbols-outlined text-[20px] transition-transform group-hover/link:translate-x-2">
-									arrow_forward
-								</span>
+								<Icon name="arrow_forward" size={20} />
 							</a>
 						</div>
 					</div>
@@ -222,9 +221,7 @@ export default function MediaSpotlightPage() {
 
 									{/* External Link */}
 									<div className="inline-flex items-center gap-2 font-label-bold text-sm" style={{ color: colors.primary }}>
-										<span className="material-symbols-outlined text-sm">
-											open_in_new
-										</span>
+										<Icon name="open_in_new" size={18} />
 										Kunjungi
 									</div>
 								</div>
@@ -242,12 +239,7 @@ export default function MediaSpotlightPage() {
 
 						<div className="relative z-10">
 							{/* Icon */}
-							<span
-								className="material-symbols-outlined text-5xl mb-6"
-								style={{ color: colors.primary, fontVariationSettings: "'FILL' 1" }}
-							>
-								handshake
-							</span>
+							<Icon name="handshake" size={48} filled />
 
 							{/* Title */}
 							<h2 className="text-2xl md:text-4xl font-bold mb-4" style={{ color: colors.text }}>
@@ -269,11 +261,9 @@ export default function MediaSpotlightPage() {
 									boxShadow: `0 0 30px ${colors.primaryAlpha}`
 								}}
 							>
-								<span className="material-symbols-outlined">mail</span>
+								<Icon name="mail" />
 								Let&apos;s Collaborate
-								<span className="material-symbols-outlined transition-transform group-hover:translate-x-1">
-									arrow_forward
-								</span>
+								<Icon name="arrow_forward" />
 							</button>
 						</div>
 					</div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Calendar, User, Eye } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
+import { Icon } from "@/components/ui/Icon";
 
 interface Article {
 	id: string;
@@ -75,9 +76,7 @@ export function ArticleCard({ data, index }: ArticleCardProps) {
 					<span className={`text-xs font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}>
 						{data.author_name?.split(" ")[0]}
 					</span>
-					<span className={`material-symbols-outlined text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
-						arrow_forward
-					</span>
+					<Icon name="arrow_forward" size={20} />
 				</div>
 			</div>
 		</Link>
