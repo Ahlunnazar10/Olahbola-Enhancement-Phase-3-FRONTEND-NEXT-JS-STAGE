@@ -77,9 +77,12 @@ export function NavigationBar() {
 					{/* Logo - Left */}
 					<Link href="/">
 						<img
-							className="w-37.5 md:w-52.5 h-8.75 md:h-11.25"
+							width={150}
+							height={35}
 							src="/images/logo/olahbola-logo.png"
 							alt="Olahbola Logo"
+							loading="eager"
+							fetchPriority="high"
 						/>
 					</Link>
 

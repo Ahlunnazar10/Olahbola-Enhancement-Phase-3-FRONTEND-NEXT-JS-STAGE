@@ -95,20 +95,18 @@ export function BannerSlider({
 							{(
 								slide.type === "article" ? slide.image : slide.imageFallback
 							) ? (
-								<div
+								<img
+									src={
+										slide.type === "article"
+											? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
+											: isMobile
+												? slide.imageMobileFallback || slide.imageFallback
+												: slide.imageFallback
+									}
+									alt={slide.ctaTitle || slide.title?.parts?.join(" ") || "Banner"}
 									className={`w-full h-full ${isDark ? "grayscale-[0.2] contrast-125" : "grayscale-[0.1] contrast-105"}`}
-									style={{
-										backgroundImage: `url(${
-											slide.type === "article"
-												? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
-												: isMobile
-													? slide.imageMobileFallback || slide.imageFallback
-													: slide.imageFallback
-										})`,
-										backgroundSize: "cover",
-										backgroundPosition:
-											slide.type === "cta" ? "center" : "bottom",
-									}}
+									fetchPriority="high"
+									decoding="async"
 								/>
 							) : (
 								<div

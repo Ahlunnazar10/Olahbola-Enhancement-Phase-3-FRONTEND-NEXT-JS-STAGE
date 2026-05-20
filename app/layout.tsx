@@ -129,38 +129,31 @@ export default function RootLayout({
 				{/* Preconnect for external resources */}
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
 				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-				<link rel="preconnect" href="https://www.googletagmanager.com" />
 
-				{/* Material Symbols Outlined - Fixed URL */}
+				{/* Material Symbols Outlined - Non-blocking load */}
 				<link
 					rel="stylesheet"
-					href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+					href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700;0..1,-50..200&display=block"
+					media="print"
 				/>
 
 				{/* JSON-LD Structured Data - Server Rendered */}
 				<GlobalSeoScripts />
 
-				{/* Google Analytics (GA4) - Load after page is interactive */}
+				{/* Google Analytics (GA4) - Load only on user interaction */}
 				{GA_ID && (
-					<>
-						<Script
-							async
-							src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-							strategy="afterInteractive"
-						/>
-						<Script id="ga4-config" strategy="afterInteractive">
-							{`
-								window.dataLayer = window.dataLayer || [];
-								function gtag(){dataLayer.push(arguments);}
-								gtag('js', new Date());
-								gtag('config', '${GA_ID}', { send_page_view: true });
-							`}
-						</Script>
-					</>
+					<Script id="ga4-inline" strategy="lazyOnload">
+						{`
+							window.dataLayer = window.dataLayer || [];
+							function gtag(){dataLayer.push(arguments);}
+							gtag('js', new Date());
+							gtag('config', '${GA_ID}', { send_page_view: true });
+						`}
+					</Script>
 				)}
 
-				{/* Google Tag Manager - Load after page is interactive */}
-				<Script id="gtm-script" strategy="afterInteractive">
+				{/* Google Tag Manager - Complete deferral */}
+				<Script id="gtm-inline" strategy="lazyOnload">
 					{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 					j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=

@@ -53,7 +53,8 @@
       "Bash(echo \"=== 4. components\\\\\\\\article\\\\\\\\ArticleCard.tsx ===\")",
       "Bash(echo \"=== 5. components\\\\\\\\article\\\\\\\\ArticleHomeCard.tsx ===\")",
       "Bash(python -c ' *)",
-      "Bash(cd e:/DEVELOPER/NEXT/olahbola && sed -i '270d' \"app/\\(main\\)/artikel/[slug]/page.tsx\")"
+      "Bash(cd e:/DEVELOPER/NEXT/olahbola && sed -i '270d' \"app/\\(main\\)/artikel/[slug]/page.tsx\")",
+      "Bash(python fix_banner.py)"
     ],
     "additionalDirectories": [
       "E:\\DEVELOPER\\NEXT\\olahbola\\app\\(main)\\artikel\\[slug]"
