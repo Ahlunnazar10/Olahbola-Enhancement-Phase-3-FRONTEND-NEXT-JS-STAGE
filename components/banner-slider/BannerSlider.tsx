@@ -95,19 +95,39 @@ export function BannerSlider({
 							{(
 								slide.type === "article" ? slide.image : slide.imageFallback
 							) ? (
-								<img
-									src={
-										slide.type === "article"
-											? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
-											: isMobile
-												? slide.imageMobileFallback || slide.imageFallback
+								<picture>
+									{/* Mobile image */}
+									<source
+										srcSet={
+											isMobile
+												? `${slide.type === "article" ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}` : slide.imageMobileFallback || slide.imageFallback} ${isMobile ? "?w=750&q=75" : ""}`
+												: undefined
+										}
+										media="(max-width: 640px)"
+									/>
+									{/* Tablet image */}
+									<source
+										srcSet={
+											`${slide.type === "article" ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}` : slide.imageFallback}?w=1080&q=75`
+										}
+										media="(max-width: 1080px)"
+									/>
+									{/* Desktop image */}
+									<img
+										src={
+											slide.type === "article"
+												? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
 												: slide.imageFallback
-									}
-									alt={slide.ctaTitle || slide.title?.parts?.join(" ") || "Banner"}
-									className={`w-full h-full ${isDark ? "grayscale-[0.2] contrast-125" : "grayscale-[0.1] contrast-105"}`}
-									fetchPriority="high"
-									decoding="async"
-								/>
+										}
+										alt={slide.ctaTitle || slide.title?.parts?.join(" ") || "Banner"}
+										className={`w-full h-full ${isDark ? "grayscale-[0.2] contrast-125" : "grayscale-[0.1] contrast-105"}`}
+										fetchPriority="high"
+										decoding="async"
+										width={1920}
+										height={1080}
+										sizes="100vw"
+									/>
+								</picture>
 							) : (
 								<div
 									className="w-full h-full bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]"
