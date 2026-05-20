@@ -1,5 +1,4 @@
 "use client";
-import { Icon } from "@/components/ui/Icon";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -137,7 +136,13 @@ export default function NotFound() {
 					animation: gradient-shift 4s ease infinite;
 				}
 
-				
+				.material-symbols-outlined {
+					font-variation-settings:
+						"FILL" 0,
+						"wght" 400,
+						"GRAD" 0,
+						"opsz" 24;
+				}
 			`}</style>
 
 			<div
@@ -181,19 +186,34 @@ export default function NotFound() {
 						className="absolute top-20 left-[15%] animate-bounce-subtle"
 						style={{ animationDelay: "0s" }}
 					>
-						<Icon name="sports_soccer" size={16} className="xl opacity-20" color={colors.accent} />
+						<span
+							className="material-symbols-outlined text-4xl opacity-20"
+							style={{ color: colors.accent }}
+						>
+							sports_soccer
+						</span>
 					</div>
 					<div
 						className="absolute top-40 right-[20%] animate-bounce-subtle"
 						style={{ animationDelay: "0.5s" }}
 					>
-						<Icon name="sports_soccer" size={12} className="xl opacity-15" color={colors.accent} />
+						<span
+							className="material-symbols-outlined text-3xl opacity-15"
+							style={{ color: colors.accent }}
+						>
+							sports_soccer
+						</span>
 					</div>
 					<div
 						className="absolute bottom-32 left-[25%] animate-bounce-subtle"
 						style={{ animationDelay: "1s" }}
 					>
-						<Icon name="sports_soccer" size={20} className="xl opacity-10" color={colors.accent} />
+						<span
+							className="material-symbols-outlined text-5xl opacity-10"
+							style={{ color: colors.accent }}
+						>
+							sports_soccer
+						</span>
 					</div>
 				</div>
 
@@ -253,7 +273,12 @@ export default function NotFound() {
 								boxShadow: `0 0 30px ${colors.accentGlow}`,
 							}}
 						>
-							<Icon name="home" size={8} className="xl" filled />
+							<span
+								className="material-symbols-outlined text-2xl"
+								style={{ fontVariationSettings: "'FILL' 1" }}
+							>
+								home
+							</span>
 							Back to Kickoff
 						</Link>
 					</div>

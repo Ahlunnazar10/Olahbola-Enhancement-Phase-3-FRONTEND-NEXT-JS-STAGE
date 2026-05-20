@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Icon } from "@/components/ui/Icon";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/authStore";
@@ -169,7 +168,12 @@ export default function ProfilePage() {
 									<div
 										className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center border-4 shadow-lg ${isDark ? "bg-[#00c2b1] text-black border-[#0f1412]" : "bg-[#0a7c6e] text-white border-white"}`}
 									>
-										<Icon name="verified" filled />
+										<span
+											className="material-symbols-outlined text-[16px]"
+											style={{ fontVariationSettings: "'FILL' 1" }}
+										>
+											verified
+										</span>
 									</div>
 								)}
 							</div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { formatDate } from "@/lib/utils";
@@ -300,7 +299,9 @@ export default function ArticleDetailPage() {
 						href="/artikel"
 						className={`flex items-center gap-2 px-4 py-2 backdrop-blur-sm rounded-lg transition-all text-sm font-bold uppercase tracking-widest ${isDark ? "bg-black/40 hover:bg-black/60 text-white/80 hover:text-white" : "bg-white/40 hover:bg-white/60 text-[#1a1a1a]/80 hover:text-[#1a1a1a]"}`}
 					>
-						<Icon name="arrow_back" />
+						<span className="material-symbols-outlined text-base">
+							arrow_back
+						</span>
 						<span>Back</span>
 					</Link>
 				</div>
@@ -335,17 +336,23 @@ export default function ArticleDetailPage() {
 							{/* Meta Info */}
 							<div className={`flex flex-wrap items-center gap-6 font-bold text-sm uppercase tracking-widest pb-6 border-b ${isDark ? "text-white/50 border-white/10" : "text-[#5a5a5a] border-gray-200"}`}>
 								<span className="flex items-center gap-2">
-									<Icon name="calendar_today" size={20} />
+									<span className={`material-symbols-outlined text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+										calendar_today
+									</span>
 									{articleData.published_at
 										? formatDate(articleData.published_at)
 										: articleData.created_diff}
 								</span>
 								<span className="flex items-center gap-2">
-									<Icon name="visibility" size={20} />
+									<span className={`material-symbols-outlined text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+										visibility
+									</span>
 									{articleData.views} Views
 								</span>
 								<span className="flex items-center gap-2">
-									<Icon name="person" size={20} />
+									<span className={`material-symbols-outlined text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+										person
+									</span>
 									{articleData.author_name}
 								</span>
 							</div>
@@ -360,7 +367,9 @@ export default function ArticleDetailPage() {
 									className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${isDark ? "border border-white/10 hover:bg-primary hover:text-on-primary hover:border-primary" : "border border-gray-200 hover:bg-[#0a7c6e] hover:text-white hover:border-[#0a7c6e]"}`}
 									title="Share"
 								>
-									<Icon name="share" size={18} />
+									<span className="material-symbols-outlined text-sm">
+										share
+									</span>
 								</button>
 								<button
 									onClick={() => {
@@ -370,7 +379,9 @@ export default function ArticleDetailPage() {
 									className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${isDark ? "border border-white/10 hover:bg-primary hover:text-on-primary hover:border-primary" : "border border-gray-200 hover:bg-[#0a7c6e] hover:text-white hover:border-[#0a7c6e]"}`}
 									title="Copy Link"
 								>
-									<Icon name="link" size={18} />
+									<span className="material-symbols-outlined text-sm">
+										link
+									</span>
 								</button>
 							</div>
 						</div>
@@ -412,7 +423,9 @@ export default function ArticleDetailPage() {
 												</h4>
 												<div className={`flex items-center gap-3 text-xs font-bold uppercase tracking-widest mt-3 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}>
 													<span className="flex items-center gap-1">
-														<Icon name="schedule" />
+														<span className="material-symbols-outlined text-xs">
+															schedule
+														</span>
 														{item.created_diff}
 													</span>
 												</div>
@@ -430,7 +443,9 @@ export default function ArticleDetailPage() {
 							{/* Popular Articles */}
 							<div className={`p-6 rounded-xl transition-all duration-300 ${isDark ? "glass-panel border border-white/5" : "bg-white shadow-lg border border-gray-200"}`}>
 								<h3 className={`text-lg font-black italic uppercase mb-6 flex items-center gap-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
-									<Icon name="trending_up" />
+									<span className={`material-symbols-outlined ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+										trending_up
+									</span>
 									Artikel Populer
 								</h3>
 								{popularLoading ? (
@@ -458,7 +473,9 @@ export default function ArticleDetailPage() {
 																{item.title}
 															</h4>
 															<p className={`text-[10px] mt-1.5 uppercase tracking-widest font-bold flex items-center gap-1 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}>
-																<Icon name="visibility" />
+																<span className="material-symbols-outlined text-[10px]">
+																	visibility
+																</span>
 																{item.views} Views
 															</p>
 														</div>
@@ -474,7 +491,9 @@ export default function ArticleDetailPage() {
 								<div className="relative aspect-4/3 overflow-hidden">
 									<div className={`absolute inset-0 ${isDark ? "bg-linear-to-br from-primary/30 to-[#E63946]/20" : "bg-linear-to-br from-[#0a7c6e]/20 to-[#d32f3e]/10"}`} />
 									<div className={`absolute inset-0 flex flex-col justify-center items-center text-center p-6 ${isDark ? "" : "bg-linear-to-br from-white to-gray-50"}`}>
-										<Icon name="bolt" size={40} />
+										<span className={`material-symbols-outlined text-5xl mb-4 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+											bolt
+										</span>
 										<h3 className={`text-xl font-black italic uppercase mb-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
 											Stay Updated
 										</h3>

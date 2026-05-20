@@ -54,7 +54,12 @@
       "Bash(echo \"=== 5. components\\\\\\\\article\\\\\\\\ArticleHomeCard.tsx ===\")",
       "Bash(python -c ' *)",
       "Bash(cd e:/DEVELOPER/NEXT/olahbola && sed -i '270d' \"app/\\(main\\)/artikel/[slug]/page.tsx\")",
-      "Bash(python fix_banner.py)"
+      "Bash(python fix_banner.py)",
+      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" log --oneline -5 origin/main)",
+      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" restore --source=origin/main -- .)",
+      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" log --oneline)",
+      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" restore --source=db158f3 -- .)",
+      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" status --short)"
     ],
     "additionalDirectories": [
       "E:\\DEVELOPER\\NEXT\\olahbola\\app\\(main)\\artikel\\[slug]"
