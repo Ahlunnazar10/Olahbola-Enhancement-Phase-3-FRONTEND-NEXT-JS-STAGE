@@ -13,43 +13,45 @@ export default function MediaSpotlightPage() {
 	const featuredArticle = allHighlights[0];
 	const remainingArticles = allHighlights.slice(1);
 
-	const colors = isDark ? {
-		bg: "#050505",
-		bgPattern: "rgba(64, 220, 202, 0.05)",
-		gradient: "#050505",
-		glassBg: "rgba(10, 15, 13, 0.6)",
-		glassBorder: "rgba(255, 255, 255, 0.1)",
-		glassBorderHover: "#00c2b1",
-		glassShadowHover: "rgba(0, 194, 177, 0.15)",
-		primary: "#00c2b1",
-		primaryGlow: "rgba(67, 222, 204, 0.5)",
-		primaryAlpha: "rgba(0, 194, 177, 0.3)",
-		text: "#ffffff",
-		textSecondary: "rgba(255, 255, 255, 0.7)",
-		textMuted: "rgba(255, 255, 255, 0.4)",
-		featuredContentBg: "rgba(28, 27, 27, 0.4)",
-		surfaceVariant: "rgba(255, 255, 255, 0.6)",
-		outline: "rgba(255, 255, 255, 0.12)",
-		heroOverlay: "from-[#050505]",
-	} : {
-		bg: "#f5f5f5",
-		bgPattern: "rgba(10, 124, 110, 0.04)",
-		gradient: "#f5f5f5",
-		glassBg: "rgba(255, 255, 255, 0.8)",
-		glassBorder: "rgba(0, 0, 0, 0.08)",
-		glassBorderHover: "#0a7c6e",
-		glassShadowHover: "rgba(10, 124, 110, 0.15)",
-		primary: "#0a7c6e",
-		primaryGlow: "rgba(10, 124, 110, 0.4)",
-		primaryAlpha: "rgba(10, 124, 110, 0.2)",
-		text: "#1a1a1a",
-		textSecondary: "rgba(26, 26, 26, 0.75)",
-		textMuted: "rgba(26, 26, 26, 0.5)",
-		featuredContentBg: "rgba(255, 255, 255, 0.6)",
-		surfaceVariant: "rgba(26, 26, 26, 0.6)",
-		outline: "rgba(0, 0, 0, 0.12)",
-		heroOverlay: "from-[#f5f5f5]",
-	};
+	const colors = isDark
+		? {
+				bg: "#050505",
+				bgPattern: "rgba(64, 220, 202, 0.05)",
+				gradient: "#050505",
+				glassBg: "rgba(10, 15, 13, 0.6)",
+				glassBorder: "rgba(255, 255, 255, 0.1)",
+				glassBorderHover: "#00c2b1",
+				glassShadowHover: "rgba(0, 194, 177, 0.15)",
+				primary: "#00c2b1",
+				primaryGlow: "rgba(67, 222, 204, 0.5)",
+				primaryAlpha: "rgba(0, 194, 177, 0.3)",
+				text: "#ffffff",
+				textSecondary: "rgba(255, 255, 255, 0.7)",
+				textMuted: "rgba(255, 255, 255, 0.4)",
+				featuredContentBg: "rgba(28, 27, 27, 0.4)",
+				surfaceVariant: "rgba(255, 255, 255, 0.6)",
+				outline: "rgba(255, 255, 255, 0.12)",
+				heroOverlay: "from-[#050505]",
+			}
+		: {
+				bg: "#f5f5f5",
+				bgPattern: "rgba(10, 124, 110, 0.04)",
+				gradient: "#f5f5f5",
+				glassBg: "rgba(255, 255, 255, 0.8)",
+				glassBorder: "rgba(0, 0, 0, 0.08)",
+				glassBorderHover: "#0a7c6e",
+				glassShadowHover: "rgba(10, 124, 110, 0.15)",
+				primary: "#0a7c6e",
+				primaryGlow: "rgba(10, 124, 110, 0.4)",
+				primaryAlpha: "rgba(10, 124, 110, 0.2)",
+				text: "#1a1a1a",
+				textSecondary: "rgba(26, 26, 26, 0.75)",
+				textMuted: "rgba(26, 26, 26, 0.5)",
+				featuredContentBg: "rgba(255, 255, 255, 0.6)",
+				surfaceVariant: "rgba(26, 26, 26, 0.6)",
+				outline: "rgba(0, 0, 0, 0.12)",
+				heroOverlay: "from-[#f5f5f5]",
+			};
 
 	return (
 		<div
@@ -83,9 +85,11 @@ export default function MediaSpotlightPage() {
 							alt="Stadium"
 						/>
 						<div
-								className="absolute inset-0 bg-linear-to-t"
-								style={{ backgroundImage: `linear-gradient(to top, ${colors.gradient}, transparent 40%, ${colors.gradient})` }}
-							/>
+							className="absolute inset-0 bg-linear-to-t"
+							style={{
+								backgroundImage: `linear-gradient(to top, ${colors.gradient}, transparent 40%, ${colors.gradient})`,
+							}}
+						/>
 					</div>
 
 					{/* Hero Content */}
@@ -99,13 +103,28 @@ export default function MediaSpotlightPage() {
 						</div>
 
 						{/* Title */}
-						<h1 className="text-4xl md:text-6xl lg:text-7xl font-bold italic mb-6 leading-none" style={{ color: colors.text }}>
+						<h1
+							className="text-4xl md:text-6xl lg:text-7xl font-bold italic mb-6 leading-none"
+							style={{ color: colors.text }}
+						>
 							Mari Ceritakan <br />
-							<span className="neon-glow" style={{ color: colors.primary, textShadow: `0 0 15px ${colors.primaryGlow}` }}>Sepak Bola</span> Bersama
+							<span
+								className="neon-glow"
+								style={{
+									color: colors.primary,
+									textShadow: `0 0 15px ${colors.primaryGlow}`,
+								}}
+							>
+								Sepak Bola
+							</span>{" "}
+							Bersama
 						</h1>
 
 						{/* Description */}
-						<p className="text-lg md:text-xl max-w-2xl mx-auto" style={{ color: colors.textSecondary }}>
+						<p
+							className="text-lg md:text-xl max-w-2xl mx-auto"
+							style={{ color: colors.textSecondary }}
+						>
 							Kami terbuka untuk media coverage, press release, hingga
 							kolaborasi kreatif bersama media, brand dan komunitas sepak bola.
 						</p>
@@ -127,24 +146,42 @@ export default function MediaSpotlightPage() {
 						</div>
 
 						{/* Content */}
-						<div className="md:w-2/5 p-8 md:p-12 flex flex-col justify-center" style={{ backgroundColor: colors.featuredContentBg }}>
+						<div
+							className="md:w-2/5 p-8 md:p-12 flex flex-col justify-center"
+							style={{ backgroundColor: colors.featuredContentBg }}
+						>
 							{/* Meta */}
 							<div className="flex items-center gap-3 mb-6">
-								<span className="px-3 py-1 rounded-full text-[10px] font-bold" style={{ backgroundColor: `${colors.primary}20`, color: colors.primary }}>
+								<span
+									className="px-3 py-1 rounded-full text-[10px] font-bold"
+									style={{
+										backgroundColor: `${colors.primary}20`,
+										color: colors.primary,
+									}}
+								>
 									{featuredArticle.source}
 								</span>
-								<span className="text-[12px]" style={{ color: colors.textMuted }}>
+								<span
+									className="text-[12px]"
+									style={{ color: colors.textMuted }}
+								>
 									{featuredArticle.date}
 								</span>
 							</div>
 
 							{/* Title */}
-							<h2 className="text-xl md:text-2xl font-bold mb-6 leading-tight" style={{ color: colors.text }}>
+							<h2
+								className="text-xl md:text-2xl font-bold mb-6 leading-tight"
+								style={{ color: colors.text }}
+							>
 								{featuredArticle.title}
 							</h2>
 
 							{/* Excerpt */}
-							<p className="mb-8 line-clamp-3" style={{ color: colors.textSecondary }}>
+							<p
+								className="mb-8 line-clamp-3"
+								style={{ color: colors.textSecondary }}
+							>
 								{featuredArticle.excerpt}
 							</p>
 
@@ -166,8 +203,14 @@ export default function MediaSpotlightPage() {
 				{/* Seluruh Liputan Media Grid */}
 				<section className="px-6 md:px-8 lg:px-16 pb-20 max-w-7xl mx-auto">
 					{/* Section Header */}
-					<div className="flex justify-between items-end mb-12 pb-6" style={{ borderBottom: `1px solid ${colors.outline}` }}>
-						<h3 className="text-xl md:text-2xl font-bold tracking-widest" style={{ color: colors.textSecondary }}>
+					<div
+						className="flex justify-between items-end mb-12 pb-6"
+						style={{ borderBottom: `1px solid ${colors.outline}` }}
+					>
+						<h3
+							className="text-xl md:text-2xl font-bold tracking-widest"
+							style={{ color: colors.textSecondary }}
+						>
 							SELURUH LIPUTAN MEDIA
 						</h3>
 						<span className="font-label-bold" style={{ color: colors.primary }}>
@@ -201,26 +244,41 @@ export default function MediaSpotlightPage() {
 								<div className="p-6 md:p-8 flex flex-col grow">
 									{/* Meta */}
 									<div className="flex items-center justify-between mb-4">
-										<span className="text-[10px] font-bold tracking-widest" style={{ color: colors.primary }}>
+										<span
+											className="text-[10px] font-bold tracking-widest"
+											style={{ color: colors.primary }}
+										>
 											{article.source}
 										</span>
-										<span className="text-[10px]" style={{ color: colors.textMuted }}>
+										<span
+											className="text-[10px]"
+											style={{ color: colors.textMuted }}
+										>
 											{article.date}
 										</span>
 									</div>
 
 									{/* Title */}
-									<h4 className="text-lg md:text-xl font-bold mb-4 transition-colors" style={{ color: colors.text }}>
+									<h4
+										className="text-lg md:text-xl font-bold mb-4 transition-colors"
+										style={{ color: colors.text }}
+									>
 										{article.title}
 									</h4>
 
 									{/* Excerpt */}
-									<p className="line-clamp-3 mb-6 grow" style={{ color: colors.textSecondary }}>
+									<p
+										className="line-clamp-3 mb-6 grow"
+										style={{ color: colors.textSecondary }}
+									>
 										{article.excerpt}
 									</p>
 
 									{/* External Link */}
-									<div className="inline-flex items-center gap-2 font-label-bold text-sm" style={{ color: colors.primary }}>
+									<div
+										className="inline-flex items-center gap-2 font-label-bold text-sm"
+										style={{ color: colors.primary }}
+									>
 										<Icon name="open_in_new" size={18} />
 										Kunjungi
 									</div>
@@ -234,20 +292,38 @@ export default function MediaSpotlightPage() {
 				<section className="px-6 md:px-8 lg:px-16 py-32">
 					<div className="max-w-4xl mx-auto glass-card rounded-2xl p-12 md:p-16 text-center relative overflow-hidden">
 						{/* Blur Effects */}
-						<div className="absolute -top-24 -left-24 w-64 h-64 rounded-full blur-[80px]" style={{ backgroundColor: colors.primaryAlpha }} />
-						<div className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full blur-[80px]" style={{ backgroundColor: colors.primaryAlpha }} />
+						<div
+							className="absolute -top-24 -left-24 w-64 h-64 rounded-full blur-[80px]"
+							style={{ backgroundColor: colors.primaryAlpha }}
+						/>
+						<div
+							className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full blur-[80px]"
+							style={{ backgroundColor: colors.primaryAlpha }}
+						/>
 
 						<div className="relative z-10">
 							{/* Icon */}
-							<Icon name="handshake" size={48} filled />
+							<Icon
+								name="handshake"
+								size={48}
+								className="mb-6 mx-auto"
+								color={colors.primary}
+								weight="fill"
+							/>
 
 							{/* Title */}
-							<h2 className="text-2xl md:text-4xl font-bold mb-4" style={{ color: colors.text }}>
+							<h2
+								className="text-2xl md:text-4xl font-bold mb-4 text-center"
+								style={{ color: colors.text }}
+							>
 								Ingin Liputan tentang Olahbola?
 							</h2>
 
 							{/* Description */}
-							<p className="text-lg md:text-xl mb-12 max-w-xl mx-auto" style={{ color: colors.textSecondary }}>
+							<p
+								className="text-lg md:text-xl mb-12 max-w-xl mx-auto text-center"
+								style={{ color: colors.textSecondary }}
+							>
 								Jika Anda media yang tertarik memberitakan Olahbola, silakan
 								hubungi kami untuk informasi lebih lanjut dan press kit lengkap.
 							</p>
@@ -258,12 +334,16 @@ export default function MediaSpotlightPage() {
 								style={{
 									backgroundColor: colors.primary,
 									color: isDark ? "#003732" : "#ffffff",
-									boxShadow: `0 0 30px ${colors.primaryAlpha}`
+									boxShadow: `0 0 30px ${colors.primaryAlpha}`,
 								}}
 							>
-								<Icon name="mail" />
+								<Icon name="mail" size={20} />
 								Let&apos;s Collaborate
-								<Icon name="arrow_forward" />
+								<Icon
+									name="arrow_forward"
+									size={20}
+									className="transition-transform group-hover:translate-x-1"
+								/>
 							</button>
 						</div>
 					</div>
