@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "@/components/ui/Icon";
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Suspense } from "react";
@@ -289,13 +290,7 @@ export default function InterviewPage() {
 							${isDark ? "rgba(0, 194, 177, 0.2)" : "rgba(10, 124, 110, 0.2)"};
 				}
 
-				.material-symbols-outlined {
-					font-variation-settings:
-						"FILL" 0,
-						"wght" 400,
-						"GRAD" 0,
-						"opsz" 24;
-				}
+				
 
 				body {
 					font-family: "Lexend", sans-serif;

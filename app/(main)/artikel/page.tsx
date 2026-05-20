@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "@/components/ui/Icon";
 
 import { Suspense, useState, useEffect, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -292,7 +293,7 @@ function ArtikelContent() {
 								className={`inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 py-2.5 sm:py-4 rounded-full font-bold text-xs sm:text-sm uppercase tracking-widest hover:scale-105 transition-transform ${isDark ? "bg-primary text-on-primary shadow-[0_0_20px_rgba(67,222,204,0.3)]" : "bg-[#0a7c6e] text-white hover:bg-[#095a50] shadow-[0_0_20px_rgba(10,124,110,0.3)]"}`}
 							>
 								Selengkapnya
-								<span className="material-symbols-outlined">arrow_forward</span>
+								<Icon name="arrow_forward" />
 							</Link>
 						</div>
 					</div>
@@ -507,9 +508,7 @@ function ArtikelContent() {
 												<div
 													className={`flex items-center gap-1 text-[11px] font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 												>
-													<span className="material-symbols-outlined text-[8px]">
-														visibility
-													</span>
+													<Icon name="visibility" className="text-[8px]" />
 													<span>{article.views || 0}</span>
 													<span>Dibaca</span>
 												</div>
@@ -608,9 +607,7 @@ function ArtikelContent() {
 														className={`flex items-center gap-4 mt-3 text-xs font-bold ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
 													>
 														<span className="flex items-center gap-1">
-															<span className="material-symbols-outlined text-xs">
-																visibility
-															</span>{" "}
+															<Icon name="visibility" className="text-xs" />{" "}
 															{article.views}
 															<span className="hidden md:flex">Dibaca</span>
 														</span>
