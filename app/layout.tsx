@@ -12,9 +12,9 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { GlobalSeoScripts } from "@/components/seo/SeoScriptsServer";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const GTM_ID = "GTM-FC96C4T4";
 
+// Only preload the primary font - reduce critical path
 const plusJakartaSans = Plus_Jakarta_Sans({
 	variable: "--font-plus-jakarta",
 	subsets: ["latin"],
@@ -24,6 +24,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 	preload: true,
 });
 
+// Other fonts - lazy loaded
 const firaCode = Fira_Code({
 	variable: "--font-fira-code",
 	subsets: ["latin"],
@@ -126,49 +127,32 @@ export default function RootLayout({
 			className={`${plusJakartaSans.variable} ${firaCode.variable} ${spaceGrotesk.variable} ${lexend.variable} h-full antialiased`}
 		>
 			<head>
-				{/* Preconnect for external resources */}
+				{/* Preconnect for external resources - critical for performance */}
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
-				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-				{/* Material Symbols Outlined - Non-blocking load */}
 				<link
-					rel="stylesheet"
-					href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700;0..1,-50..200&display=block"
-					media="print"
+					rel="preconnect"
+					href="https://fonts.gstatic.com"
+					crossOrigin="anonymous"
 				/>
+				<link rel="preconnect" href="https://cms.olahbola.com" />
 
 				{/* JSON-LD Structured Data - Server Rendered */}
 				<GlobalSeoScripts />
-
-				{/* Google Analytics (GA4) - Load only on user interaction */}
-				{GA_ID && (
-					<Script id="ga4-inline" strategy="lazyOnload">
-						{`
-							window.dataLayer = window.dataLayer || [];
-							function gtag(){dataLayer.push(arguments);}
-							gtag('js', new Date());
-							gtag('config', '${GA_ID}', { send_page_view: true });
-						`}
-					</Script>
-				)}
-
-				{/* Google Tag Manager - Complete deferral */}
-				<Script id="gtm-inline" strategy="lazyOnload">
-					{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-					j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-					'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-					})(window,document,'script','dataLayer','${GTM_ID}');`}
-				</Script>
 			</head>
 			<body className="min-h-full flex flex-col">
 				<Analytics />
 
-				{/* Google Tag Manager (noscript) - above the fold */}
+				{/* Google Tag Manager - Load after page is interactive (lazyOnload) */}
+				<Script
+					id="gtm-script"
+					strategy="lazyOnload"
+					src={`https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`}
+				/>
+
+				{/* Google Tag Manager (noscript) */}
 				<noscript
 					dangerouslySetInnerHTML={{
-						__html: `<iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}"
-					height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
+						__html: `<iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
 					}}
 				/>
 
@@ -184,9 +168,7 @@ export default function RootLayout({
 						zIndex: 9999,
 					}}
 					toastOptions={{
-						// Default options for all toasts
 						duration: 4000,
-						// Success style
 						success: {
 							duration: 3000,
 							style: {
@@ -203,7 +185,6 @@ export default function RootLayout({
 								secondary: "#ffffff",
 							},
 						},
-						// Error style
 						error: {
 							duration: 5000,
 							style: {
@@ -220,7 +201,6 @@ export default function RootLayout({
 								secondary: "#DC2626",
 							},
 						},
-						// Loading style
 						loading: {
 							duration: Infinity,
 							style: {

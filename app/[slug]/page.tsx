@@ -22,12 +22,6 @@ import {
 	Link2,
 	Clock,
 	TrendingUp,
-	AlertCircle,
-	AlertTriangle,
-	Info,
-	Download,
-	ChevronRight,
-	Copy,
 	Zap,
 } from "lucide-react";
 

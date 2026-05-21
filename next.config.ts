@@ -32,10 +32,15 @@ const nextConfig: NextConfig = {
 				hostname: "www.olahbola.com",
 			},
 		],
-		// Performance optimizations
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
 		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
 		formats: ["image/avif", "image/webp"],
+	},
+	// Transpile swiper package for better tree-shaking
+	transpilePackages: ["swiper"],
+	// Experimental features for better performance
+	experimental: {
+		optimizeCss: true,
 	},
 };
 
