@@ -24,7 +24,7 @@ import {
 	Edit2,
 	Loader2,
 	LogOut,
-	CheckCircle
+	CheckCircle,
 	TrendingUp,
 	LayoutDashboard,
 	KeyRound,
