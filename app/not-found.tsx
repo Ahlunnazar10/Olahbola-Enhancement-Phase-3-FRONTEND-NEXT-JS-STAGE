@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Home, Footprints } from "lucide-react";
 
 export default function NotFound() {
 	const [isDark, setIsDark] = useState(true);
@@ -135,14 +136,6 @@ export default function NotFound() {
 					background-size: 200% 200%;
 					animation: gradient-shift 4s ease infinite;
 				}
-
-				.material-symbols-outlined {
-					font-variation-settings:
-						"FILL" 0,
-						"wght" 400,
-						"GRAD" 0,
-						"opsz" 24;
-				}
 			`}</style>
 
 			<div
@@ -186,34 +179,28 @@ export default function NotFound() {
 						className="absolute top-20 left-[15%] animate-bounce-subtle"
 						style={{ animationDelay: "0s" }}
 					>
-						<span
-							className="material-symbols-outlined text-4xl opacity-20"
+						<Footprints
+							className="size-10 opacity-20"
 							style={{ color: colors.accent }}
-						>
-							sports_soccer
-						</span>
+						/>
 					</div>
 					<div
 						className="absolute top-40 right-[20%] animate-bounce-subtle"
 						style={{ animationDelay: "0.5s" }}
 					>
-						<span
-							className="material-symbols-outlined text-3xl opacity-15"
+						<Footprints
+							className="size-8 opacity-15"
 							style={{ color: colors.accent }}
-						>
-							sports_soccer
-						</span>
+						/>
 					</div>
 					<div
 						className="absolute bottom-32 left-[25%] animate-bounce-subtle"
 						style={{ animationDelay: "1s" }}
 					>
-						<span
-							className="material-symbols-outlined text-5xl opacity-10"
+						<Footprints
+							className="size-12 opacity-10"
 							style={{ color: colors.accent }}
-						>
-							sports_soccer
-						</span>
+						/>
 					</div>
 				</div>
 
@@ -273,12 +260,7 @@ export default function NotFound() {
 								boxShadow: `0 0 30px ${colors.accentGlow}`,
 							}}
 						>
-							<span
-								className="material-symbols-outlined text-2xl"
-								style={{ fontVariationSettings: "'FILL' 1" }}
-							>
-								home
-							</span>
+							<Home className="size-6" />
 							Back to Kickoff
 						</Link>
 					</div>

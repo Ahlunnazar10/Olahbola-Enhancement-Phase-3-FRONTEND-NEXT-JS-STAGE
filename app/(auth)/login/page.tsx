@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Rocket, Settings, Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 import {
 	useLogin,
@@ -174,9 +174,7 @@ export default function LoginPage() {
 				className={`absolute bottom-[20%] left-[10%] floating-element hidden lg:block ${isDark ? "opacity-20" : "opacity-15"}`}
 				style={{ animationDelay: "1s" }}
 			>
-				<span className={`material-symbols-outlined text-[120px] ${isDark ? "text-primary/10" : "text-[#0a7c6e]/10"}`}>
-					rocket_launch
-				</span>
+				<Rocket className={`size-12 ${isDark ? "text-primary/10" : "text-[#0a7c6e]/10"}`} />
 			</div>
 
 			<div
@@ -184,9 +182,7 @@ export default function LoginPage() {
 				style={{ animationDelay: "3s" }}
 			>
 				<div className={`p-6 rounded-full flex items-center justify-center ${isDark ? "glass-card border border-primary/40" : "bg-white/80 border border-[#0a7c6e]/30 shadow-lg"}`}>
-					<span className={`material-symbols-outlined text-4xl ${isDark ? "text-primary animate-spin" : "text-[#0a7c6e]"}`}>
-						settings
-					</span>
+					<Settings className={`size-10 ${isDark ? "text-primary animate-spin" : "text-[#0a7c6e]"}`} />
 				</div>
 			</div>
 
@@ -295,9 +291,7 @@ export default function LoginPage() {
 										Email atau Nomor Telepon
 									</label>
 									<div className="relative">
-										<span className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-xl transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-											mail
-										</span>
+										<Mail className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
 										<input
 											type="text"
 											value={emailOrPhone}
@@ -314,9 +308,7 @@ export default function LoginPage() {
 										Kata Sandi
 									</label>
 									<div className="relative">
-										<span className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-xl transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-											lock
-										</span>
+										<Lock className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
 										<input
 											type={showPassword ? "text" : "password"}
 											value={password}

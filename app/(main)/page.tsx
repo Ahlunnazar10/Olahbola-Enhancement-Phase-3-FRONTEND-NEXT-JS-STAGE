@@ -8,7 +8,7 @@ import { apiClient } from "@/lib/api/client";
 import { useAuthStore } from "@/stores/authStore";
 import { useUIStore } from "@/stores/uiStore";
 import type { Article, Interview } from "@/types";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Play, Circle, ArrowUpRight } from "lucide-react";
 import {
 	BannerSlider,
 	type BannerSlide,
@@ -370,14 +370,6 @@ export default function HomePage() {
 					text-shadow: 0 0 10px rgba(67, 222, 204, 0.5);
 				}
 
-				.material-symbols-outlined {
-					font-variation-settings:
-						"FILL" 0,
-						"wght" 400,
-						"GRAD" 0,
-						"opsz" 24;
-				}
-
 				@keyframes scroll-left {
 					0% {
 						transform: translateX(0);
@@ -572,12 +564,6 @@ export default function HomePage() {
 									color: isDark ? "#003732" : "#ffffff",
 								}}
 							>
-								<span
-									className="material-symbols-outlined text-lg"
-									style={{ fontVariationSettings: "'FILL' 1" }}
-								>
-									sports_soccer
-								</span>
 								<span className="notranslate">LIVE LEADERBOARD</span>
 							</div>
 
@@ -648,12 +634,7 @@ export default function HomePage() {
 									className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
 									style={{ background: `${heroPlayColors.accent}15` }}
 								>
-									<span
-										className="material-symbols-outlined text-5xl"
-										style={{ color: heroPlayColors.accent }}
-									>
-										sports_soccer
-									</span>
+									<Circle className="size-10" fill="currentColor" />
 								</div>
 								<p
 									className="text-lg mb-4"
@@ -741,15 +722,7 @@ export default function HomePage() {
 													className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
 													style={{ background: `${heroPlayColors.silver}20` }}
 												>
-													<span
-														className="material-symbols-outlined text-sm"
-														style={{
-															color: heroPlayColors.silver,
-															fontVariationSettings: "'FILL' 1",
-														}}
-													>
-														sports_soccer
-													</span>
+													<Circle className="size-3.5" fill="currentColor" />
 													<span
 														className="font-bold text-lg"
 														style={{ color: heroPlayColors.text }}
@@ -840,15 +813,7 @@ export default function HomePage() {
 														border: `1px solid ${heroPlayColors.gold}40`,
 													}}
 												>
-													<span
-														className="material-symbols-outlined text-lg"
-														style={{
-															color: heroPlayColors.gold,
-															fontVariationSettings: "'FILL' 1",
-														}}
-													>
-														sports_soccer
-													</span>
+													<Circle className="size-5" fill="currentColor" />
 													<span
 														className="font-black text-2xl"
 														style={{ color: heroPlayColors.text }}
@@ -926,15 +891,7 @@ export default function HomePage() {
 													className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
 													style={{ background: `${heroPlayColors.bronze}20` }}
 												>
-													<span
-														className="material-symbols-outlined text-sm"
-														style={{
-															color: heroPlayColors.bronze,
-															fontVariationSettings: "'FILL' 1",
-														}}
-													>
-														sports_soccer
-													</span>
+													<Circle className="size-3.5" fill="currentColor" />
 													<span
 														className="font-bold text-lg"
 														style={{ color: heroPlayColors.text }}
@@ -1032,15 +989,7 @@ export default function HomePage() {
 													border: `1px solid ${heroPlayColors.accent}30`,
 												}}
 											>
-												<span
-													className="material-symbols-outlined text-sm"
-													style={{
-														color: heroPlayColors.accent,
-														fontVariationSettings: "'FILL' 1",
-													}}
-												>
-													sports_soccer
-												</span>
+												<Circle className="size-3.5" fill="currentColor" />
 												<span
 													className="font-bold"
 													style={{ color: heroPlayColors.text }}
@@ -1148,15 +1097,7 @@ export default function HomePage() {
 														border: `1px solid ${heroPlayColors.accent}30`,
 													}}
 												>
-													<span
-														className="material-symbols-outlined text-sm"
-														style={{
-															color: heroPlayColors.accent,
-															fontVariationSettings: "'FILL' 1",
-														}}
-													>
-														sports_soccer
-													</span>
+													<Circle className="size-3.5" fill="currentColor" />
 													<span
 														className="font-bold"
 														style={{ color: heroPlayColors.text }}
@@ -1182,16 +1123,8 @@ export default function HomePage() {
 											boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
 										}}
 									>
-										<span
-											className="material-symbols-outlined text-2xl"
-											style={{ fontVariationSettings: "'FILL' 1" }}
-										>
-											sports_soccer
-										</span>
 										Ikuti Pertandingan Sekarang
-										<span className="material-symbols-outlined text-xl">
-											arrow_forward
-										</span>
+										<ArrowRight className="size-5" />
 									</a>
 								</div>
 							</div>
@@ -1201,12 +1134,7 @@ export default function HomePage() {
 									className="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center"
 									style={{ background: heroPlayColors.cardBg }}
 								>
-									<span
-										className="material-symbols-outlined text-5xl"
-										style={{ color: heroPlayColors.textMuted }}
-									>
-										sports_soccer
-									</span>
+									<Circle className="size-10" fill="currentColor" />
 								</div>
 								<p
 									className="text-lg"

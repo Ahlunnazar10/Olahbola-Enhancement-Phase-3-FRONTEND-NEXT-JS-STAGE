@@ -55,11 +55,21 @@
       "Bash(python -c ' *)",
       "Bash(cd e:/DEVELOPER/NEXT/olahbola && sed -i '270d' \"app/\\(main\\)/artikel/[slug]/page.tsx\")",
       "Bash(python fix_banner.py)",
-      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" log --oneline -5 origin/main)",
-      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" restore --source=origin/main -- .)",
-      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" log --oneline)",
-      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" restore --source=db158f3 -- .)",
-      "Bash(git -C \"e:\\\\DEVELOPER\\\\NEXT\\\\olahbola\" status --short)"
+      "Bash(grep -v \"^--$\")",
+      "Bash(sed -n '293,297p' \"app/\\(main\\)/artikel/page.tsx\")",
+      "Bash(sed -n '306,312p' \"app/\\(main\\)/artikel/page.tsx\")",
+      "Bash(sed -n '508,514p' \"app/\\(main\\)/artikel/page.tsx\")",
+      "Bash(sed -n '567,573p' \"app/\\(main\\)/artikel/page.tsx\")",
+      "Bash(sed -n '609,614p' \"app/\\(main\\)/artikel/page.tsx\")",
+      "Bash(sed -n '157,162p' \"app/\\(main\\)/media-spotlight/page.tsx\")",
+      "Bash(sed -n '223,228p' \"app/\\(main\\)/media-spotlight/page.tsx\")",
+      "Bash(sed -n '244,250p' \"app/\\(main\\)/media-spotlight/page.tsx\")",
+      "Bash(sed -n '270,278p' \"app/\\(main\\)/media-spotlight/page.tsx\")",
+      "Bash(sed -n '574,580p' \"app/\\(main\\)/page.tsx\")",
+      "Bash(sed -n '650,656p' \"app/\\(main\\)/page.tsx\")",
+      "Bash(sed -n '743,749p' \"app/\\(main\\)/page.tsx\")",
+      "Bash(sed -n '842,848p' \"app/\\(main\\)/page.tsx\")",
+      "Bash(sed -n '928,934p' \"app/\\(main\\)/page.tsx\")"
     ],
     "additionalDirectories": [
       "E:\\DEVELOPER\\NEXT\\olahbola\\app\\(main)\\artikel\\[slug]"

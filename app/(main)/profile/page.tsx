@@ -19,12 +19,12 @@ import { useLogout } from "@/hooks/queries/useAuth";
 import { getProfilePictureUrl } from "@/lib/utils";
 import toast from "react-hot-toast";
 import {
-	CheckCircle,
+	Badge, BadgeCheck,
 	XCircle,
 	Edit2,
 	Loader2,
 	LogOut,
-	Badge,
+	CheckCircle
 	TrendingUp,
 	LayoutDashboard,
 	KeyRound,
@@ -168,12 +168,7 @@ export default function ProfilePage() {
 									<div
 										className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center border-4 shadow-lg ${isDark ? "bg-[#00c2b1] text-black border-[#0f1412]" : "bg-[#0a7c6e] text-white border-white"}`}
 									>
-										<span
-											className="material-symbols-outlined text-[16px]"
-											style={{ fontVariationSettings: "'FILL' 1" }}
-										>
-											verified
-										</span>
+										<BadgeCheck className="size-4" fill="currentColor" />
 									</div>
 								)}
 							</div>

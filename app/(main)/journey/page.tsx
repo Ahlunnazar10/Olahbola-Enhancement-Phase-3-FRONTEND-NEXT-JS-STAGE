@@ -596,7 +596,7 @@ export default function JourneyPage() {
 						Bersama Kami?
 					</h2>
 					<div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-						<Link
+						{/* <Link
 							href="/quiz"
 							className="w-full sm:w-auto px-10 py-5 rounded-full font-bold uppercase tracking-tighter transition-all hover:scale-105 active:scale-95"
 							style={{
@@ -606,7 +606,7 @@ export default function JourneyPage() {
 							}}
 						>
 							Main Quiz
-						</Link>
+						</Link> */}
 						<Link
 							href="/artikel"
 							className="w-full sm:w-auto px-10 py-5 rounded-full font-bold uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 hover:bg-white/10"

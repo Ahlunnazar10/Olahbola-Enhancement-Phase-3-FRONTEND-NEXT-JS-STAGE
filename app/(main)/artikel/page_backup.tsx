@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight, Search, FileText, Eye, ChevronRight, Zap } from "lucide-react";
 import Link from "next/link";
 import { ArticleCardSkeleton } from "@/components/article/ArticleCard";
 import { PopularArticleCardSkeleton } from "@/components/article/PopularArticleCard";
@@ -272,7 +272,7 @@ function ArtikelContent() {
 								className="flex items-center gap-3 bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform shadow-[0_0_20px_rgba(67,222,204,0.3)] w-fit"
 							>
 								Selengkapnya{" "}
-								<span className="material-symbols-outlined">arrow_forward</span>
+								<ArrowRight className="size-5" />
 							</Link>
 						</div>
 					</div>
@@ -282,9 +282,7 @@ function ArtikelContent() {
 			{/* Search & Categories Bar with Glassmorphism */}
 			<section className="flex flex-col md:flex-row gap-6 mt-4 mb-8 items-center bg-white/5 backdrop-blur-xl p-4 rounded-2xl border border-white/5 ">
 				<div className="relative w-full md:w-1/3 group">
-					<span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">
-						search
-					</span>
+					<Search className="size-5 text-outline" />
 					<input
 						className="w-full bg-surface-container-highest/20 border border-outline-variant/30 rounded-xl py-4 pl-12 pr-4 font-bold text-sm tracking-widest placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all backdrop-blur-md"
 						placeholder="SEARCH ARCHIVE..."
@@ -423,9 +421,7 @@ function ArtikelContent() {
 												<span className="text-on-surface-variant text-xs font-bold">
 													{article.created_diff}
 												</span>
-												<span className="material-symbols-outlined text-primary text-sm">
-													article
-												</span>
+												<FileText className="size-5 text-primary" />
 											</div>
 										</div>
 									</Link>
@@ -463,12 +459,7 @@ function ArtikelContent() {
 					<div className="glass-panel p-8 rounded-2xl border-l-[6px] border-l-primary relative overflow-hidden group/sidebar">
 						<div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/5 blur-[80px] rounded-full group-hover/sidebar:bg-primary/10 transition-all duration-700"></div>
 						<h2 className="text-3xl uppercase tracking-tighter mb-10 flex items-center gap-3 relative z-10">
-							<span
-								className="material-symbols-outlined text-primary float-anim"
-								style={{ fontVariationSettings: "'FILL' 1;" }}
-							>
-								bolt
-							</span>
+							<Zap className="size-8 text-primary float-anim" />
 							TRENDING NOW
 						</h2>
 						<div className="space-y-10 relative z-10">
@@ -498,9 +489,7 @@ function ArtikelContent() {
 												</h4>
 												<div className="flex items-center gap-4 mt-3 text-xs text-outline font-bold">
 													<span className="flex items-center gap-1">
-														<span className="material-symbols-outlined text-xs">
-															visibility
-														</span>{" "}
+														<Eye className="size-3" />
 														{article.views}
 													</span>
 													<span>{article.created_diff}</span>
@@ -512,9 +501,7 @@ function ArtikelContent() {
 						</div>
 						<button className="w-full mt-12 py-5 border-y border-white/5 text-on-surface-variant font-bold text-sm uppercase tracking-widest hover:text-white hover:bg-white/5 transition-all flex justify-between items-center group">
 							SEE FULL RANKINGS
-							<span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
-								chevron_right
-							</span>
+							<ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
 						</button>
 					</div>
 

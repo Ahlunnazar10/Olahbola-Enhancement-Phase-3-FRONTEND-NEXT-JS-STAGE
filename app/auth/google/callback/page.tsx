@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -106,9 +106,7 @@ function GoogleCallbackContent() {
 				{status === "success" && (
 					<>
 						<div className="w-12 h-12 rounded-full bg-green-500 mx-auto mb-4 flex items-center justify-center">
-							<span className="material-symbols-outlined text-white text-2xl">
-								check
-							</span>
+							<Check className="text-white size-6" />
 						</div>
 						<h2 className="text-xl font-semibold text-white mb-2">
 							Login Berhasil!
@@ -122,9 +120,7 @@ function GoogleCallbackContent() {
 				{status === "error" && (
 					<>
 						<div className="w-12 h-12 rounded-full bg-red-500 mx-auto mb-4 flex items-center justify-center">
-							<span className="material-symbols-outlined text-white text-2xl">
-								close
-							</span>
+							<X className="text-white size-6" />
 						</div>
 						<h2 className="text-xl font-semibold text-white mb-2">
 							Login Gagal

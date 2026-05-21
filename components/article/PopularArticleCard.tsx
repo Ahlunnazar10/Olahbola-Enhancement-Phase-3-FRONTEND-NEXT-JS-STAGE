@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Eye } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 
 interface PopularArticleCardProps {
@@ -19,10 +20,6 @@ interface PopularArticleCardProps {
 export function PopularArticleCard({ data, index }: PopularArticleCardProps) {
   const { theme } = useUIStore();
   const isDark = theme === "dark";
-  const imageUrl = data.image || data.featured_image;
-  const fullImageUrl = imageUrl
-    ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${imageUrl}`
-    : '/placeholder.png';
 
   return (
     <Link href={`/${data.slug}`} className="flex gap-6 group cursor-pointer">
@@ -38,7 +35,7 @@ export function PopularArticleCard({ data, index }: PopularArticleCardProps) {
         </h4>
         <div className={`flex items-center gap-4 mt-3 text-xs font-bold ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}>
           <span className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-xs">visibility</span>{' '}
+            <Eye className={`size-3 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`} />
             {data.views}
           </span>
           <span>{data.created_diff}</span>

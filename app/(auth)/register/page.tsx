@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Rocket, Settings, User, Mail, Phone, MapPin, Lock, Timer, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRegister } from "@/hooks/queries/useAuth";
 import { cn } from "@/lib/utils";
@@ -151,9 +151,7 @@ export default function RegisterPage() {
 				className={`absolute bottom-[20%] left-[10%] floating-element hidden lg:block ${isDark ? "opacity-20" : "opacity-15"}`}
 				style={{ animationDelay: "1s" }}
 			>
-				<span className={`material-symbols-outlined text-[120px] ${isDark ? "text-primary/10" : "text-[#0a7c6e]/10"}`}>
-					rocket_launch
-				</span>
+				<Rocket className={`size-12 ${isDark ? "text-primary/10" : "text-[#0a7c6e]/10"}`} />
 			</div>
 
 			<div
@@ -161,9 +159,7 @@ export default function RegisterPage() {
 				style={{ animationDelay: "3s" }}
 			>
 				<div className={`p-6 rounded-full flex items-center justify-center ${isDark ? "glass-card border border-primary/40" : "bg-white/80 border border-[#0a7c6e]/30 shadow-lg"}`}>
-					<span className={`material-symbols-outlined text-4xl ${isDark ? "text-primary animate-spin" : "text-[#0a7c6e]"}`}>
-						settings
-					</span>
+					<Settings className={`size-10 ${isDark ? "text-primary animate-spin" : "text-[#0a7c6e]"}`} />
 				</div>
 			</div>
 
@@ -266,9 +262,7 @@ export default function RegisterPage() {
 										Nama Lengkap
 									</label>
 									<div className="relative">
-										<span className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-xl transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-											person
-										</span>
+										<User className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
 										<input
 											type="text"
 											value={name}
@@ -286,9 +280,7 @@ export default function RegisterPage() {
 											Alamat Email
 										</label>
 										<div className="relative">
-											<span className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-xl transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-												mail
-											</span>
+											<Mail className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
 											<input
 												type="email"
 												value={email}
@@ -307,9 +299,7 @@ export default function RegisterPage() {
 											Nomor Telepon
 										</label>
 										<div className="relative">
-											<span className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-xl transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-												call
-											</span>
+											<Phone className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
 											<input
 												type="tel"
 												value={phone}
@@ -333,9 +323,7 @@ export default function RegisterPage() {
 										Kota
 									</label>
 									<div className="relative">
-										<span className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-xl transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-											location_on
-										</span>
+										<MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
 										<input
 											type="text"
 											value={city}
@@ -374,9 +362,7 @@ export default function RegisterPage() {
 										Kata Sandi
 									</label>
 									<div className="relative">
-										<span className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-xl transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-											lock
-										</span>
+										<Lock className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
 										<input
 											type={showPassword ? "text" : "password"}
 											value={password}
@@ -416,9 +402,7 @@ export default function RegisterPage() {
 										Konfirmasi Password
 									</label>
 									<div className="relative">
-										<span className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-xl transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-											lock_clock
-										</span>
+										<Timer className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
 										<input
 											type={showConfirmPassword ? "text" : "password"}
 											value={confirmPassword}
@@ -466,9 +450,7 @@ export default function RegisterPage() {
 										onClick={() => setAgreeToTerms(!agreeToTerms)}
 									>
 										{agreeToTerms && (
-											<span className="material-symbols-outlined text-black text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-												check
-											</span>
+											<Check className="text-black size-3.5" strokeWidth={3} />
 										)}
 									</span>
 									<span className={`text-[10px] leading-relaxed text-start select-none ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} onClick={() => setAgreeToTerms(!agreeToTerms)}>

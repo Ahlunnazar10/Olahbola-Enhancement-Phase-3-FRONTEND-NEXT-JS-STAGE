@@ -13,6 +13,23 @@ import {
 import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { notFound } from "next/navigation";
+import {
+	ArrowLeft,
+	Calendar,
+	Eye,
+	User,
+	Share2,
+	Link2,
+	Clock,
+	TrendingUp,
+	AlertCircle,
+	AlertTriangle,
+	Info,
+	Download,
+	ChevronRight,
+	Copy,
+	Zap,
+} from "lucide-react";
 
 export default function ArticleDetailPage() {
 	const params = useParams();
@@ -218,8 +235,12 @@ export default function ArticleDetailPage() {
 
 	if (isLoading) {
 		return (
-			<div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? "bg-[#0f1412]" : "bg-[#f5f5f5]"}`}>
-				<div className={`w-10 h-10 rounded-full border-2 animate-spin ${isDark ? "border-primary/30 border-t-primary" : "border-[#0a7c6e]/30 border-t-[#0a7c6e]"}`} />
+			<div
+				className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? "bg-[#0f1412]" : "bg-[#f5f5f5]"}`}
+			>
+				<div
+					className={`w-10 h-10 rounded-full border-2 animate-spin ${isDark ? "border-primary/30 border-t-primary" : "border-[#0a7c6e]/30 border-t-[#0a7c6e]"}`}
+				/>
 			</div>
 		);
 	}
@@ -237,52 +258,56 @@ export default function ArticleDetailPage() {
 	const relatedArticles = relatedData?.data || [];
 
 	// Define color variables based on theme
-	const colors = isDark ? {
-		contentBg: "#1c211e",
-		contentText: "#dfe4e0",
-		contentTextSecondary: "#dfe4e0cc",
-		primary: "#00c2b1",
-		primaryLight: "#43decc",
-		headingColor: "#00c2b1",
-		linkColor: "#43decc",
-		shadowColor: "rgba(0, 0, 0, 0.4)",
-		borderColor: "rgba(255, 255, 255, 0.08)",
-		tableHeaderBg: "linear-gradient(135deg, #00c2b1, #43decc)",
-		tableHeaderText: "#003732",
-		listBullet: "#00c2b1",
-		codeBg: "rgba(0, 194, 177, 0.1)",
-		codeBorder: "rgba(0, 194, 177, 0.2)",
-		codeText: "#43decc",
-		preBg: "#0a0f0d",
-		hrColor: "rgba(0, 194, 177, 0.4)",
-		overlay: "from-[#0f1412] to-transparent",
-		cardBg: "rgba(255, 255, 255, 0.05)",
-		cardBorder: "rgba(255, 255, 255, 0.1)",
-	} : {
-		contentBg: "#ffffff",
-		contentText: "#1a1a1a",
-		contentTextSecondary: "#5a5a5a",
-		primary: "#0a7c6e",
-		primaryLight: "#43decc",
-		headingColor: "#0a7c6e",
-		linkColor: "#0a7c6e",
-		shadowColor: "rgba(0, 0, 0, 0.1)",
-		borderColor: "rgba(0, 0, 0, 0.08)",
-		tableHeaderBg: "linear-gradient(135deg, #0a7c6e, #43decc)",
-		tableHeaderText: "#ffffff",
-		listBullet: "#0a7c6e",
-		codeBg: "rgba(10, 124, 110, 0.1)",
-		codeBorder: "rgba(10, 124, 110, 0.2)",
-		codeText: "#0a7c6e",
-		preBg: "#f5f5f5",
-		hrColor: "rgba(10, 124, 110, 0.4)",
-		overlay: "from-[#f5f5f5] to-transparent",
-		cardBg: "rgba(255, 255, 255, 0.9)",
-		cardBorder: "rgba(0, 0, 0, 0.08)",
-	};
+	const colors = isDark
+		? {
+				contentBg: "#1c211e",
+				contentText: "#dfe4e0",
+				contentTextSecondary: "#dfe4e0cc",
+				primary: "#00c2b1",
+				primaryLight: "#43decc",
+				headingColor: "#00c2b1",
+				linkColor: "#43decc",
+				shadowColor: "rgba(0, 0, 0, 0.4)",
+				borderColor: "rgba(255, 255, 255, 0.08)",
+				tableHeaderBg: "linear-gradient(135deg, #00c2b1, #43decc)",
+				tableHeaderText: "#003732",
+				listBullet: "#00c2b1",
+				codeBg: "rgba(0, 194, 177, 0.1)",
+				codeBorder: "rgba(0, 194, 177, 0.2)",
+				codeText: "#43decc",
+				preBg: "#0a0f0d",
+				hrColor: "rgba(0, 194, 177, 0.4)",
+				overlay: "from-[#0f1412] to-transparent",
+				cardBg: "rgba(255, 255, 255, 0.05)",
+				cardBorder: "rgba(255, 255, 255, 0.1)",
+			}
+		: {
+				contentBg: "#ffffff",
+				contentText: "#1a1a1a",
+				contentTextSecondary: "#5a5a5a",
+				primary: "#0a7c6e",
+				primaryLight: "#43decc",
+				headingColor: "#0a7c6e",
+				linkColor: "#0a7c6e",
+				shadowColor: "rgba(0, 0, 0, 0.1)",
+				borderColor: "rgba(0, 0, 0, 0.08)",
+				tableHeaderBg: "linear-gradient(135deg, #0a7c6e, #43decc)",
+				tableHeaderText: "#ffffff",
+				listBullet: "#0a7c6e",
+				codeBg: "rgba(10, 124, 110, 0.1)",
+				codeBorder: "rgba(10, 124, 110, 0.2)",
+				codeText: "#0a7c6e",
+				preBg: "#f5f5f5",
+				hrColor: "rgba(10, 124, 110, 0.4)",
+				overlay: "from-[#f5f5f5] to-transparent",
+				cardBg: "rgba(255, 255, 255, 0.9)",
+				cardBorder: "rgba(0, 0, 0, 0.08)",
+			};
 
 	return (
-		<div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}>
+		<div
+			className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
+		>
 			{/* Theme Toggle */}
 			<ThemeToggle />
 
@@ -299,67 +324,79 @@ export default function ArticleDetailPage() {
 						href="/artikel"
 						className={`flex items-center gap-2 px-4 py-2 backdrop-blur-sm rounded-lg transition-all text-sm font-bold uppercase tracking-widest ${isDark ? "bg-black/40 hover:bg-black/60 text-white/80 hover:text-white" : "bg-white/40 hover:bg-white/60 text-[#1a1a1a]/80 hover:text-[#1a1a1a]"}`}
 					>
-						<span className="material-symbols-outlined text-base">
-							arrow_back
-						</span>
+						<ArrowLeft className="size-4" />
 						<span>Back</span>
 					</Link>
 				</div>
 
 				{/* Decorative gradient overlay at bottom */}
-				<div className={`absolute bottom-0 left-0 right-0 h-32 z-10 bg-linear-to-t ${colors.overlay}`} />
+				<div
+					className={`absolute bottom-0 left-0 right-0 h-32 z-10 bg-linear-to-t ${colors.overlay}`}
+				/>
 			</section>
 
 			{/* Content Layer */}
-			<section className={`relative z-30 -mt-1 px-6 md:px-12 pb-24 max-w-screen-2xl mx-auto`}>
+			<section
+				className={`relative z-30 -mt-1 px-6 md:px-12 pb-24 max-w-screen-2xl mx-auto`}
+			>
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 					{/* Main Article Body */}
 					<article className="lg:col-span-8">
 						{/* Glass Article Header */}
-						<div className={`p-8 md:p-10 rounded-xl mb-8 transition-all duration-300 ${isDark ? "glass-panel shadow-2xl" : "bg-white shadow-lg border border-gray-200"}`}>
+						<div
+							className={`p-8 md:p-10 rounded-xl mb-8 transition-all duration-300 ${isDark ? "glass-panel shadow-2xl" : "bg-white shadow-lg border border-gray-200"}`}
+						>
 							{/* Category Badge */}
 							{articleData.category_name && (
 								<Link
 									href={`/artikel?kategori=${articleData.category_slug}`}
 									className={`inline-flex items-center gap-2 px-4 py-1.5 font-bold text-xs rounded-full mb-6 uppercase tracking-widest hover:opacity-90 transition-opacity ${isDark ? "bg-[#E63946] text-white" : "bg-[#d32f3e] text-white"}`}
 								>
-									<span className={`w-2 h-2 rounded-full animate-pulse ${isDark ? "bg-white" : "bg-white"}`} />
+									<span
+										className={`w-2 h-2 rounded-full animate-pulse ${isDark ? "bg-white" : "bg-white"}`}
+									/>
 									{articleData.category_name}
 								</Link>
 							)}
 
 							{/* Title */}
-							<h1 className={`text-2xl md:text-5xl font-black italic uppercase mb-6 leading-tight tracking-tight ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
+							<h1
+								className={`text-2xl md:text-5xl font-black italic uppercase mb-6 leading-tight tracking-tight ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+							>
 								{articleData.title}
 							</h1>
 
 							{/* Meta Info */}
-							<div className={`flex flex-wrap items-center gap-6 font-bold text-sm uppercase tracking-widest pb-6 border-b ${isDark ? "text-white/50 border-white/10" : "text-[#5a5a5a] border-gray-200"}`}>
+							<div
+								className={`flex flex-wrap items-center gap-6 font-bold text-sm uppercase tracking-widest pb-6 border-b ${isDark ? "text-white/50 border-white/10" : "text-[#5a5a5a] border-gray-200"}`}
+							>
 								<span className="flex items-center gap-2">
-									<span className={`material-symbols-outlined text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
-										calendar_today
-									</span>
+									<Calendar
+										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+									/>
 									{articleData.published_at
 										? formatDate(articleData.published_at)
 										: articleData.created_diff}
 								</span>
 								<span className="flex items-center gap-2">
-									<span className={`material-symbols-outlined text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
-										visibility
-									</span>
-									{articleData.views} Views
+									<Eye
+										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+									/>
+									{articleData.views} Dibaca
 								</span>
 								<span className="flex items-center gap-2">
-									<span className={`material-symbols-outlined text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
-										person
-									</span>
+									<User
+										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+									/>
 									{articleData.author_name}
 								</span>
 							</div>
 
 							{/* Share buttons inline with meta */}
 							<div className="flex items-center gap-3 mt-4">
-								<span className={`font-bold text-xs uppercase tracking-widest mr-2 ${isDark ? "text-white/30" : "text-gray-400"}`}>
+								<span
+									className={`font-bold text-xs uppercase tracking-widest mr-2 ${isDark ? "text-white/30" : "text-gray-400"}`}
+								>
 									Share:
 								</span>
 								<button
@@ -367,9 +404,7 @@ export default function ArticleDetailPage() {
 									className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${isDark ? "border border-white/10 hover:bg-primary hover:text-on-primary hover:border-primary" : "border border-gray-200 hover:bg-[#0a7c6e] hover:text-white hover:border-[#0a7c6e]"}`}
 									title="Share"
 								>
-									<span className="material-symbols-outlined text-sm">
-										share
-									</span>
+									<Share2 className="size-4" />
 								</button>
 								<button
 									onClick={() => {
@@ -379,9 +414,7 @@ export default function ArticleDetailPage() {
 									className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${isDark ? "border border-white/10 hover:bg-primary hover:text-on-primary hover:border-primary" : "border border-gray-200 hover:bg-[#0a7c6e] hover:text-white hover:border-[#0a7c6e]"}`}
 									title="Copy Link"
 								>
-									<span className="material-symbols-outlined text-sm">
-										link
-									</span>
+									<Link2 className="size-4" />
 								</button>
 							</div>
 						</div>
@@ -398,9 +431,13 @@ export default function ArticleDetailPage() {
 						{/* Related Articles (Inside Main Content) */}
 						{relatedArticles.length > 0 && (
 							<div className="mt-12">
-								<h2 className={`text-2xl md:text-3xl font-black italic uppercase mb-8 tracking-tighter flex items-center gap-3 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
+								<h2
+									className={`text-2xl md:text-3xl font-black italic uppercase mb-8 tracking-tighter flex items-center gap-3 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+								>
 									Artikel
-									<span className={isDark ? "text-primary" : "text-[#0a7c6e]"}>Terbaru</span>
+									<span className={isDark ? "text-primary" : "text-[#0a7c6e]"}>
+										Terbaru
+									</span>
 								</h2>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 									{relatedArticles.slice(0, 4).map((item: any) => (
@@ -418,14 +455,16 @@ export default function ArticleDetailPage() {
 												<div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
 											</div>
 											<div className="p-5">
-												<h4 className={`text-base font-bold group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors leading-snug line-clamp-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
+												<h4
+													className={`text-base font-bold group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors leading-snug line-clamp-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+												>
 													{item.title}
 												</h4>
-												<div className={`flex items-center gap-3 text-xs font-bold uppercase tracking-widest mt-3 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}>
+												<div
+													className={`flex items-center gap-3 text-xs font-bold uppercase tracking-widest mt-3 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}
+												>
 													<span className="flex items-center gap-1">
-														<span className="material-symbols-outlined text-xs">
-															schedule
-														</span>
+														<Clock className="size-3" />
 														{item.created_diff}
 													</span>
 												</div>
@@ -441,11 +480,15 @@ export default function ArticleDetailPage() {
 					<aside className="lg:col-span-4">
 						<div className="sticky top-5 space-y-6">
 							{/* Popular Articles */}
-							<div className={`p-6 rounded-xl transition-all duration-300 ${isDark ? "glass-panel border border-white/5" : "bg-white shadow-lg border border-gray-200"}`}>
-								<h3 className={`text-lg font-black italic uppercase mb-6 flex items-center gap-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
-									<span className={`material-symbols-outlined ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
-										trending_up
-									</span>
+							<div
+								className={`p-6 rounded-xl transition-all duration-300 ${isDark ? "glass-panel border border-white/5" : "bg-white shadow-lg border border-gray-200"}`}
+							>
+								<h3
+									className={`text-lg font-black italic uppercase mb-6 flex items-center gap-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+								>
+									<TrendingUp
+										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+									/>
 									Artikel Populer
 								</h3>
 								{popularLoading ? (
@@ -465,18 +508,24 @@ export default function ArticleDetailPage() {
 													className="group block"
 												>
 													<div className="flex gap-4">
-														<span className={`text-3xl font-black italic opacity-40 group-hover:opacity-100 transition-opacity leading-none mt-1 shrink-0 ${isDark ? "bg-clip-text bg-linear-to-b from-primary to-transparent text-transparent" : "bg-clip-text bg-linear-to-b from-[#0a7c6e] to-transparent text-transparent"}`}>
+														<span
+															className={`text-3xl font-black italic opacity-40 group-hover:opacity-100 transition-opacity leading-none mt-1 shrink-0 ${isDark ? "bg-clip-text bg-linear-to-b from-primary to-transparent text-transparent" : "bg-clip-text bg-linear-to-b from-[#0a7c6e] to-transparent text-transparent"}`}
+														>
 															{String(index + 1).padStart(2, "0")}
 														</span>
 														<div className="min-w-0">
-															<h4 className={`font-bold text-sm group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors line-clamp-2 leading-snug ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
+															<h4
+																className={`font-bold text-sm group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors line-clamp-2 leading-snug ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+															>
 																{item.title}
 															</h4>
-															<p className={`text-[10px] mt-1.5 uppercase tracking-widest font-bold flex items-center gap-1 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}>
-																<span className="material-symbols-outlined text-[10px]">
-																	visibility
-																</span>
-																{item.views} Views
+															<p
+																className={`text-[10px] mt-1.5 uppercase tracking-widest font-bold flex items-center gap-1 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}
+															>
+																<Eye
+																	className={`size-4 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}
+																/>
+																{item.views} Dibaca
 															</p>
 														</div>
 													</div>
@@ -487,20 +536,32 @@ export default function ArticleDetailPage() {
 							</div>
 
 							{/* Newsletter / CTA Card */}
-							<div className={`rounded-xl overflow-hidden transition-all ${isDark ? "glass-panel border border-primary/20" : "bg-white shadow-lg border border-[#0a7c6e]/20"}`}>
+							<div
+								className={`rounded-xl overflow-hidden transition-all ${isDark ? "glass-panel border border-primary/20" : "bg-white shadow-lg border border-[#0a7c6e]/20"}`}
+							>
 								<div className="relative aspect-4/3 overflow-hidden">
-									<div className={`absolute inset-0 ${isDark ? "bg-linear-to-br from-primary/30 to-[#E63946]/20" : "bg-linear-to-br from-[#0a7c6e]/20 to-[#d32f3e]/10"}`} />
-									<div className={`absolute inset-0 flex flex-col justify-center items-center text-center p-6 ${isDark ? "" : "bg-linear-to-br from-white to-gray-50"}`}>
-										<span className={`material-symbols-outlined text-5xl mb-4 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
-											bolt
-										</span>
-										<h3 className={`text-xl font-black italic uppercase mb-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
+									<div
+										className={`absolute inset-0 ${isDark ? "bg-linear-to-br from-primary/30 to-[#E63946]/20" : "bg-linear-to-br from-[#0a7c6e]/20 to-[#d32f3e]/10"}`}
+									/>
+									<div
+										className={`absolute inset-0 flex flex-col justify-center items-center text-center p-6 ${isDark ? "" : "bg-linear-to-br from-white to-gray-50"}`}
+									>
+										<Zap
+											className={`size-12 mb-4 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+										/>
+										<h3
+											className={`text-xl font-black italic uppercase mb-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+										>
 											Stay Updated
 										</h3>
-										<p className={`text-xs mb-4 leading-relaxed ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+										<p
+											className={`text-xs mb-4 leading-relaxed ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
+										>
 											Dapatkan artikel terbaru langsung ke inbox kamu.
 										</p>
-										<button className={`w-full py-3 font-black uppercase tracking-widest text-xs rounded-lg transition-colors ${isDark ? "bg-primary text-on-primary hover:bg-primary/80" : "bg-[#0a7c6e] text-white hover:bg-[#095a50]"}`}>
+										<button
+											className={`w-full py-3 font-black uppercase tracking-widest text-xs rounded-lg transition-colors ${isDark ? "bg-primary text-on-primary hover:bg-primary/80" : "bg-[#0a7c6e] text-white hover:bg-[#095a50]"}`}
+										>
 											Subscribe For Free
 										</button>
 									</div>
@@ -508,7 +569,9 @@ export default function ArticleDetailPage() {
 							</div>
 
 							{/* Promo Section */}
-							<div className={`h-fit rounded-2xl overflow-hidden group shadow-2xl ${isDark ? "" : "shadow-lg"}`}>
+							<div
+								className={`h-fit rounded-2xl overflow-hidden group shadow-2xl ${isDark ? "" : "shadow-lg"}`}
+							>
 								<a href="https://www.igvault.id/home">
 									<img
 										className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]"
@@ -544,7 +607,8 @@ export default function ArticleDetailPage() {
 					margin-right: 0.15em;
 					margin-top: 0.08em;
 					color: ${colors.primary};
-					text-shadow: 0 0 20px ${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.3)"};
+					text-shadow: 0 0 20px
+						${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.3)"};
 				}
 				.article-content p:empty,
 				.article-content p:has(> br:first-child:last-child),
@@ -577,7 +641,8 @@ export default function ArticleDetailPage() {
 				.article-content h2 {
 					font-size: 1.6rem;
 					padding-bottom: 0.75em;
-					border-bottom: 2px solid ${isDark ? "rgba(0, 194, 177, 0.2)" : "rgba(10, 124, 110, 0.2)"};
+					border-bottom: 2px solid
+						${isDark ? "rgba(0, 194, 177, 0.2)" : "rgba(10, 124, 110, 0.2)"};
 					position: relative;
 				}
 				.article-content h2::before {
@@ -588,7 +653,8 @@ export default function ArticleDetailPage() {
 					width: 60px;
 					height: 2px;
 					background: ${colors.primary};
-					box-shadow: 0 0 10px ${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.3)"};
+					box-shadow: 0 0 10px
+						${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.3)"};
 				}
 				.article-content h3 {
 					font-size: 1.25rem;
@@ -602,7 +668,8 @@ export default function ArticleDetailPage() {
 				.article-content h1 {
 					font-size: 2rem;
 					color: ${isDark ? "#fff" : "#1a1a1a"};
-					text-shadow: 0 0 30px ${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.2)"};
+					text-shadow: 0 0 30px
+						${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.2)"};
 				}
 
 				/* Links */
@@ -610,14 +677,16 @@ export default function ArticleDetailPage() {
 					color: ${colors.linkColor} !important;
 					text-decoration: none;
 					font-weight: 600;
-					border-bottom: 1px solid ${isDark ? "rgba(67, 222, 204, 0.3)" : "rgba(10, 124, 110, 0.3)"};
+					border-bottom: 1px solid
+						${isDark ? "rgba(67, 222, 204, 0.3)" : "rgba(10, 124, 110, 0.3)"};
 					transition: all 0.3s ease;
 					padding-bottom: 1px;
 				}
 				.article-content a:hover {
 					color: ${colors.primary} !important;
 					border-bottom-color: ${colors.primary};
-					text-shadow: 0 0 12px ${isDark ? "rgba(0, 194, 177, 0.6)" : "rgba(10, 124, 110, 0.4)"};
+					text-shadow: 0 0 12px
+						${isDark ? "rgba(0, 194, 177, 0.6)" : "rgba(10, 124, 110, 0.4)"};
 				}
 
 				/* Images */
@@ -627,7 +696,9 @@ export default function ArticleDetailPage() {
 					margin: 2em 0;
 					border-radius: 16px;
 					display: block;
-					box-shadow: 0 8px 32px ${colors.shadowColor}, 0 0 0 1px ${colors.borderColor};
+					box-shadow:
+						0 8px 32px ${colors.shadowColor},
+						0 0 0 1px ${colors.borderColor};
 				}
 				.article-content figure {
 					margin: 2em 0;
@@ -670,7 +741,8 @@ export default function ArticleDetailPage() {
 					height: 8px;
 					background: ${colors.listBullet};
 					border-radius: 2px;
-					box-shadow: 0 0 8px ${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.3)"};
+					box-shadow: 0 0 8px
+						${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.3)"};
 				}
 				.article-content ol {
 					counter-reset: list-counter;
@@ -692,7 +764,11 @@ export default function ArticleDetailPage() {
 					top: 0;
 					width: 32px;
 					height: 32px;
-					background: linear-gradient(135deg, ${colors.primary}, ${colors.primaryLight});
+					background: linear-gradient(
+						135deg,
+						${colors.primary},
+						${colors.primaryLight}
+					);
 					color: ${isDark ? "#003732" : "#ffffff"};
 					font-size: 0.8em;
 					font-weight: 800;
@@ -701,7 +777,8 @@ export default function ArticleDetailPage() {
 					align-items: center;
 					justify-content: center;
 					line-height: 1;
-					box-shadow: 0 4px 12px ${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.3)"};
+					box-shadow: 0 4px 12px
+						${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.3)"};
 				}
 
 				/* Blockquote */
@@ -709,11 +786,15 @@ export default function ArticleDetailPage() {
 					margin: 2.5em 0;
 					padding: 2em 2.5em;
 					border-left: 0;
-					border-top: 1px solid ${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.3)"};
-					border-bottom: 1px solid ${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.3)"};
+					border-top: 1px solid
+						${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.3)"};
+					border-bottom: 1px solid
+						${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.3)"};
 					background: linear-gradient(
 						135deg,
-						${isDark ? "rgba(0, 194, 177, 0.05) 0%, rgba(67, 222, 204, 0.02) 100%" : "rgba(10, 124, 110, 0.05) 0%, rgba(10, 124, 110, 0.02) 100%"}
+						${isDark
+							? "rgba(0, 194, 177, 0.05) 0%, rgba(67, 222, 204, 0.02) 100%"
+							: "rgba(10, 124, 110, 0.05) 0%, rgba(10, 124, 110, 0.02) 100%"}
 					);
 					font-style: italic;
 					color: ${isDark ? "#fff" : "#1a1a1a"};
@@ -722,7 +803,7 @@ export default function ArticleDetailPage() {
 					border-radius: 0;
 				}
 				.article-content blockquote::before {
-					content: """";
+					content: "" "";
 					position: absolute;
 					top: -20px;
 					left: 50%;
@@ -797,7 +878,9 @@ export default function ArticleDetailPage() {
 					background: ${isDark ? "rgba(255, 255, 255, 0.02)" : "#f9f9f9"};
 				}
 				.article-content tr:hover {
-					background: ${isDark ? "rgba(0, 194, 177, 0.05)" : "rgba(10, 124, 110, 0.05)"};
+					background: ${isDark
+						? "rgba(0, 194, 177, 0.05)"
+						: "rgba(10, 124, 110, 0.05)"};
 				}
 
 				/* Code */
@@ -817,7 +900,9 @@ export default function ArticleDetailPage() {
 					padding: 1.5em;
 					overflow-x: auto;
 					margin: 1.5em 0;
-					box-shadow: ${isDark ? "inset 0 2px 8px rgba(0, 0, 0, 0.3)" : "inset 0 2px 8px rgba(0, 0, 0, 0.05)"};
+					box-shadow: ${isDark
+						? "inset 0 2px 8px rgba(0, 0, 0, 0.3)"
+						: "inset 0 2px 8px rgba(0, 0, 0, 0.05)"};
 				}
 				.article-content pre code {
 					background: none;

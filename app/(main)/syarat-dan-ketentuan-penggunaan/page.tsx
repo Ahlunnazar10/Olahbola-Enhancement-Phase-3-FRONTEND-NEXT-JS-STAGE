@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { useState } from "react";
+import { Handshake } from "lucide-react";
 
 export default function SyaratDanKetentuanPage() {
 	const { theme } = useUIStore();
@@ -644,12 +645,7 @@ export default function SyaratDanKetentuanPage() {
 									}}
 								>
 									<div className="absolute top-0 right-0 opacity-10">
-										<span
-											className="material-symbols-outlined text-[200px]"
-											style={{ fontVariationSettings: "'FILL' 1" }}
-										>
-											handshake
-										</span>
+										<Handshake className="size-50 opacity-10" />
 									</div>
 									<div className="relative z-10">
 										<h3

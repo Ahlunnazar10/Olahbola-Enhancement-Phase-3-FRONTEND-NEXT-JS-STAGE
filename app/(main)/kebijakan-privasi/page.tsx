@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { useState } from "react";
+import { Shield } from "lucide-react";
 
 export default function KebijakanPrivasiPage() {
 	const { theme } = useUIStore();
@@ -548,12 +549,7 @@ export default function KebijakanPrivasiPage() {
 									}}
 								>
 									<div className="absolute top-0 right-0 opacity-10">
-										<span
-											className="material-symbols-outlined text-[200px]"
-											style={{ fontVariationSettings: "'FILL' 1" }}
-										>
-											policy
-										</span>
+										<Shield className="size-50 opacity-10" />
 									</div>
 									<div className="relative z-10">
 										<h3
