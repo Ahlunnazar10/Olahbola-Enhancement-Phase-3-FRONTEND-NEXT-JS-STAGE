@@ -166,11 +166,11 @@ export function NavigationBar() {
 						<div className="flex items-center gap-3">
 							{/* Main Hero Button */}
 							<a
+								data-gtm-cta="Main City Battle!"
 								href="https://www.mainhero.id"
 								target="_blank"
 								rel="noopener noreferrer"
 								className={cn(
-									"gtm-cta-track",
 									"group relative overflow-hidden px-5 py-2.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-300",
 									"bg-linear-to-r from-[#00c2b1] to-[#00a89a] text-black",
 									"shadow-[0_0_20px_rgba(0,194,177,0.4)] hover:shadow-[0_0_35px_rgba(0,194,177,0.7)]",
@@ -202,11 +202,11 @@ export function NavigationBar() {
 
 							{/* Berlangganan Button */}
 							<a
+								data-gtm-cta="Berlangganan!"
 								href="https://heroplay.igvault.id/subscription"
 								target="_blank"
 								rel="noopener noreferrer"
 								className={cn(
-									"gtm-cta-track",
 									"group relative overflow-hidden px-5 py-2.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-300",
 									"bg-linear-to-r from-[#ffaa00] to-[#ff9500] text-black",
 									"shadow-[0_0_20px_rgba(255,170,0,0.4)] hover:shadow-[0_0_35px_rgba(255,170,0,0.7)]",

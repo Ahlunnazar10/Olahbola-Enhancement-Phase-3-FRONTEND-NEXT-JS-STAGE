@@ -216,10 +216,11 @@ export function BannerSlider({
 									)}
 									{slide.ctaCtaText && slide.ctaCtaHref && (
 										<a
+											data-gtm-cta="DAFTAR SEKARANG!"
 											href={slide.ctaCtaHref}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="gtm-cta-track group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-lg font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-[#00c2b1] to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-[#00c2b1]/40"
+											className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-lg font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-[#00c2b1] to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-[#00c2b1]/40"
 										>
 											<span className="relative z-10 flex items-center gap-3">
 												<svg
