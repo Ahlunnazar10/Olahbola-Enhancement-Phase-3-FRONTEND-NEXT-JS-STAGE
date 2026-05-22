@@ -107,7 +107,7 @@ export function BannerSlider({
 									alt={
 										slide.ctaTitle || slide.title?.parts?.join(" ") || "Banner"
 									}
-									className={`w-full h-full object-cover object-top ${
+									className={`w-full h-full object-cover object-center ${
 										isDark
 											? "grayscale-[0.2] contrast-125"
 											: "grayscale-[0.1] contrast-105"
