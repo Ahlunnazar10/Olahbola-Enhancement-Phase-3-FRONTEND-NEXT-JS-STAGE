@@ -200,7 +200,7 @@ export default function HomePage() {
 			ctaTitle: "IKUTI CHALLENGE\nFOOTBALL CITY BATTLE",
 			ctaSubtitle:
 				"Cetak gol, menangkan pertandingan, dan bawa kotamu ke puncak klasemen.",
-			ctaCtaText: "Daftar Sekarang!",
+			ctaCtaText: "DAFTAR SEKARANG!",
 			ctaCtaHref: "https://www.mainhero.id",
 			ctaAlignment: "right" as const,
 			ctaTerms: "* Syarat & ketentuan berlaku",
