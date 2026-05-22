@@ -90,32 +90,24 @@ export function BannerSlider({
 				watchOverflow={true}
 			>
 				{slides.map((slide, index) => (
-					<SwiperSlide
-						key={slide.id}
-						className="w-full! h-full! list-none!"
-					>
+					<SwiperSlide key={slide.id} className="w-full! h-full! list-none!">
 						{/* Background - First slide loads eagerly, others lazy */}
 						<div className="absolute inset-0 w-full h-full">
 							{(
-								slide.type === "article"
-									? slide.image
-									: slide.imageFallback
+								slide.type === "article" ? slide.image : slide.imageFallback
 							) ? (
 								<img
 									src={
 										slide.type === "article"
 											? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
 											: isMobile
-											? slide.imageMobileFallback ||
-											  slide.imageFallback
-											: slide.imageFallback
+												? slide.imageMobileFallback || slide.imageFallback
+												: slide.imageFallback
 									}
 									alt={
-										slide.ctaTitle ||
-										slide.title?.parts?.join(" ") ||
-										"Banner"
+										slide.ctaTitle || slide.title?.parts?.join(" ") || "Banner"
 									}
-									className={`w-full h-full ${
+									className={`w-full h-full object-cover object-top ${
 										isDark
 											? "grayscale-[0.2] contrast-125"
 											: "grayscale-[0.1] contrast-105"
@@ -137,18 +129,18 @@ export function BannerSlider({
 										? "bg-linear-to-t from-black via-black/60 to-transparent"
 										: "bg-linear-to-l from-black via-transparent to-transparent"
 									: slide.type === "article"
-									? isMobile
-										? isDark
-											? "bg-linear-to-t from-black via-black/60 to-transparent"
-											: "bg-linear-to-t from-black/80 via-black/50 to-transparent"
-										: isDark
-										? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent"
-										: "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
-									: `bg-linear-to-r ${
-											isDark
-												? "from-black via-[#0f1412]/60 to-transparent"
-												: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
-									  }`
+										? isMobile
+											? isDark
+												? "bg-linear-to-t from-black via-black/60 to-transparent"
+												: "bg-linear-to-t from-black/80 via-black/50 to-transparent"
+											: isDark
+												? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent"
+												: "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
+										: `bg-linear-to-r ${
+												isDark
+													? "from-black via-[#0f1412]/60 to-transparent"
+													: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
+											}`
 							}`}
 						/>
 
@@ -164,31 +156,24 @@ export function BannerSlider({
 													className={
 														part.color === "primary"
 															? `${
-																	isDark
-																		? "text-[#43decc]"
-																		: "text-[#0a7c6e]"
-															  } text-glow block`
+																	isDark ? "text-[#43decc]" : "text-[#0a7c6e]"
+																} text-glow block`
 															: part.color === "accent"
 																? "text-[#fe9d00]"
 																: isDark
-																? "text-white"
-																: "text-[#1a1a1a]"
+																	? "text-white"
+																	: "text-[#1a1a1a]"
 													}
 												>
 													{part.text}
-													{i <
-														slide.staticTitle!.parts.length -
-															1 &&
-														" "}
+													{i < slide.staticTitle!.parts.length - 1 && " "}
 												</span>
 											))}
 										</h1>
 									)}
 									<p
 										className={`text-sm sm:text-base md:text-lg max-w-sm sm:max-w-md md:max-w-md lg:max-w-xl mx-auto md:mx-0 ${
-											isDark
-												? "text-[#bbcac6]"
-												: "text-[#5a5a5a]"
+											isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"
 										}`}
 									>
 										{slide.description}
@@ -277,22 +262,17 @@ export function BannerSlider({
 													className={
 														color === "primary"
 															? `${
-																	isDark
-																		? "text-[#43decc]"
-																		: "text-[#0a7c6e]"
-															  } text-glow block`
+																	isDark ? "text-[#43decc]" : "text-[#0a7c6e]"
+																} text-glow block`
 															: color === "accent"
 																? "text-[#fe9d00]"
 																: isDark
-																? "text-white"
-																: "text-[#1a1a1a]"
+																	? "text-white"
+																	: "text-[#1a1a1a]"
 													}
 												>
 													{part}
-													{i <
-														slide.title!.parts.length -
-															1 &&
-														" "}
+													{i < slide.title!.parts.length - 1 && " "}
 												</span>
 											);
 										})}
@@ -300,9 +280,7 @@ export function BannerSlider({
 								)}
 								<p
 									className={`text-base md:text-lg max-w-xl mb-6 line-clamp-2 md:line-clamp-3 ${
-										isDark
-											? "text-[#bbcac6]"
-											: "text-[#5a5a5a]"
+										isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"
 									}`}
 								>
 									{slide.excerpt}
@@ -312,8 +290,7 @@ export function BannerSlider({
 										href={slide.ctaButtons.primary.href}
 										className="inline-flex items-center gap-2 w-fit px-6 py-3 bg-[#43decc] text-[#003732] font-bold uppercase tracking-widest text-sm rounded-full hover:bg-[#5eebe8] hover:scale-105 transition-all group"
 									>
-										{slide.ctaButtons.primary.text ||
-											"Baca Selengkapnya!"}
+										{slide.ctaButtons.primary.text || "Baca Selengkapnya!"}
 										<ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
 									</Link>
 								)}
