@@ -242,9 +242,12 @@ export function BannerSlider({
 										</a>
 									)}
 									{slide.ctaTerms && (
-										<p className="text-sm mt-3 text-[#ffaa00]">
+										<Link
+											href="/syarat-dan-ketentuan-football-city-battle"
+											className="flex justify-center md:justify-end gap-2 text-sm mt-3 text-[#ffaa00]"
+										>
 											{slide.ctaTerms}
-										</p>
+										</Link>
 									)}
 								</div>
 							</div>
