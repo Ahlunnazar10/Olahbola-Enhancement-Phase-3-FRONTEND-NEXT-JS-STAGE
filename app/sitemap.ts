@@ -102,9 +102,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/quiz`,
+      url: `${baseUrl}/games`,
       lastModified: now,
       changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/prediksi-skor`,
+      lastModified: now,
+      changeFrequency: "daily",
       priority: 0.9,
     },
     {

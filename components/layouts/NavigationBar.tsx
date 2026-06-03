@@ -16,7 +16,7 @@ const navLinks = [
 	{ href: "/artikel", label: "Artikel" },
 	{ href: "/interview", label: "Interview" },
 	{ href: "/kolaborasi", label: "Kolaborasi" },
-	// { href: "/quiz", label: "Quiz" },
+	// { href: "/games", label: "Games" },
 	{ href: "/media-spotlight", label: "Media Spotlight" },
 ];
 
