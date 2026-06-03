@@ -167,8 +167,8 @@ export default function PrediksiSkorPage() {
 		"matches",
 	);
 	const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-	const [homeScore, setHomeScore] = useState(0);
-	const [awayScore, setAwayScore] = useState(0);
+	const [homeScore, setHomeScore] = useState<number | "">(0);
+	const [awayScore, setAwayScore] = useState<number | "">(0);
 	const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
 
 	// Data hooks
@@ -323,8 +323,8 @@ export default function PrediksiSkorPage() {
 		try {
 			await submitPrediction.mutateAsync({
 				match_id: selectedMatch.id,
-				home_score_predicted: homeScore,
-				away_score_predicted: awayScore,
+				home_score_predicted: Number(homeScore) || 0,
+				away_score_predicted: Number(awayScore) || 0,
 			});
 			toast.success("Prediksi berhasil disimpan!");
 			setSelectedMatch(null);
@@ -339,8 +339,8 @@ export default function PrediksiSkorPage() {
 			setHomeScore(existing.home_score_predicted);
 			setAwayScore(existing.away_score_predicted);
 		} else {
-			setHomeScore(0);
-			setAwayScore(0);
+			setHomeScore("");
+			setAwayScore("");
 		}
 		setSelectedMatch(match);
 	};
@@ -607,7 +607,7 @@ export default function PrediksiSkorPage() {
 												{formatMatchDate(
 													match.match_date,
 													match.kickoff_time,
-													match.timezone,
+													"WIB",
 												)}
 											</span>
 											{isCompleted && userPred && (
@@ -956,7 +956,7 @@ export default function PrediksiSkorPage() {
 								{formatMatchDate(
 									selectedMatch.match_date,
 									selectedMatch.kickoff_time,
-									selectedMatch.timezone,
+									"WIB",
 								)}
 							</p>
 						</div>
@@ -975,7 +975,13 @@ export default function PrediksiSkorPage() {
 									type="number"
 									value={homeScore}
 									onChange={(e) => {
-										const v = parseInt(e.target.value) || 0;
+										const raw = e.target.value;
+										if (raw === "") {
+											setHomeScore("");
+											return;
+										}
+										const v = parseInt(raw);
+										if (Number.isNaN(v)) return;
 										setHomeScore(Math.min(99, Math.max(0, v)));
 									}}
 									className="w-16 h-14 text-center text-4xl font-black bg-transparent border-b-2 transition-all focus:scale-105"
@@ -985,6 +991,7 @@ export default function PrediksiSkorPage() {
 									}}
 									min="0"
 									max="99"
+									placeholder="0"
 								/>
 							</div>
 
@@ -1007,7 +1014,13 @@ export default function PrediksiSkorPage() {
 									type="number"
 									value={awayScore}
 									onChange={(e) => {
-										const v = parseInt(e.target.value) || 0;
+										const raw = e.target.value;
+										if (raw === "") {
+											setAwayScore("");
+											return;
+										}
+										const v = parseInt(raw);
+										if (Number.isNaN(v)) return;
 										setAwayScore(Math.min(99, Math.max(0, v)));
 									}}
 									className="w-16 h-14 text-center text-4xl font-black bg-transparent border-b-2 transition-all focus:scale-105"
@@ -1017,6 +1030,7 @@ export default function PrediksiSkorPage() {
 									}}
 									min="0"
 									max="99"
+									placeholder="0"
 								/>
 							</div>
 						</div>
