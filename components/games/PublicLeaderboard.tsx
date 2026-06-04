@@ -70,12 +70,6 @@ export function PublicLeaderboard({ isDark }: PublicLeaderboardProps) {
 					border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)"}`,
 				}}
 			>
-				<Trophy
-					className="w-12 h-12 mx-auto mb-3"
-					style={{
-						color: isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
-					}}
-				/>
 				<p
 					style={{
 						color: isDark
@@ -168,7 +162,7 @@ function PodiumCard({
 	accent: string;
 }) {
 	const medalColors = {
-		1: { ring: accent, fill: "#FFD700", chip: "#FFD700" },
+		1: { ring: accent, fill: "#00C2B1", chip: "#00C2B1" },
 		2: {
 			ring: isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(26, 26, 26, 0.3)",
 			fill: "#C0C0C0",
@@ -385,7 +379,6 @@ function RankRow({
 									: "rgba(26, 26, 26, 0.5)",
 							}}
 						>
-							<Activity className="w-3 h-3" />
 							{entry.total_predictions} PREDICTIONS
 						</span>
 					</div>

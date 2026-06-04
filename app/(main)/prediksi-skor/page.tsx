@@ -136,7 +136,7 @@ function CountryBadge({
 	const abbr = getCountryInitials(name);
 	const sizeClasses = {
 		sm: "w-10 h-10 text-sm",
-		md: "w-18 h-18 text-xl",
+		md: "w-16 h-16 text-xl",
 		lg: "w-28 h-28 text-4xl",
 	};
 	return (

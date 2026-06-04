@@ -190,7 +190,7 @@ export function GamesPageContent() {
 						description="Tebak skor pertandingan World Cup 2026. Raih poin untuk setiap match dan jadilah si paling tau bola!"
 						href="/prediksi-skor"
 						isActive={true}
-						bgImage="https://lh3.googleusercontent.com/aida-public/AB6AXuB5HI0Ic9TTLFLPzKLZkiDC7j96nX26StXZbDRonjaCHXwtxjc83Z6qh24Jp_KAyPlscOAc-zt9movr_lsoI71-ZrdklVfCTyVVnZKUXdSq910PBwQzcdYGHyKxfmSiOrrmsW1ZxQqxIxYqP61lXz1ATWdXduJCqpRWzTp8yNZrca_o1oxCAFaSsQ4vSm_t8C5BbF-aztQICu0iD_4EcLS2NLgQmZH-x0n8qv_-NY3ZdmLJsSZNlxHBWEVGhvNifBew4-ZEw-6UymA"
+						bgImage="/images/games/prediction-bg.webp"
 						accentColor={accent}
 						isDark={isDark}
 					/>
@@ -202,7 +202,7 @@ export function GamesPageContent() {
 						description="Ikuti olahbola quiz, adu pengetahuan seputar sepak bola, dan buktikan kamu si paling jago bola!"
 						href="/quiz"
 						isActive={false}
-						bgImage="https://fistf.com/wp-content/uploads/2017/08/cropped-UEFA-Champions-League-Stadium-Wallpaper.jpg"
+						bgImage="/images/games/quiz-bg.webp"
 						accentColor={
 							isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(26, 26, 26, 0.35)"
 						}

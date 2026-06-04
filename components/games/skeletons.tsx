@@ -1,3 +1,31 @@
+export function StatsSkeleton({ isDark }: { isDark: boolean }) {
+	const surface = isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)";
+
+	return (
+		<div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+			{Array.from({ length: 4 }).map((_, i) => (
+				<div
+					key={i}
+					className="rounded-2xl p-4 md:p-5 animate-pulse"
+					style={{
+						background: surface,
+						border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"}`,
+					}}
+				>
+					<div
+						className="h-3 rounded w-1/2 mb-3"
+						style={{ background: surface }}
+					/>
+					<div
+						className="h-6 md:h-7 rounded w-2/3"
+						style={{ background: surface }}
+					/>
+				</div>
+			))}
+		</div>
+	);
+}
+
 export function LeaderboardSkeleton({ isDark }: { isDark: boolean }) {
 	const surface = isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)";
 	const dimSurface = isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.04)";

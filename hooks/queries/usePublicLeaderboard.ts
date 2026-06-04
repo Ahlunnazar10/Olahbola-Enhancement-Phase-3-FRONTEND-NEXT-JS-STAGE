@@ -12,12 +12,13 @@ export interface PublicLeaderboardEntry {
 	exact_scores: number;
 }
 
-const WC_PUBLIC_API = "http://127.0.0.1:8000/api/v1/world-cup";
+const WC_PUBLIC_API =
+	process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com";
 
 async function fetchPublicLeaderboard(
 	limit: number,
 ): Promise<PublicLeaderboardEntry[]> {
-	const res = await fetch(`${WC_PUBLIC_API}/leaderboard`, {
+	const res = await fetch(`${WC_PUBLIC_API}/api/v1/world-cup/leaderboard`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
