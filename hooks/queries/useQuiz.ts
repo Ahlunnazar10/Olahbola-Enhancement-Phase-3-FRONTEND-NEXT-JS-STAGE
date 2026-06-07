@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
 import { endpoints } from '@/lib/api/endpoints';
-import type { ApiResponse, Quiz, QuizQuestion, QuizSummary } from '@/types';
+import type { ApiResponse, Quiz, QuizQuestion, QuizSummary, QuizWorldCupSession, QuizWorldCupPlay, QuizWorldCupAnswerResult, QuizWorldCupFinishResult, QuizWorldCupState, QuizWorldCupLeaderboardEntry, QuizWorldCupMyRank, QuizWorldCupSessionLeaderboardEntry, QuizWorldCupSessionMyRank } from '@/types';
 
 // Get quiz summary
 export function useQuizSummary() {
@@ -14,6 +14,21 @@ export function useQuizSummary() {
       return response.data.data as QuizSummary;
     },
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+// Get quiz world cup sessions by event slug
+export function useQuizWorldCupSessions(eventSlug: string) {
+  return useQuery({
+    queryKey: ['quiz-world-cup-sessions', eventSlug],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<QuizWorldCupSession[]>>(
+        endpoints.quizWorldCupSessions(eventSlug)
+      );
+      return response.data.data;
+    },
+    enabled: !!eventSlug,
+    staleTime: 60 * 1000,
   });
 }
 
@@ -152,5 +167,161 @@ export function useCompleteImageQuiz() {
       queryClient.invalidateQueries({ queryKey: ['quiz-summary'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
     },
+  });
+}
+
+// ============================================
+// Quiz World Cup - Sessions
+// ============================================
+
+// Get all sessions for a World Cup event
+export function useQuizSessions(eventSlug: string = "world-cup-2026") {
+  return useQuery({
+    queryKey: ['wc-sessions', eventSlug],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<QuizWorldCupSession[]>>(
+        endpoints.quizWorldCupSessions(eventSlug)
+      );
+      return response.data.data;
+    },
+    staleTime: 60 * 1000,
+  });
+}
+
+// Get current session state (resume or null)
+export function useSessionState(sessionId: string) {
+  return useQuery({
+    queryKey: ['wc-session-state', sessionId],
+    queryFn: async () => {
+      try {
+        const response = await apiClient.get<ApiResponse<QuizWorldCupState>>(
+          endpoints.quizWorldCupState(sessionId)
+        );
+        return response.data.data;
+      } catch (err: unknown) {
+        const status = (err as { response?: { status?: number } })?.response?.status;
+        if (status === 404 || status === 401) {
+          return null;
+        }
+        throw err;
+      }
+    },
+    enabled: !!sessionId,
+    staleTime: 30 * 1000,
+  });
+}
+
+// Start a session
+export function useStartSession() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (sessionId: string) => {
+      const response = await apiClient.post<ApiResponse<QuizWorldCupPlay>>(
+        endpoints.quizWorldCupPlay(sessionId)
+      );
+      return response.data.data;
+    },
+    onSuccess: (data, sessionId) => {
+      queryClient.setQueryData(['wc-session-state', sessionId], {
+        session_id: data.session_id,
+        attempt_id: data.attempt_id,
+        status: 'in_progress',
+        current_index: 0,
+        score: 0,
+        correct_count: 0,
+        total_questions: data.questions.length,
+        remaining_seconds: data.duration_seconds,
+        finished: false,
+      });
+    },
+  });
+}
+
+// Submit an answer
+export function useSubmitAnswer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: {
+      sessionId: string;
+      attemptId: string;
+      questionId: string;
+      answer: number;
+    }) => {
+      const response = await apiClient.post<ApiResponse<QuizWorldCupAnswerResult>>(
+        endpoints.quizWorldCupAnswer(payload.attemptId),
+        {
+          question_id: payload.questionId,
+          selected_option: payload.answer,
+        }
+      );
+      return response.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wc-session-state'] });
+    },
+  });
+}
+
+// ============================================
+// Quiz World Cup - Global Leaderboard
+// ============================================
+
+export function useQuizGlobalLeaderboard(eventSlug: string = "world-cup-2026") {
+  return useQuery({
+    queryKey: ['wc-global-leaderboard', eventSlug],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<QuizWorldCupLeaderboardEntry[]>>(
+        endpoints.quizWorldCupGlobalLeaderboard(eventSlug)
+      );
+      return response.data.data;
+    },
+    enabled: !!eventSlug,
+    staleTime: 60 * 1000,
+  });
+}
+
+export function useQuizMyGlobalRank(eventSlug: string = "world-cup-2026") {
+  return useQuery({
+    queryKey: ['wc-my-global-rank', eventSlug],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<QuizWorldCupMyRank>>(
+        endpoints.quizWorldCupMyRank(eventSlug)
+      );
+      return response.data.data;
+    },
+    enabled: !!eventSlug,
+    staleTime: 30 * 1000,
+  });
+}
+
+// ============================================
+// Quiz World Cup - Session Leaderboard
+// ============================================
+
+export function useQuizSessionLeaderboard(sessionId: string, eventSlug: string = "world-cup-2026") {
+  return useQuery({
+    queryKey: ['wc-session-leaderboard', sessionId],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<QuizWorldCupSessionLeaderboardEntry[]>>(
+        endpoints.quizWorldCupSessionLeaderboard(sessionId, eventSlug)
+      );
+      return response.data.data;
+    },
+    enabled: !!sessionId,
+    staleTime: 15 * 1000,
+  });
+}
+
+export function useQuizMySessionRank(sessionId: string, eventSlug: string = "world-cup-2026") {
+  return useQuery({
+    queryKey: ['wc-my-session-rank', sessionId],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<QuizWorldCupSessionMyRank>>(
+        endpoints.quizWorldCupMySessionRank(sessionId, eventSlug)
+      );
+      return response.data.data;
+    },
+    enabled: !!sessionId,
+    staleTime: 15 * 1000,
   });
 }

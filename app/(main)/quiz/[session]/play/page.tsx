@@ -1,0 +1,831 @@
+"use client";
+
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
+import { apiClient } from "@/lib/api/client";
+import type {
+	QuizWorldCupPlay,
+	QuizWorldCupQuestion,
+	QuizWorldCupSessionLeaderboardEntry,
+} from "@/types";
+import {
+	useQuizSessionLeaderboard,
+	useQuizMySessionRank,
+} from "@/hooks/queries/useQuiz";
+
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                            */
+/* ------------------------------------------------------------------ */
+
+function formatCountdown(totalSeconds: number): string {
+	const m = Math.floor(totalSeconds / 60);
+	const s = totalSeconds % 60;
+	return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function formatDuration(raw: string): string {
+	// Handle API compact formats like "45s", "1m 30s", "2m", "1h 23m"
+	let totalSeconds = 0;
+	const match = raw.match(/^(\d+)h\s*(\d+)m\s*(\d+)s$/);
+	if (match) {
+		const [, h, m, s] = match;
+		totalSeconds =
+			parseInt(h, 10) * 3600 + parseInt(m, 10) * 60 + parseInt(s, 10);
+	} else {
+		const matchM = raw.match(/^(\d+)m\s*(\d+)s$/);
+		if (matchM) {
+			const [, m, s] = matchM;
+			totalSeconds = parseInt(m, 10) * 60 + parseInt(s, 10);
+		} else {
+			const matchM = raw.match(/^(\d+)m$/);
+			if (matchM) {
+				totalSeconds = parseInt(matchM[1], 10) * 60;
+			} else {
+				const parsed = parseInt(raw, 10);
+				totalSeconds = isNaN(parsed) ? 0 : Math.abs(parsed);
+			}
+		}
+	}
+	const h = Math.floor(totalSeconds / 3600);
+	const m = Math.floor((totalSeconds % 3600) / 60);
+	const s = totalSeconds % 60;
+	if (h > 0) return `${h} jam ${m} menit`;
+	if (m > 0 && s > 0) return `${m} menit ${s} detik`;
+	if (m > 0) return `${m} menit`;
+	return `${s} detik`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Types                                                              */
+/* ------------------------------------------------------------------ */
+
+interface AnswerResponse {
+	correct: boolean;
+	correct_answer: number;
+	selected_answer: number;
+	explanation: string | null;
+	points_earned: number;
+	next_question: QuizWorldCupQuestion | null;
+	finished: boolean;
+	total_points: number;
+	total_points_so_far: number;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
+
+export default function PlaySessionPage() {
+	const router = useRouter();
+	const params = useParams();
+	const searchParams = useSearchParams();
+	const sessionId = params?.session as string;
+
+	const sessionName =
+		searchParams?.get("name") ?? `Session ${sessionId.slice(-4)}`;
+	const pointsPerCorrect = parseInt(searchParams?.get("points") ?? "5", 10);
+	const durationFromUrl =
+		parseInt(searchParams?.get("duration") ?? "0", 10) || 120;
+
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	const [attemptId, setAttemptId] = useState<string | null>(null);
+	const [totalQuestions, setTotalQuestions] = useState(0);
+	const [duration, setDuration] = useState(0);
+
+	const [currentQuestion, setCurrentQuestion] =
+		useState<QuizWorldCupQuestion | null>(null);
+	const [questionIndex, setQuestionIndex] = useState(0);
+
+	const [answerSubmitted, setAnswerSubmitted] = useState(false);
+	const [answerResult, setAnswerResult] = useState<{
+		correct: boolean;
+		correctAnswer: number;
+		selectedAnswer: number;
+		explanation: string | null;
+		pointsEarned: number;
+	} | null>(null);
+
+	const [totalCorrect, setTotalCorrect] = useState(0);
+	const [timer, setTimer] = useState(0);
+
+	const [finished, setFinished] = useState(false);
+	const [finalData, setFinalData] = useState<{
+		score: number;
+		correctCount: number;
+		totalPoints: number;
+		totalQuestions: number;
+	} | null>(null);
+
+	// Refs untuk menghindari stale closures di interval & answer handler
+	const totalCorrectRef = useRef(0);
+	const totalQuestionsRef = useRef(0);
+	const answeredCountRef = useRef(0);
+	const totalPointsSoFarRef = useRef(0);
+	const attemptIdRef = useRef<string | null>(null);
+	const questionIndexRef = useRef(0);
+	const currentQuestionRef = useRef<QuizWorldCupQuestion | null>(null);
+	const durationRef = useRef(0);
+	const timerRef = useRef(0);
+
+	// Sinkronkan state ke refs
+	useEffect(() => {
+		questionIndexRef.current = questionIndex;
+	}, [questionIndex]);
+	useEffect(() => {
+		currentQuestionRef.current = currentQuestion;
+	}, [currentQuestion]);
+	useEffect(() => {
+		attemptIdRef.current = attemptId;
+	}, [attemptId]);
+	useEffect(() => {
+		durationRef.current = duration;
+	}, [duration]);
+	useEffect(() => {
+		timerRef.current = timer;
+	}, [timer]);
+	useEffect(() => {
+		totalCorrectRef.current = totalCorrect;
+	}, [totalCorrect]);
+	useEffect(() => {
+		totalQuestionsRef.current = totalQuestions;
+	}, [totalQuestions]);
+
+	/* ---- answer-result handler ---- */
+	const handleAnswerResult = useCallback((result: AnswerResponse) => {
+		answeredCountRef.current += 1;
+		questionIndexRef.current = answeredCountRef.current;
+		setQuestionIndex(answeredCountRef.current);
+
+		// Count as correct only if total_points_so_far increased
+		const previousPoints = totalPointsSoFarRef.current;
+		const currentPoints =
+			typeof result.total_points_so_far === "number"
+				? result.total_points_so_far
+				: previousPoints + (result.points_earned ?? 0);
+
+		if (currentPoints > previousPoints) {
+			setTotalCorrect((c) => c + 1);
+			totalCorrectRef.current += 1;
+		}
+
+		totalPointsSoFarRef.current = currentPoints;
+
+		if (result.finished) {
+			setFinalData({
+				score: result.total_points,
+				correctCount: totalCorrectRef.current,
+				totalPoints: result.total_points,
+				totalQuestions: totalQuestionsRef.current,
+			});
+			setFinished(true);
+			return;
+		}
+
+		if (result.next_question) {
+			setCurrentQuestion(result.next_question);
+			setAnswerSubmitted(false);
+			setAnswerResult(null);
+			return;
+		}
+
+		setAnswerSubmitted(false);
+		setAnswerResult(null);
+	}, []);
+
+	const handleAnswerResultRef = useRef(handleAnswerResult);
+
+	useEffect(() => {
+		handleAnswerResultRef.current = handleAnswerResult;
+	}, [handleAnswerResult]);
+
+	/* ---- start session (fresh only, no localStorage) ---- */
+	useEffect(() => {
+		let cancelled = false;
+		async function startSession() {
+			try {
+				setLoading(true);
+				const response = await apiClient.get<{
+					data: QuizWorldCupPlay;
+				}>(`/api/quiz-world-cup/sessions/${sessionId}/play`);
+				const data = response.data.data;
+				if (cancelled) return;
+				setAttemptId(data.attempt_id);
+				const qCount = data.questions?.length ?? 0;
+				const dur = data.duration_seconds ?? durationFromUrl;
+				setTotalQuestions(qCount);
+				totalQuestionsRef.current = qCount;
+				setDuration(dur);
+				setTimer(dur);
+
+				if (data.questions && data.questions.length > 0) {
+					setCurrentQuestion(data.questions[0]);
+					totalQuestionsRef.current = qCount;
+				} else {
+					setError("Tidak ada pertanyaan untuk sesi ini");
+				}
+			} catch (err: unknown) {
+				if (cancelled) return;
+				const axiosErr = err as {
+					response?: { data?: unknown };
+					message?: string;
+				};
+				const apiMessage =
+					axiosErr?.response?.data &&
+					typeof axiosErr.response.data === "object" &&
+					"message" in (axiosErr.response.data as Record<string, unknown>)
+						? (axiosErr.response.data as { message?: string }).message
+						: undefined;
+				setError(
+					apiMessage ??
+						axiosErr?.message ??
+						"Pertanyaan tidak ditemukan atau data tidak valid",
+				);
+			} finally {
+				if (!cancelled) setLoading(false);
+			}
+		}
+		startSession();
+		return () => {
+			cancelled = true;
+		};
+	}, [sessionId, durationFromUrl]);
+
+	/* ---- session countdown (tanpa localStorage) ---- */
+	useEffect(() => {
+		if (!duration || finished || timer <= 0) return;
+		const interval = setInterval(() => {
+			setTimer((prev) => {
+				const next = prev <= 1 ? 0 : prev - 1;
+				return next;
+			});
+		}, 1000);
+		return () => clearInterval(interval);
+	}, [duration, finished, timer === 0]);
+
+	/* ---- auto-submit on timeout ---- */
+	const submittedRef = useRef(false);
+	useEffect(() => {
+		if (
+			timer !== 0 ||
+			!attemptId ||
+			answerSubmitted ||
+			finished ||
+			!currentQuestion ||
+			submittedRef.current
+		)
+			return;
+
+		submittedRef.current = true;
+		setAnswerSubmitted(true);
+
+		const correct = totalCorrectRef.current;
+		const qCount = totalQuestionsRef.current;
+		const score = qCount > 0 ? Math.round((correct / qCount) * 100) : 0;
+		setFinalData({
+			score,
+			correctCount: correct,
+			totalPoints: 0,
+			totalQuestions: qCount,
+		});
+		setFinished(true);
+		setQuestionIndex(qCount);
+	}, [timer, attemptId, answerSubmitted, finished, currentQuestion]);
+
+	/* ---- submit answer ---- */
+	const handleSubmitAnswer = useCallback(
+		async (selectedAnswer: number) => {
+			if (answerSubmitted || !attemptId || !currentQuestion) return;
+			setAnswerSubmitted(true);
+
+			const selectedOption = String.fromCharCode(65 + selectedAnswer);
+
+			try {
+				const response = await apiClient.post<{ data: AnswerResponse }>(
+					`/api/quiz-world-cup/attempts/${attemptId}/answer`,
+					{
+						question_id: currentQuestion.id,
+						selected_option: selectedOption,
+					},
+				);
+				const result = response.data.data;
+				setAnswerResult({
+					correct: result.correct,
+					correctAnswer: result.correct_answer,
+					selectedAnswer: result.selected_answer,
+					explanation: result.explanation,
+					pointsEarned: result.points_earned,
+				});
+				handleAnswerResultRef.current(result);
+			} catch {
+				setAnswerSubmitted(false);
+			}
+		},
+		[answerSubmitted, attemptId, currentQuestion],
+	);
+
+	/* ---- cleanup result feedback ---- */
+	useEffect(() => {
+		if (!answerSubmitted || finished) return;
+		const timeout = setTimeout(() => setAnswerResult(null), 1200);
+		return () => clearTimeout(timeout);
+	}, [answerSubmitted, finished, answerResult]);
+
+	/* ---- timer SVG helpers ---- */
+	const circumference = 2 * Math.PI * 54;
+	const timePercent = duration > 0 ? timer / duration : 0;
+	const timerOffset = circumference * (1 - timePercent);
+	const timerColor =
+		timePercent > 0.5 ? "#00c2b1" : timePercent > 0.25 ? "#fbbf24" : "#ff4444";
+	const isUrgent = timePercent <= 0.25;
+
+	/* ------------------------------------------------------------------ */
+	/*  Render — Loading                                                   */
+	/* ------------------------------------------------------------------ */
+	if (loading) {
+		return (
+			<div className="min-h-screen bg-background flex items-center justify-center">
+				<div className="text-primary animate-pulse text-lg font-label-bold">
+					Loading...
+				</div>
+			</div>
+		);
+	}
+
+	/* ------------------------------------------------------------------ */
+	/*  Render — Error                                                     */
+	/* ------------------------------------------------------------------ */
+	if (error && !attemptId) {
+		return (
+			<div className="min-h-screen velocity-mesh relative flex items-center justify-center px-6 py-12">
+				<div className="absolute inset-0 bg-quiz-hero opacity-30 pointer-events-none"></div>
+				<div className="relative z-10 max-w-md w-full text-center">
+					<div className="glass-panel rounded-[24px] p-8 md:p-10">
+						<div className="mx-auto w-20 h-20 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,180,171,0.2)]">
+							<AlertCircle className="size-10 text-red-400" />
+						</div>
+						<div className="flex items-center justify-center gap-2 mb-3">
+							<span className="inline-block w-2 h-2 bg-red-400 rounded-full animate-pulse shadow-[0_0_10px_#ffb4ab]"></span>
+							<p className="font-label-bold text-red-400 tracking-[0.3em] uppercase text-xs">
+								Session Error
+							</p>
+						</div>
+						<h2 className="font-headline-md text-white uppercase leading-tight mb-5">
+							{error}
+						</h2>
+
+						<Link
+							href="/quiz"
+							className="inline-flex items-center justify-center gap-2 w-full bg-primary text-slate-950 font-label-bold uppercase tracking-widest text-sm py-3 px-6 rounded-xl hover:shadow-[0_0_20px_rgba(0,194,177,0.5)] active:scale-95 transition-all"
+						>
+							<ArrowLeft className="size-4" />
+							Kembali ke Quiz
+						</Link>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	/* ------------------------------------------------------------------ */
+	/*  Render — Finished                                                  */
+	/* ------------------------------------------------------------------ */
+	if (finished && finalData) {
+		const pct =
+			finalData.totalQuestions > 0
+				? Math.round((finalData.correctCount / finalData.totalQuestions) * 100)
+				: 0;
+
+		return (
+			<div className="min-h-screen bg-quiz-page relative flex items-center justify-center px-4 py-20">
+				{/* Ambient glow */}
+				<div className="fixed inset-0 pointer-events-none overflow-hidden">
+					<div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 rounded-full bg-primary/5 blur-[120px]" />
+				</div>
+
+				<div className="relative z-10 w-full max-w-lg">
+					{/* Session label */}
+					<div className="text-center mb-8">
+						<div className="inline-flex items-center gap-2 mb-4">
+							<span className="inline-block w-2.5 h-2.5 bg-primary rounded-full animate-pulse shadow-[0_0_10px_#43decc]" />
+							<p className="font-label-bold text-primary tracking-[0.3em] uppercase text-sm">
+								Session Selesai
+							</p>
+						</div>
+						<h1 className="text-white font-headline-lg leading-tight">
+							{sessionName}
+						</h1>
+					</div>
+
+					{/* Score card — big glow */}
+					<div className="glass-card rounded-3xl p-10 md:p-12 flex flex-col items-center gap-6 mb-6">
+						<div className="relative">
+							<svg width="140" height="140" className="-rotate-90">
+								<circle
+									cx="70"
+									cy="70"
+									r="60"
+									fill="transparent"
+									stroke="rgba(255,255,255,0.06)"
+									strokeWidth="6"
+								/>
+								<circle
+									cx="70"
+									cy="70"
+									r="60"
+									fill="transparent"
+									stroke="#00c2b1"
+									strokeWidth="6"
+									strokeLinecap="round"
+									strokeDasharray={2 * Math.PI * 60}
+									strokeDashoffset={2 * Math.PI * 60 * (1 - pct / 100)}
+									className="transition-all duration-1000"
+									style={{
+										filter: "drop-shadow(0 0 10px rgba(0,194,177,0.5))",
+									}}
+								/>
+							</svg>
+							<div className="absolute inset-0 flex flex-col items-center justify-center">
+								<span className="text-white font-display-md font-bold text-4xl">
+									+{finalData.score}
+								</span>
+								<span className="text-xs text-white/50 font-label-bold tracking-widest uppercase">
+									Poin
+								</span>
+							</div>
+						</div>
+
+						{/* Stats row */}
+						<div className="flex items-center gap-8 w-full justify-center">
+							<div className="text-center">
+								<div className="text-3xl font-bold text-primary">
+									{finalData.correctCount}
+								</div>
+								<div className="text-xs text-white/50 font-label-bold tracking-widest uppercase mt-1">
+									Benar
+								</div>
+							</div>
+							<div className="w-px h-10 bg-white/10" />
+							<div className="text-center">
+								<div className="text-3xl font-bold text-white">
+									{finalData.totalQuestions}
+								</div>
+								<div className="text-xs text-white/50 font-label-bold tracking-widest uppercase mt-1">
+									Total
+								</div>
+							</div>
+							<div className="w-px h-10 bg-white/10" />
+							<div className="text-center">
+								<div className="text-3xl font-bold text-primary">{pct}%</div>
+								<div className="text-xs text-white/50 font-label-bold tracking-widest uppercase mt-1">
+									Akurasi
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* Action */}
+					<button
+						onClick={() => router.push("/quiz")}
+						className="w-full bg-primary text-black font-label-bold py-4 rounded-2xl hover:shadow-[0_0_25px_rgba(0,194,177,0.4)] active:scale-[0.98] transition-all text-base tracking-wide uppercase"
+					>
+						Kembali ke Quiz
+					</button>
+				</div>
+			</div>
+		);
+	}
+
+	/* ------------------------------------------------------------------ */
+	/*  Render — Playing                                                   */
+	/* ------------------------------------------------------------------ */
+	if (!currentQuestion) return null;
+
+	const currentQ = questionIndex + 1;
+	const questionDotList = Array.from({ length: totalQuestions }, (_, i) => i);
+
+	return (
+		<div className="min-h-screen bg-quiz-page relative px-4 py-6 md:py-8">
+			{/* Ambient glow */}
+			<div className="fixed inset-0 pointer-events-none overflow-hidden">
+				<div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 rounded-full bg-primary/5 blur-[120px]" />
+			</div>
+
+			<div className="relative z-10 max-w-300 mx-auto">
+				{/* ---- Header: session name + timer ---- */}
+				<div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
+					<div className="space-y-1">
+						<div className="flex items-center gap-2">
+							<span className="inline-block w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_10px_#43decc]" />
+							<p className="font-body-lg text-primary tracking-[0.3em] uppercase text-sm">
+								Sesi Aktif
+							</p>
+						</div>
+						<p className=" text-white font-bold uppercase text-2xl md:text-4xl tracking-wide">
+							{sessionName}
+						</p>
+					</div>
+
+					{/* Circular timer */}
+					<div className="relative w-28 h-28 md:w-32 md:h-32 flex items-center justify-center shrink-0">
+						<svg className="w-full h-full -rotate-90" aria-hidden="true">
+							<circle
+								cx="64"
+								cy="64"
+								r="54"
+								fill="transparent"
+								stroke="rgba(255,255,255,0.08)"
+								strokeWidth="6"
+							/>
+							<circle
+								cx="64"
+								cy="64"
+								r="54"
+								fill="transparent"
+								stroke={timerColor}
+								strokeWidth="6"
+								strokeLinecap="round"
+								strokeDasharray={circumference}
+								strokeDashoffset={timerOffset}
+								className="transition-all duration-1000"
+								style={{
+									filter: isUrgent
+										? "none"
+										: "drop-shadow(0 0 8px rgba(0,194,177,0.4))",
+								}}
+							/>
+						</svg>
+						<div className="absolute flex flex-col items-center">
+							<span
+								className={`font-headline-md ${isUrgent ? "text-red-400" : "text-white"}`}
+							>
+								{formatCountdown(timer)}
+							</span>
+							<span className="text-[9px] text-white/40 font-bold tracking-widest uppercase">
+								Waktu
+							</span>
+						</div>
+					</div>
+				</div>
+
+				{/* ---- Bento grid ---- */}
+				<div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+					{/* ===== Main question card (col-span-8) ===== */}
+					<div className="lg:col-span-8 glass-panel rounded-3xl border-t border-primary/30 shadow-[0_0_40px_rgba(0,194,177,0.08)] p-6 md:p-10 flex flex-col justify-between min-h-90">
+						{/* Question header */}
+						<div className="flex justify-between items-center">
+							<span className="font-body-lg text-primary-container px-3 py-1 bg-primary-container/10 border border-primary-container/20 rounded-full text-xs">
+								PERTANYAAN {String(currentQ).padStart(2, "0")} /{" "}
+								{String(totalQuestions).padStart(2, "0")}
+							</span>
+							<div className="flex gap-1">
+								{questionDotList.map((i) => (
+									<span
+										key={i}
+										className={`w-2 h-2 rounded-full transition-colors ${
+											i < currentQ - 1
+												? "bg-primary"
+												: i === currentQ - 1
+													? "bg-primary"
+													: "bg-white/20"
+										}`}
+									/>
+								))}
+							</div>
+						</div>
+
+						{/* Image (if any) */}
+						{currentQuestion.image_url && (
+							<div className="mb-6 rounded-2xl overflow-hidden">
+								<img
+									src={currentQuestion.image_url}
+									alt="Question"
+									className="w-full rounded-xl object-cover max-h-56"
+								/>
+							</div>
+						)}
+
+						{/* Question text */}
+						<h2 className="text-white text-lg md:text-xl font-headline-md leading-relaxed">
+							{currentQuestion.question}
+						</h2>
+
+						{/* Options */}
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+							{currentQuestion.options.map((option, index) => {
+								const isSelected =
+									answerSubmitted && answerResult?.selectedAnswer === index;
+								const isCorrect =
+									answerSubmitted && answerResult?.correctAnswer === index;
+								const isWrong = answerSubmitted && isSelected && !isCorrect;
+
+								let btnClass =
+									"group flex items-center justify-between p-4 rounded-2xl glass-panel border-white/6 text-left transition-all duration-300 ";
+
+								if (answerSubmitted) {
+									if (isCorrect) {
+										btnClass +=
+											"active-glass bg-primary-container/10 border-[#00c2b1]";
+									} else if (isWrong) {
+										btnClass += "border-red-500/50 bg-red-500/10";
+									} else {
+										btnClass += "opacity-40 border-white/4";
+									}
+								} else {
+									btnClass +=
+										"hover:bg-primary/10 hover:border-[#00c2b1] hover:translate-x-2";
+								}
+
+								return (
+									<button
+										key={index}
+										onClick={() => handleSubmitAnswer(index)}
+										disabled={answerSubmitted}
+										className={btnClass}
+									>
+										<span className="text-sm md:text-base text-white/80 group-hover:text-white font-body-lg">
+											{option}
+										</span>
+										{answerSubmitted && isCorrect && (
+											<CheckCircle2 className="size-5 text-primary shrink-0" />
+										)}
+										{answerSubmitted && isWrong && (
+											<span className="size-5 shrink-0 rounded-full border-2 border-red-400 flex items-center justify-center">
+												<span className="block w-2 h-2 bg-red-400 rounded-full" />
+											</span>
+										)}
+									</button>
+								);
+							})}
+						</div>
+
+						{/* Explanation */}
+						{answerSubmitted && answerResult?.explanation && (
+							<div className="mt-6 p-4 rounded-xl bg-primary/10 border border-primary/25">
+								<p className="text-sm text-white/80">
+									<span className="text-primary font-label-bold">
+										Penjelasan:{" "}
+									</span>
+									{answerResult.explanation}
+								</p>
+							</div>
+						)}
+					</div>
+
+					{/* ===== Sidebar (col-span-4) ===== */}
+					<div className="lg:col-span-4 flex flex-col gap-5">
+						{/* Progress card */}
+						<div className="glass-panel p-5 rounded-3xl border-white/6">
+							<p className="font-label-bold text-white/40 mb-3 uppercase tracking-widest text-xs">
+								Jawaban Benar
+							</p>
+							<div className="space-y-2">
+								<div className="flex justify-between text-xs font-bold text-white/60">
+									<span>
+										{totalCorrect}/{totalQuestions}
+									</span>
+									<span>
+										{totalQuestions > 0
+											? Math.round((totalCorrect / totalQuestions) * 100)
+											: 0}
+										%
+									</span>
+								</div>
+								<div className="h-2.5 w-full bg-white/5 rounded-full overflow-hidden">
+									<div
+										className="h-full bg-linear-to-r from-primary to-primary-container shadow-[0_0_10px_rgba(0,194,177,0.5)] transition-all duration-500 rounded-full"
+										style={{
+											width: `${
+												totalQuestions > 0
+													? (totalCorrect / totalQuestions) * 100
+													: 0
+											}%`,
+										}}
+									/>
+								</div>
+							</div>
+						</div>
+
+						{/* Session leaderboard card */}
+						<SessionLeaderboardCard sessionId={sessionId} />
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Session Leaderboard Card                                           */
+/* ------------------------------------------------------------------ */
+
+function SessionLeaderboardCard({ sessionId }: { sessionId: string }) {
+	const { data, isLoading } = useQuizSessionLeaderboard(
+		sessionId,
+		"world-cup-2026",
+	);
+	const { data: myRank } = useQuizMySessionRank(sessionId, "world-cup-2026");
+
+	/* ---- helpers ---- */
+	function rankEmoji(r: number) {
+		if (r === 1) return "#1";
+		if (r === 2) return "#2";
+		if (r === 3) return "#3";
+		return `#${r}`;
+	}
+
+	return (
+		<div className="glass-panel p-5 rounded-3xl border-white/6 flex flex-col h-full">
+			<p className="font-label-bold text-white/40 mb-3 uppercase tracking-widest text-xs">
+				Leaderboard
+			</p>
+
+			{/* Leaderboard list */}
+			<div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin mb-3 scrollbar-thumb-white/10 scrollbar-track-transparent">
+				{isLoading && (
+					<div className="text-center text-white/30 text-xs py-8">
+						Loading...
+					</div>
+				)}
+
+				{data && !isLoading && data.length === 0 && (
+					<div className="text-center text-white/30 text-xs py-8">
+						Belum ada data leaderboard
+					</div>
+				)}
+
+				{data &&
+					!isLoading &&
+					data.slice(0, 3).map((entry: QuizWorldCupSessionLeaderboardEntry) => (
+						<div
+							key={entry.user_id}
+							className={`flex items-center justify-between p-2.5 rounded-xl transition-colors ${
+								entry.user_id === myRank?.user_id
+									? "bg-primary/10 border border-primary/20"
+									: "hover:bg-white/5"
+							}`}
+						>
+							<div className="flex items-center gap-2">
+								<span className="text-xl w-10 text-center font-bold">
+									{entry.rank ? rankEmoji(entry.rank) : "—"}
+								</span>
+								<div>
+									<div className="text-white text-sm font-body-sm truncate max-w-36">
+										{entry.name || "Anonim"}
+									</div>
+									<div className="text-white/30 text-xs">
+										{formatDuration(entry.duration_formatted)}
+									</div>
+								</div>
+							</div>
+							<span className="text-primary text-sm font-label-bold">
+								{entry.points ?? 0} Pts
+							</span>
+						</div>
+					))}
+			</div>
+
+			{/* My rank */}
+			{myRank && myRank.rank ? (
+				<div className="mb-3 p-3 rounded-xl bg-primary/10 border border-primary/20">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-2">
+							<span className="text-sm">{rankEmoji(myRank.rank)}</span>
+							<span className="text-white text-sm font-label-bold">
+								Posisimu
+							</span>
+						</div>
+						<div className="text-right">
+							<span className="text-primary text-sm font-label-bold">
+								{myRank.points ?? 0} poin
+							</span>
+							<span className="text-white/40 text-xs ml-1">
+								({formatDuration(myRank.duration_formatted)})
+							</span>
+						</div>
+					</div>
+				</div>
+			) : (
+				<div className="mb-3 p-3 rounded-xl bg-primary/10 border border-primary/20">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-2">
+							<span className="text-white text-sm font-label-bold">
+								Posisimu
+							</span>
+						</div>
+						<div className="text-right">
+							<span className="text-white/30 text-xs italic">
+								{data && data.length > 0
+									? "Belum ada jawaban"
+									: "Menunggu jawaban pertama..."}
+							</span>
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	);
+}

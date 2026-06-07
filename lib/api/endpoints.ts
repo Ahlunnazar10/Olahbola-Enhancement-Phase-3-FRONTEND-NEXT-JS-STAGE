@@ -64,6 +64,25 @@ export const endpoints = {
 	imageQuizComplete: "/api/v1/image-quiz/complete",
 	imageQuizUserSummary: "/api/v1/image-quiz/user-summary",
 
+	// Quiz - World Cup Event
+	quizWorldCupEvents: "/api/quiz-world-cup/events",
+	quizWorldCupSessions: (eventSlug: string) =>
+		"/api/quiz-world-cup/events/" + eventSlug + "/sessions",
+	quizWorldCupPlay: (sessionId: string) =>
+		"/api/quiz-world-cup/sessions/" + sessionId + "/play",
+	quizWorldCupState: (sessionId: string) =>
+		"/api/quiz-world-cup/sessions/" + sessionId + "/state",
+	quizWorldCupAnswer: (attemptId: string) =>
+		"/api/quiz-world-cup/attempts/" + attemptId + "/answer",
+	quizWorldCupGlobalLeaderboard: (eventSlug: string) =>
+		"/api/quiz-world-cup/leaderboard/global?event_slug=" + eventSlug,
+	quizWorldCupMyRank: (eventSlug: string) =>
+		"/api/quiz-world-cup/my-rank/global?event_slug=" + eventSlug,
+	quizWorldCupSessionLeaderboard: (sessionId: string, eventSlug: string = "world-cup-2026") =>
+		"/api/quiz-world-cup/leaderboard/session/" + sessionId + "?event_slug=" + eventSlug,
+	quizWorldCupMySessionRank: (sessionId: string, eventSlug: string = "world-cup-2026") =>
+		"/api/quiz-world-cup/my-rank/session/" + sessionId + "?event_slug=" + eventSlug,
+
 	// Quiz - Event
 	eventActive: "/api/v1/events/active",
 	eventLevels: (eventId: string) => "/api/v1/events/" + eventId,
@@ -78,6 +97,7 @@ export const endpoints = {
 		"/api/v1/events/leaderboard/" + eventId,
 	eventMyRank: (eventId: string) =>
 		"/api/v1/events/leaderboard/" + eventId + "/me",
+
 
 	// Special Events
 	specialEvents: "/api/v1/special-events",

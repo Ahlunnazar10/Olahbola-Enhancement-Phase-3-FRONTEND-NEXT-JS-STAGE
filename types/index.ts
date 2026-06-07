@@ -144,6 +144,98 @@ export interface QuizSummary {
 	total_points_earned: number;
 }
 
+export interface QuizWorldCupSession {
+	id: string;
+	session_number: number;
+	name: string;
+	subtitle: string;
+	description: string;
+	status: "active" | "coming_soon" | "nonactive";
+	countdown: string | null;
+	points_per_correct: number;
+	duration_seconds: number;
+	total_questions: number;
+	release_date: string;
+	is_played: boolean;
+}
+
+export interface QuizWorldCupQuestion {
+	id: string;
+	question: string;
+	options: string[];
+	order: number;
+	image_url: string | null;
+}
+
+export interface QuizWorldCupPlay {
+	session_id: string;
+	attempt_id: string;
+	duration_seconds: number;
+	questions: QuizWorldCupQuestion[];
+}
+
+export interface QuizWorldCupState {
+	session_id: string;
+	attempt_id: string;
+	status: "in_progress" | "completed" | "expired";
+	current_index: number;
+	score: number;
+	correct_count: number;
+	total_questions: number;
+	remaining_seconds: number;
+	finished: boolean;
+}
+
+export interface QuizWorldCupAnswerResult {
+	correct: boolean;
+	correct_answer: number;
+	selected_answer: number;
+	explanation: string | null;
+	points_earned: number;
+	total_points_so_far: number;
+}
+
+export interface QuizWorldCupFinishResult {
+	score: number;
+	correct_count: number;
+	points_earned: number;
+}
+
+export interface QuizWorldCupLeaderboardEntry {
+	rank: number;
+	user_id: string;
+	name: string;
+	email: string;
+	total_points: number;
+	total_duration_formatted: string;
+}
+
+export interface QuizWorldCupMyRank {
+	rank: number;
+	total_points: number;
+	total_duration: number;
+	total_duration_formatted: string;
+}
+
+export interface QuizWorldCupSessionLeaderboardEntry {
+	rank: number;
+	user_id: string;
+	name: string;
+	email: string;
+	points: number;
+	duration_formatted: string;
+	correct_count: number;
+}
+
+export interface QuizWorldCupSessionMyRank {
+	rank: number;
+	user_id: string;
+	points: number;
+	duration: number;
+	duration_formatted: string;
+	correct_count: number;
+}
+
 // Event types
 export interface Event {
 	id: string;
