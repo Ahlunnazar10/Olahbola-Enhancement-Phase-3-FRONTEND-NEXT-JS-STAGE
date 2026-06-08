@@ -69,6 +69,78 @@ function formatDurationFromApi(raw: string): string {
 	return abs;
 }
 
+function LoadingOverlay() {
+	const [progress, setProgress] = useState(0);
+
+	useEffect(() => {
+		setProgress(0);
+		const start = Date.now();
+		const VIRTUAL_TOTAL_MS = 4000;
+		const id = setInterval(() => {
+			const elapsed = Date.now() - start;
+			const ratio = Math.min(elapsed / VIRTUAL_TOTAL_MS, 1);
+			const eased = 1 - Math.pow(1 - ratio, 3);
+			setProgress(Math.floor(eased * 100));
+			if (ratio >= 1) clearInterval(id);
+		}, 80);
+		return () => clearInterval(id);
+	}, []);
+
+	return (
+		<div
+			className="fixed inset-0 z-9999 flex items-center justify-center bg-black/70 backdrop-blur-md transition-opacity duration-300"
+			role="status"
+			aria-live="polite"
+		>
+			<div className="glass-card neon-border rounded-2xl p-10 flex flex-col items-center gap-6 max-w-sm w-full mx-4">
+				<div className="relative w-32 h-32 flex items-center justify-center">
+					<svg
+						className="absolute inset-0 -rotate-90"
+						viewBox="0 0 120 120"
+						aria-hidden="true"
+					>
+						<circle
+							cx="60"
+							cy="60"
+							r="52"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="8"
+							className="text-primary/20"
+						/>
+						<circle
+							cx="60"
+							cy="60"
+							r="52"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="8"
+							strokeLinecap="round"
+							strokeDasharray={2 * Math.PI * 52}
+							strokeDashoffset={2 * Math.PI * 52 * (1 - progress / 100)}
+							className="text-primary transition-[stroke-dashoffset] duration-100 ease-out"
+							style={{
+								filter: "drop-shadow(0 0 6px rgba(0,194,177,0.6))",
+							}}
+						/>
+					</svg>
+					<span className="relative font-display-md text-display-md italic-bold text-primary neon-text tabular-nums">
+						{progress}%
+					</span>
+				</div>
+				<div className="text-center space-y-1">
+					<p className="font-headline-sm text-headline-sm italic-bold text-white neon-text">
+						Memuat Quiz...
+					</p>
+					<p className="text-on-surface-variant text-sm">
+						Mengambil data sesi World Cup 2026
+					</p>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 function formatDuration(totalSeconds: number): string {
 	const safe = Math.max(0, Math.floor(totalSeconds));
 	const minutes = Math.floor(safe / 60);
@@ -217,8 +289,12 @@ export default function QuizPage() {
 
 	return (
 		<div
+			data-theme={theme}
 			className={`min-h-screen velocity-mesh transition-colors duration-300 ${isDark ? "bg-[#050505]" : "bg-[#f5f5f5]"}`}
 		>
+			{/* Loader Overlay: tampil saat sedang memuat data event sessions */}
+			{sessionsLoading && <LoadingOverlay />}
+
 			{/* Background Blobs */}
 			<div
 				className={`vibrant-blob top-[10%] -left-40 ${isDark ? "bg-primary" : "bg-[#0a7c6e]"}`}
@@ -231,7 +307,7 @@ export default function QuizPage() {
 			/>
 
 			{/* Hero Section */}
-			<section className="relative w-full h-125 overflow-hidden mb-12 group shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+			<section className="relative w-full min-h-100 lg:h-125 overflow-hidden mb-12 group shadow-[0_0_50px_rgba(0,0,0,0.5)]">
 				<div className="absolute inset-0 z-0">
 					<img
 						alt="Football Stadium"
@@ -240,11 +316,11 @@ export default function QuizPage() {
 					/>
 				</div>
 				<div className="absolute inset-0 bg-linear-to-t from-surface via-transparent to-transparent z-10" />
-				<div className="relative z-20 flex flex-col items-center justify-center h-full text-center p-6">
-					<h1 className="font-display-xl text-display-xl italic-bold text-white mb-4 leading-none tracking-tight neon-text">
+				<div className="relative z-20 flex flex-col items-center justify-center min-h-100 lg:h-full text-center p-6 py-12 lg:py-0">
+					<h1 className="quiz-hero-title italic-bold font-bold text-white mb-4 leading-none neon-text">
 						KUIS SPESIAL
 						<br />
-						<span className="text-primary-fixed-dim">WORLD CUP 2026</span>
+						<span className="text-[#1FE6DA]">WORLD CUP 2026</span>
 					</h1>
 					<p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-8">
 						Uji pengetahuan sepak bola kamu dan Buktikan Kamu adalah si-paling
@@ -324,30 +400,29 @@ export default function QuizPage() {
 												<span className="font-label-bold text-primary/80 uppercase tracking-widest">
 													WC SPECIAL EDITION
 												</span>
-												<h3 className="font-extrabold text-3xl italic-bold text-white mt-2 neon-text">
+												<h3
+													className={`font-extrabold text-3xl italic-bold ${isDark ? "text-white" : "text-[#329589]"} mt-2 neon-text`}
+												>
 													{session.name}
 												</h3>
-												<p className="text-on-surface-variant mt-3 text-sm">
+												<p
+													className={`text-sm mt-2 ${isDark ? "text-on-surface-variant" : "text-black/80"}`}
+												>
 													{session.subtitle}
 												</p>
 											</div>
 											<div className="mt-8">
 												<div className="flex items-center gap-4 mb-4">
-													<Clock
-														className={`size-5 ${
-															isLive
-																? "text-primary neon-text"
-																: "text-on-surface-variant"
-														}`}
-													/>
 													<span
-														className={
+														className={`${
 															isLive
 																? "text-on-surface"
 																: "text-on-surface-variant"
-														}
+														}`}
 													>
-														{getCountdownText(session)}
+														{isLive
+															? `123 Pemain sedang bermain!`
+															: `Rilis dalam: ${getCountdownText(session)}`}
 													</span>
 												</div>
 												<button
@@ -362,10 +437,10 @@ export default function QuizPage() {
 														: isPlaying
 															? "LOADING..."
 															: isDisabled && !isLive
-																? "LOCKED"
+																? "TERKUNCI"
 																: isPlayed
-																	? "ALREADY PLAYED"
-																	: "PLAY QUIZ"}
+																	? "SUDAH MAIN"
+																	: "MAIN QUIZ"}
 												</button>
 											</div>
 										</div>
@@ -384,7 +459,9 @@ export default function QuizPage() {
 					<aside className="lg:col-span-4 space-y-8">
 						{/* Leaderboard - Global World Cup */}
 						<div className="glass-card rounded-xl p-6 neon-border bg-black/60">
-							<h2 className="font-headline-md text-headline-md italic-bold text-white mb-6 flex items-center gap-3 neon-text">
+							<h2
+								className={`font-headline-md text-headline-md italic-bold ${isDark ? "text-white" : "text-black/80"} mb-6 flex items-center gap-3 neon-text`}
+							>
 								Klasemen Sementara
 							</h2>
 							<div className="space-y-4">
@@ -439,7 +516,9 @@ export default function QuizPage() {
 													{String(entry.rank).padStart(2, "0")}
 												</div>
 												<div className="flex-1 relative z-10 text-end">
-													<div className="font-label-bold text-white truncate">
+													<div
+														className={`font-label-bold ${isDark ? "text-white" : "text-black/80"} truncate`}
+													>
 														{entry.name}
 														{isUser && (
 															<span className="ml-2 text-xs text-primary font-label-bold bg-primary/30 px-1.5 py-0.5 rounded">
@@ -539,7 +618,9 @@ export default function QuizPage() {
 
 						{/* How to Play Section (tidak berubah) */}
 						<div className="glass-card rounded-xl p-8">
-							<h2 className="font-headline-md text-headline-md italic-bold text-white mb-6 neon-text text-center">
+							<h2
+								className={`font-headline-md text-headline-md italic-bold ${isDark ? "text-white" : "text-black/80"} mb-6 flex items-center gap-3 neon-text`}
+							>
 								CARA BERMAIN
 							</h2>
 							<div className="grid grid-cols-1  gap-6">
@@ -552,7 +633,9 @@ export default function QuizPage() {
 									<h3 className="font-label-bold text-white mb-2">
 										PILIH QUIZ
 									</h3>
-									<p className="text-on-surface-variant text-sm">
+									<p
+										className={`text-sm ${isDark ? "text-on-surface-variant" : "text-black/80"}`}
+									>
 										Pilih quiz yang tersedia sesuai sesi yang tersedia, pastikan
 										kamu siap sebelum waktu habis!
 									</p>
@@ -566,7 +649,9 @@ export default function QuizPage() {
 									<h3 className="font-label-bold text-white mb-2">
 										JAWAB SOAL
 									</h3>
-									<p className="text-on-surface-variant text-sm">
+									<p
+										className={`text-sm ${isDark ? "text-on-surface-variant" : "text-black/80"}`}
+									>
 										Jawab sejumlah pertanyaan pilihan ganda dalam waktu yang
 										ditentukan
 									</p>
@@ -580,7 +665,9 @@ export default function QuizPage() {
 									<h3 className="font-label-bold text-white mb-2">
 										KUMPUL POIN
 									</h3>
-									<p className="text-on-surface-variant text-sm">
+									<p
+										className={`text-sm ${isDark ? "text-on-surface-variant" : "text-black/80"}`}
+									>
 										Kumpulkan poin dan naik di leaderboard untuk menang hadiah!
 									</p>
 								</div>
@@ -591,6 +678,111 @@ export default function QuizPage() {
 			</main>
 
 			<style jsx global>{`
+				/* ================================
+				   LIGHT MODE OVERRIDES
+				   Ganti semua teal primer (#1FE6DA / primary) ke #0A7C6E
+				   hanya saat data-theme="light" di root quiz page
+				   ================================ */
+				[data-theme="light"] .text-primary,
+				[data-theme="light"] .text-primary-fixed-dim {
+					color: #0a7c6e !important;
+				}
+				[data-theme="light"] .bg-primary {
+					background-color: #0a7c6e !important;
+				}
+				[data-theme="light"] .border-primary {
+					border-color: rgba(10, 124, 110, 0.5) !important;
+				}
+				[data-theme="light"] .border-primary\/20 {
+					border-color: rgba(10, 124, 110, 0.2) !important;
+				}
+				[data-theme="light"] .border-primary\/30 {
+					border-color: rgba(10, 124, 110, 0.35) !important;
+				}
+				[data-theme="light"] .border-primary\/40 {
+					border-color: rgba(10, 124, 110, 0.45) !important;
+				}
+				[data-theme="light"] .border-primary\/60 {
+					border-color: rgba(10, 124, 110, 0.7) !important;
+				}
+				[data-theme="light"] .bg-primary\/10 {
+					background-color: rgba(10, 124, 110, 0.1) !important;
+				}
+				[data-theme="light"] .bg-primary\/20 {
+					background-color: rgba(10, 124, 110, 0.2) !important;
+				}
+				[data-theme="light"] .bg-primary\/30 {
+					background-color: rgba(10, 124, 110, 0.3) !important;
+				}
+				[data-theme="light"] .from-primary,
+				[data-theme="light"] .to-primary {
+					--tw-gradient-from: #0a7c6e !important;
+					--tw-gradient-to: rgba(10, 124, 110, 0) !important;
+				}
+				[data-theme="light"] .fill-primary {
+					fill: #0a7c6e !important;
+				}
+				[data-theme="light"] .ring-primary {
+					--tw-ring-color: #0a7c6e !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_8px_\#00C2B1\] {
+					box-shadow: 0 0 8px rgba(10, 124, 110, 0.55) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_15px_rgba\(0\,194\,177\,0\.3\)\] {
+					box-shadow: 0 0 15px rgba(10, 124, 110, 0.3) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_20px_rgba\(0\,194\,177\,0\.3\)\] {
+					box-shadow: 0 0 20px rgba(10, 124, 110, 0.3) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_25px_rgba\(0\,194\,177\,0\.4\)\] {
+					box-shadow: 0 0 25px rgba(10, 124, 110, 0.35) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_30px_rgba\(0\,194\,177\,0\.15\)\] {
+					box-shadow: 0 0 30px rgba(10, 124, 110, 0.15) !important;
+				}
+				[data-theme="light"] .hover\:bg-primary:hover {
+					background-color: #0a7c6e !important;
+					color: #ffffff !important;
+				}
+				[data-theme="light"] .hover\:text-primary:hover {
+					color: #0a7c6e !important;
+				}
+				[data-theme="light"] .hover\:brightness-110:hover {
+					filter: brightness(1) saturate(1.1) !important;
+				}
+
+				/* ================================
+				   HERO TITLE RESPONSIVE
+				   text-display-xl = 72px (terlalu besar di mobile)
+				   Mobile: 36px, sm: 48px, md: 60px, lg: 72px
+				   ================================ */
+				.quiz-hero-title {
+					font-size: 36px;
+					line-height: 1.05;
+					letter-spacing: -0.02em;
+				}
+				@media (min-width: 640px) {
+					.quiz-hero-title {
+						font-size: 48px;
+						line-height: 1.05;
+						letter-spacing: -0.03em;
+					}
+				}
+				@media (min-width: 768px) {
+					.quiz-hero-title {
+						font-size: 60px;
+						line-height: 1.1;
+						letter-spacing: -0.04em;
+					}
+				}
+				@media (min-width: 1024px) {
+					.quiz-hero-title {
+						font-size: 72px;
+						line-height: 1.1;
+						letter-spacing: -0.04em;
+					}
+				}
+
 				/* style sama seperti sebelumnya – tidak diubah */
 				.velocity-mesh {
 					background-color: ${isDark ? "#050505" : "#f5f5f5"};
