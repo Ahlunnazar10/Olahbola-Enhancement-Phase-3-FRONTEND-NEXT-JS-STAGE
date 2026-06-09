@@ -319,7 +319,7 @@ export default function QuizPage() {
 				<div className="absolute inset-0 z-0">
 					<img
 						alt="Football Stadium"
-						src="https://i.pinimg.com/736x/f5/43/12/f543125fc77c68f3975cdc236c627695.jpg"
+						src="/images/quiz/quiz-bg.webp"
 						className="w-full h-full object-cover grayscale brightness-50 contrast-125 transition-transform duration-1000 group-hover:scale-105"
 					/>
 				</div>

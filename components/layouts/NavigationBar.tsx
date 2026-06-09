@@ -12,11 +12,10 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
 	{ href: "/", label: "Kickoff" },
-	{ href: "/journey", label: "Journey" },
 	{ href: "/artikel", label: "Artikel" },
+	{ href: "/games", label: "Games" },
 	{ href: "/interview", label: "Interview" },
 	{ href: "/kolaborasi", label: "Kolaborasi" },
-	// { href: "/games", label: "Games" },
 	{ href: "/media-spotlight", label: "Media Spotlight" },
 ];
 
