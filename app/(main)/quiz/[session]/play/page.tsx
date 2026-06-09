@@ -8,6 +8,7 @@ import {
 	usePathname,
 } from "next/navigation";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
 import type {
@@ -168,6 +169,7 @@ export default function PlaySessionPage() {
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
 	const router = useRouter();
+	const queryClient = useQueryClient();
 	const params = useParams();
 	const searchParams = useSearchParams();
 	const sessionId = params?.session as string;
@@ -924,6 +926,12 @@ export default function PlaySessionPage() {
 								backsoundRef.current = null;
 							}
 							clearSessionState();
+							queryClient.invalidateQueries({ queryKey: ["wc-global-leaderboard"] });
+							queryClient.invalidateQueries({ queryKey: ["wc-my-global-rank"] });
+							queryClient.invalidateQueries({ queryKey: ["wc-sessions"] });
+							queryClient.invalidateQueries({ queryKey: ["wc-session-leaderboard"] });
+							queryClient.invalidateQueries({ queryKey: ["wc-my-session-rank"] });
+							queryClient.invalidateQueries({ queryKey: ["quiz-summary"] });
 							router.push("/quiz");
 						}}
 						className="w-full bg-primary text-black font-label-bold py-4 rounded-2xl hover:shadow-[0_0_25px_rgba(0,194,177,0.4)] active:scale-[0.98] transition-all text-base tracking-wide uppercase"
