@@ -212,7 +212,7 @@ function PodiumCard({
 			{/* Avatar dengan rank chip */}
 			<div
 				className={`relative mx-auto mb-4 ${
-					isChampion ? "w-24 h-24 md:w-24 md:h-24" : "w-20 h-20 md:w-20 md:h-20"
+					isChampion ? "w-24 h-24 md:w-16 md:h-16" : "w-20 h-20 md:w-14 md:h-14"
 				}`}
 			>
 				<div
@@ -241,7 +241,7 @@ function PodiumCard({
 				</div>
 				<div
 					className={`absolute -top-2 -right-2 rounded-full flex items-center justify-center font-black text-black shadow-lg ${
-						isChampion ? "w-10 h-10 text-base" : "w-8 h-8 text-xs"
+						isChampion ? "w-6 h-6 text-base" : "w-5 h-5 text-xs"
 					}`}
 					style={{
 						background: medal.chip,
@@ -255,7 +255,7 @@ function PodiumCard({
 			{/* Nama */}
 			<h4
 				className={`font-black tracking-tight uppercase mb-1 truncate px-1 ${
-					isChampion ? "text-2xl md:text-2xl" : "text-lg md:text-lg"
+					isChampion ? "text-2xl md:text-sm" : "text-lg md:text-sm"
 				}`}
 				style={{
 					color: isDark ? "#ffffff" : "#1a1a1a",

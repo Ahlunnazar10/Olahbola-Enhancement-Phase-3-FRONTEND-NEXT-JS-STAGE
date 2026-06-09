@@ -154,6 +154,86 @@ function CountryBadge({
 }
 
 // ============================================================
+// LOADING OVERLAY (percentage-based)
+// ============================================================
+function LoadingOverlay() {
+	const [progress, setProgress] = useState(0);
+
+	useEffect(() => {
+		setProgress(0);
+		const start = Date.now();
+		const VIRTUAL_TOTAL_MS = 4000;
+		const id = setInterval(() => {
+			const elapsed = Date.now() - start;
+			const ratio = Math.min(elapsed / VIRTUAL_TOTAL_MS, 1);
+			const eased = 1 - Math.pow(1 - ratio, 3);
+			setProgress(Math.floor(eased * 100));
+			if (ratio >= 1) clearInterval(id);
+		}, 80);
+		return () => clearInterval(id);
+	}, []);
+
+	return (
+		<div
+			className="fixed inset-0 z-9999 flex items-center justify-center bg-black/70 backdrop-blur-md transition-opacity duration-300"
+			role="status"
+			aria-live="polite"
+		>
+			<div
+				className="rounded-2xl p-10 flex flex-col items-center gap-6 max-w-sm w-full mx-4 border"
+				style={{
+					background: "rgba(255,255,255,0.03)",
+					borderColor: "rgba(67, 222, 204, 0.3)",
+				}}
+			>
+				<div className="relative w-32 h-32 flex items-center justify-center">
+					<svg
+						className="absolute inset-0 -rotate-90"
+						viewBox="0 0 120 120"
+						aria-hidden="true"
+					>
+						<circle
+							cx="60"
+							cy="60"
+							r="52"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="8"
+							className="text-primary/20"
+						/>
+						<circle
+							cx="60"
+							cy="60"
+							r="52"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="8"
+							strokeLinecap="round"
+							strokeDasharray={2 * Math.PI * 52}
+							strokeDashoffset={2 * Math.PI * 52 * (1 - progress / 100)}
+							style={{ color: "#43decc" }}
+							className="transition-[stroke-dashoffset] duration-100 ease-out"
+						/>
+					</svg>
+					<span className="relative font-medium italic text-xl text-[#43decc] tabular-nums">
+						{progress}%
+					</span>
+				</div>
+				<div className="text-center space-y-1">
+					<p className="font-bold text-lg" style={{ color: "#e5e2e1" }}>
+						Memuat Prediksi Skor...
+					</p>
+					<p className="text-sm" style={{ color: "#bbcac6" }}>
+						Mengambil data Prediksi Skor dan klasemen terbaru. Tunggu sebentar
+						ya!
+					</p>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+// ============================================================
 // MAIN PAGE
 // ============================================================
 export default function PrediksiSkorPage() {
@@ -172,17 +252,36 @@ export default function PrediksiSkorPage() {
 	const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
 
 	// Data hooks
-	const { data: phasesData } = usePhases();
+	const { data: phasesData, isLoading: phasesLoading } = usePhases();
 	const { data: matchesData, isLoading: matchesLoading } = useMatches({
 		phase: activePhase,
 		...(activePhase === "group_stage" && { group: activeGroup }),
 	});
 	const { data: leaderboardData, isLoading: leaderboardLoading } =
 		useLeaderboard();
-	const { data: myPredictionsData } = useMyPredictions();
-	const { data: myRankData } = useMyRank();
-	const { data: mySummaryData } = useMySummary();
+	const { data: myPredictionsData, isLoading: myPredictionsLoading } =
+		useMyPredictions();
+	const { data: myRankData, isLoading: myRankLoading } = useMyRank();
+	const { data: mySummaryData, isLoading: mySummaryLoading } = useMySummary();
 	const submitPrediction = useSubmitPrediction();
+
+	// Initial overlay: only shown during the very first mount/refresh.
+	// Once every query has resolved at least once, the overlay is gone forever
+	// (subsequent tab/group switches show skeleton loaders, not the overlay).
+	const [initialLoadDone, setInitialLoadDone] = useState(false);
+	const isAnyLoading =
+		phasesLoading ||
+		matchesLoading ||
+		leaderboardLoading ||
+		myPredictionsLoading ||
+		myRankLoading ||
+		mySummaryLoading;
+	useEffect(() => {
+		if (!isAnyLoading && !initialLoadDone) {
+			setInitialLoadDone(true);
+		}
+	}, [isAnyLoading, initialLoadDone]);
+	const showInitialOverlay = !initialLoadDone;
 
 	// Set initial active phase from API (first active phase)
 	useEffect(() => {
@@ -356,6 +455,8 @@ export default function PrediksiSkorPage() {
 			className="min-h-screen pb-24 md:pb-12"
 			style={{ background: bg, color: text }}
 		>
+			{/* Initial loader overlay — only removed once every query has resolved at least once */}
+			{showInitialOverlay && <LoadingOverlay />}
 			{/* Velocity Mesh Background */}
 			<div
 				className="fixed inset-0 z-0 opacity-5 pointer-events-none"
@@ -380,8 +481,8 @@ export default function PrediksiSkorPage() {
 							fontFamily: "Space Grotesk, sans-serif",
 						}}
 					>
-						Olahbola <br />{" "}
-						<span style={{ color: primary }}>Prediksi Skor</span>
+						Prediksi Skor <br />{" "}
+						<span style={{ color: primary }}>Pesta Bola 2026</span>
 					</h1>
 
 					{/* Stats Bento Grid */}

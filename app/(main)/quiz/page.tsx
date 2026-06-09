@@ -14,6 +14,14 @@ import {
 import { useUIStore } from "@/stores/uiStore";
 
 const WORLD_CUP_EVENT_SLUG = "world-cup-2026";
+const MAX_NAME_WORDS = 2;
+
+function truncateName(name: string): string {
+	const parts = name.trim().split(/\s+/);
+	return parts.length <= MAX_NAME_WORDS
+		? name
+		: parts.slice(0, MAX_NAME_WORDS).join(" ");
+}
 
 function formatCountdown(target: Date): string {
 	const now = new Date();
@@ -36,7 +44,7 @@ function formatDisplayDuration(raw: string): string {
 }
 
 // Parse API duration string into readable format: "45 detik" or "2 menit"
-function formatDurationFromApi(raw: string): string {
+function formatDurationFromApi(raw: string | undefined): string {
 	if (!raw) return "-";
 	const abs = raw.replace("-", "");
 
@@ -130,10 +138,10 @@ function LoadingOverlay() {
 				</div>
 				<div className="text-center space-y-1">
 					<p className="font-headline-sm text-headline-sm italic-bold text-white neon-text">
-						Memuat Quiz...
+						Memuat Kuis...
 					</p>
 					<p className="text-on-surface-variant text-sm">
-						Mengambil data sesi World Cup 2026
+						Mengambil data sesi quiz dan klasemen terbaru. Tunggu bentar ya!
 					</p>
 				</div>
 			</div>
@@ -271,7 +279,7 @@ export default function QuizPage() {
 			<div className="min-h-screen velocity-mesh flex items-center justify-center px-4">
 				<div className="glass-card rounded-xl p-8 text-center max-w-md">
 					<h2 className="text-white text-xl font-headline-sm mb-4">
-						Gagal memuat data quiz
+						Gagal memuat data kuis
 					</h2>
 					<p className="text-on-surface-variant text-sm mb-6">
 						Terjadi kesalahan saat menghubungi server. Silakan coba lagi nanti.
@@ -317,15 +325,12 @@ export default function QuizPage() {
 				</div>
 				<div className="absolute inset-0 bg-linear-to-t from-surface via-transparent to-transparent z-10" />
 				<div className="relative z-20 flex flex-col items-center justify-center min-h-100 lg:h-full text-center p-6 py-12 lg:py-0">
-					<h1 className="quiz-hero-title italic-bold font-bold text-white mb-4 leading-none neon-text">
-						KUIS SPESIAL
+					<h1 className="quiz-hero-title italic-bold font-bold text-white mb-6 leading-none neon-text">
+						KUIS
 						<br />
-						<span className="text-[#1FE6DA]">WORLD CUP 2026</span>
+						<span className="text-[#1FE6DA]">PENTAS BOLA 2026</span>
 					</h1>
-					<p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-8">
-						Uji pengetahuan sepak bola kamu dan Buktikan Kamu adalah si-paling
-						tau bola dan menangkan hadiah jersey original!
-					</p>
+
 					<button
 						onClick={handlePlayNow}
 						disabled={!hasLiveSession}
@@ -372,7 +377,7 @@ export default function QuizPage() {
 									return (
 										<div
 											key={session.id}
-											className={`glass-card rounded-xl p-8 flex flex-col justify-between min-h-80 relative overflow-hidden group transition-all ${
+											className={`glass-card rounded-xl p-8 flex flex-col justify-between min-h-60 relative overflow-hidden group transition-all ${
 												isDisabled
 													? "border-outline-variant opacity-60"
 													: "border-primary/30"
@@ -397,9 +402,6 @@ export default function QuizPage() {
 												</span>
 											</div>
 											<div className="mt-5">
-												<span className="font-label-bold text-primary/80 uppercase tracking-widest">
-													WC SPECIAL EDITION
-												</span>
 												<h3
 													className={`font-extrabold text-3xl italic-bold ${isDark ? "text-white" : "text-[#329589]"} mt-2 neon-text`}
 												>
@@ -440,7 +442,7 @@ export default function QuizPage() {
 																? "TERKUNCI"
 																: isPlayed
 																	? "SUDAH MAIN"
-																	: "MAIN QUIZ"}
+																	: "MAIN KUIS"}
 												</button>
 											</div>
 										</div>
@@ -449,7 +451,7 @@ export default function QuizPage() {
 
 							{!sessionsLoading && sessions && sessions.length === 0 && (
 								<div className="glass-card rounded-xl p-8 col-span-full text-center text-on-surface-variant">
-									Belum ada quiz session yang aktif saat ini.
+									Belum ada kuis session yang aktif saat ini.
 								</div>
 							)}
 						</div>
@@ -519,7 +521,7 @@ export default function QuizPage() {
 													<div
 														className={`font-label-bold ${isDark ? "text-white" : "text-black/80"} truncate`}
 													>
-														{entry.name}
+														{truncateName(entry.name)}
 														{isUser && (
 															<span className="ml-2 text-xs text-primary font-label-bold bg-primary/30 px-1.5 py-0.5 rounded">
 																KAMU
@@ -556,39 +558,39 @@ export default function QuizPage() {
 										</div>
 									)}
 
-								{/* User NOT in top — show at bottom */}
+								{/* User NOT in top 3 — show realtime rank from my-rank API */}
 								{leaderboardDisplay &&
 									isAuthenticated &&
 									user &&
-									!leaderboardDisplay.userInTop &&
+									leaderboardDisplay.userRankInTop >= COUNT_TO_SHOW &&
 									myRankDisplay && (
 										<div className="mt-6 pt-4 border-t border-outline-variant">
-											<div className="flex items-center gap-4 bg-tertiary-container/30 p-3 rounded-lg border border-tertiary/60 shadow-[0_0_20px_rgba(255,143,99,0.3)] text-end">
+											<div
+												className={`flex items-center gap-4  p-3 rounded-lg border ${isDark ? "bg-tertiary-container/30" : "bg-[#9be1d2]"} border-tertiary/60 shadow-[0_0_20px_rgba(255,143,99,0.3)] text-end`}
+											>
 												<div className="font-display-xl text-3xl italic-bold text-white opacity-50 w-8">
 													{String(myRankDisplay.rank).padStart(2, "0")}
 												</div>
 												<div className="flex-1">
-													<div className="font-label-bold text-white">
-														{user.name}
-														<span className="ml-2 text-xs text-tertiary-fixed-dim font-label-bold bg-tertiary-container/50 px-1.5 py-0.5 rounded">
+													<div
+														className={`font-label-bold ${isDark ? "text-white" : "text-black/80"} truncate`}
+													>
+														{truncateName(user.name)}
+														<span
+															className={`ml-2 text-xs text-tertiary-fixed-dim font-label-bold bg-tertiary-container/50 px-1.5 py-0.5 rounded ${isDark ? "text-white" : "text-black"}`}
+														>
 															KAMU
 														</span>
 													</div>
-													<div className="text-xs text-tertiary-fixed-dim font-bold uppercase">
-														{myRankDisplay.points.toLocaleString()} POINTS
+													<div
+														className={`text-xs mt-1 ${isDark ? "text-white" : "text-black/80"}	`}
+													>
+														{myRankDisplay.points.toLocaleString()} POINTS •{" "}
+														{formatDurationFromApi(
+															myRank?.total_duration_formatted,
+														)}
 													</div>
 												</div>
-											</div>
-											<div className="flex items-center justify-center gap-2 mt-3 text-xs text-on-surface-variant text-center">
-												<Clock className="size-3" />
-												<span>
-													Durasi:{" "}
-													{myRank
-														? formatDurationFromApi(
-																myRank.total_duration_formatted,
-															)
-														: "-"}
-												</span>
 											</div>
 										</div>
 									)}
@@ -631,13 +633,13 @@ export default function QuizPage() {
 										</span>
 									</div>
 									<h3 className="font-label-bold text-white mb-2">
-										PILIH QUIZ
+										PILIH KUIS
 									</h3>
 									<p
 										className={`text-sm ${isDark ? "text-on-surface-variant" : "text-black/80"}`}
 									>
-										Pilih quiz yang tersedia sesuai sesi yang tersedia, pastikan
-										kamu siap sebelum waktu habis!
+										Pilih kuis sesuai sesi yang tersedia, pastikan kamu selesai
+										sebelum waktu habis!
 									</p>
 								</div>
 								<div className="text-center">
@@ -652,8 +654,7 @@ export default function QuizPage() {
 									<p
 										className={`text-sm ${isDark ? "text-on-surface-variant" : "text-black/80"}`}
 									>
-										Jawab sejumlah pertanyaan pilihan ganda dalam waktu yang
-										ditentukan
+										Jawab pertanyaan pilihan ganda dalam waktu yang ditentukan
 									</p>
 								</div>
 								<div className="text-center">

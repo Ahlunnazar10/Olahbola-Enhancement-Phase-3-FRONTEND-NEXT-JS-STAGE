@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import {
+	useRouter,
+	useParams,
+	useSearchParams,
+	usePathname,
+} from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
@@ -14,6 +19,7 @@ import {
 	useQuizSessionLeaderboard,
 	useQuizMySessionRank,
 } from "@/hooks/queries/useQuiz";
+import { useUIStore } from "@/stores/uiStore";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -63,6 +69,7 @@ function formatDuration(raw: string): string {
 const playSound = (url: string) => {
 	try {
 		const audio = new Audio(url);
+		audio.volume = 1.0;
 		audio.play().catch((e) => console.warn("Audio play error:", e));
 	} catch (e) {
 		console.warn("Audio error:", e);
@@ -89,7 +96,7 @@ function saveSessionState(
 	},
 ) {
 	try {
-		localStorage.setItem(
+		sessionStorage.setItem(
 			STORAGE_KEY,
 			JSON.stringify({ session_id: sessionId, ...state, savedAt: Date.now() }),
 		);
@@ -100,7 +107,7 @@ function saveSessionState(
 
 function loadSessionState(sessionId: string) {
 	try {
-		const raw = localStorage.getItem(STORAGE_KEY);
+		const raw = sessionStorage.getItem(STORAGE_KEY);
 		if (!raw) return null;
 		const parsed = JSON.parse(raw);
 		if (parsed.session_id !== sessionId) return null;
@@ -122,7 +129,7 @@ function loadSessionState(sessionId: string) {
 
 function clearSessionState() {
 	try {
-		localStorage.removeItem(STORAGE_KEY);
+		sessionStorage.removeItem(STORAGE_KEY);
 	} catch {
 		/* ignore */
 	}
@@ -133,14 +140,10 @@ function clearSessionState() {
 /* ------------------------------------------------------------------ */
 
 interface AnswerResponse {
-	correct: boolean;
-	correct_answer: number;
-	selected_answer: number;
-	explanation: string | null;
-	points_earned: number;
-	next_question: QuizWorldCupQuestion | null;
 	finished: boolean;
-	total_points: number;
+	next_question: QuizWorldCupQuestion | null;
+	current_index: number;
+	remaining_time_seconds: number;
 	total_points_so_far: number;
 }
 
@@ -162,6 +165,8 @@ interface ForceCloseResponse {
 /* ------------------------------------------------------------------ */
 
 export default function PlaySessionPage() {
+	const { theme } = useUIStore();
+	const isDark = theme === "dark";
 	const router = useRouter();
 	const params = useParams();
 	const searchParams = useSearchParams();
@@ -181,6 +186,12 @@ export default function PlaySessionPage() {
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [awaitingResume, setAwaitingResume] = useState(false);
+	const [resumeSnapshot, setResumeSnapshot] = useState<{
+		questionIndex: number;
+		totalQuestions: number;
+		totalPoints: number;
+	} | null>(null);
 
 	const [attemptId, setAttemptId] = useState<string | null>(null);
 	const [totalQuestions, setTotalQuestions] = useState(0);
@@ -215,11 +226,11 @@ export default function PlaySessionPage() {
 	const wrongStreakRef = useRef(0);
 	const backsoundRef = useRef<HTMLAudioElement | null>(null);
 	const hasPlayedTimerWarning = useRef(false);
+	const lastSelectedAnswerRef = useRef<number | null>(null);
 
 	// Refs
 	const totalCorrectRef = useRef(0);
 	const totalQuestionsRef = useRef(0);
-	const answeredCountRef = useRef(0);
 	const totalPointsSoFarRef = useRef(0);
 	const attemptIdRef = useRef<string | null>(null);
 	const questionIndexRef = useRef(0);
@@ -281,7 +292,7 @@ export default function PlaySessionPage() {
 		try {
 			const audio = new Audio(url);
 			audio.loop = true;
-			audio.volume = 0.2;
+			audio.volume = 0.1;
 			audio.play().catch((e) => console.warn("Backsound error:", e));
 			backsoundRef.current = audio;
 		} catch (e) {
@@ -290,17 +301,46 @@ export default function PlaySessionPage() {
 	}, [sessionNumber]);
 
 	useEffect(() => {
-		if (!loading && sessionNumber !== null) {
+		const isPlaying =
+			!loading &&
+			!awaitingResume &&
+			!error &&
+			!finished &&
+			!!currentQuestion &&
+			sessionNumber !== null;
+		if (isPlaying) {
 			startBacksound();
-		}
-	}, [loading, sessionNumber, startBacksound]);
-
-	useEffect(() => {
-		if (finished && backsoundRef.current) {
+		} else if (backsoundRef.current) {
 			backsoundRef.current.pause();
+			backsoundRef.current.currentTime = 0;
 			backsoundRef.current = null;
 		}
-	}, [finished]);
+	}, [
+		loading,
+		awaitingResume,
+		error,
+		finished,
+		currentQuestion,
+		sessionNumber,
+		startBacksound,
+	]);
+
+	/* ---- Hapus sessionStorage saat navigasi keluar dari quiz play ---- */
+	const pathname = usePathname();
+	const lastSeenPathnameRef = useRef(pathname);
+	useEffect(() => {
+		const prev = lastSeenPathnameRef.current;
+		lastSeenPathnameRef.current = pathname;
+		// Hapus hanya jika pathname berubah (bukan render pertama)
+		// dan route bukan lagi /quiz/[...]/play
+		if (prev !== pathname && !pathname?.startsWith("/quiz/")) {
+			clearSessionState();
+			if (backsoundRef.current) {
+				backsoundRef.current.pause();
+				backsoundRef.current = null;
+			}
+		}
+	}, [pathname]);
 
 	/* ---- Play sound effect based on answer and streak ---- */
 	const playAnswerSound = useCallback((isCorrect: boolean) => {
@@ -308,39 +348,24 @@ export default function PlaySessionPage() {
 		const currentCorrect = correctStreakRef.current;
 		const currentWrong = wrongStreakRef.current;
 
-		console.log(
-			`[DEBUG] Sebelum: correctStreak=${currentCorrect}, wrongStreak=${currentWrong}, jawaban=${isCorrect ? "BENAR" : "SALAH"}`,
-		);
-
 		if (isCorrect) {
-			// Jika sebelumnya salah 2x -> tumben bener
 			if (currentWrong === 2) {
 				soundUrl = "/sounds/effect/tumben-bener.mp3";
-			}
-			// Jika streak benar +1 akan menjadi 3 -> ambil sendiri pialanya
-			else if (currentCorrect + 1 === 3) {
+			} else if (currentCorrect + 1 === 3) {
 				soundUrl = "/sounds/effect/ambil-sendiri-pialanya.mp3";
-			}
-			// Biasa
-			else {
+			} else {
 				soundUrl = "/sounds/effect/benar.mp3";
 			}
 		} else {
-			// Jika sebelumnya benar 2x -> yah kocak oke lanjut
 			if (currentCorrect === 2) {
 				soundUrl = "/sounds/effect/yah-kocak-oke-lanjut.mp3";
-			}
-			// Jika streak salah +1 akan menjadi 3 -> bisa main gak sih
-			else if (currentWrong + 1 === 3) {
+			} else if (currentWrong + 1 === 3) {
 				soundUrl = "/sounds/effect/bisa-main-gak-sih.mp3";
-			}
-			// Biasa
-			else {
+			} else {
 				soundUrl = "/sounds/effect/salah.mp3";
 			}
 		}
 
-		// Update streaks
 		if (isCorrect) {
 			correctStreakRef.current += 1;
 			wrongStreakRef.current = 0;
@@ -348,11 +373,6 @@ export default function PlaySessionPage() {
 			wrongStreakRef.current += 1;
 			correctStreakRef.current = 0;
 		}
-
-		console.log(`[DEBUG] Memutar: ${soundUrl}`);
-		console.log(
-			`[DEBUG] Sesudah: correctStreak=${correctStreakRef.current}, wrongStreak=${wrongStreakRef.current}`,
-		);
 
 		playSound(soundUrl);
 	}, []);
@@ -391,34 +411,41 @@ export default function PlaySessionPage() {
 	/* ---- Answer result handler ---- */
 	const handleAnswerResult = useCallback(
 		(result: AnswerResponse) => {
-			// Log nilai correct dari API untuk debugging
-			console.log(`[API] result.correct = ${result.correct}`);
-
-			// Play sound effect berdasarkan nilai correct dari API
-			playAnswerSound(result.correct);
-
-			answeredCountRef.current += 1;
-			questionIndexRef.current = answeredCountRef.current;
-			setQuestionIndex(answeredCountRef.current);
+			questionIndexRef.current += 1;
+			setQuestionIndex(questionIndexRef.current);
 
 			const previousPoints = totalPointsSoFarRef.current;
 			const currentPoints =
 				typeof result.total_points_so_far === "number"
 					? result.total_points_so_far
-					: previousPoints + (result.points_earned ?? 0);
+					: previousPoints;
 
-			if (currentPoints > previousPoints) {
+			const isCorrect = currentPoints > previousPoints;
+			if (isCorrect) {
 				setTotalCorrect((c) => c + 1);
 				totalCorrectRef.current += 1;
 			}
 
 			totalPointsSoFarRef.current = currentPoints;
 
+			playAnswerSound(isCorrect);
+
+			const selectedAnswer = lastSelectedAnswerRef.current ?? 0;
+			const correctAnswer = isCorrect ? selectedAnswer : -1;
+			const pointsEarned = currentPoints - previousPoints;
+			setAnswerResult({
+				correct: isCorrect,
+				correctAnswer,
+				selectedAnswer,
+				explanation: null,
+				pointsEarned,
+			});
+
 			if (result.finished) {
 				setFinalData({
-					score: result.total_points,
+					score: currentPoints,
 					correctCount: totalCorrectRef.current,
-					totalPoints: result.total_points,
+					totalPoints: currentPoints,
 					totalQuestions: totalQuestionsRef.current,
 				});
 				setFinished(true);
@@ -431,7 +458,7 @@ export default function PlaySessionPage() {
 				setAnswerSubmitted(false);
 				setAnswerResult(null);
 				saveSessionState(sessionId, {
-					questionIndex: answeredCountRef.current,
+					questionIndex: questionIndexRef.current,
 					totalPoints: totalPointsSoFarRef.current,
 					totalCorrect: totalCorrectRef.current,
 					timer: timerRef.current,
@@ -449,6 +476,30 @@ export default function PlaySessionPage() {
 		[sessionId, playAnswerSound],
 	);
 
+	const handleResume = useCallback(() => {
+		const saved = loadSessionState(sessionId);
+		if (!saved) {
+			setAwaitingResume(false);
+			return;
+		}
+		setAttemptId(saved.attemptId);
+		const qCount = saved.totalQuestions ?? saved.questionIndex + 1;
+		const dur = saved.duration ?? durationFromUrl;
+		setTotalQuestions(qCount);
+		totalQuestionsRef.current = qCount;
+		setDuration(dur);
+		setTimer(saved.timer);
+		setTotalCorrect(saved.totalCorrect);
+		totalCorrectRef.current = saved.totalCorrect;
+		totalPointsSoFarRef.current = saved.totalPoints;
+		setQuestionIndex(saved.questionIndex);
+		if (saved.currentQuestion) {
+			setCurrentQuestion(saved.currentQuestion);
+		}
+		setAwaitingResume(false);
+		setResumeSnapshot(null);
+	}, [sessionId, durationFromUrl]);
+
 	const handleAnswerResultRef = useRef(handleAnswerResult);
 	useEffect(() => {
 		handleAnswerResultRef.current = handleAnswerResult;
@@ -465,20 +516,13 @@ export default function PlaySessionPage() {
 				saved.questionIndex < saved.totalQuestions!
 			) {
 				if (cancelled) return;
-				setAttemptId(saved.attemptId);
 				const qCount = saved.totalQuestions ?? saved.questionIndex + 1;
-				const dur = saved.duration ?? durationFromUrl;
-				setTotalQuestions(qCount);
-				totalQuestionsRef.current = qCount;
-				setDuration(dur);
-				setTimer(saved.timer);
-				setTotalCorrect(saved.totalCorrect);
-				totalCorrectRef.current = saved.totalCorrect;
-				totalPointsSoFarRef.current = saved.totalPoints;
-				setQuestionIndex(saved.questionIndex);
-				if (saved.currentQuestion) {
-					setCurrentQuestion(saved.currentQuestion);
-				}
+				setResumeSnapshot({
+					questionIndex: saved.questionIndex,
+					totalQuestions: qCount,
+					totalPoints: saved.totalPoints,
+				});
+				setAwaitingResume(true);
 				setLoading(false);
 				return;
 			}
@@ -497,6 +541,10 @@ export default function PlaySessionPage() {
 				totalQuestionsRef.current = qCount;
 				setDuration(dur);
 				setTimer(dur);
+				correctStreakRef.current = 0;
+				wrongStreakRef.current = 0;
+				setAnswerSubmitted(false);
+				setAnswerResult(null);
 				if (data.questions && data.questions.length > 0) {
 					setCurrentQuestion(data.questions[0]);
 				} else {
@@ -599,6 +647,7 @@ export default function PlaySessionPage() {
 		async (selectedAnswer: number) => {
 			if (answerSubmitted || !attemptId || !currentQuestion) return;
 			setAnswerSubmitted(true);
+			lastSelectedAnswerRef.current = selectedAnswer;
 
 			const selectedOption = String.fromCharCode(65 + selectedAnswer);
 
@@ -611,13 +660,6 @@ export default function PlaySessionPage() {
 					},
 				);
 				const result = response.data.data;
-				setAnswerResult({
-					correct: result.correct,
-					correctAnswer: result.correct_answer,
-					selectedAnswer: result.selected_answer,
-					explanation: result.explanation,
-					pointsEarned: result.points_earned,
-				});
 				handleAnswerResultRef.current(result);
 			} catch {
 				setAnswerSubmitted(false);
@@ -644,10 +686,77 @@ export default function PlaySessionPage() {
 	/* ------------------------------------------------------------------ */
 	/*  Render                                                            */
 	/* ------------------------------------------------------------------ */
+	if (awaitingResume && resumeSnapshot) {
+		const nextQ = resumeSnapshot.questionIndex + 1;
+		return (
+			<div className="play-session-page">
+				<div
+					data-theme={theme}
+					className={`min-h-screen ${isDark ? "bg-[#050505]" : "bg-[#f5f5f5]"} velocity-mesh relative flex items-center justify-center px-6 py-12 transition-colors duration-300`}
+				>
+					<div className="absolute inset-0 bg-quiz-hero opacity-30 pointer-events-none"></div>
+					<div className="relative z-10 max-w-md w-full text-center">
+						<div className="glass-panel rounded-3xl p-8 md:p-10">
+							<div className="mx-auto w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(67,222,204,0.25)]">
+								<span className="text-3xl">⏱</span>
+							</div>
+							<div className="flex items-center justify-center gap-2 mb-3">
+								<span
+									className={`inline-block w-2 h-2 ${isDark ? "bg-primary" : "bg-[#298B7F]"} rounded-full animate-pulse shadow-[0_0_10px_#43decc]`}
+								></span>
+								<p
+									className={`font-label-bold ${isDark ? "text-primary" : "text-[#298B7F]"} tracking-[0.3em] uppercase text-xs`}
+								>
+									Sesi Tersimpan
+								</p>
+							</div>
+							<h2
+								className={`font-headline-md uppercase leading-tight mb-5 ${isDark ? "text-white" : "text-black/85"}`}
+							>
+								Lanjutkan Kuis?
+							</h2>
+							<p
+								className={`text-sm mb-8 leading-relaxed ${isDark ? "text-white/70" : "text-black/70"}`}
+							>
+								Kamu sebelumnya sedang di pertanyaan{" "}
+								<span
+									className={`${isDark ? "text-primary" : "text-[#298B7F]"} font-bold`}
+								>
+									{String(nextQ).padStart(2, "0")} /{" "}
+									{String(resumeSnapshot.totalQuestions).padStart(2, "0")}
+								</span>{" "}
+								dengan skor{" "}
+								<span
+									className={`${isDark ? "text-primary" : "text-[#298B7F]"} font-bold`}
+								>
+									{resumeSnapshot.totalPoints} poin
+								</span>
+								.
+							</p>
+							<div className="flex flex-col gap-3">
+								<button
+									onClick={handleResume}
+									className="w-full bg-primary text-slate-950 font-label-bold uppercase tracking-widest text-sm py-3 px-6 rounded-xl hover:shadow-[0_0_20px_rgba(0,194,177,0.5)] active:scale-95 transition-all"
+								>
+									Lanjut Kuis
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	if (loading) {
 		return (
-			<div className="min-h-screen bg-background flex items-center justify-center">
-				<div className="text-primary animate-pulse text-lg font-label-bold">
+			<div
+				data-theme={theme}
+				className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? "bg-[#050505]" : "bg-[#f5f5f5]"}`}
+			>
+				<div
+					className={`${isDark ? "text-primary" : "text-[#107F71]"} animate-pulse text-lg font-label-bold`}
+				>
 					Loading...
 				</div>
 			</div>
@@ -656,7 +765,10 @@ export default function PlaySessionPage() {
 
 	if (error && !attemptId) {
 		return (
-			<div className="min-h-screen velocity-mesh relative flex items-center justify-center px-6 py-12">
+			<div
+				data-theme={theme}
+				className={`min-h-screen ${isDark ? "bg-[#050505]" : "bg-[#f5f5f5]"} velocity-mesh relative flex items-center justify-center px-6 py-12 transition-colors duration-300`}
+			>
 				<div className="absolute inset-0 bg-quiz-hero opacity-30 pointer-events-none"></div>
 				<div className="relative z-10 max-w-md w-full text-center">
 					<div className="glass-panel rounded-3xl p-8 md:p-10">
@@ -669,7 +781,9 @@ export default function PlaySessionPage() {
 								Session Error
 							</p>
 						</div>
-						<h2 className="font-headline-md text-white uppercase leading-tight mb-5">
+						<h2
+							className={`font-headline-md uppercase leading-tight mb-5 ${isDark ? "text-white" : "text-black/85"}`}
+						>
 							{error}
 						</h2>
 						<Link
@@ -677,7 +791,7 @@ export default function PlaySessionPage() {
 							className="inline-flex items-center justify-center gap-2 w-full bg-primary text-slate-950 font-label-bold uppercase tracking-widest text-sm py-3 px-6 rounded-xl hover:shadow-[0_0_20px_rgba(0,194,177,0.5)] active:scale-95 transition-all"
 						>
 							<ArrowLeft className="size-4" />
-							Kembali ke Quiz
+							Kembali ke Kuis
 						</Link>
 					</div>
 				</div>
@@ -692,19 +806,28 @@ export default function PlaySessionPage() {
 				: 0;
 
 		return (
-			<div className="min-h-screen bg-quiz-page relative flex items-center justify-center px-4 py-20">
+			<div
+				data-theme={theme}
+				className={`min-h-screen relative flex items-center justify-center px-4 py-20 transition-colors duration-300 ${isDark ? "bg-[#081010]" : "bg-[#f5f5f5]"}`}
+			>
 				<div className="fixed inset-0 pointer-events-none overflow-hidden">
 					<div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 rounded-full bg-primary/5 blur-[120px]" />
 				</div>
 				<div className="relative z-10 w-full max-w-lg">
 					<div className="text-center mb-8">
 						<div className="inline-flex items-center gap-2 mb-4">
-							<span className="inline-block w-2.5 h-2.5 bg-primary rounded-full animate-pulse shadow-[0_0_10px_#43decc]" />
-							<p className="font-label-bold text-primary tracking-[0.3em] uppercase text-sm">
-								Session Selesai
+							<span
+								className={`inline-block w-2.5 h-2.5 ${isDark ? "bg-primary" : "bg-[#298B7F]"} rounded-full animate-pulse shadow-[0_0_10px_#43decc]`}
+							/>
+							<p
+								className={`font-label-bold ${isDark ? "text-primary" : "text-[#298B7F]"} tracking-[0.3em] uppercase text-sm`}
+							>
+								Sesi Selesai
 							</p>
 						</div>
-						<h1 className="text-white font-headline-lg leading-tight">
+						<h1
+							className={`font-headline-lg leading-tight ${isDark ? "text-white" : "text-black/85"}`}
+						>
 							{sessionName}
 						</h1>
 					</div>
@@ -736,46 +859,76 @@ export default function PlaySessionPage() {
 								/>
 							</svg>
 							<div className="absolute inset-0 flex flex-col items-center justify-center">
-								<span className="text-white font-display-md font-bold text-4xl">
+								<span
+									className={`font-display-md font-bold text-4xl ${isDark ? "text-white" : "text-black/85"}`}
+								>
 									+{finalData.score}
 								</span>
-								<span className="text-xs text-white/50 font-label-bold tracking-widest uppercase">
+								<span
+									className={`text-xs font-label-bold tracking-widest uppercase ${isDark ? "text-white/50" : "text-black/50"}`}
+								>
 									Poin
 								</span>
 							</div>
 						</div>
 						<div className="flex items-center gap-8 w-full justify-center">
 							<div className="text-center">
-								<div className="text-3xl font-bold text-primary">
+								<div
+									className={`text-3xl font-bold ${isDark ? "text-white" : "text-black/85"}`}
+								>
 									{finalData.correctCount}
 								</div>
-								<div className="text-xs text-white/50 font-label-bold tracking-widest uppercase mt-1">
+								<div
+									className={`text-xs font-label-bold tracking-widest uppercase mt-1 ${isDark ? "text-white/50" : "text-black/50"}`}
+								>
 									Benar
 								</div>
 							</div>
-							<div className="w-px h-10 bg-white/10" />
+							<div
+								className={`w-px h-10 ${isDark ? "bg-white/10" : "bg-black/10"}`}
+							/>
 							<div className="text-center">
-								<div className="text-3xl font-bold text-white">
+								<div
+									className={`text-3xl font-bold ${isDark ? "text-white" : "text-black/85"}`}
+								>
 									{finalData.totalQuestions}
 								</div>
-								<div className="text-xs text-white/50 font-label-bold tracking-widest uppercase mt-1">
+								<div
+									className={`text-xs font-label-bold tracking-widest uppercase mt-1 ${isDark ? "text-white/50" : "text-black/50"}`}
+								>
 									Total
 								</div>
 							</div>
-							<div className="w-px h-10 bg-white/10" />
+							<div
+								className={`w-px h-10 ${isDark ? "bg-white/10" : "bg-black/10"}`}
+							/>
 							<div className="text-center">
-								<div className="text-3xl font-bold text-primary">{pct}%</div>
-								<div className="text-xs text-white/50 font-label-bold tracking-widest uppercase mt-1">
+								<div
+									className={`text-3xl font-bold ${isDark ? "text-white" : "text-black/85"}`}
+								>
+									{pct}%
+								</div>
+								<div
+									className={`text-xs font-label-bold tracking-widest uppercase mt-1 ${isDark ? "text-white/50" : "text-black/50"}`}
+								>
 									Akurasi
 								</div>
 							</div>
 						</div>
 					</div>
 					<button
-						onClick={() => router.push("/quiz")}
+						onClick={() => {
+							if (backsoundRef.current) {
+								backsoundRef.current.pause();
+								backsoundRef.current.currentTime = 0;
+								backsoundRef.current = null;
+							}
+							clearSessionState();
+							router.push("/quiz");
+						}}
 						className="w-full bg-primary text-black font-label-bold py-4 rounded-2xl hover:shadow-[0_0_25px_rgba(0,194,177,0.4)] active:scale-[0.98] transition-all text-base tracking-wide uppercase"
 					>
-						Kembali ke Quiz
+						Kembali ke kuis
 					</button>
 				</div>
 			</div>
@@ -788,12 +941,15 @@ export default function PlaySessionPage() {
 	const questionDotList = Array.from({ length: totalQuestions }, (_, i) => i);
 
 	return (
-		<div className="min-h-screen bg-quiz-page relative px-4 py-6 md:py-8">
+		<div
+			data-theme={theme}
+			className={`min-h-screen ${isDark ? "bg-[#081010]" : "bg-[#f5f5f5]"}  relative px-4 py-6 md:py-8 transition-colors duration-300`}
+		>
 			<div className="fixed inset-0 pointer-events-none overflow-hidden">
 				<div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 rounded-full bg-primary/5 blur-[120px]" />
 			</div>
 			<div className="relative z-10 max-w-300 mx-auto">
-				<div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
+				<div className="flex flex-row justify-between items-start md:items-end gap-4 mb-8">
 					<div className="space-y-1">
 						<div className="flex items-center gap-2">
 							<span className="inline-block w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_10px_#43decc]" />
@@ -801,18 +957,20 @@ export default function PlaySessionPage() {
 								Sesi Aktif
 							</p>
 						</div>
-						<p className="text-white font-bold uppercase text-2xl md:text-4xl tracking-wide">
+						<p
+							className={`font-bold uppercase text-2xl md:text-4xl tracking-wide ${isDark ? "text-white" : "text-black/85"}`}
+						>
 							{sessionName}
 						</p>
 					</div>
-					<div className="relative w-28 h-28 md:w-32 md:h-32 flex items-center justify-center shrink-0">
+					<div className="relative w-32 h-32 flex items-center justify-center shrink-0">
 						<svg className="w-full h-full -rotate-90" aria-hidden="true">
 							<circle
 								cx="64"
 								cy="64"
 								r="54"
 								fill="transparent"
-								stroke="rgba(255,255,255,0.08)"
+								stroke={isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}
 								strokeWidth="6"
 							/>
 							<circle
@@ -835,11 +993,13 @@ export default function PlaySessionPage() {
 						</svg>
 						<div className="absolute flex flex-col items-center">
 							<span
-								className={`font-headline-md ${isUrgent ? "text-red-400" : "text-white"}`}
+								className={`font-headline-md ${isUrgent ? "text-red-400" : isDark ? "text-white" : "text-black/85"}`}
 							>
 								{formatCountdown(timer)}
 							</span>
-							<span className="text-[9px] text-white/40 font-bold tracking-widest uppercase">
+							<span
+								className={`text-[9px] font-bold tracking-widest uppercase ${isDark ? "text-white/40" : "text-black/40"}`}
+							>
 								Waktu
 							</span>
 						</div>
@@ -847,7 +1007,7 @@ export default function PlaySessionPage() {
 				</div>
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
 					<div className="lg:col-span-8 glass-panel rounded-3xl border-t border-primary/30 shadow-[0_0_40px_rgba(0,194,177,0.08)] p-6 md:p-10 flex flex-col justify-between min-h-90">
-						<div className="flex justify-between items-center">
+						<div className="flex flex-col md:flex-row gap-2 justify-between items-center">
 							<span className="font-body-lg text-primary-container px-3 py-1 bg-primary-container/10 border border-primary-container/20 rounded-full text-xs">
 								PERTANYAAN {String(currentQ).padStart(2, "0")} /{" "}
 								{String(totalQuestions).padStart(2, "0")}
@@ -861,7 +1021,9 @@ export default function PlaySessionPage() {
 												? "bg-primary"
 												: i === currentQ - 1
 													? "bg-primary"
-													: "bg-white/20"
+													: isDark
+														? "bg-white/20"
+														: "bg-black/20"
 										}`}
 									/>
 								))}
@@ -876,7 +1038,9 @@ export default function PlaySessionPage() {
 								/>
 							</div>
 						)}
-						<h2 className="text-white text-lg md:text-xl font-headline-md leading-relaxed">
+						<h2
+							className={`text-lg md:text-xl font-headline-md leading-relaxed my-6 md:my-0 ${isDark ? "text-white" : "text-black/85"}`}
+						>
 							{currentQuestion.question}
 						</h2>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -886,8 +1050,9 @@ export default function PlaySessionPage() {
 								const isCorrect =
 									answerSubmitted && answerResult?.correctAnswer === index;
 								const isWrong = answerSubmitted && isSelected && !isCorrect;
-								let btnClass =
-									"group flex items-center justify-between p-4 rounded-2xl glass-panel border-white/6 text-left transition-all duration-300 ";
+								const baseBorder = isDark ? "border-white/6" : "border-black/8";
+								const dimBorder = isDark ? "border-white/4" : "border-black/6";
+								let btnClass = `group flex items-center justify-between p-4 rounded-2xl glass-panel ${baseBorder} text-left transition-all duration-300 `;
 								if (answerSubmitted) {
 									if (isCorrect) {
 										btnClass +=
@@ -895,12 +1060,15 @@ export default function PlaySessionPage() {
 									} else if (isWrong) {
 										btnClass += "border-red-500/50 bg-red-500/10";
 									} else {
-										btnClass += "opacity-40 border-white/4";
+										btnClass += `opacity-40 ${dimBorder}`;
 									}
 								} else {
 									btnClass +=
 										"hover:bg-primary/10 hover:border-[#00c2b1] hover:translate-x-2";
 								}
+								const optionTextClass = isDark
+									? "text-white/80 group-hover:text-white"
+									: "text-black/80 group-hover:text-black";
 								return (
 									<button
 										key={index}
@@ -908,7 +1076,9 @@ export default function PlaySessionPage() {
 										disabled={answerSubmitted}
 										className={btnClass}
 									>
-										<span className="text-sm md:text-base text-white/80 group-hover:text-white font-body-lg">
+										<span
+											className={`text-sm md:text-base font-body-lg ${optionTextClass}`}
+										>
 											{option}
 										</span>
 										{answerSubmitted && isCorrect && (
@@ -925,7 +1095,9 @@ export default function PlaySessionPage() {
 						</div>
 						{answerSubmitted && answerResult?.explanation && (
 							<div className="mt-6 p-4 rounded-xl bg-primary/10 border border-primary/25">
-								<p className="text-sm text-white/80">
+								<p
+									className={`text-sm ${isDark ? "text-white/80" : "text-black/80"}`}
+								>
 									<span className="text-primary font-label-bold">
 										Penjelasan:{" "}
 									</span>
@@ -935,12 +1107,18 @@ export default function PlaySessionPage() {
 						)}
 					</div>
 					<div className="lg:col-span-4 flex flex-col gap-5">
-						<div className="glass-panel p-5 rounded-3xl border-white/6">
-							<p className="font-label-bold text-white/40 mb-3 uppercase tracking-widest text-xs">
+						<div
+							className={`glass-panel p-5 rounded-3xl ${isDark ? "border-white/6" : "border-black/8"}`}
+						>
+							<p
+								className={`font-label-bold mb-3 uppercase tracking-widest text-xs ${isDark ? "text-white/40" : "text-black/40"}`}
+							>
 								Jawaban Benar
 							</p>
 							<div className="space-y-2">
-								<div className="flex justify-between text-xs font-bold text-white/60">
+								<div
+									className={`flex justify-between text-xs font-bold ${isDark ? "text-white/60" : "text-black/60"}`}
+								>
 									<span>
 										{totalCorrect}/{totalQuestions}
 									</span>
@@ -951,7 +1129,9 @@ export default function PlaySessionPage() {
 										%
 									</span>
 								</div>
-								<div className="h-2.5 w-full bg-white/5 rounded-full overflow-hidden">
+								<div
+									className={`h-2.5 w-full rounded-full overflow-hidden ${isDark ? "bg-white/5" : "bg-black/5"}`}
+								>
 									<div
 										className="h-full bg-linear-to-r from-primary to-primary-container shadow-[0_0_10px_rgba(0,194,177,0.5)] transition-all duration-500 rounded-full"
 										style={{
@@ -961,10 +1141,138 @@ export default function PlaySessionPage() {
 								</div>
 							</div>
 						</div>
-						<SessionLeaderboardCard sessionId={sessionId} />
+						<SessionLeaderboardCard sessionId={sessionId} isDark={isDark} />
 					</div>
 				</div>
 			</div>
+			<style jsx global>{`
+				[data-theme="light"] .text-primary,
+				[data-theme="light"] .text-primary-fixed-dim {
+					color: #0a7c6e !important;
+				}
+				[data-theme="light"] .bg-primary {
+					background-color: #0a7c6e !important;
+				}
+				[data-theme="light"] .border-primary {
+					border-color: rgba(10, 124, 110, 0.5) !important;
+				}
+				[data-theme="light"] .border-primary\/20 {
+					border-color: rgba(10, 124, 110, 0.2) !important;
+				}
+				[data-theme="light"] .border-primary\/30 {
+					border-color: rgba(10, 124, 110, 0.35) !important;
+				}
+				[data-theme="light"] .border-primary\/40 {
+					border-color: rgba(10, 124, 110, 0.45) !important;
+				}
+				[data-theme="light"] .border-primary\/60 {
+					border-color: rgba(10, 124, 110, 0.7) !important;
+				}
+				[data-theme="light"] .bg-primary\/10 {
+					background-color: rgba(10, 124, 110, 0.1) !important;
+				}
+				[data-theme="light"] .bg-primary\/20 {
+					background-color: rgba(10, 124, 110, 0.2) !important;
+				}
+				[data-theme="light"] .bg-primary\/30 {
+					background-color: rgba(10, 124, 110, 0.3) !important;
+				}
+				[data-theme="light"] .from-primary,
+				[data-theme="light"] .to-primary {
+					--tw-gradient-from: #0a7c6e !important;
+					--tw-gradient-to: rgba(10, 124, 110, 0) !important;
+				}
+				[data-theme="light"] .fill-primary {
+					fill: #0a7c6e !important;
+				}
+				[data-theme="light"] .ring-primary {
+					--tw-ring-color: #0a7c6e !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_8px_\#00C2B1\] {
+					box-shadow: 0 0 8px rgba(10, 124, 110, 0.55) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_10px_\#43decc\] {
+					box-shadow: 0 0 10px rgba(10, 124, 110, 0.55) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_15px_rgba\(0\,194\,177\,0\.3\)\] {
+					box-shadow: 0 0 15px rgba(10, 124, 110, 0.3) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_20px_rgba\(0\,194\,177\,0\.3\)\] {
+					box-shadow: 0 0 20px rgba(10, 124, 110, 0.3) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_20px_rgba\(0\,194\,177\,0\.4\)\] {
+					box-shadow: 0 0 20px rgba(10, 124, 110, 0.35) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_25px_rgba\(0\,194\,177\,0\.4\)\] {
+					box-shadow: 0 0 25px rgba(10, 124, 110, 0.35) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_30px_rgba\(0\,194\,177\,0\.15\)\] {
+					box-shadow: 0 0 30px rgba(10, 124, 110, 0.15) !important;
+				}
+				[data-theme="light"] .shadow-\[0_0_40px_rgba\(0\,194\,177\,0\.08\)\] {
+					box-shadow: 0 0 40px rgba(10, 124, 110, 0.08) !important;
+				}
+				[data-theme="light"] .hover\:bg-primary:hover {
+					background-color: #0a7c6e !important;
+					color: #ffffff !important;
+				}
+				[data-theme="light"] .hover\:text-primary:hover {
+					color: #0a7c6e !important;
+				}
+				[data-theme="light"] .hover\:brightness-110:hover {
+					filter: brightness(1) saturate(1.1) !important;
+				}
+
+				/* Light mode glass panel */
+				[data-theme="light"] .glass-panel {
+					background: rgba(255, 255, 255, 0.8) !important;
+					border: 1px solid rgba(10, 124, 110, 0.15) !important;
+					box-shadow: 0 8px 32px 0 rgba(10, 124, 110, 0.08) !important;
+				}
+				[data-theme="light"] .glass-card {
+					background: rgba(255, 255, 255, 0.8) !important;
+					border: 1px solid rgba(10, 124, 110, 0.2) !important;
+					box-shadow:
+						0 8px 32px 0 rgba(0, 0, 0, 0.06),
+						inset 0 0 32px rgba(10, 124, 110, 0.03) !important;
+				}
+
+				/* Light mode quiz page background */
+				[data-theme="light"] .bg-quiz-page {
+					background-color: #f5f5f5 !important;
+					background-image:
+						linear-gradient(
+							rgba(245, 245, 245, 0.85),
+							rgba(245, 245, 245, 0.85)
+						),
+						radial-gradient(
+							circle at 50% 50%,
+							rgba(10, 124, 110, 0.06) 0%,
+							transparent 70%
+						),
+						linear-gradient(rgba(10, 124, 110, 0.04) 1px, transparent 1px),
+						linear-gradient(
+							90deg,
+							rgba(10, 124, 110, 0.04) 1px,
+							transparent 1px
+						) !important;
+				}
+
+				/* Light mode velocity mesh background */
+				[data-theme="light"] .velocity-mesh {
+					background-color: #f5f5f5 !important;
+					background-image: radial-gradient(
+						circle at 2px 2px,
+						rgba(10, 124, 110, 0.06) 1px,
+						transparent 0
+					) !important;
+				}
+
+				/* Light mode timer ring track */
+				[data-theme="light"] .scrollbar-thumb-white\/10 {
+					--tw-scrollbar-thumb: rgba(10, 124, 110, 0.2) !important;
+				}
+			`}</style>
 		</div>
 	);
 }
@@ -973,7 +1281,13 @@ export default function PlaySessionPage() {
 /*  Session Leaderboard Card                                           */
 /* ------------------------------------------------------------------ */
 
-function SessionLeaderboardCard({ sessionId }: { sessionId: string }) {
+function SessionLeaderboardCard({
+	sessionId,
+	isDark,
+}: {
+	sessionId: string;
+	isDark: boolean;
+}) {
 	const { data, isLoading } = useQuizSessionLeaderboard(
 		sessionId,
 		"world-cup-2026",
@@ -988,18 +1302,28 @@ function SessionLeaderboardCard({ sessionId }: { sessionId: string }) {
 	}
 
 	return (
-		<div className="glass-panel p-5 rounded-3xl border-white/6 flex flex-col h-full">
-			<p className="font-label-bold text-white/40 mb-3 uppercase tracking-widest text-xs">
-				Leaderboard
+		<div
+			className={`glass-panel p-5 rounded-3xl flex flex-col h-full ${isDark ? "border-white/6" : "border-black/8"}`}
+		>
+			<p
+				className={`font-label-bold mb-3 uppercase tracking-widest text-xs ${isDark ? "text-white/40" : "text-black/40"}`}
+			>
+				Klasemen Sesi 1
 			</p>
-			<div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin mb-3 scrollbar-thumb-white/10 scrollbar-track-transparent">
+			<div
+				className={`flex-1 overflow-y-auto space-y-1 scrollbar-thin mb-3 ${isDark ? "scrollbar-thumb-white/10" : "scrollbar-thumb-black/10"} scrollbar-track-transparent`}
+			>
 				{isLoading && (
-					<div className="text-center text-white/30 text-xs py-8">
+					<div
+						className={`text-center text-xs py-8 ${isDark ? "text-white/30" : "text-black/30"}`}
+					>
 						Loading...
 					</div>
 				)}
 				{data && !isLoading && data.length === 0 && (
-					<div className="text-center text-white/30 text-xs py-8">
+					<div
+						className={`text-center text-xs py-8 ${isDark ? "text-white/30" : "text-black/30"}`}
+					>
 						Belum ada data leaderboard
 					</div>
 				)}
@@ -1011,18 +1335,26 @@ function SessionLeaderboardCard({ sessionId }: { sessionId: string }) {
 							className={`flex items-center justify-between p-2.5 rounded-xl transition-colors ${
 								entry.user_id === myRank?.user_id
 									? "bg-primary/10 border border-primary/20"
-									: "hover:bg-white/5"
+									: isDark
+										? "hover:bg-white/5"
+										: "hover:bg-black/5"
 							}`}
 						>
 							<div className="flex items-center gap-2">
-								<span className="text-xl w-10 text-center font-bold">
+								<span
+									className={`text-xl w-10 text-center font-bold ${isDark ? "text-white" : "text-black/85"}`}
+								>
 									{entry.rank ? rankEmoji(entry.rank) : "—"}
 								</span>
 								<div>
-									<div className="text-white text-sm font-body-sm truncate max-w-36">
+									<div
+										className={`text-sm font-body-sm truncate max-w-36 ${isDark ? "text-white" : "text-black/85"}`}
+									>
 										{entry.name || "Anonim"}
 									</div>
-									<div className="text-white/30 text-xs">
+									<div
+										className={`text-xs ${isDark ? "text-white/30" : "text-black/30"}`}
+									>
 										{formatDuration(entry.duration_formatted)}
 									</div>
 								</div>
@@ -1033,43 +1365,6 @@ function SessionLeaderboardCard({ sessionId }: { sessionId: string }) {
 						</div>
 					))}
 			</div>
-			{myRank && myRank.rank ? (
-				<div className="mb-3 p-3 rounded-xl bg-primary/10 border border-primary/20">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<span className="text-sm">{rankEmoji(myRank.rank)}</span>
-							<span className="text-white text-sm font-label-bold">
-								Posisimu
-							</span>
-						</div>
-						<div className="text-right">
-							<span className="text-primary text-sm font-label-bold">
-								{myRank.points ?? 0} poin
-							</span>
-							<span className="text-white/40 text-xs ml-1">
-								({formatDuration(myRank.duration_formatted)})
-							</span>
-						</div>
-					</div>
-				</div>
-			) : (
-				<div className="mb-3 p-3 rounded-xl bg-primary/10 border border-primary/20">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<span className="text-white text-sm font-label-bold">
-								Posisimu
-							</span>
-						</div>
-						<div className="text-right">
-							<span className="text-white/30 text-xs italic">
-								{data && data.length > 0
-									? "Belum ada jawaban"
-									: "Menunggu jawaban pertama..."}
-							</span>
-						</div>
-					</div>
-				</div>
-			)}
 		</div>
 	);
 }

@@ -3,6 +3,7 @@
 import { useUIStore } from "@/stores/uiStore";
 import { GameCard } from "@/components/games/GameCard";
 import { PublicLeaderboard } from "@/components/games/PublicLeaderboard";
+import { QuizWorldCupLeaderboard } from "@/components/games/QuizWorldCupLeaderboard";
 import { Play, Sparkles, Trophy, Zap } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
@@ -11,7 +12,7 @@ export function GamesPageContent() {
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
 
-	const accent = isDark ? "#00C2B1" : "#0a7c6e";
+	const accent = "#00C2B1";
 	const accentSoft = isDark
 		? "rgba(0, 194, 177, 0.5)"
 		: "rgba(10, 124, 110, 0.4)";
@@ -151,7 +152,7 @@ export function GamesPageContent() {
 							Olahbola Games
 						</span>
 					</div>
-					<h1 className="text-6xl md:text-[84px] font-black italic tracking-tighter leading-none">
+					<h1 className="text-4xl md:text-[84px] font-black italic tracking-tighter leading-none">
 						<span style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}>
 							PLAY THE GAME
 						</span>
@@ -159,7 +160,7 @@ export function GamesPageContent() {
 						<span
 							className="italic games-glow-text"
 							style={{
-								background: `linear-gradient(90deg, ${accent} 0%, ${isDark ? "#ffffff" : "#1a1a1a"} 100%)`,
+								backgroundImage: `linear-gradient(90deg, ${accent} 0%, ${isDark ? "#ffffff" : "#1a1a1a"} 100%)`,
 								WebkitBackgroundClip: "text",
 								WebkitTextFillColor: "transparent",
 								backgroundClip: "text",
@@ -176,8 +177,8 @@ export function GamesPageContent() {
 								: "rgba(26, 26, 26, 0.6)",
 						}}
 					>
-						This is your pitch. Your moment. Compete against the world's best,
-						showcase your football mastery, and carve your name into legend.
+						Ini panggungmu. Waktumu bersinar. Tunjukkan bahwa kamu lebih dari
+						sekadar penonton, kamu adalah pemainnya.
 					</p>
 				</section>
 
@@ -186,8 +187,8 @@ export function GamesPageContent() {
 					{/* Prediksi Skor - Score Predictor (Active) */}
 					<GameCard
 						title="Prediksi Skor"
-						subtitle="Olahbola"
-						description="Tebak skor pertandingan World Cup 2026. Raih poin untuk setiap match dan jadilah si paling tau bola!"
+						subtitle="Pentas Bola 2026"
+						description="Tebak skor pertandingan Pentas Bola 2026. Raih poin untuk setiap match dan jadilah si paling tau bola!"
 						href="/prediksi-skor"
 						isActive={true}
 						bgImage="/images/games/prediction-bg.webp"
@@ -195,42 +196,39 @@ export function GamesPageContent() {
 						isDark={isDark}
 					/>
 
-					{/* OlahBola Quiz - Pro Quiz (Coming Soon) */}
+					{/* OlahBola Kuis - Pro Quiz  */}
 					<GameCard
-						title="OlahBola Quiz"
-						subtitle="Si Paling Jago Bola"
-						description="Ikuti olahbola quiz, adu pengetahuan seputar sepak bola, dan buktikan kamu si paling jago bola!"
+						title="OlahBola Kuis"
+						subtitle="Pentas Bola 2026"
+						description="Ikuti olahbola kuis, adu pengetahuan seputar sepak bola, dan buktikan kamu si paling jago bola!"
 						href="/quiz"
-						isActive={false}
+						isActive={true}
 						bgImage="/images/games/quiz-bg.webp"
-						accentColor={
-							isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(26, 26, 26, 0.35)"
-						}
+						accentColor={accent}
 						isDark={isDark}
 					/>
 				</section>
 
-				{/* Leaderboard Section - Global Top 10 (tanpa hover, hanya static glass card) */}
-				<section
-					className="rounded-3xl md:rounded-[40px] p-6 md:p-10 relative overflow-hidden"
-					style={{
-						background: isDark
-							? "rgba(255, 255, 255, 0.03)"
-							: "rgba(255, 255, 255, 0.55)",
-						backdropFilter: "blur(40px)",
-						border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.08)"}`,
-					}}
-				>
-					<div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 md:mb-12 gap-6">
-						<div>
-							<div className="flex items-center gap-3 mb-2">
-								<h2
-									className="text-3xl font-black italic tracking-tight uppercase"
-									style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
-								>
-									Klasemen Prediksi Skor
-								</h2>
-							</div>
+				{/* Leaderboard Section - Side by side: Prediksi Skor | Quiz World Cup */}
+				<section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					{/* Prediksi Skor Leaderboard */}
+					<div
+						className="rounded-3xl md:rounded-[40px] p-6 md:p-8 relative overflow-hidden"
+						style={{
+							background: isDark
+								? "rgba(255, 255, 255, 0.03)"
+								: "rgba(255, 255, 255, 0.55)",
+							backdropFilter: "blur(40px)",
+							border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.08)"}`,
+						}}
+					>
+						<div className="mb-6 md:mb-8">
+							<h2
+								className="text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-2"
+								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
+							>
+								Klasemen Prediksi Skor
+							</h2>
 							<p
 								className="text-xs font-bold tracking-widest uppercase"
 								style={{
@@ -239,28 +237,74 @@ export function GamesPageContent() {
 										: "rgba(26, 26, 26, 0.5)",
 								}}
 							>
-								Live sementara — World Cup Season 1
+								Live sementara — Olahbola Pentas Bola Season 1
 							</p>
+						</div>
+
+						<PublicLeaderboard isDark={isDark} />
+
+						<div className="mt-8 text-center">
+							<Link
+								href="/prediksi-skor"
+								className="inline-flex items-center gap-2 px-8 py-2.5 rounded-full font-black italic tracking-widest text-xs uppercase transition-all hover:scale-105"
+								style={{
+									background: `${accent}1a`,
+									border: `1px solid ${accent}66`,
+									color: accent,
+								}}
+							>
+								<Zap className="w-3.5 h-3.5" />
+								<span>Main Prediksi Skor</span>
+							</Link>
 						</div>
 					</div>
 
-					{/* Leaderboard Content */}
-					<PublicLeaderboard isDark={isDark} />
+					{/* Quiz World Cup Leaderboard */}
+					<div
+						className="rounded-3xl md:rounded-[40px] p-6 md:p-8 relative overflow-hidden"
+						style={{
+							background: isDark
+								? "rgba(255, 255, 255, 0.03)"
+								: "rgba(255, 255, 255, 0.55)",
+							backdropFilter: "blur(40px)",
+							border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.08)"}`,
+						}}
+					>
+						<div className="mb-6 md:mb-8">
+							<h2
+								className="text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-2"
+								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
+							>
+								Klasemen Kuis
+							</h2>
+							<p
+								className="text-xs font-bold tracking-widest uppercase"
+								style={{
+									color: isDark
+										? "rgba(255, 255, 255, 0.4)"
+										: "rgba(26, 26, 26, 0.5)",
+								}}
+							>
+								Live sementara — Olahbola Pentas Bola Season 1
+							</p>
+						</div>
 
-					{/* CTA */}
-					<div className="mt-10 text-center">
-						<Link
-							href="/prediksi-skor"
-							className="inline-flex items-center gap-2 px-10 py-3 rounded-full font-black italic tracking-widest text-xs uppercase transition-all hover:scale-105"
-							style={{
-								background: `${accent}1a`,
-								border: `1px solid ${accent}66`,
-								color: accent,
-							}}
-						>
-							<Trophy className="w-3.5 h-3.5" />
-							<span>View Full Leaderboard</span>
-						</Link>
+						<QuizWorldCupLeaderboard isDark={isDark} />
+
+						<div className="mt-8 text-center">
+							<Link
+								href="/quiz"
+								className="inline-flex items-center gap-2 px-8 py-2.5 rounded-full font-black italic tracking-widest text-xs uppercase transition-all hover:scale-105"
+								style={{
+									background: `${accent}1a`,
+									border: `1px solid ${accent}66`,
+									color: accent,
+								}}
+							>
+								<Zap className="w-3.5 h-3.5" />
+								<span>Main Kuis</span>
+							</Link>
+						</div>
 					</div>
 				</section>
 			</div>

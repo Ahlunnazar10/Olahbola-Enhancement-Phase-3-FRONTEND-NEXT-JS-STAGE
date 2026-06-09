@@ -33,7 +33,7 @@ export function GameCard({
 	const cardStyle: React.CSSProperties = {
 		backdropFilter: "blur(40px)",
 		border: isActive
-			? `1px solid ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(10, 124, 110, 0.15)"}`
+			? `1px solid ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(10, 124, 110, 0.35)"}`
 			: `1px dashed ${isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.15)"}`,
 		transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
 	};
@@ -51,7 +51,9 @@ export function GameCard({
 					className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
 					style={{
 						backgroundImage: isActive
-							? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url("${bgImage}")`
+							? isDark
+								? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url("${bgImage}")`
+								: `linear-gradient(rgba(10, 50, 45, 0.75), rgba(10, 50, 45, 0.9)), url("${bgImage}")`
 							: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url("${bgImage}")`,
 					}}
 				/>
@@ -118,12 +120,10 @@ export function GameCard({
 
 			{/* Title */}
 			<h2
-				className="text-4xl font-black italic tracking-tighter uppercase mb-3 relative z-10"
+				className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-3 relative z-10"
 				style={{
 					color: isActive
-						? isDark
-							? "#ffffff"
-							: "#1a1a1a"
+						? "#ffffff"
 						: isDark
 							? "rgba(255, 255, 255, 0.4)"
 							: "rgba(26, 26, 26, 0.45)",
@@ -137,9 +137,7 @@ export function GameCard({
 				className="text-sm leading-relaxed max-w-88 mb-8 relative z-10"
 				style={{
 					color: isActive
-						? isDark
-							? "rgba(255, 255, 255, 0.6)"
-							: "rgba(26, 26, 26, 0.65)"
+						? "rgba(255, 255, 255, 0.85)"
 						: isDark
 							? "rgba(255, 255, 255, 0.3)"
 							: "rgba(26, 26, 26, 0.4)",
