@@ -218,7 +218,7 @@ export default function QuizPage() {
 		}
 		const session = sessions?.find((s) => s.id === sessionId);
 		if (session) {
-			const target = `/quiz/${sessionId}/play?name=${encodeURIComponent(session.name)}&points=${session.points_per_correct}&total=${session.total_questions}&duration=${session.duration_seconds ?? 120}`;
+			const target = `/quiz/${sessionId}/play?name=${encodeURIComponent(session.name)}&points=${session.points_per_correct}&total=${session.total_questions}&duration=${session.duration_seconds ?? 120}&sessionNumber=${session.session_number}`;
 			setNavigatingTo(target);
 			router.push(target);
 		} else {

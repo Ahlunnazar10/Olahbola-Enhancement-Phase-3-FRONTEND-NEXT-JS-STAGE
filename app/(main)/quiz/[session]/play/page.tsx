@@ -57,6 +57,19 @@ function formatDuration(raw: string): string {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Sound effects helper                                              */
+/* ------------------------------------------------------------------ */
+
+const playSound = (url: string) => {
+	try {
+		const audio = new Audio(url);
+		audio.play().catch((e) => console.warn("Audio play error:", e));
+	} catch (e) {
+		console.warn("Audio error:", e);
+	}
+};
+
+/* ------------------------------------------------------------------ */
 /*  LocalStorage helpers                                              */
 /* ------------------------------------------------------------------ */
 
@@ -158,6 +171,13 @@ export default function PlaySessionPage() {
 		searchParams?.get("name") ?? `Session ${sessionId.slice(-4)}`;
 	const durationFromUrl =
 		parseInt(searchParams?.get("duration") ?? "0", 10) || 120;
+	let sessionNumber = searchParams?.get("sessionNumber")
+		? parseInt(searchParams.get("sessionNumber")!, 10)
+		: null;
+	if (!sessionNumber) {
+		const match = sessionName.match(/SESSION\s+(\d+)/i);
+		if (match) sessionNumber = parseInt(match[1], 10);
+	}
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -189,6 +209,12 @@ export default function PlaySessionPage() {
 		totalPoints: number;
 		totalQuestions: number;
 	} | null>(null);
+
+	// Audio & streak
+	const correctStreakRef = useRef(0);
+	const wrongStreakRef = useRef(0);
+	const backsoundRef = useRef<HTMLAudioElement | null>(null);
+	const hasPlayedTimerWarning = useRef(false);
 
 	// Refs
 	const totalCorrectRef = useRef(0);
@@ -224,6 +250,113 @@ export default function PlaySessionPage() {
 		totalQuestionsRef.current = totalQuestions;
 	}, [totalQuestions]);
 
+	/* ---- Timer warning sound ---- */
+	useEffect(() => {
+		if (finished || timer > 10 || timer <= 0) {
+			if (timer > 10) hasPlayedTimerWarning.current = false;
+			return;
+		}
+		if (
+			!hasPlayedTimerWarning.current &&
+			timer <= 10 &&
+			timer > 0 &&
+			!finished
+		) {
+			hasPlayedTimerWarning.current = true;
+			playSound("/sounds/effect/buruan-udah-mau-abis.mp3");
+		}
+	}, [timer, finished]);
+
+	/* ---- Start backsound automatically when page loaded ---- */
+	const startBacksound = useCallback(() => {
+		if (backsoundRef.current) return;
+		if (sessionNumber === null) {
+			console.warn("sessionNumber tidak diketahui, backsound tidak diputar");
+			return;
+		}
+		const url =
+			sessionNumber % 2 === 1
+				? "/sounds/backsound-1.mpeg"
+				: "/sounds/backsound-2.mpeg";
+		try {
+			const audio = new Audio(url);
+			audio.loop = true;
+			audio.volume = 0.2;
+			audio.play().catch((e) => console.warn("Backsound error:", e));
+			backsoundRef.current = audio;
+		} catch (e) {
+			console.warn("Backsound init error:", e);
+		}
+	}, [sessionNumber]);
+
+	useEffect(() => {
+		if (!loading && sessionNumber !== null) {
+			startBacksound();
+		}
+	}, [loading, sessionNumber, startBacksound]);
+
+	useEffect(() => {
+		if (finished && backsoundRef.current) {
+			backsoundRef.current.pause();
+			backsoundRef.current = null;
+		}
+	}, [finished]);
+
+	/* ---- Play sound effect based on answer and streak ---- */
+	const playAnswerSound = useCallback((isCorrect: boolean) => {
+		let soundUrl = "";
+		const currentCorrect = correctStreakRef.current;
+		const currentWrong = wrongStreakRef.current;
+
+		console.log(
+			`[DEBUG] Sebelum: correctStreak=${currentCorrect}, wrongStreak=${currentWrong}, jawaban=${isCorrect ? "BENAR" : "SALAH"}`,
+		);
+
+		if (isCorrect) {
+			// Jika sebelumnya salah 2x -> tumben bener
+			if (currentWrong === 2) {
+				soundUrl = "/sounds/effect/tumben-bener.mp3";
+			}
+			// Jika streak benar +1 akan menjadi 3 -> ambil sendiri pialanya
+			else if (currentCorrect + 1 === 3) {
+				soundUrl = "/sounds/effect/ambil-sendiri-pialanya.mp3";
+			}
+			// Biasa
+			else {
+				soundUrl = "/sounds/effect/benar.mp3";
+			}
+		} else {
+			// Jika sebelumnya benar 2x -> yah kocak oke lanjut
+			if (currentCorrect === 2) {
+				soundUrl = "/sounds/effect/yah-kocak-oke-lanjut.mp3";
+			}
+			// Jika streak salah +1 akan menjadi 3 -> bisa main gak sih
+			else if (currentWrong + 1 === 3) {
+				soundUrl = "/sounds/effect/bisa-main-gak-sih.mp3";
+			}
+			// Biasa
+			else {
+				soundUrl = "/sounds/effect/salah.mp3";
+			}
+		}
+
+		// Update streaks
+		if (isCorrect) {
+			correctStreakRef.current += 1;
+			wrongStreakRef.current = 0;
+		} else {
+			wrongStreakRef.current += 1;
+			correctStreakRef.current = 0;
+		}
+
+		console.log(`[DEBUG] Memutar: ${soundUrl}`);
+		console.log(
+			`[DEBUG] Sesudah: correctStreak=${correctStreakRef.current}, wrongStreak=${wrongStreakRef.current}`,
+		);
+
+		playSound(soundUrl);
+	}, []);
+
 	/* ---- Force close attempt saat timeout ---- */
 	const forceCloseAttempt = useCallback(async () => {
 		const currentAttemptId = attemptIdRef.current;
@@ -244,7 +377,6 @@ export default function PlaySessionPage() {
 			clearSessionState();
 		} catch (err) {
 			console.error("Force close failed:", err);
-			// Fallback: tetap anggap selesai meskipun API error
 			setFinalData({
 				score: totalPointsSoFarRef.current,
 				correctCount: totalCorrectRef.current,
@@ -259,6 +391,12 @@ export default function PlaySessionPage() {
 	/* ---- Answer result handler ---- */
 	const handleAnswerResult = useCallback(
 		(result: AnswerResponse) => {
+			// Log nilai correct dari API untuk debugging
+			console.log(`[API] result.correct = ${result.correct}`);
+
+			// Play sound effect berdasarkan nilai correct dari API
+			playAnswerSound(result.correct);
+
 			answeredCountRef.current += 1;
 			questionIndexRef.current = answeredCountRef.current;
 			setQuestionIndex(answeredCountRef.current);
@@ -308,7 +446,7 @@ export default function PlaySessionPage() {
 			setAnswerSubmitted(false);
 			setAnswerResult(null);
 		},
-		[sessionId],
+		[sessionId, playAnswerSound],
 	);
 
 	const handleAnswerResultRef = useRef(handleAnswerResult);
@@ -316,7 +454,7 @@ export default function PlaySessionPage() {
 		handleAnswerResultRef.current = handleAnswerResult;
 	}, [handleAnswerResult]);
 
-	/* ---- Start session (resume from localStorage or fresh) ---- */
+	/* ---- Start session ---- */
 	useEffect(() => {
 		let cancelled = false;
 		async function startSession() {
@@ -401,7 +539,7 @@ export default function PlaySessionPage() {
 		};
 	}, [sessionId, durationFromUrl]);
 
-	/* ---- Countdown with saving every second ---- */
+	/* ---- Countdown ---- */
 	useEffect(() => {
 		if (!duration || finished || timer <= 0) return;
 		const interval = setInterval(() => {
@@ -425,7 +563,7 @@ export default function PlaySessionPage() {
 		return () => clearInterval(interval);
 	}, [duration, finished, timer === 0, sessionId]);
 
-	/* ---- Auto-submit on timeout (timer reaches 0) ---- */
+	/* ---- Auto-submit on timeout ---- */
 	const submittedRef = useRef(false);
 	const completingRef = useRef(false);
 	useEffect(() => {
