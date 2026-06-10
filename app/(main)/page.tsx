@@ -257,7 +257,7 @@ export default function HomePage() {
 		setFeaturedLoading(true);
 		try {
 			const response = await apiClient.get(
-				"/api/v1/article/baggott-ezra-comeback-marc-klok-dikritik",
+				"/api/v1/article/resmi-dimulai-football-city-battle-olahbola-meriah",
 			);
 			if (response.data.status === "success") {
 				setFeaturedArticle(response.data.data);
