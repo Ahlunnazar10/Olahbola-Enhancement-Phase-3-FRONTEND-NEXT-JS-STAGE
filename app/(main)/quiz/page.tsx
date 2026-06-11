@@ -174,6 +174,7 @@ export default function QuizPage() {
 	const [now, setNow] = useState(() => new Date());
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
+	const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
 	useEffect(() => {
 		const tick = () => setNow(new Date());
@@ -189,6 +190,20 @@ export default function QuizPage() {
 			document.removeEventListener("visibilitychange", onVisibilityChange);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!isLeaderboardOpen) return;
+		const prevOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setIsLeaderboardOpen(false);
+		};
+		window.addEventListener("keydown", onKey);
+		return () => {
+			document.body.style.overflow = prevOverflow;
+			window.removeEventListener("keydown", onKey);
+		};
+	}, [isLeaderboardOpen]);
 
 	const sessions = useMemo(
 		() =>
@@ -423,7 +438,7 @@ export default function QuizPage() {
 														}`}
 													>
 														{isLive
-															? `123 Pemain sedang bermain!`
+															? `${session.total_players ?? 0} Pemain Berpartisipasi`
 															: `Rilis dalam: ${getCountdownText(session)}`}
 													</span>
 												</div>
@@ -610,12 +625,13 @@ export default function QuizPage() {
 									</div>
 								)}
 							</div>
-							<Link
-								href="/leaderboard"
+							<button
+								type="button"
+								onClick={() => setIsLeaderboardOpen(true)}
 								className="block w-full mt-6 py-3 rounded-lg font-label-bold text-center border border-primary/40 text-primary hover:bg-primary/10 transition-all"
 							>
 								LIHAT LEADERBOARD LENGKAP
-							</Link>
+							</button>
 						</div>
 
 						{/* How to Play Section (tidak berubah) */}
@@ -677,6 +693,167 @@ export default function QuizPage() {
 					</aside>
 				</div>
 			</main>
+
+			{/* Full Leaderboard Modal */}
+			{isLeaderboardOpen && (
+				<div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+					{/* Backdrop */}
+					<div
+						className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+						onClick={() => setIsLeaderboardOpen(false)}
+					/>
+
+					{/* Modal content */}
+					<div
+						className={`relative z-10 w-full max-w-md rounded-3xl border p-6 shadow-2xl transition-colors duration-300 ${
+							isDark
+								? "bg-[#0a0f0d] border-[rgba(0,194,177,0.3)]"
+								: "bg-white border-[rgba(10,124,110,0.25)]"
+						}`}
+					>
+						{/* Header */}
+						<div className="flex items-center justify-between mb-6">
+							<div className="flex items-center gap-3">
+								<h2
+									className={`font-headline-md italic-bold ${isDark ? "text-white" : "text-black/85"}`}
+								>
+									Klasemen Lengkap
+								</h2>
+							</div>
+							<button
+								type="button"
+								onClick={() => setIsLeaderboardOpen(false)}
+								className={`size-9 flex items-center justify-center rounded-full transition-colors ${
+									isDark
+										? "hover:bg-white/10 text-white/60"
+										: "hover:bg-black/5 text-black/40"
+								}`}
+								aria-label="Tutup"
+							>
+								<svg
+									width="18"
+									height="18"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								>
+									<line x1="18" y1="6" x2="6" y2="18" />
+									<line x1="6" y1="6" x2="18" y2="18" />
+								</svg>
+							</button>
+						</div>
+
+						{/* Leaderboard list */}
+						<div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+							{rawLeaderboard ? (
+								rawLeaderboard.length === 0 ? (
+									<div
+										className={`text-center py-10 text-sm ${isDark ? "text-white/30" : "text-black/30"}`}
+									>
+										Belum ada data leaderboard.
+									</div>
+								) : (
+									rawLeaderboard
+										.slice()
+										.sort((a, b) => a.rank - b.rank)
+										.map((entry, idx) => {
+											const isUser = entry.user_id === user?.id;
+											const medalEmoji =
+												idx === 0
+													? "#1"
+													: idx === 1
+														? "#2"
+														: idx === 2
+															? "#3"
+															: null;
+											return (
+												<div
+													key={entry.user_id}
+													className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+														isUser
+															? `border ${
+																	isDark
+																		? "border-primary/40 bg-primary/10"
+																		: "border-[#0a7c6e]/40 bg-[#0a7c6e]/10"
+																}`
+															: isDark
+																? "border border-transparent hover:bg-white/5"
+																: "border border-transparent hover:bg-black/5"
+													}`}
+												>
+													{/* Rank */}
+													<span
+														className={`w-8 text-center font-display-lg italic-bold text-xl ${
+															idx < 3
+																? ""
+																: isDark
+																	? "text-white/30"
+																	: "text-black/30"
+														}`}
+													>
+														{medalEmoji ?? `#${entry.rank}`}
+													</span>
+
+													{/* Name + email */}
+													<div className="flex-1 min-w-0">
+														<div
+															className={`text-sm font-label-bold truncate ${
+																isUser
+																	? isDark
+																		? "text-primary"
+																		: "text-[#0a7c6e]"
+																	: isDark
+																		? "text-white"
+																		: "text-black/85"
+															}`}
+														>
+															{entry.name || "Anonim"}
+															{isUser && (
+																<span className="ml-2 text-[10px] text-primary font-label-bold bg-primary/30 px-1.5 py-0.5 rounded">
+																	KAMU
+																</span>
+															)}
+														</div>
+														<div
+															className={`text-xs truncate ${isDark ? "text-white/30" : "text-black/30"}`}
+														>
+															{entry.email || "—"}
+														</div>
+													</div>
+
+													{/* Points */}
+													<div className="text-right">
+														<span
+															className={`text-sm font-label-bold ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+														>
+															{entry.total_points} Pts
+														</span>
+														<div
+															className={`text-[10px] truncate max-w-20 ${isDark ? "text-white/30" : "text-black/30"}`}
+														>
+															{formatDurationFromApi(
+																entry.total_duration_formatted,
+															)}
+														</div>
+													</div>
+												</div>
+											);
+										})
+								)
+							) : (
+								<div
+									className={`text-center py-10 text-sm ${isDark ? "text-white/30" : "text-black/30"}`}
+								>
+									Memuat...
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
+			)}
 
 			<style jsx global>{`
 				/* ================================

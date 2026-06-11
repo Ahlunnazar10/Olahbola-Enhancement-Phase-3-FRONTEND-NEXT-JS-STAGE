@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { apiClient } from '@/lib/api/client';
 import { useAuthStore } from '@/stores/authStore';
+import { getLastPathname } from '@/lib/last-path';
 
 function AuthCallbackContent() {
   const router = useRouter();
@@ -40,7 +41,8 @@ function AuthCallbackContent() {
             login(data.user);
           }
           setStatus('success');
-          router.push('/profile');
+          const lastPath = getLastPathname();
+          router.push(lastPath || '/profile');
         } else {
           console.error('Login failed:', data);
           setStatus('error');

@@ -313,10 +313,10 @@ export function formatMatchDate(matchDate: string, kickoffTime: string | null | 
 	const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 	const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
-	const dayName = dayNames[date.getDay()];
-	const day = date.getDate();
-	const monthName = monthNames[date.getMonth()];
-	const year = date.getFullYear();
+	const dayName = dayNames[date.getUTCDay()];
+	const day = date.getUTCDate();
+	const monthName = monthNames[date.getUTCMonth()];
+	const year = date.getUTCFullYear();
 
 	// Resolve kickoff time. API sometimes returns null/empty for kickoff_time,
 	// so we fall back to extracting the hour from matchDate (ISO string with UTC offset)

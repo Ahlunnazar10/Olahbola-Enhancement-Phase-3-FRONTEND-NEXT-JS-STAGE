@@ -250,6 +250,17 @@ export default function PrediksiSkorPage() {
 	const [homeScore, setHomeScore] = useState<number | "">(0);
 	const [awayScore, setAwayScore] = useState<number | "">(0);
 	const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
+	const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+	// Show login prompt modal once for unauthenticated visitors on first visit
+	useEffect(() => {
+		if (isAuthenticated) return;
+		if (typeof window === "undefined") return;
+		const seen = sessionStorage.getItem("prediksi-skor:loginPromptSeen");
+		if (seen) return;
+		setShowLoginPrompt(true);
+		sessionStorage.setItem("prediksi-skor:loginPromptSeen", "1");
+	}, [isAuthenticated]);
 
 	// Data hooks
 	const { data: phasesData, isLoading: phasesLoading } = usePhases();
@@ -411,10 +422,7 @@ export default function PrediksiSkorPage() {
 	const getUserPrediction = (matchId: string) => {
 		if (!myPredictionsData?.data) return null;
 
-		return myPredictionsData.data.find((p: any) => {
-			// match_id ada di dalam object p.match.id (nested)
-			return p.match?.id === matchId;
-		});
+		return myPredictionsData.data.find((p: any) => p.match_id === matchId);
 	};
 
 	const handleSubmit = async () => {
@@ -466,7 +474,7 @@ export default function PrediksiSkorPage() {
 				}}
 			/>
 
-			<main className="pt-10 md:pt-24 relative">
+			<main className="pt-10 md:pt-18 relative">
 				{/* Hero Section */}
 				<section className="max-w-7xl mx-auto px-6 md:px-8 text-center mb-6 md:mb-16 relative">
 					<div
@@ -483,6 +491,13 @@ export default function PrediksiSkorPage() {
 					>
 						Prediksi Skor <br />{" "}
 						<span style={{ color: primary }}>Pesta Bola 2026</span>
+						<span
+							className="block mt-1 text-xs italic font-normal tracking-normal"
+							style={{ color: textSecondary }}
+						>
+							*Tebak akurat dapat 10 poin, tebak pemenang dapat 5 poin & tebak
+							salah dapat 0 poin
+						</span>
 					</h1>
 
 					{/* Stats Bento Grid */}
@@ -715,8 +730,16 @@ export default function PrediksiSkorPage() {
 												<div
 													className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
 													style={{
-														background: colors.primary20,
-														color: primary,
+														background: userPred.score_exact
+															? "rgba(34, 197, 94, 0.2)"
+															: userPred.result_correct
+																? "rgba(234, 179, 8, 0.2)"
+																: "rgba(239, 68, 68, 0.2)",
+														color: userPred.score_exact
+															? "#22c55e"
+															: userPred.result_correct
+																? "#eab308"
+																: "#ef4444",
 													}}
 												>
 													+{userPred.points_earned ?? 0} pts
@@ -810,10 +833,10 @@ export default function PrediksiSkorPage() {
 											{isCompleted && hasPrediction ? (
 												/* Show prediction result vs actual score for completed matches */
 												<div
-													className={`w-full py-4 px-4 text-sm md:text-base rounded-2xl flex items-center justify-between border ${
-														(userPred.points_earned ?? 0) >= 10
-															? " border-green-400/40"
-															: (userPred.points_earned ?? 0) >= 5
+													className={`w-full py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-1 border ${
+														userPred.score_exact
+															? "border-green-400/40"
+															: userPred.result_correct
 																? "border-yellow-400/40"
 																: "border-red-400/40"
 													}`}
@@ -821,14 +844,12 @@ export default function PrediksiSkorPage() {
 														background: colors.primary15,
 													}}
 												>
-													<div className="flex items-center justify-center w-full">
-														<span
-															className="font-bold text-center"
-															style={{ color: primary }}
-														>
-															{`Prediksi Kamu ${userPred.home_score_predicted} - ${userPred.away_score_predicted}`}
-														</span>
-													</div>
+													<span
+														className="font-bold text-center"
+														style={{ color: primary }}
+													>
+														{`Prediksi Kamu ${userPred.home_score_predicted} - ${userPred.away_score_predicted}`}
+													</span>
 												</div>
 											) : isCompleted ? (
 												<button
@@ -1176,6 +1197,80 @@ export default function PrediksiSkorPage() {
 							>
 								Batal
 							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Login Prompt Modal (guest only, shown once) */}
+			{showLoginPrompt && (
+				<div
+					className="fixed inset-0 z-200 flex items-center justify-center p-4 animate-fadeIn"
+					style={{
+						background: "rgba(0,0,0,0.85)",
+						backdropFilter: "blur(8px)",
+					}}
+					onClick={() => setShowLoginPrompt(false)}
+				>
+					<div
+						className="w-full max-w-sm p-6 rounded-3xl border relative overflow-hidden animate-scaleIn text-center"
+						style={{
+							background: surface,
+							borderColor: colors.primary30,
+							boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)`,
+						}}
+						onClick={(e) => e.stopPropagation()}
+					>
+						{/* Glow */}
+						<div
+							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
+							style={{ background: primaryAlpha }}
+						/>
+
+						{/* Close button */}
+						<button
+							onClick={() => setShowLoginPrompt(false)}
+							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
+							style={{ background: whiteAlpha5, color: textSecondary }}
+						>
+							<X className="size-4" />
+						</button>
+
+						{/* Content */}
+						<div className="relative z-10">
+							<div
+								className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+								style={{
+									background: colors.primary15,
+									border: `2px solid ${colors.primary30}`,
+								}}
+							>
+								<Lock className="size-7" style={{ color: primary }} />
+							</div>
+
+							<h3 className="text-xl font-black mb-2" style={{ color: text }}>
+								<span style={{ color: primary }}>Login Dulu Ya!</span>
+							</h3>
+							<p
+								className="text-sm mb-6 leading-relaxed"
+								style={{ color: textSecondary }}
+							>
+								Kamu belum login sob. Login dulu biar bisa ikut main prediksi
+								skor Pentas Bola 2026!
+							</p>
+
+							<Link href="/login">
+								<div
+									className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
+									style={{
+										background: primary,
+										color: "#003732",
+										boxShadow: `0 2px 15px ${primaryAlpha}`,
+									}}
+								>
+									Login Sekarang
+								</div>
+							</Link>
 						</div>
 					</div>
 				</div>

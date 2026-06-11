@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
+import { getLastPathname } from "@/lib/last-path";
 
 // Helper function to determine if input is email or phone
 const getIdentifierType = (identifier: string): "email" | "phone" | null => {
@@ -96,7 +97,8 @@ export default function LoginPage() {
 			} as { email_or_phone: string; password: string; register_via: "email" });
 
 			toast.success("Login berhasil! Selamat datang di Olahbola.");
-			router.push("/");
+			const lastPath = getLastPathname();
+			router.push(lastPath || "/");
 		} catch (error) {
 			const message =
 				error instanceof Error

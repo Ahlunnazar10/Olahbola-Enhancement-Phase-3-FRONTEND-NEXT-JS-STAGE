@@ -157,6 +157,7 @@ export interface QuizWorldCupSession {
 	total_questions: number;
 	release_date: string;
 	is_played: boolean;
+	total_players: number;
 }
 
 export interface QuizWorldCupQuestion {

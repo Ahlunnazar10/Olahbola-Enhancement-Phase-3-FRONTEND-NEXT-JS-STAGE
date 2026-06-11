@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Check, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/stores/authStore";
+import { getLastPathname } from "@/lib/last-path";
 
 function GoogleCallbackContent() {
 	const router = useRouter();
@@ -70,7 +71,8 @@ function GoogleCallbackContent() {
 
 					setStatus("success");
 					toast.success("Login dengan Google berhasil!");
-					setTimeout(() => router.push("/"), 1500);
+					const lastPath = getLastPathname();
+					setTimeout(() => router.push(lastPath || "/"), 1500);
 				} else {
 					throw new Error(data.message || "Login gagal");
 				}
