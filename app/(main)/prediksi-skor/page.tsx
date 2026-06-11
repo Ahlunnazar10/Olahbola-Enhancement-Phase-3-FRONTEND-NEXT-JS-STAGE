@@ -490,13 +490,13 @@ export default function PrediksiSkorPage() {
 						}}
 					>
 						Prediksi Skor <br />{" "}
-						<span style={{ color: primary }}>Pesta Bola 2026</span>
+						<span style={{ color: primary }}>Pentas Bola 2026</span>
 						<span
 							className="block mt-1 text-xs italic font-normal tracking-normal"
 							style={{ color: textSecondary }}
 						>
-							*Tebak akurat dapat 10 poin, tebak pemenang dapat 5 poin & tebak
-							salah dapat 0 poin
+							*Tebak akurat dapat 10 poin, tebak pemenang / tebak skor dapat 5
+							poin, jika salah dapat 0 poin
 						</span>
 					</h1>
 
