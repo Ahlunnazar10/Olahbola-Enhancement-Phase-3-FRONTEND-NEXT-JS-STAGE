@@ -343,7 +343,7 @@ export default function QuizPage() {
 					<h1 className="quiz-hero-title italic-bold font-bold text-white mb-6 leading-none neon-text">
 						KUIS
 						<br />
-						<span className="text-[#1FE6DA]">PENTAS BOLA 2026</span>
+						<span className="text-[#1FE6DA]">TEATER BOLA DUNIA</span>
 					</h1>
 
 					<button

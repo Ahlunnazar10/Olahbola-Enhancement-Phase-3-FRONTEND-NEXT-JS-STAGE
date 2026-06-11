@@ -187,8 +187,8 @@ export function GamesPageContent() {
 					{/* Prediksi Skor - Score Predictor (Active) */}
 					<GameCard
 						title="Prediksi Skor"
-						subtitle="Pentas Bola 2026"
-						description="Tebak skor pertandingan Pentas Bola 2026. Raih poin untuk setiap match dan jadilah si paling tau bola!"
+						subtitle="Teater Bola Dunia"
+						description="Tebak skor pertandingan Teater Bola Dunia. Raih poin untuk setiap match dan jadilah si paling tau bola!"
 						href="/prediksi-skor"
 						isActive={true}
 						bgImage="/images/games/prediction-bg.webp"
@@ -199,7 +199,7 @@ export function GamesPageContent() {
 					{/* OlahBola Kuis - Pro Quiz  */}
 					<GameCard
 						title="OlahBola Kuis"
-						subtitle="Pentas Bola 2026"
+						subtitle="Teater Bola Dunia"
 						description="Ikuti olahbola kuis, adu pengetahuan seputar sepak bola, dan buktikan kamu si paling jago bola!"
 						href="/quiz"
 						isActive={true}
@@ -237,7 +237,7 @@ export function GamesPageContent() {
 										: "rgba(26, 26, 26, 0.5)",
 								}}
 							>
-								Live sementara — Olahbola Pentas Bola Season 1
+								Live sementara — Olahbola Teater Bola Dunia Season 1
 							</p>
 						</div>
 
@@ -285,7 +285,7 @@ export function GamesPageContent() {
 										: "rgba(26, 26, 26, 0.5)",
 								}}
 							>
-								Live sementara — Olahbola Pentas Bola Season 1
+								Live sementara — Olahbola Teater Bola Dunia Season 1
 							</p>
 						</div>
 

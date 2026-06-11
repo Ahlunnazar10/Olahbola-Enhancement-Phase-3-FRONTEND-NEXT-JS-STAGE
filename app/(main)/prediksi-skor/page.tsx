@@ -490,7 +490,7 @@ export default function PrediksiSkorPage() {
 						}}
 					>
 						Prediksi Skor <br />{" "}
-						<span style={{ color: primary }}>Pentas Bola 2026</span>
+						<span style={{ color: primary }}>Teater Bola Dunia</span>
 						<span
 							className="block mt-1 text-xs italic font-normal tracking-normal"
 							style={{ color: textSecondary }}
@@ -1256,7 +1256,7 @@ export default function PrediksiSkorPage() {
 								style={{ color: textSecondary }}
 							>
 								Kamu belum login sob. Login dulu biar bisa ikut main prediksi
-								skor Pentas Bola 2026!
+								skor Teater Bola Dunia!
 							</p>
 
 							<Link href="/login">
