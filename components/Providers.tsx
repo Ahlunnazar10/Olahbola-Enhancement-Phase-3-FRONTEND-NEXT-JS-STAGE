@@ -3,9 +3,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useState, type ReactNode } from 'react';
+import { useSecurityGuards } from '@/hooks/useSecurityGuards';
 
 interface ProvidersProps {
   children: ReactNode;
+}
+
+function SecurityGuard() {
+  useSecurityGuards();
+  return null;
 }
 
 export function Providers({ children }: ProvidersProps) {
@@ -28,6 +34,7 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SecurityGuard />
       {children}
       <Toaster
         position="top-right"
