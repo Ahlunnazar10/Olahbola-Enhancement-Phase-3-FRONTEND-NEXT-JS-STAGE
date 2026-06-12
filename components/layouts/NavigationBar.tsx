@@ -347,6 +347,22 @@ export function NavigationBar() {
 						</a>
 					</div>
 
+					{/* Logout Button */}
+					{isAuthenticated && (
+						<button
+							onClick={handleLogout}
+							className="text-[16px] md:text-xl text-red-300 flex flex-row items-left gap-1 justify-left cursor-pointer hover:text-red-200 mb-4"
+							disabled={logoutMutation.isPending}
+						>
+							{logoutMutation.isPending ? (
+								<span className="loading loading-bars loading-xs me-2" />
+							) : (
+								<LogOut className="size-6 md:size-7 me-1" />
+							)}
+							Keluar
+						</button>
+					)}
+
 					{/* User Profile for authenticated users */}
 					{isAuthenticated && user && (
 						<Link
@@ -375,22 +391,6 @@ export function NavigationBar() {
 						src="/images/home/banner-1.webp"
 						alt="Banner 1"
 					/>
-
-					{/* Logout Button */}
-					{isAuthenticated && (
-						<button
-							onClick={handleLogout}
-							className="text-[16px] md:text-xl text-red-300 flex flex-row items-center gap-1 justify-center cursor-pointer hover:text-red-200 mt-4"
-							disabled={logoutMutation.isPending}
-						>
-							{logoutMutation.isPending ? (
-								<span className="loading loading-bars loading-xs me-2" />
-							) : (
-								<LogOut className="size-6 md:size-7 me-1" />
-							)}
-							Keluar
-						</button>
-					)}
 				</div>
 			</div>
 		</>

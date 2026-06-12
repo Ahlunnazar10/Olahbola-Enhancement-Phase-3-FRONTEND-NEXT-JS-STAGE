@@ -313,10 +313,14 @@ export function formatMatchDate(matchDate: string, kickoffTime: string | null | 
 	const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 	const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
-	const dayName = dayNames[date.getUTCDay()];
-	const day = date.getUTCDate();
-	const monthName = monthNames[date.getUTCMonth()];
-	const year = date.getUTCFullYear();
+	// Use local-time accessors so the ISO offset (+07:00) is honored
+	// correctly. Using getUTC* would read the underlying UTC instant and
+	// shift the displayed day backward for WIB matches (e.g. 2026-06-12T02:00+07:00
+	// is 2026-06-11T19:00Z, which would render as "Kam, 11 Jun").
+	const dayName = dayNames[date.getDay()];
+	const day = date.getDate();
+	const monthName = monthNames[date.getMonth()];
+	const year = date.getFullYear();
 
 	// Resolve kickoff time. API sometimes returns null/empty for kickoff_time,
 	// so we fall back to extracting the hour from matchDate (ISO string with UTC offset)

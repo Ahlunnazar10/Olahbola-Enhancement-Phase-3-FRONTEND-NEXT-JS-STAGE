@@ -130,7 +130,7 @@ function QuizRankRow({
 				e.currentTarget.style.boxShadow = "none";
 			}}
 		>
-			<div className="flex items-center gap-4 min-w-0">
+			<div className="flex items-center gap-8 min-w-0">
 				<span
 					className="font-black italic text-xl w-6 transition-transform duration-300 group-hover:translate-x-1 shrink-0"
 					style={{

@@ -47,7 +47,7 @@ export function GamesPageContent() {
 
 	return (
 		<div
-			className="relative min-h-screen pt-8 md:pt-12 pb-24 overflow-hidden"
+			className="relative min-h-screen pt-0 md:pt-6 pb-24 overflow-hidden"
 			style={{
 				background: isDark ? "#050505" : "#f5f5f5",
 				color: isDark ? "#e5e2e1" : "#1a1a1a",
@@ -133,7 +133,7 @@ export function GamesPageContent() {
 
 			<div className="relative max-w-7xl mx-auto px-6 py-12">
 				{/* Hero Section */}
-				<section className="text-center mb-24 space-y-6">
+				<section className="text-center mb-10 md:mb-24 space-y-6">
 					<div
 						className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
 						style={{
@@ -183,7 +183,7 @@ export function GamesPageContent() {
 				</section>
 
 				{/* Game Cards Grid - 2 kolom */}
-				<section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+				<section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-10 md:mb-24">
 					{/* Prediksi Skor - Score Predictor (Active) */}
 					<GameCard
 						title="Prediksi Skor"
