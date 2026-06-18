@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, EffectFade } from "swiper/modules";
-import { ChevronRight, ChevronLeft, ArrowRight } from "lucide-react";
+import { ChevronRight, ChevronLeft, ArrowRight, Award } from "lucide-react";
 import { useRef } from "react";
 
 // Import Swiper styles - use string path to avoid type resolution issues
@@ -14,7 +14,7 @@ import "swiper/css/effect-fade";
 
 export interface BannerSlide {
 	id: string;
-	type: "article" | "static" | "cta";
+	type: "article" | "static" | "cta" | "event";
 	label?: string;
 	labelColor?: "breaking" | "season" | "default";
 	title?: {
@@ -39,6 +39,24 @@ export interface BannerSlide {
 	ctaCtaHref?: string;
 	ctaAlignment?: "left" | "right";
 	ctaTerms?: string;
+	// Event-specific (type === "event")
+	eventBadge?: string;
+	eventTitle?: {
+		parts: { text: string; color: "primary" | "white" }[];
+	};
+	eventDescription?: string;
+	eventPrimaryCta?: { text: string; href: string };
+	eventSecondaryCta?: { text: string; href: string };
+	eventHudStats?: { label: string; value: string; suffix?: string }[];
+	eventRewardImage?: string;
+	eventRewardImageAlt?: string;
+	eventFloatingCards?: {
+		position: "top-right" | "bottom-left";
+		icon: string;
+		iconFilled?: boolean;
+		label: string;
+		title: string;
+	}[];
 }
 
 interface BannerSliderProps {
@@ -94,23 +112,27 @@ export function BannerSlider({
 						{/* Background - First slide loads eagerly, others lazy */}
 						<div className="absolute inset-0 w-full h-full">
 							{(
-								slide.type === "article" ? slide.image : slide.imageFallback
+								slide.type === "article"
+									? slide.image
+									: slide.type === "event"
+										? slide.imageFallback
+										: slide.imageFallback
 							) ? (
 								<img
 									src={
 										slide.type === "article"
 											? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
-											: isMobile
-												? slide.imageMobileFallback || slide.imageFallback
-												: slide.imageFallback
+											: slide.imageFallback
 									}
 									alt={
 										slide.ctaTitle || slide.title?.parts?.join(" ") || "Banner"
 									}
 									className={`w-full h-full object-cover object-center ${
-										isDark
-											? "grayscale-[0.2] contrast-125"
-											: "grayscale-[0.1] contrast-105"
+										slide.type === "event"
+											? ""
+											: isDark
+												? "grayscale-[0.2] contrast-125"
+												: "grayscale-[0.1] contrast-105"
 									}`}
 									fetchPriority={index === 0 ? "high" : "low"}
 									decoding="async"
@@ -136,13 +158,32 @@ export function BannerSlider({
 											: isDark
 												? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent"
 												: "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
-										: `bg-linear-to-r ${
-												isDark
-													? "from-black via-[#0f1412]/60 to-transparent"
-													: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
-											}`
+										: slide.type === "event"
+											? "bg-linear-to-t from-[#050505] via-transparent to-[#050505]/40"
+											: `bg-linear-to-r ${
+													isDark
+														? "from-black via-[#0f1412]/60 to-transparent"
+														: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
+												}`
 							}`}
 						/>
+
+						{/* Event Type — overlay tuned per theme for text legibility */}
+						{slide.type === "event" && (
+							<>
+								{isDark ? (
+									<>
+										<div className="absolute inset-0 bg-linear-to-r from-[#050505] via-[#050505]/60 to-[#050505] pointer-events-none" />
+										<div className="absolute inset-0 bg-[#050505]/40 pointer-events-none" />
+									</>
+								) : (
+									<>
+										<div className="absolute inset-0 bg-linear-to-r from-[#ffffff]/85 via-[#ffffff]/40 to-[#ffffff]/85 pointer-events-none" />
+										<div className="absolute inset-0 bg-[#ffffff]/30 pointer-events-none" />
+									</>
+								)}
+							</>
+						)}
 
 						{/* Static Type */}
 						{slide.type === "static" ? (
@@ -192,6 +233,133 @@ export function BannerSlider({
 											/>
 										</div>
 									</div>
+								</div>
+							</div>
+						) : slide.type === "event" ? (
+							/* Event Type - Teater Bola Dunia */
+							<div className="relative z-10 w-full max-w-360 mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-14 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center h-full">
+								{/* Left Content: Typography & CTA */}
+								<div className="lg:col-span-6 flex flex-col items-center md:items-start gap-3 md:gap-6">
+									{/* Live Badge */}
+									{slide.eventBadge && (
+										<div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full mb-2">
+											<span className="relative flex h-3 w-3">
+												<span className="absolute inline-flex h-full w-full rounded-full bg-primary animate-ping opacity-75" />
+												<span
+													className={`relative inline-flex rounded-full h-3 w-3 ${isDark ? "bg-primary" : "bg-green-800"}`}
+												/>
+											</span>
+											<span
+												className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+											>
+												{slide.eventBadge}
+											</span>
+										</div>
+									)}
+
+									{/* Event Title */}
+									{slide.eventTitle && (
+										<h1 className="text-2xl md:text-5xl font-extrabold italic uppercase leading-none neon-glow-text">
+											{slide.eventTitle.parts.map((part, i) => (
+												<span
+													key={i}
+													className={
+														part.color === "primary"
+															? `${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"} text-glow block`
+															: isDark
+																? "text-white"
+																: "text-[#1a1a1a]"
+													}
+												>
+													{part.text}
+												</span>
+											))}
+										</h1>
+									)}
+
+									{/* Description */}
+									{slide.eventDescription && (
+										<p
+											className={`text-sm md:text-lg font-medium max-w-xl text-center md:text-left ${isDark ? "text-[#bbcac6]" : "text-[#3a3a3a]"}`}
+										>
+											{slide.eventDescription}
+										</p>
+									)}
+
+									{/* CTA Buttons */}
+									<div className="flex flex-row gap-4 mt-4">
+										{slide.eventPrimaryCta && (
+											<a
+												href={slide.eventPrimaryCta.href}
+												className="bg-primary text-on-primary text-xs md:text-sm font-extrabold px-4 md:px-8 py-3 md:py-4 rounded-sm hover:shadow-[0_0_20px_rgba(67,222,204,0.6)] transition-all duration-300 active:scale-95 uppercase tracking-widest"
+											>
+												{slide.eventPrimaryCta.text}
+											</a>
+										)}
+										{slide.eventSecondaryCta && (
+											<a
+												href={slide.eventSecondaryCta.href}
+												className={`${isDark ? "glass-panel text-primary" : "bg-white/70 backdrop-blur-md border-gray-200 shadow-md text-[#0A7C6E]"} border-primary border-2  text-xs md:text-sm font-extrabold px-4 md:px-8 py-3 md:py-4 rounded-sm hover:bg-primary/10 transition-all duration-300 active:scale-95 uppercase tracking-widest`}
+											>
+												{slide.eventSecondaryCta.text}
+											</a>
+										)}
+									</div>
+								</div>
+
+								{/* Right Content: Reward Showcase */}
+								<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-0 pb-12 lg:py-20 -mt-8 lg:mt-0">
+									{/* Ambient glow */}
+									<div className="absolute inset-0 bg-primary/5 rounded-full blur-[120px] opacity-40" />
+
+									{/* Background shapes to highlight the prize image */}
+									<div
+										aria-hidden
+										className="absolute z-0 w-72 h-72 sm:w-96 sm:h-96 rounded-full pointer-events-none"
+										style={{
+											background:
+												"radial-gradient(circle, rgba(0, 194, 177, 0.35) 0%, rgba(0, 194, 177, 0.12) 45%, transparent 70%)",
+											filter: "blur(40px)",
+										}}
+									/>
+									<div
+										aria-hidden
+										className="absolute z-0 -bottom-6 -right-6 w-56 h-56 rounded-full pointer-events-none"
+										style={{
+											background:
+												"radial-gradient(circle, rgba(67, 222, 204, 0.25) 0%, transparent 65%)",
+											filter: "blur(30px)",
+										}}
+									/>
+									<div
+										aria-hidden
+										className="absolute z-0 -top-6 -left-6 w-44 h-44 rounded-full pointer-events-none"
+										style={{
+											background:
+												"radial-gradient(circle, rgba(0, 194, 177, 0.22) 0%, transparent 65%)",
+											filter: "blur(30px)",
+										}}
+									/>
+									<div
+										aria-hidden
+										className="absolute z-0 inset-0 m-auto w-64 h-64 sm:w-80 sm:h-80 rounded-full border-2 border-primary/20 pointer-events-none"
+									/>
+									<div
+										aria-hidden
+										className="absolute z-0 inset-0 m-auto w-44 h-44 sm:w-56 sm:h-56 rounded-full border border-primary/30 pointer-events-none"
+									/>
+
+									{/* Reward Image */}
+									{slide.eventRewardImage && (
+										<div className="relative z-20 transition-transform duration-500 hover:scale-125">
+											<img
+												alt={slide.eventRewardImageAlt || "Prize"}
+												src={slide.eventRewardImage}
+												className="h-65 sm:h-80 md:h-110 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
+												loading="lazy"
+											/>
+										</div>
+									)}
 								</div>
 							</div>
 						) : slide.type === "cta" ? (

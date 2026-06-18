@@ -209,8 +209,212 @@ export function GamesPageContent() {
 					/>
 				</section>
 
+				{/* Tournament Prizes Section */}
+				<section className="mb-10 md:mb-24">
+					<div className="flex flex-col items-center text-center mb-12">
+						<h2
+							className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-2"
+							style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
+						>
+							Tournament Mystery Prizes
+						</h2>
+						<p
+							className="text-xs md:text-sm font-bold tracking-widest  max-w-xl"
+							style={{
+								color: isDark
+									? "rgba(255, 255, 255, 0.4)"
+									: "rgba(26, 26, 26, 0.5)",
+							}}
+						>
+							Ini adalah hadiah yang bisa kamu menangkan pada tiap game quiz dan
+							prediksi skor. Semakin tinggi peringkatmu, semakin keren
+							hadiahnya!
+						</p>
+						<div
+							className="w-24 h-1 bg-primary mt-4 rounded-full"
+							style={{ background: accent }}
+						/>
+					</div>
+
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+						{/* Champion */}
+						<div className="games-glass-card rounded-4xl p-6 flex flex-col items-center text-center group">
+							<div className="relative mb-6 w-full aspect-square rounded-2xl overflow-hidden border border-white/10">
+								{/* Hover background shapes behind image */}
+								<div
+									aria-hidden
+									className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+									style={{
+										background: `radial-gradient(circle at 30% 30%, ${accent}66 0%, transparent 60%), radial-gradient(circle at 70% 70%, ${accent}44 0%, transparent 60%)`,
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -top-8 -left-8 w-32 h-32 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}55 0%, transparent 70%)`,
+										filter: "blur(15px)",
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}44 0%, transparent 70%)`,
+										filter: "blur(20px)",
+									}}
+								/>
+								<img
+									alt="Mystery Team Jersey"
+									className="relative w-full h-full p-3 object-cover transition-transform duration-500 group-hover:scale-110"
+									src="/images/games/mistery-jersey.png"
+								/>
+							</div>
+							<span
+								className="text-[10px] font-black tracking-widest uppercase mb-2 block"
+								style={{ color: accent }}
+							>
+								Top 1 Leaderboard
+							</span>
+							<h3
+								className="text-xl font-black italic tracking-tight uppercase mb-1"
+								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
+							>
+								Champion Prize
+							</h3>
+							<p
+								className="text-sm"
+								style={{
+									color: isDark
+										? "rgba(255, 255, 255, 0.6)"
+										: "rgba(26, 26, 26, 0.6)",
+								}}
+							>
+								Mystery LaLiga Team Jersey
+							</p>
+						</div>
+
+						{/* Runner-Up */}
+						<div className="games-glass-card rounded-4xl p-6 flex flex-col items-center text-center group">
+							<div className="relative mb-6 w-full aspect-square rounded-2xl overflow-hidden border border-white/10">
+								{/* Hover background shapes behind image */}
+								<div
+									aria-hidden
+									className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+									style={{
+										background: `radial-gradient(circle at 70% 30%, ${accent}55 0%, transparent 60%), radial-gradient(circle at 30% 70%, ${accent}33 0%, transparent 60%)`,
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}44 0%, transparent 70%)`,
+										filter: "blur(20px)",
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-56 h-20 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700"
+									style={{
+										background: `radial-gradient(ellipse, ${accent}55 0%, transparent 70%)`,
+										filter: "blur(15px)",
+									}}
+								/>
+								<img
+									alt="Official Match Ball"
+									className="relative w-full h-full p-14 object-cover transition-transform duration-500 group-hover:scale-110"
+									src="/images/games/ball.png"
+								/>
+							</div>
+							<span
+								className="text-[10px] font-black tracking-widest uppercase mb-2 block"
+								style={{ color: accent }}
+							>
+								Peringkat 2
+							</span>
+							<h3
+								className="text-xl font-black italic tracking-tight uppercase mb-1"
+								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
+							>
+								Pro Runner-Up
+							</h3>
+							<p
+								className="text-sm"
+								style={{
+									color: isDark
+										? "rgba(255, 255, 255, 0.6)"
+										: "rgba(26, 26, 26, 0.6)",
+								}}
+							>
+								Official Match Ball
+							</p>
+						</div>
+
+						{/* Elite */}
+						<div className="games-glass-card rounded-4xl p-6 flex flex-col items-center text-center group">
+							<div className="relative mb-6 w-full aspect-square rounded-2xl overflow-hidden border border-white/10">
+								{/* Hover background shapes behind image */}
+								<div
+									aria-hidden
+									className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+									style={{
+										background: `radial-gradient(circle at 50% 50%, ${accent}55 0%, transparent 65%)`,
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -top-10 -right-10 w-44 h-44 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}44 0%, transparent 70%)`,
+										filter: "blur(20px)",
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -bottom-10 -left-10 w-44 h-44 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}33 0%, transparent 70%)`,
+										filter: "blur(20px)",
+									}}
+								/>
+								<img
+									alt="Limited Edition Cap"
+									className="relative w-full h-full  p-6 object-cover transition-transform duration-500 group-hover:scale-110"
+									src="/images/games/bundes-cap.png"
+								/>
+							</div>
+							<span
+								className="text-[10px] font-black tracking-widest uppercase mb-2 block"
+								style={{ color: accent }}
+							>
+								Peringkat 3
+							</span>
+							<h3
+								className="text-xl font-black italic tracking-tight uppercase mb-1"
+								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
+							>
+								Elite Contender
+							</h3>
+							<p
+								className="text-sm"
+								style={{
+									color: isDark
+										? "rgba(255, 255, 255, 0.6)"
+										: "rgba(26, 26, 26, 0.6)",
+								}}
+							>
+								Limited Edition Bundesliga Cap
+							</p>
+						</div>
+					</div>
+				</section>
+
 				{/* Leaderboard Section - Side by side: Prediksi Skor | Quiz World Cup */}
-				<section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<section
+					className="grid grid-cols-1 md:grid-cols-2 gap-6"
+					id="leaderboard"
+				>
 					{/* Prediksi Skor Leaderboard */}
 					<div
 						className="rounded-3xl md:rounded-[40px] p-6 md:p-8 relative overflow-hidden"

@@ -130,46 +130,55 @@ function InterviewContent() {
 				{/* Bento Grid Video Gallery */}
 				<div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
 					{/* Featured Card (Large) - col-span-8 */}
-					<div className="md:col-span-8 group relative overflow-hidden rounded-xl glass-panel glowing-border transition-all duration-500 flex items-stretch">
-						<div
-							className="relative overflow-hidden w-full"
-							style={{ aspectRatio: "16/9" }}
+					{displayedInterviews[0] && (
+						<a
+							href={displayedInterviews[0].post_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="md:col-span-8 group relative overflow-hidden rounded-xl glass-panel glowing-border transition-all duration-500 flex items-stretch"
 						>
-							{displayedInterviews[0] ? (
+							<div
+								className="relative overflow-hidden w-full"
+								style={{ aspectRatio: "16/9" }}
+							>
 								<img
 									src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${displayedInterviews[0].image}`}
 									alt={displayedInterviews[0].title || "Featured Interview"}
 									className="w-full h-full object-cover object-[40%_30%] group-hover:scale-105 transition-transform duration-700"
 								/>
-							) : (
-								<div className="w-full h-full bg-linear-to-br from-[#1c211e] to-[#0f1412]" />
-							)}
-							<div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
-						</div>
-					</div>
+								<div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
+							</div>
+						</a>
+					)}
 
 					{/* Side Card - col-span-4 */}
-					<div className="md:col-span-4 group glass-panel rounded-xl glowing-border transition-all duration-300 flex flex-col">
-						<div className="relative overflow-hidden rounded-xl w-full">
-							{displayedInterviews[1] ? (
+					{displayedInterviews[1] && (
+						<a
+							href={displayedInterviews[1].post_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="md:col-span-4 group glass-panel rounded-xl glowing-border transition-all duration-300 flex flex-col"
+						>
+							<div className="relative overflow-hidden rounded-xl w-full">
 								<img
 									src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${displayedInterviews[1].image}`}
 									alt={displayedInterviews[1].title || "Interview"}
 									className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
 								/>
-							) : (
-								<div className="w-full h-full bg-linear-to-br from-[#1c211e] to-[#0f1412]" />
-							)}
-							<div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-						</div>
-					</div>
+								<div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+							</div>
+						</a>
+					)}
 
 					{/* Gallery Row - 3 cards */}
 					{displayedInterviews
 						.slice(2, 5)
 						.map((interview: any, idx: number) => (
-							<div
+							<a
 								key={interview.id || idx}
+								href={interview.post_url}
+								target="_blank"
+								rel="noopener noreferrer"
 								className="md:col-span-4 group glass-panel rounded-xl glowing-border transition-all duration-300"
 							>
 								<div className="relative overflow-hidden aspect-square rounded-xl w-full">
@@ -180,7 +189,7 @@ function InterviewContent() {
 									/>
 									<div className="absolute inset-0 bg-black/30" />
 								</div>
-							</div>
+							</a>
 						))}
 
 					{/* Fallback cards when loading */}
@@ -205,8 +214,11 @@ function InterviewContent() {
 						className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"
 					>
 						{displayedInterviews.slice(3).map((interview: any, idx: number) => (
-							<div
+							<a
 								key={interview.id}
+								href={interview.post_url}
+								target="_blank"
+								rel="noopener noreferrer"
 								className="group glass-panel rounded-xl glowing-border transition-all duration-300"
 							>
 								<div className="relative overflow-hidden rounded-xl w-full aspect-square">
@@ -217,7 +229,7 @@ function InterviewContent() {
 									/>
 									<div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
 								</div>
-							</div>
+							</a>
 						))}
 					</div>
 				)}

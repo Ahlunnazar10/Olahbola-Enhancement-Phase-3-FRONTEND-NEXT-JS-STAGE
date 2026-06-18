@@ -250,6 +250,29 @@ export default function HomePage() {
 		// 	imageFallback: "/images/home/banner-bg.webp",
 		// });
 
+		// Slide 3: Event Banner - Teater Bola Dunia (World Cup Edition)
+		slides.push({
+			id: "event-teater-bola-dunia",
+			type: "event" as const,
+			imageFallback: "/images/home/teater-bola-bg.webp",
+			eventBadge: "Turnamen Sedang Berlangsung",
+			eventTitle: {
+				parts: [{ text: "TEATER BOLA DUNIA", color: "white" as const }],
+			},
+			eventDescription:
+				"Teater bola dunia dimulai! Ikuti turnamen ini dengan skill terbaikmu dan dapatkan hadiah mistery jersey, bola & topi limited edition.",
+			eventPrimaryCta: {
+				text: "Main Sekarang",
+				href: "/games",
+			},
+			eventSecondaryCta: {
+				text: "Lihat Klasemen",
+				href: "/games#leaderboard",
+			},
+			eventRewardImage: "/images/home/home-prize.png",
+			eventRewardImageAlt: "Mystery World Cup Jersey",
+		});
+
 		return slides;
 	}, [featuredArticle]);
 
