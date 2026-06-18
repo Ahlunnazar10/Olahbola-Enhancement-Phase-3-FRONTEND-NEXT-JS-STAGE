@@ -136,7 +136,7 @@ function CountryBadge({
 	const abbr = getCountryInitials(name);
 	const sizeClasses = {
 		sm: "w-10 h-10 text-sm",
-		md: "w-16 h-16 text-xl",
+		md: "w-14 h-14 text-md",
 		lg: "w-28 h-28 text-4xl",
 	};
 	return (
@@ -708,7 +708,7 @@ export default function PrediksiSkorPage() {
 								return (
 									<div
 										key={match.id}
-										className="match-card p-8 rounded-3xl backdrop-blur-xl border transition-all duration-300 group relative overflow-hidden"
+										className="match-card px-3 md:px-8 py-5 md:py-8 rounded-3xl backdrop-blur-xl border transition-all duration-300 group relative overflow-hidden"
 										style={{
 											background: whiteAlpha5,
 											borderColor: whiteAlpha10,
@@ -757,7 +757,7 @@ export default function PrediksiSkorPage() {
 										</div>
 
 										{/* Teams & Score */}
-										<div className="flex items-center justify-between gap-4 mb-10 relative z-10">
+										<div className="flex items-center justify-between gap-0 mb-10 relative z-10">
 											{/* Home Team */}
 											<div className="flex flex-col items-center gap-3 flex-1">
 												<CountryBadge

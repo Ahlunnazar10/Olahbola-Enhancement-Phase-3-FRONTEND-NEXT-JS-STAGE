@@ -216,7 +216,7 @@ function PodiumCard({
 				}`}
 			>
 				<div
-					className="absolute inset-0 rounded-2xl overflow-hidden"
+					className="absolute inset-0 rounded-2xl overflow-hidden "
 					style={{
 						border: `2px solid ${isChampion ? accent : medal.ring}`,
 					}}
@@ -320,7 +320,7 @@ function RankRow({
 			}}
 		>
 			{/* Rank Number + Avatar + Nama/Stats */}
-			<div className="flex items-center gap-4">
+			<div className="flex items-center gap-6 md:gap-4">
 				<span
 					className="font-black italic text-xl w-6 transition-transform duration-300 group-hover:translate-x-1"
 					style={{
@@ -333,7 +333,7 @@ function RankRow({
 				</span>
 
 				{/* Avatar dengan glow effect saat hover */}
-				<div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 group-avatar">
+				<div className="relative hidden md:flex w-10 h-10 rounded-lg overflow-hidden shrink-0 group-avatar">
 					<div
 						className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"
 						style={{
@@ -362,7 +362,7 @@ function RankRow({
 					)}
 				</div>
 
-				<div className="min-w-0">
+				<div className="flex-1 min-w-0 max-w-[180px] md:max-w-[200px]">
 					<p
 						className="font-black uppercase tracking-tight truncate transition-all duration-300 group-hover:translate-x-1"
 						style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
