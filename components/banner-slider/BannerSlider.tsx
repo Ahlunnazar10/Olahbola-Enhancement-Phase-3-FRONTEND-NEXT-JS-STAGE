@@ -1,86 +1,142 @@
 "use client";
 
 import Link from "next/link";
+
 import { Swiper, SwiperSlide } from "swiper/react";
+
 import { Navigation, Autoplay, EffectFade } from "swiper/modules";
+
 import { ChevronRight, ChevronLeft, ArrowRight, Award } from "lucide-react";
+
 import { useRef } from "react";
 
 // Import Swiper styles - use string path to avoid type resolution issues
+
 // @ts-ignore
+
 import "swiper/css";
+
 // @ts-ignore
+
 import "swiper/css/effect-fade";
 
 export interface BannerSlide {
 	id: string;
+
 	type: "article" | "static" | "cta" | "event";
+
 	label?: string;
+
 	labelColor?: "breaking" | "season" | "default";
+
 	title?: {
 		parts: string[];
+
 		colors?: ("primary" | "white" | "accent")[];
 	};
+
 	staticTitle?: {
 		parts: { text: string; color: "primary" | "white" | "accent" }[];
 	};
+
 	description?: string;
+
 	excerpt?: string;
+
 	image?: string;
+
 	imageFallback?: string;
+
 	imageMobileFallback?: string;
+
 	ctaButtons?: {
 		primary?: { text: string; href?: string; icon?: string };
+
 		secondary?: { text: string; href?: string; icon?: string };
 	};
+
 	ctaTitle?: string;
+
 	ctaSubtitle?: string;
+
 	ctaCtaText?: string;
+
 	ctaCtaHref?: string;
+
 	ctaAlignment?: "left" | "right";
+
 	ctaTerms?: string;
+
 	// Event-specific (type === "event")
+
 	eventBadge?: string;
+
 	eventTitle?: {
 		parts: { text: string; color: "primary" | "white" }[];
 	};
+
 	eventDescription?: string;
+
 	eventPrimaryCta?: { text: string; href: string };
+
 	eventSecondaryCta?: { text: string; href: string };
+
 	eventHudStats?: { label: string; value: string; suffix?: string }[];
+
 	eventRewardImage?: string;
+
 	eventRewardImageAlt?: string;
+
 	eventFloatingCards?: {
 		position: "top-right" | "bottom-left";
+
 		icon: string;
+
 		iconFilled?: boolean;
+
 		label: string;
+
 		title: string;
 	}[];
 }
 
 interface BannerSliderProps {
 	slides: BannerSlide[];
+
 	autoPlay?: boolean;
+
 	autoPlayInterval?: number;
+
 	showNavigation?: boolean;
+
 	className?: string;
+
 	isDark?: boolean;
+
 	isMobile?: boolean;
 }
 
 export function BannerSlider({
 	slides,
+
 	autoPlay = true,
+
 	autoPlayInterval = 2000,
+
 	showNavigation = true,
+
 	className = "",
+
 	isDark = true,
+
 	isMobile = false,
 }: BannerSliderProps) {
 	const swiperRef = useRef<any>(null);
+
 	const totalSlides = slides.length;
+
 	const showControls = totalSlides > 1;
+
 	const isAutoPlaying = showControls && autoPlay;
 
 	return (
@@ -96,7 +152,9 @@ export function BannerSlider({
 					isAutoPlaying
 						? {
 								delay: autoPlayInterval,
+
 								disableOnInteraction: false,
+
 								pauseOnMouseEnter: true,
 							}
 						: false
@@ -110,40 +168,67 @@ export function BannerSlider({
 				{slides.map((slide, index) => (
 					<SwiperSlide key={slide.id} className="w-full! h-full! list-none!">
 						{/* Background - First slide loads eagerly, others lazy */}
+
 						<div className="absolute inset-0 w-full h-full">
 							{(
 								slide.type === "article"
 									? slide.image
-									: slide.type === "event"
-										? slide.imageFallback
-										: slide.imageFallback
+									: slide.imageFallback || slide.imageMobileFallback
 							) ? (
-								<img
-									src={
-										slide.type === "article"
-											? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
-											: slide.imageFallback
-									}
-									alt={
-										slide.ctaTitle || slide.title?.parts?.join(" ") || "Banner"
-									}
-									className={`w-full h-full object-cover object-center ${
-										slide.type === "event"
-											? ""
-											: isDark
-												? "grayscale-[0.2] contrast-125"
-												: "grayscale-[0.1] contrast-105"
-									}`}
-									fetchPriority={index === 0 ? "high" : "low"}
-									decoding="async"
-									loading={index === 0 ? "eager" : "lazy"}
-								/>
+								<>
+									{slide.imageFallback && (
+										<img
+											src={
+												slide.type === "article"
+													? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
+													: slide.imageFallback
+											}
+											alt={
+												slide.ctaTitle ||
+												slide.title?.parts?.join(" ") ||
+												"Banner"
+											}
+											className={`w-full h-full object-cover object-center ${
+												slide.type === "event"
+													? ""
+													: isDark
+														? "grayscale-[0.2] contrast-125"
+														: "grayscale-[0.1] contrast-105"
+											} hidden md:block`}
+											fetchPriority={index === 0 ? "high" : "low"}
+											decoding="async"
+											loading={index === 0 ? "eager" : "lazy"}
+										/>
+									)}
+
+									{slide.imageMobileFallback && (
+										<img
+											src={slide.imageMobileFallback}
+											alt={
+												slide.ctaTitle ||
+												slide.title?.parts?.join(" ") ||
+												"Banner"
+											}
+											className={`w-full h-full object-cover object-center ${
+												slide.type === "event"
+													? ""
+													: isDark
+														? "grayscale-[0.2] contrast-125"
+														: "grayscale-[0.1] contrast-105"
+											} md:hidden`}
+											fetchPriority={index === 0 ? "high" : "low"}
+											decoding="async"
+											loading={index === 0 ? "eager" : "lazy"}
+										/>
+									)}
+								</>
 							) : (
 								<div className="w-full h-full bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]" />
 							)}
 						</div>
 
 						{/* Overlays */}
+
 						<div
 							className={`absolute inset-0 ${
 								slide.type === "cta"
@@ -169,16 +254,19 @@ export function BannerSlider({
 						/>
 
 						{/* Event Type — overlay tuned per theme for text legibility */}
+
 						{slide.type === "event" && (
 							<>
 								{isDark ? (
 									<>
 										<div className="absolute inset-0 bg-linear-to-r from-[#050505] via-[#050505]/60 to-[#050505] pointer-events-none" />
+
 										<div className="absolute inset-0 bg-[#050505]/40 pointer-events-none" />
 									</>
 								) : (
 									<>
 										<div className="absolute inset-0 bg-linear-to-r from-[#ffffff]/85 via-[#ffffff]/40 to-[#ffffff]/85 pointer-events-none" />
+
 										<div className="absolute inset-0 bg-[#ffffff]/30 pointer-events-none" />
 									</>
 								)}
@@ -186,6 +274,7 @@ export function BannerSlider({
 						)}
 
 						{/* Static Type */}
+
 						{slide.type === "static" ? (
 							<div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center md:items-center justify-center md:justify-between gap-8 md:gap-4 px-8 sm:px-12 md:px-16 lg:px-24 xl:px-32">
 								<div className="flex flex-col justify-center w-full md:w-1/2 md:max-w-xl lg:max-w-2xl text-center md:text-left order-2 md:order-1">
@@ -207,11 +296,13 @@ export function BannerSlider({
 													}
 												>
 													{part.text}
+
 													{i < slide.staticTitle!.parts.length - 1 && " "}
 												</span>
 											))}
 										</h1>
 									)}
+
 									<p
 										className={`text-sm sm:text-base md:text-lg max-w-sm sm:max-w-md md:max-w-md lg:max-w-xl mx-auto md:mx-0 ${
 											isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"
@@ -224,6 +315,7 @@ export function BannerSlider({
 								<div className="flex items-center justify-center order-1 md:order-2 w-full md:w-5/12 lg:w-1/2 md:justify-end">
 									<div className="relative w-70 h-70 md:w-56 md:h-56 lg:w-110 lg:h-110">
 										<div className="absolute inset-0 bg-linear-to-br from-[#43decc]/20 to-[#fe9d00]/20 rounded-full blur-3xl" />
+
 										<div className="relative w-full h-full rounded-2xl overflow-hidden animate-float">
 											<img
 												src="/images/home/banner-1.webp"
@@ -237,18 +329,23 @@ export function BannerSlider({
 							</div>
 						) : slide.type === "event" ? (
 							/* Event Type - Teater Bola Dunia */
+
 							<div className="relative z-10 w-full max-w-360 mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-14 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center h-full">
 								{/* Left Content: Typography & CTA */}
+
 								<div className="lg:col-span-6 flex flex-col items-center md:items-start gap-3 md:gap-6">
 									{/* Live Badge */}
+
 									{slide.eventBadge && (
 										<div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full mb-2">
 											<span className="relative flex h-3 w-3">
 												<span className="absolute inline-flex h-full w-full rounded-full bg-primary animate-ping opacity-75" />
+
 												<span
 													className={`relative inline-flex rounded-full h-3 w-3 ${isDark ? "bg-primary" : "bg-green-800"}`}
 												/>
 											</span>
+
 											<span
 												className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
 											>
@@ -258,6 +355,7 @@ export function BannerSlider({
 									)}
 
 									{/* Event Title */}
+
 									{slide.eventTitle && (
 										<h1 className="text-2xl md:text-5xl font-extrabold italic uppercase leading-none neon-glow-text">
 											{slide.eventTitle.parts.map((part, i) => (
@@ -278,6 +376,7 @@ export function BannerSlider({
 									)}
 
 									{/* Description */}
+
 									{slide.eventDescription && (
 										<p
 											className={`text-sm md:text-lg font-medium max-w-xl text-center md:text-left ${isDark ? "text-[#bbcac6]" : "text-[#3a3a3a]"}`}
@@ -287,19 +386,21 @@ export function BannerSlider({
 									)}
 
 									{/* CTA Buttons */}
+
 									<div className="flex flex-row gap-4 mt-4">
 										{slide.eventPrimaryCta && (
 											<a
 												href={slide.eventPrimaryCta.href}
-												className="bg-primary text-on-primary text-xs md:text-sm font-extrabold px-4 md:px-8 py-3 md:py-4 rounded-sm hover:shadow-[0_0_20px_rgba(67,222,204,0.6)] transition-all duration-300 active:scale-95 uppercase tracking-widest"
+												className="bg-primary text-on-primary text-[11px] md:text-sm font-extrabold px-4 md:px-8 py-3 md:py-4 rounded-sm hover:shadow-[0_0_20px_rgba(67,222,204,0.6)] transition-all duration-300 active:scale-95 uppercase tracking-widest"
 											>
 												{slide.eventPrimaryCta.text}
 											</a>
 										)}
+
 										{slide.eventSecondaryCta && (
 											<a
 												href={slide.eventSecondaryCta.href}
-												className={`${isDark ? "glass-panel text-primary" : "bg-white/70 backdrop-blur-md border-gray-200 shadow-md text-[#0A7C6E]"} border-primary border-2  text-xs md:text-sm font-extrabold px-4 md:px-8 py-3 md:py-4 rounded-sm hover:bg-primary/10 transition-all duration-300 active:scale-95 uppercase tracking-widest`}
+												className={`${isDark ? "glass-panel text-primary" : "bg-white/70 backdrop-blur-md border-gray-200 shadow-md text-[#0A7C6E]"} border-primary border-2  text-[11px] md:text-sm font-extrabold px-4 md:px-8 py-3 md:py-4 rounded-sm hover:bg-primary/10 transition-all duration-300 active:scale-95 uppercase tracking-widest`}
 											>
 												{slide.eventSecondaryCta.text}
 											</a>
@@ -308,48 +409,59 @@ export function BannerSlider({
 								</div>
 
 								{/* Right Content: Reward Showcase */}
+
 								<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-0 pb-12 lg:py-20 -mt-8 lg:mt-0">
 									{/* Ambient glow */}
+
 									<div className="absolute inset-0 bg-primary/5 rounded-full blur-[120px] opacity-40" />
 
 									{/* Background shapes to highlight the prize image */}
+
 									<div
 										aria-hidden
 										className="absolute z-0 w-72 h-72 sm:w-96 sm:h-96 rounded-full pointer-events-none"
 										style={{
 											background:
 												"radial-gradient(circle, rgba(0, 194, 177, 0.35) 0%, rgba(0, 194, 177, 0.12) 45%, transparent 70%)",
+
 											filter: "blur(40px)",
 										}}
 									/>
+
 									<div
 										aria-hidden
 										className="absolute z-0 -bottom-6 -right-6 w-56 h-56 rounded-full pointer-events-none"
 										style={{
 											background:
 												"radial-gradient(circle, rgba(67, 222, 204, 0.25) 0%, transparent 65%)",
+
 											filter: "blur(30px)",
 										}}
 									/>
+
 									<div
 										aria-hidden
 										className="absolute z-0 -top-6 -left-6 w-44 h-44 rounded-full pointer-events-none"
 										style={{
 											background:
 												"radial-gradient(circle, rgba(0, 194, 177, 0.22) 0%, transparent 65%)",
+
 											filter: "blur(30px)",
 										}}
 									/>
+
 									<div
 										aria-hidden
 										className="absolute z-0 inset-0 m-auto w-64 h-64 sm:w-80 sm:h-80 rounded-full border-2 border-primary/20 pointer-events-none"
 									/>
+
 									<div
 										aria-hidden
 										className="absolute z-0 inset-0 m-auto w-44 h-44 sm:w-56 sm:h-56 rounded-full border border-primary/30 pointer-events-none"
 									/>
 
 									{/* Reward Image */}
+
 									{slide.eventRewardImage && (
 										<div className="relative z-20 ">
 											<img
@@ -364,8 +476,9 @@ export function BannerSlider({
 							</div>
 						) : slide.type === "cta" ? (
 							/* CTA Type */
+
 							<div className="relative z-10 w-full h-full flex items-center">
-								<div className="relative z-20 w-full max-w-2xl lg:max-w-4xl px-14 md:px-8 ml-auto mr-4 md:mr-16 lg:mr-32 text-center md:text-right mt-50 md:mt-0">
+								<div className="relative z-20 w-full max-w-2xl lg:max-w-4xl px-14 md:px-8 ml-auto mr-4 md:mr-16 lg:mr-32 text-center md:text-right mt-30 md:mt-0">
 									{slide.ctaTitle && (
 										<h2 className="text-xl md:text-[42px] lg:text-[48px] font-black uppercase leading-tight md:leading-[1.1] mb-4 md:mb-6 text-white">
 											{slide.ctaTitle.split("\n").map((line, i) => (
@@ -375,6 +488,7 @@ export function BannerSlider({
 											))}
 										</h2>
 									)}
+
 									{slide.ctaSubtitle && (
 										<p className="text-sm md:text-lg font-semibold leading-relaxed mb-6 md:mb-8 max-w-lg ml-auto">
 											<span className="text-[#43decc]">
@@ -382,6 +496,7 @@ export function BannerSlider({
 											</span>
 										</p>
 									)}
+
 									{slide.ctaCtaText && slide.ctaCtaHref && (
 										<a
 											data-gtm-cta="DAFTAR SEKARANG!"
@@ -404,11 +519,14 @@ export function BannerSlider({
 														d="M13 10V3L4 14h7v7l9-11h-7z"
 													/>
 												</svg>
+
 												{slide.ctaCtaText}
 											</span>
+
 											<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
 										</a>
 									)}
+
 									{slide.ctaTerms && (
 										<Link
 											href="/syarat-dan-ketentuan-football-city-battle"
@@ -421,13 +539,15 @@ export function BannerSlider({
 							</div>
 						) : (
 							/* Article Type */
-							<div className="relative z-10 w-full max-w-4xl px-18 md:px-16 lg:px-24 xl:px-32 mt-24 md:mt-0 h-full flex flex-col justify-center">
+
+							<div className="relative z-10 w-full max-w-4xl px-18 md:px-16 lg:px-24 xl:px-32 mt-20 md:mt-0 h-full flex flex-col justify-center">
 								{slide.title && (
 									<h1 className="text-xl md:text-[46px] lg:text-5xl font-bold uppercase italic leading-none mb-3 md:mb-6">
 										{slide.title.parts.map((part, i) => {
 											const color =
 												slide.title?.colors?.[i] ||
 												(i === 0 ? "primary" : "white");
+
 											return (
 												<span
 													key={i}
@@ -444,12 +564,14 @@ export function BannerSlider({
 													}
 												>
 													{part}
+
 													{i < slide.title!.parts.length - 1 && " "}
 												</span>
 											);
 										})}
 									</h1>
 								)}
+
 								<p
 									className={`text-base md:text-lg max-w-xl mb-6 line-clamp-2 md:line-clamp-3 ${
 										isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"
@@ -457,12 +579,14 @@ export function BannerSlider({
 								>
 									{slide.excerpt}
 								</p>
+
 								{slide.ctaButtons?.primary?.href && (
 									<Link
 										href={slide.ctaButtons.primary.href}
 										className="inline-flex items-center gap-2 w-fit px-6 py-3 bg-[#43decc] text-[#003732] font-bold uppercase tracking-widest text-sm rounded-full hover:bg-[#5eebe8] hover:scale-105 transition-all group"
 									>
 										{slide.ctaButtons.primary.text || "Baca Selengkapnya!"}
+
 										<ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
 									</Link>
 								)}
@@ -473,6 +597,7 @@ export function BannerSlider({
 			</Swiper>
 
 			{/* Custom Navigation Arrows */}
+
 			{showNavigation && showControls && (
 				<>
 					<button
@@ -490,6 +615,7 @@ export function BannerSlider({
 							}`}
 						/>
 					</button>
+
 					<button
 						onClick={() => swiperRef.current?.swiper.slideNext()}
 						className={`absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all group ${
@@ -509,82 +635,111 @@ export function BannerSlider({
 			)}
 
 			{/* Custom Swiper Styles */}
+
 			<style jsx global>{`
 				.banner-slider {
 					width: 100%;
+
 					height: 100%;
 				}
+
 				.banner-slider .swiper-wrapper {
 					height: 100% !important;
 				}
+
 				.banner-slider .swiper-slide {
 					width: 100% !important;
+
 					height: 100% !important;
+
 					flex-shrink: 0 !important;
 				}
+
 				.banner-slider .swiper-button-next,
 				.banner-slider .swiper-button-prev {
 					display: none !important;
 				}
+
 				.banner-slider .swiper-lazy-preloader {
 					display: none !important;
 				}
+
 				.banner-slider .swiper-fade .swiper-slide {
 					pointer-events: none;
 				}
+
 				.banner-slider .swiper-fade .swiper-slide-active {
 					pointer-events: auto;
 				}
+
 				.banner-slider .swiper-fade .swiper-slide-active .animate-float {
 					animation: floatIn 0.8s ease-out 0.3s both;
 				}
+
 				.banner-slider .swiper-fade .swiper-slide-active h1 {
 					animation: slideUp 0.6s ease-out 0.2s both;
 				}
+
 				.banner-slider .swiper-fade .swiper-slide-active p {
 					animation: slideUp 0.6s ease-out 0.4s both;
 				}
+
 				.banner-slider .swiper-fade .swiper-slide-active span {
 					animation: fadeIn 0.5s ease-out 0.1s both;
 				}
+
 				@keyframes floatIn {
 					from {
 						opacity: 0;
+
 						transform: translateX(50px) scale(0.9);
 					}
+
 					to {
 						opacity: 1;
+
 						transform: translateX(0) scale(1);
 					}
 				}
+
 				@keyframes slideUp {
 					from {
 						opacity: 0;
+
 						transform: translateY(30px);
 					}
+
 					to {
 						opacity: 1;
+
 						transform: translateY(0);
 					}
 				}
+
 				@keyframes fadeIn {
 					from {
 						opacity: 0;
+
 						transform: scale(0.9);
 					}
+
 					to {
 						opacity: 1;
+
 						transform: scale(1);
 					}
 				}
+
 				.animate-float {
 					animation: float 3s ease-in-out infinite;
 				}
+
 				@keyframes float {
 					0%,
 					100% {
 						transform: translateY(0px);
 					}
+
 					50% {
 						transform: translateY(-15px);
 					}
