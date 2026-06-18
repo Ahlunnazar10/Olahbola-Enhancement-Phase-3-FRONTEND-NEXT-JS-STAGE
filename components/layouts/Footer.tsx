@@ -21,6 +21,10 @@ const footerLinks = {
 			href: "/syarat-dan-ketentuan-periklanan-partnership",
 			label: "Syarat dan Ketentuan Periklanan & Partnership",
 		},
+		{
+			href: "/syarat-ketentuan-olahbola-games",
+			label: "Syarat Ketentuan Olahbola Games",
+		},
 		{ href: "/kebijakan-hak-cipta", label: "Kebijakan Hak Cipta" },
 		{ href: "/media-spotlight", label: "Media Spotlight" },
 	],
