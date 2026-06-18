@@ -351,11 +351,11 @@ export function BannerSlider({
 
 									{/* Reward Image */}
 									{slide.eventRewardImage && (
-										<div className="relative z-20 transition-transform duration-500 hover:scale-125">
+										<div className="relative z-20 ">
 											<img
 												alt={slide.eventRewardImageAlt || "Prize"}
 												src={slide.eventRewardImage}
-												className="h-65 sm:h-80 md:h-110 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
+												className="h-100 md:h-135 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
 												loading="lazy"
 											/>
 										</div>

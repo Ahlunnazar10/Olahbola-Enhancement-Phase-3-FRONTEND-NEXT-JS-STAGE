@@ -780,7 +780,7 @@ export default function PlaySessionPage() {
 						<div className="flex items-center justify-center gap-2 mb-3">
 							<span className="inline-block w-2 h-2 bg-red-400 rounded-full animate-pulse shadow-[0_0_10px_#ffb4ab]"></span>
 							<p className="font-label-bold text-red-400 tracking-[0.3em] uppercase text-xs">
-								Session Error
+								Pemberitahuan!
 							</p>
 						</div>
 						<h2
@@ -926,11 +926,19 @@ export default function PlaySessionPage() {
 								backsoundRef.current = null;
 							}
 							clearSessionState();
-							queryClient.invalidateQueries({ queryKey: ["wc-global-leaderboard"] });
-							queryClient.invalidateQueries({ queryKey: ["wc-my-global-rank"] });
+							queryClient.invalidateQueries({
+								queryKey: ["wc-global-leaderboard"],
+							});
+							queryClient.invalidateQueries({
+								queryKey: ["wc-my-global-rank"],
+							});
 							queryClient.invalidateQueries({ queryKey: ["wc-sessions"] });
-							queryClient.invalidateQueries({ queryKey: ["wc-session-leaderboard"] });
-							queryClient.invalidateQueries({ queryKey: ["wc-my-session-rank"] });
+							queryClient.invalidateQueries({
+								queryKey: ["wc-session-leaderboard"],
+							});
+							queryClient.invalidateQueries({
+								queryKey: ["wc-my-session-rank"],
+							});
 							queryClient.invalidateQueries({ queryKey: ["quiz-summary"] });
 							router.push("/quiz");
 						}}
@@ -1316,7 +1324,7 @@ function SessionLeaderboardCard({
 			<p
 				className={`font-label-bold mb-3 uppercase tracking-widest text-xs ${isDark ? "text-white/40" : "text-black/40"}`}
 			>
-				Klasemen Sesi 1
+				Klasemen Sesi Ini
 			</p>
 			<div
 				className={`flex-1 overflow-y-auto space-y-1 scrollbar-thin mb-3 ${isDark ? "scrollbar-thumb-white/10" : "scrollbar-thumb-black/10"} scrollbar-track-transparent`}

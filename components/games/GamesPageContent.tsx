@@ -290,7 +290,7 @@ export function GamesPageContent() {
 										: "rgba(26, 26, 26, 0.6)",
 								}}
 							>
-								Mystery LaLiga Team Jersey
+								Mystery LaLiga Original Jersey
 							</p>
 						</div>
 
@@ -347,7 +347,7 @@ export function GamesPageContent() {
 										: "rgba(26, 26, 26, 0.6)",
 								}}
 							>
-								Official Match Ball
+								Original Match Ball
 							</p>
 						</div>
 
@@ -405,6 +405,120 @@ export function GamesPageContent() {
 								}}
 							>
 								Limited Edition Bundesliga Cap
+							</p>
+						</div>
+					</div>
+
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:max-w-4xl mx-auto mt-8">
+						{/* Rank 4 */}
+						<div className="games-glass-card rounded-4xl p-6 flex flex-col items-center text-center group">
+							<div className="relative mb-6 w-full aspect-square rounded-2xl overflow-hidden border border-white/10">
+								<div
+									aria-hidden
+									className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+									style={{
+										background: `radial-gradient(circle at 50% 50%, ${accent}55 0%, transparent 65%)`,
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -top-10 -right-10 w-44 h-44 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}44 0%, transparent 70%)`,
+										filter: "blur(20px)",
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -bottom-10 -left-10 w-44 h-44 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}33 0%, transparent 70%)`,
+										filter: "blur(20px)",
+									}}
+								/>
+								<img
+									alt="Olahbola Tumbler"
+									className="relative m-auto h-80 md:h-90 p-6 object-cover transition-transform duration-500 group-hover:scale-110"
+									src="/images/games/Tumbler Olahbola.png"
+								/>
+							</div>
+							<span
+								className="text-[10px] font-black tracking-widest uppercase mb-2 block"
+								style={{ color: accent }}
+							>
+								Peringkat 4
+							</span>
+							<h3
+								className="text-xl font-black italic tracking-tight uppercase mb-1"
+								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
+							>
+								Wildcard Spot
+							</h3>
+							<p
+								className="text-sm"
+								style={{
+									color: isDark
+										? "rgba(255, 255, 255, 0.6)"
+										: "rgba(26, 26, 26, 0.6)",
+								}}
+							>
+								Olahbola Tumbler Eksklusif
+							</p>
+						</div>
+
+						{/* Rank 5-10 */}
+						<div className="games-glass-card rounded-4xl p-6 flex flex-col max-w-2xl items-center text-center group">
+							<div className="relative mb-6 w-full aspect-square rounded-2xl overflow-hidden border border-white/10">
+								<div
+									aria-hidden
+									className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+									style={{
+										background: `radial-gradient(circle at 50% 50%, ${accent}55 0%, transparent 65%)`,
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -top-10 -right-10 w-44 h-44 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}44 0%, transparent 70%)`,
+										filter: "blur(20px)",
+									}}
+								/>
+								<div
+									aria-hidden
+									className="absolute -bottom-10 -left-10 w-44 h-44 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-125"
+									style={{
+										background: `radial-gradient(circle, ${accent}33 0%, transparent 70%)`,
+										filter: "blur(20px)",
+									}}
+								/>
+								<img
+									alt="Olahbola Sticker Pack"
+									className="relative w-full h-full p-6 object-cover transition-transform duration-500 group-hover:scale-110"
+									src="/images/games/mockupp Sticker.png"
+								/>
+							</div>
+							<span
+								className="text-[10px] font-black tracking-widest uppercase mb-2 block"
+								style={{ color: accent }}
+							>
+								Peringkat 5 - 10
+							</span>
+							<h3
+								className="text-xl font-black italic tracking-tight uppercase mb-1"
+								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
+							>
+								Top 10 Squad
+							</h3>
+							<p
+								className="text-sm"
+								style={{
+									color: isDark
+										? "rgba(255, 255, 255, 0.6)"
+										: "rgba(26, 26, 26, 0.6)",
+								}}
+							>
+								Olahbola Sticker Pack Eksklusif
 							</p>
 						</div>
 					</div>
