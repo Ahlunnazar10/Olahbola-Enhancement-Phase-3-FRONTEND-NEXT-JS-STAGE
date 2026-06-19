@@ -170,61 +170,74 @@ export function BannerSlider({
 						{/* Background - First slide loads eagerly, others lazy */}
 
 						<div className="absolute inset-0 w-full h-full">
-							{(
-								slide.type === "article"
-									? slide.image
-									: slide.imageFallback || slide.imageMobileFallback
-							) ? (
-								<>
-									{slide.imageFallback && (
-										<img
-											src={
-												slide.type === "article"
-													? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
-													: slide.imageFallback
-											}
-											alt={
-												slide.ctaTitle ||
-												slide.title?.parts?.join(" ") ||
-												"Banner"
-											}
-											className={`w-full h-full object-cover object-center ${
-												slide.type === "event"
-													? ""
-													: isDark
-														? "grayscale-[0.2] contrast-125"
-														: "grayscale-[0.1] contrast-105"
-											} hidden md:block`}
-											fetchPriority={index === 0 ? "high" : "low"}
-											decoding="async"
-											loading={index === 0 ? "eager" : "lazy"}
-										/>
-									)}
+							{(() => {
+								const articleImageUrl =
+									slide.type === "article" && slide.image
+										? `${process.env.NEXT_PUBLIC_API_URL}/storage/${slide.image}`
+										: null;
 
-									{slide.imageMobileFallback && (
-										<img
-											src={slide.imageMobileFallback}
-											alt={
-												slide.ctaTitle ||
-												slide.title?.parts?.join(" ") ||
-												"Banner"
-											}
-											className={`w-full h-full object-cover object-center ${
-												slide.type === "event"
-													? ""
-													: isDark
-														? "grayscale-[0.2] contrast-125"
-														: "grayscale-[0.1] contrast-105"
-											} md:hidden`}
-											fetchPriority={index === 0 ? "high" : "low"}
-											decoding="async"
-											loading={index === 0 ? "eager" : "lazy"}
-										/>
-									)}
-								</>
-							) : (
-								<div className="w-full h-full bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]" />
-							)}
+								const desktopSrc =
+									slide.type === "article"
+										? articleImageUrl
+										: slide.imageFallback;
+
+								const mobileSrc =
+									slide.type === "article"
+										? articleImageUrl || slide.imageMobileFallback
+										: slide.imageMobileFallback;
+
+								if (!desktopSrc && !mobileSrc) {
+									return (
+										<div className="w-full h-full bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]" />
+									);
+								}
+
+								return (
+									<>
+										{desktopSrc && (
+											<img
+												src={desktopSrc}
+												alt={
+													slide.ctaTitle ||
+													slide.title?.parts?.join(" ") ||
+													"Banner"
+												}
+												className={`w-full h-full object-cover object-center ${
+													slide.type === "event"
+														? ""
+														: isDark
+															? "grayscale-[0.2] contrast-125"
+															: "grayscale-[0.1] contrast-105"
+												} hidden md:block`}
+												fetchPriority={index === 0 ? "high" : "low"}
+												decoding="async"
+												loading={index === 0 ? "eager" : "lazy"}
+											/>
+										)}
+
+										{mobileSrc && (
+											<img
+												src={mobileSrc}
+												alt={
+													slide.ctaTitle ||
+													slide.title?.parts?.join(" ") ||
+													"Banner"
+												}
+												className={`w-full h-full object-cover object-center ${
+													slide.type === "event"
+														? ""
+														: isDark
+															? "grayscale-[0.2] contrast-125"
+															: "grayscale-[0.1] contrast-105"
+												} md:hidden`}
+												fetchPriority={index === 0 ? "high" : "low"}
+												decoding="async"
+												loading={index === 0 ? "eager" : "lazy"}
+											/>
+										)}
+									</>
+								);
+							})()}
 						</div>
 
 						{/* Overlays */}
