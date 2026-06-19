@@ -45,12 +45,12 @@ const brandLogos = [
 	"/images/brand-logo/Lifeboy.png",
 	"/images/brand-logo/Oppo.png",
 	"/images/brand-logo/Shopee.png",
-	"/images/brand-logo/MolaTv.png",
+	"/images/brand-logo/maxstream.png",
+	"/images/brand-logo/mizone.png",
+	"/images/brand-logo/djarum-super.png",
 	"/images/brand-logo/Rcti.png",
 	"/images/brand-logo/Eafc.png",
 	"/images/brand-logo/Vidio.png",
-	"/images/brand-logo/Stadeo.png",
-	"/images/brand-logo/YerbaMate.png",
 	"/images/brand-logo/Traveloka.png",
 ];
 
