@@ -29,6 +29,36 @@ interface HeroPlayPlayer {
 	rank: number;
 }
 
+interface PrediksiLeaderboardEntry {
+	rank: number;
+	user_id: string;
+	user_name: string;
+	profile_picture: string | null;
+	total_points: number;
+	total_predictions: number;
+	exact_scores: number;
+}
+
+interface QuizLeaderboardEntry {
+	rank: number;
+	user_id: string;
+	name: string;
+	email: string;
+	total_points: number;
+	total_duration_formatted: string;
+}
+
+type LeaderboardType = "football" | "prediksi" | "quiz";
+
+interface LeaderboardRow {
+	rank: number;
+	userId: string;
+	name: string;
+	profilePicture: string | null;
+	subtitle?: string;
+	score: number;
+}
+
 function useSectionInView(threshold = 0.1) {
 	const { ref, inView } = useInView({ threshold, triggerOnce: true });
 	return { ref, inView };
@@ -54,6 +84,18 @@ const brandLogos = [
 	"/images/brand-logo/Traveloka.png",
 ];
 
+function formatDurationId(input: string): string {
+	if (!input) return "-";
+	const match = input.trim().match(/^(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?$/i);
+	if (!match) return input;
+	const [, h, m, s] = match;
+	const parts: string[] = [];
+	if (h) parts.push(`${h} jam`);
+	if (m) parts.push(`${m} menit`);
+	if (s) parts.push(`${s} detik`);
+	return parts.length ? parts.join(" ") : input;
+}
+
 export default function HomePage() {
 	const { user, isAuthenticated } = useAuthStore();
 	const { theme } = useUIStore();
@@ -77,6 +119,20 @@ export default function HomePage() {
 	const [heroPlayLoading, setHeroPlayLoading] = useState(false);
 	const [heroPlayError, setHeroPlayError] = useState<string | null>(null);
 	const [heroPlayBgLoaded, setHeroPlayBgLoaded] = useState(false);
+
+	// Leaderboard Switcher State
+	const [leaderboardType, setLeaderboardType] =
+		useState<LeaderboardType>("football");
+	const [prediksiLeaderboard, setPrediksiLeaderboard] = useState<
+		PrediksiLeaderboardEntry[]
+	>([]);
+	const [prediksiLoading, setPrediksiLoading] = useState(false);
+	const [prediksiError, setPrediksiError] = useState<string | null>(null);
+	const [quizLeaderboard, setQuizLeaderboard] = useState<
+		QuizLeaderboardEntry[]
+	>([]);
+	const [quizLoading, setQuizLoading] = useState(false);
+	const [quizError, setQuizError] = useState<string | null>(null);
 
 	const { ref: articleRef, inView: articleVisible } = useSectionInView(0.1);
 	const { ref: socmedRef, inView: socmedVisible } = useSectionInView(0.1);
@@ -145,6 +201,82 @@ export default function HomePage() {
 		}
 	};
 
+	const fetchPrediksiLeaderboard = async () => {
+		if (prediksiLoading) return;
+
+		setPrediksiLoading(true);
+		setPrediksiError(null);
+
+		try {
+			const apiUrl =
+				process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com";
+			const response = await fetch(`${apiUrl}/api/v1/world-cup/leaderboard`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					Accept: "application/json",
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const json = await response.json();
+			if (json.success && Array.isArray(json.data)) {
+				setPrediksiLeaderboard(json.data.slice(0, 10));
+			} else {
+				throw new Error(json.message || "Failed to fetch prediksi leaderboard");
+			}
+		} catch (err) {
+			console.error("Error fetching prediksi leaderboard:", err);
+			setPrediksiError("Gagal memuat papan skor prediksi.");
+			setPrediksiLeaderboard([]);
+		} finally {
+			setPrediksiLoading(false);
+		}
+	};
+
+	const fetchQuizLeaderboard = async () => {
+		if (quizLoading) return;
+
+		setQuizLoading(true);
+		setQuizError(null);
+
+		try {
+			const apiUrl =
+				process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com";
+			const eventSlug = "world-cup-2026";
+			const response = await fetch(
+				`${apiUrl}/api/quiz-world-cup/leaderboard/global?event_slug=${eventSlug}`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Accept: "application/json",
+					},
+				},
+			);
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const json = await response.json();
+			if (json.success && Array.isArray(json.data)) {
+				setQuizLeaderboard(json.data);
+			} else {
+				throw new Error(json.message || "Failed to fetch quiz leaderboard");
+			}
+		} catch (err) {
+			console.error("Error fetching quiz leaderboard:", err);
+			setQuizError("Gagal memuat papan skor kuis.");
+			setQuizLeaderboard([]);
+		} finally {
+			setQuizLoading(false);
+		}
+	};
+
 	// Preload hero play background
 	useEffect(() => {
 		const img = new window.Image();
@@ -159,8 +291,115 @@ export default function HomePage() {
 		}
 	}, [heroPlayVisible]);
 
+	// Fetch Prediksi Skor leaderboard when section is visible
+	useEffect(() => {
+		if (heroPlayVisible && leaderboardType === "prediksi") {
+			fetchPrediksiLeaderboard();
+		}
+	}, [heroPlayVisible, leaderboardType]);
+
+	// Fetch Quiz leaderboard when section is visible
+	useEffect(() => {
+		if (heroPlayVisible && leaderboardType === "quiz") {
+			fetchQuizLeaderboard();
+		}
+	}, [heroPlayVisible, leaderboardType]);
+
 	const formatScore = (score: number) => {
 		return Number(score).toLocaleString("id-ID");
+	};
+
+	const normalizeRows = (
+		type: LeaderboardType,
+		data:
+			| HeroPlayPlayer[]
+			| PrediksiLeaderboardEntry[]
+			| QuizLeaderboardEntry[]
+			| undefined,
+	): LeaderboardRow[] => {
+		if (!data) return [];
+		switch (type) {
+			case "football":
+				return ((data as unknown as HeroPlayPlayer[]) ?? [])
+					.sort((a, b) => a.rank - b.rank)
+					.map((p, i) => ({
+						rank: i + 1,
+						userId: p._id,
+						name: p.user.name,
+						profilePicture: p.user.profilePicture,
+						subtitle: p.user.city || "-",
+						score: p.totalScore,
+					}));
+			case "prediksi":
+				return ((data as unknown as PrediksiLeaderboardEntry[]) ?? [])
+					.sort((a, b) => a.rank - b.rank)
+					.map((p, i) => ({
+						rank: i + 1,
+						userId: p.user_id,
+						name: p.user_name,
+						profilePicture: p.profile_picture,
+						subtitle: `Prediksi: ${p.total_predictions} · Tepat: ${p.exact_scores}`,
+						score: p.total_points,
+					}));
+			case "quiz":
+				return ((data as unknown as QuizLeaderboardEntry[]) ?? [])
+					.sort((a, b) => a.rank - b.rank)
+					.map((p, i) => ({
+						rank: i + 1,
+						userId: p.user_id,
+						name: p.name,
+						profilePicture: null,
+						subtitle: formatDurationId(p.total_duration_formatted),
+						score: p.total_points,
+					}));
+			default:
+				return [];
+		}
+	};
+
+	const leaderboardRows: LeaderboardRow[] = useMemo(() => {
+		if (leaderboardType === "football")
+			return normalizeRows(
+				"football",
+				heroPlayLeaderboard.length ? heroPlayLeaderboard : undefined,
+			);
+		if (leaderboardType === "prediksi")
+			return normalizeRows(
+				"prediksi",
+				prediksiLeaderboard.length ? prediksiLeaderboard : undefined,
+			);
+		return normalizeRows(
+			"quiz",
+			quizLeaderboard.length ? quizLeaderboard : undefined,
+		);
+	}, [
+		leaderboardType,
+		heroPlayLeaderboard,
+		prediksiLeaderboard,
+		quizLeaderboard,
+	]);
+
+	const activeLoading =
+		leaderboardType === "football"
+			? heroPlayLoading
+			: leaderboardType === "prediksi"
+				? prediksiLoading
+				: quizLoading;
+	const activeError =
+		leaderboardType === "football"
+			? heroPlayError
+			: leaderboardType === "prediksi"
+				? prediksiError
+				: quizError;
+	const leaderboardTitleMap: Record<LeaderboardType, string> = {
+		football: "FOOTBALL CITY BATTLE",
+		prediksi: "PREDIKSI SKOR",
+		quiz: "OLAHBOLA QUIZ",
+	};
+	const leaderboardLabelMap: Record<LeaderboardType, string> = {
+		football: "Football City Battle",
+		prediksi: "Prediksi Skor",
+		quiz: "Olahbola Quiz",
 	};
 
 	// HeroPlay colors - matching site theme
@@ -206,7 +445,30 @@ export default function HomePage() {
 			ctaTerms: "* Syarat & ketentuan berlaku",
 		});
 
-		// Slide 2: Article banner (if available)
+		// Slide 2: Event Banner - Teater Bola Dunia (World Cup Edition)
+		slides.push({
+			id: "event-teater-bola-dunia",
+			type: "event" as const,
+			imageFallback: "/images/home/teater-bola-bg.webp",
+			eventBadge: "Turnamen Sedang Berlangsung",
+			eventTitle: {
+				parts: [{ text: "TEATER BOLA DUNIA", color: "white" as const }],
+			},
+			eventDescription:
+				"Teater bola dunia dimulai! Ikuti turnamen ini dengan skill terbaikmu dan dapatkan hadiah mistery jersey, bola & topi limited edition.",
+			eventPrimaryCta: {
+				text: "Main Sekarang",
+				href: "/games",
+			},
+			eventSecondaryCta: {
+				text: "Lihat Klasemen",
+				href: "/games#leaderboard",
+			},
+			eventRewardImage: "/images/home/home-prize.png",
+			eventRewardImageAlt: "Mystery World Cup Jersey",
+		});
+
+		// Slide 3: Article banner (if available)
 		if (featuredArticle) {
 			slides.push({
 				id: `article-${featuredArticle.id}`,
@@ -231,47 +493,6 @@ export default function HomePage() {
 				},
 			});
 		}
-
-		// Slide 3: Static Banner - Taktik, Fakta, Semua Ada!
-		// slides.push({
-		// 	id: "static-taktik",
-		// 	type: "static" as const,
-		// 	label: "Season Update",
-		// 	labelColor: "season" as const,
-		// 	staticTitle: {
-		// 		parts: [
-		// 			{ text: "Taktik,", color: "primary" as const },
-		// 			{ text: "Fakta,", color: "white" as const },
-		// 			{ text: "Semua Ada!", color: "accent" as const },
-		// 		],
-		// 	},
-		// 	description:
-		// 		" Temukan insight sepak bola yang bikin kamu selangkah lebih tahu… sampai yang bikin kamu bilang, 'lah, baru tau!' ",
-		// 	imageFallback: "/images/home/banner-bg.webp",
-		// });
-
-		// Slide 3: Event Banner - Teater Bola Dunia (World Cup Edition)
-		slides.push({
-			id: "event-teater-bola-dunia",
-			type: "event" as const,
-			imageFallback: "/images/home/teater-bola-bg.webp",
-			eventBadge: "Turnamen Sedang Berlangsung",
-			eventTitle: {
-				parts: [{ text: "TEATER BOLA DUNIA", color: "white" as const }],
-			},
-			eventDescription:
-				"Teater bola dunia dimulai! Ikuti turnamen ini dengan skill terbaikmu dan dapatkan hadiah mistery jersey, bola & topi limited edition.",
-			eventPrimaryCta: {
-				text: "Main Sekarang",
-				href: "/games",
-			},
-			eventSecondaryCta: {
-				text: "Lihat Klasemen",
-				href: "/games#leaderboard",
-			},
-			eventRewardImage: "/images/home/home-prize.png",
-			eventRewardImageAlt: "Mystery World Cup Jersey",
-		});
 
 		return slides;
 	}, [featuredArticle]);
@@ -496,7 +717,7 @@ export default function HomePage() {
 					<BannerSlider
 						slides={bannerSlides}
 						autoPlay={true}
-						autoPlayInterval={2000}
+						autoPlayInterval={1200}
 						showNavigation={bannerSlides.length > 1}
 						isDark={isDark}
 						isMobile={isMobileView}
@@ -597,18 +818,58 @@ export default function HomePage() {
 									color: heroPlayColors.accent,
 								}}
 							>
-								FOOTBALL CITY BATTLE
+								{leaderboardTitleMap[leaderboardType]}
 							</h2>
 							<p
 								className="text-base md:text-lg"
 								style={{ color: heroPlayColors.textSecondary }}
 							>
-								Klasemen Sementara Berdasarkan Peforma Dalam Game
+								Klasemen Sementara Berdasarkan Peforma{" "}
+								{leaderboardLabelMap[leaderboardType]}
 							</p>
+
+							{/* Switcher Buttons */}
+							<div
+								className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-full"
+								style={{
+									background: heroPlayColors.cardBg,
+									border: `1px solid ${heroPlayColors.cardBorder}`,
+									backdropFilter: "blur(20px)",
+								}}
+							>
+								{(["football", "prediksi", "quiz"] as LeaderboardType[]).map(
+									(type) => {
+										const isActive = leaderboardType === type;
+										return (
+											<button
+												key={type}
+												type="button"
+												onClick={() => setLeaderboardType(type)}
+												className="px-4 md:px-5 py-2 rounded-full text-sm md:text-base font-bold transition-all duration-300"
+												style={{
+													background: isActive
+														? heroPlayColors.gradientBadge
+														: "transparent",
+													color: isActive
+														? isDark
+															? "#003732"
+															: "#ffffff"
+														: heroPlayColors.textSecondary,
+													boxShadow: isActive
+														? `0 4px 16px ${heroPlayColors.accentGlow}`
+														: "none",
+												}}
+											>
+												{leaderboardLabelMap[type]}
+											</button>
+										);
+									},
+								)}
+							</div>
 						</div>
 
 						{/* Loading State */}
-						{heroPlayLoading ? (
+						{activeLoading ? (
 							<div className="max-w-4xl mx-auto">
 								<div
 									className="flex items-center gap-4 p-4 mb-6 rounded-2xl animate-pulse"
@@ -651,7 +912,7 @@ export default function HomePage() {
 									))}
 								</div>
 							</div>
-						) : heroPlayError ? (
+						) : activeError ? (
 							<div className="text-center py-12 max-w-md mx-auto">
 								<div
 									className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
@@ -663,7 +924,7 @@ export default function HomePage() {
 									className="text-lg mb-4"
 									style={{ color: heroPlayColors.text }}
 								>
-									{heroPlayError}
+									{activeError}
 								</p>
 								<button
 									onClick={fetchHeroPlayLeaderboard}
@@ -676,7 +937,7 @@ export default function HomePage() {
 									Coba Lagi
 								</button>
 							</div>
-						) : heroPlayLeaderboard.length > 0 ? (
+						) : leaderboardRows.length > 0 ? (
 							<div className="max-w-5xl mx-auto">
 								{/* Top 3 Podium Cards - Desktop - Gen-Z Style */}
 								<div
@@ -684,7 +945,7 @@ export default function HomePage() {
 									style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
 								>
 									{/* Rank 2 */}
-									{heroPlayLeaderboard[1] && (
+									{leaderboardRows[1] && (
 										<div
 											className="relative p-5 rounded-3xl text-center order-1 transition-all duration-300 hover:scale-[1.02]"
 											style={{
@@ -705,11 +966,11 @@ export default function HomePage() {
 												2
 											</div>
 											<div className="pt-5">
-												{heroPlayLeaderboard[1].user.profilePicture ? (
+												{leaderboardRows[1].profilePicture ? (
 													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
 														<Image
-															src={heroPlayLeaderboard[1].user.profilePicture}
-															alt={heroPlayLeaderboard[1].user.name}
+															src={leaderboardRows[1].profilePicture}
+															alt={leaderboardRows[1].name}
 															fill
 															sizes="64px"
 															style={{
@@ -733,13 +994,13 @@ export default function HomePage() {
 													className="font-bold text-lg truncate"
 													style={{ color: heroPlayColors.text }}
 												>
-													{heroPlayLeaderboard[1].user.name}
+													{leaderboardRows[1].name}
 												</h3>
 												<p
 													className="text-sm mb-3"
 													style={{ color: heroPlayColors.textMuted }}
 												>
-													{heroPlayLeaderboard[1].user.city || "-"}
+													{leaderboardRows[1].subtitle || "-"}
 												</p>
 												<div
 													className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
@@ -750,7 +1011,7 @@ export default function HomePage() {
 														className="font-bold text-lg"
 														style={{ color: heroPlayColors.text }}
 													>
-														{formatScore(heroPlayLeaderboard[1].totalScore)}
+														{formatScore(leaderboardRows[1].score)}
 													</span>
 												</div>
 											</div>
@@ -758,7 +1019,7 @@ export default function HomePage() {
 									)}
 
 									{/* Rank 1 - Featured - Champion */}
-									{heroPlayLeaderboard[0] && (
+									{leaderboardRows[0] && (
 										<div
 											className="relative p-6 rounded-3xl text-center order-2 transition-all duration-300 hover:scale-[1.03]"
 											style={{
@@ -793,11 +1054,11 @@ export default function HomePage() {
 												Champion
 											</div>
 											<div className="pt-5">
-												{heroPlayLeaderboard[0].user.profilePicture ? (
+												{leaderboardRows[0].profilePicture ? (
 													<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
 														<Image
-															src={heroPlayLeaderboard[0].user.profilePicture}
-															alt={heroPlayLeaderboard[0].user.name}
+															src={leaderboardRows[0].profilePicture}
+															alt={leaderboardRows[0].name}
 															fill
 															sizes="80px"
 															style={{
@@ -821,13 +1082,13 @@ export default function HomePage() {
 													className="font-black text-xl mb-1"
 													style={{ color: heroPlayColors.text }}
 												>
-													{heroPlayLeaderboard[0].user.name}
+													{leaderboardRows[0].name}
 												</h3>
 												<p
 													className="text-sm mb-4"
 													style={{ color: heroPlayColors.textMuted }}
 												>
-													{heroPlayLeaderboard[0].user.city || "-"}
+													{leaderboardRows[0].subtitle || "-"}
 												</p>
 												<div
 													className="inline-flex items-center gap-2 px-5 py-3 rounded-full"
@@ -841,7 +1102,7 @@ export default function HomePage() {
 														className="font-black text-2xl"
 														style={{ color: heroPlayColors.text }}
 													>
-														{formatScore(heroPlayLeaderboard[0].totalScore)}
+														{formatScore(leaderboardRows[0].score)}
 													</span>
 												</div>
 											</div>
@@ -849,7 +1110,7 @@ export default function HomePage() {
 									)}
 
 									{/* Rank 3 */}
-									{heroPlayLeaderboard[2] && (
+									{leaderboardRows[2] && (
 										<div
 											className="relative p-5 rounded-3xl text-center order-3 transition-all duration-300 hover:scale-[1.02]"
 											style={{
@@ -874,11 +1135,11 @@ export default function HomePage() {
 												</span>
 											</div>
 											<div className="pt-5">
-												{heroPlayLeaderboard[2].user.profilePicture ? (
+												{leaderboardRows[2].profilePicture ? (
 													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
 														<Image
-															src={heroPlayLeaderboard[2].user.profilePicture}
-															alt={heroPlayLeaderboard[2].user.name}
+															src={leaderboardRows[2].profilePicture}
+															alt={leaderboardRows[2].name}
 															fill
 															sizes="64px"
 															style={{
@@ -902,13 +1163,13 @@ export default function HomePage() {
 													className="font-bold text-lg truncate"
 													style={{ color: heroPlayColors.text }}
 												>
-													{heroPlayLeaderboard[2].user.name}
+													{leaderboardRows[2].name}
 												</h3>
 												<p
 													className="text-sm mb-3"
 													style={{ color: heroPlayColors.textMuted }}
 												>
-													{heroPlayLeaderboard[2].user.city || "-"}
+													{leaderboardRows[2].subtitle || "-"}
 												</p>
 												<div
 													className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
@@ -919,7 +1180,7 @@ export default function HomePage() {
 														className="font-bold text-lg"
 														style={{ color: heroPlayColors.text }}
 													>
-														{formatScore(heroPlayLeaderboard[2].totalScore)}
+														{formatScore(leaderboardRows[2].score)}
 													</span>
 												</div>
 											</div>
@@ -929,9 +1190,9 @@ export default function HomePage() {
 
 								{/* Top 3 Mobile Card View - Gen-Z Style */}
 								<div className="md:hidden space-y-4 mb-6">
-									{heroPlayLeaderboard.slice(0, 3).map((player, index) => (
+									{leaderboardRows.slice(0, 3).map((player, index) => (
 										<div
-											key={player._id}
+											key={player.userId}
 											className="relative flex items-center gap-4 p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
 											style={{
 												background:
@@ -962,11 +1223,11 @@ export default function HomePage() {
 											>
 												{index + 1}
 											</div>
-											{player.user.profilePicture ? (
+											{player.profilePicture ? (
 												<div className="relative w-12 h-12 rounded-xl overflow-hidden border">
 													<Image
-														src={player.user.profilePicture}
-														alt={player.user.name}
+														src={player.profilePicture}
+														alt={player.name}
 														fill
 														sizes="48px"
 														style={{
@@ -996,13 +1257,13 @@ export default function HomePage() {
 													className="font-bold truncate"
 													style={{ color: heroPlayColors.text }}
 												>
-													{player.user.name}
+													{player.name}
 												</h3>
 												<p
 													className="text-sm"
 													style={{ color: heroPlayColors.textMuted }}
 												>
-													{player.user.city || "-"}
+													{player.subtitle || "-"}
 												</p>
 											</div>
 											<div
@@ -1017,7 +1278,7 @@ export default function HomePage() {
 													className="font-bold"
 													style={{ color: heroPlayColors.text }}
 												>
-													{formatScore(player.totalScore)}
+													{formatScore(player.score)}
 												</span>
 											</div>
 										</div>
@@ -1025,7 +1286,7 @@ export default function HomePage() {
 								</div>
 
 								{/* Rest of Leaderboard (Rank 4+) - Gen-Z Style */}
-								{heroPlayLeaderboard.length > 3 && (
+								{leaderboardRows.length > 3 && (
 									<div className="space-y-3">
 										{/* Section Header */}
 										<div className=" items-center gap-3 mb-4 hidden md:flex">
@@ -1044,9 +1305,9 @@ export default function HomePage() {
 												style={{ background: heroPlayColors.cardBorder }}
 											/>
 										</div>
-										{heroPlayLeaderboard.slice(3, 10).map((player, index) => (
+										{leaderboardRows.slice(3, 10).map((player, index) => (
 											<div
-												key={player._id}
+												key={player.userId}
 												className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
 												style={{
 													background: heroPlayColors.cardBg,
@@ -1077,11 +1338,11 @@ export default function HomePage() {
 													>
 														{index + 4}
 													</div>
-													{player.user.profilePicture ? (
+													{player.profilePicture ? (
 														<div className="relative w-10 h-10 rounded-xl overflow-hidden">
 															<Image
-																src={player.user.profilePicture}
-																alt={player.user.name}
+																src={player.profilePicture}
+																alt={player.name}
 																fill
 																sizes="40px"
 																style={{ objectFit: "cover" }}
@@ -1103,13 +1364,13 @@ export default function HomePage() {
 															className="font-semibold"
 															style={{ color: heroPlayColors.text }}
 														>
-															{player.user.name}
+															{player.name}
 														</h4>
 														<p
 															className="text-sm"
 															style={{ color: heroPlayColors.textMuted }}
 														>
-															{player.user.city || "-"}
+															{player.subtitle || "-"}
 														</p>
 													</div>
 												</div>
@@ -1125,7 +1386,7 @@ export default function HomePage() {
 														className="font-bold"
 														style={{ color: heroPlayColors.text }}
 													>
-														{formatScore(player.totalScore)}
+														{formatScore(player.score)}
 													</span>
 												</div>
 											</div>
