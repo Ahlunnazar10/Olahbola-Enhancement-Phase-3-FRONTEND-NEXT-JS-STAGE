@@ -15,19 +15,26 @@ async function fetchSitemapData(): Promise<{
   interviews: Array<{ slug: string; updated_at: string }>;
   kolaborasis: Array<{ slug: string; updated_at: string }>;
 }> {
+  // Small payload to stay under Next.js 2MB static param cache limit.
+  // per_page=20 → ~300KB total per endpoint (slugs only), well within budget.
+  const FETCH_TIMEOUT_MS = 15_000; // 15 seconds per endpoint
+
   try {
     const [articlesRes, interviewsRes, kolaborasisRes] = await Promise.allSettled([
-      fetch(`${API_BASE_URL}/api/v1/article?per_page=100`, {
+      fetch(`${API_BASE_URL}/api/v1/article?per_page=20`, {
         headers: { Accept: "application/json" },
         next: { revalidate: 3600 }, // Cache for 1 hour
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       }),
-      fetch(`${API_BASE_URL}/api/v1/interview?per_page=100`, {
+      fetch(`${API_BASE_URL}/api/v1/interview?per_page=20`, {
         headers: { Accept: "application/json" },
         next: { revalidate: 3600 },
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       }),
-      fetch(`${API_BASE_URL}/api/v1/kolaborasi?per_page=100`, {
+      fetch(`${API_BASE_URL}/api/v1/kolaborasi?per_page=20`, {
         headers: { Accept: "application/json" },
         next: { revalidate: 3600 },
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       }),
     ]);
 
