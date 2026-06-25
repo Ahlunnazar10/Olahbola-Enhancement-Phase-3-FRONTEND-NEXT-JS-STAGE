@@ -15,11 +15,12 @@ import { GlobalSeoScripts } from "@/components/seo/SeoScriptsServer";
 const GTM_ID = "GTM-FC96C4T4";
 
 // Only preload the primary font - reduce critical path
+// Only 400 and 700 normal are needed for initial paint — italic + light weights deferred to avoid CLS
 const plusJakartaSans = Plus_Jakarta_Sans({
 	variable: "--font-plus-jakarta",
 	subsets: ["latin"],
-	weight: ["200", "300", "400", "500", "600", "700", "800"],
-	style: ["normal", "italic"],
+	weight: ["400", "700"],
+	style: ["normal"],
 	display: "swap",
 	preload: true,
 });
@@ -28,7 +29,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 const firaCode = Fira_Code({
 	variable: "--font-fira-code",
 	subsets: ["latin"],
-	weight: ["300", "400", "500", "600", "700"],
+	weight: ["400"],
 	display: "swap",
 	preload: false,
 });
@@ -36,7 +37,7 @@ const firaCode = Fira_Code({
 const spaceGrotesk = Space_Grotesk({
 	variable: "--font-space-grotesk",
 	subsets: ["latin"],
-	weight: ["300", "400", "500", "600", "700"],
+	weight: ["400", "700"],
 	display: "swap",
 	preload: false,
 });
@@ -44,7 +45,7 @@ const spaceGrotesk = Space_Grotesk({
 const lexend = Lexend({
 	variable: "--font-lexend",
 	subsets: ["latin"],
-	weight: ["300", "400", "500", "600", "700"],
+	weight: ["400"],
 	display: "swap",
 	preload: false,
 });
@@ -83,7 +84,7 @@ export const metadata: Metadata = {
 			"Olahbola adalah platform terbaik untuk penggemar sepak bola. Dapatkan artikel terbaru, highlight, quiz sepak bola dan game seru lainnya di sini.",
 		images: [
 			{
-				url: "/og-image.svg",
+				url: "/images/logo/olahbola-logo.png",
 				width: 1200,
 				height: 630,
 				alt: "Olahbola - Tempatnya Penggila Bola!",
@@ -97,7 +98,7 @@ export const metadata: Metadata = {
 		title: "Olahbola | Tempatnya Penggila Bola!",
 		description:
 			"Olahbola adalah platform terbaik untuk penggemar sepak bola. Dapatkan artikel terbaru, highlight, quiz sepak bola dan game seru lainnya di sini.",
-		images: ["/og-image.svg"],
+		images: ["/images/logo/olahbola-logo.png"],
 	},
 	icons: {
 		icon: "/favicon.png",
@@ -113,6 +114,9 @@ export const metadata: Metadata = {
 			"max-image-preview": "large",
 			"max-snippet": -1,
 		},
+	},
+	verification: {
+		google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? "",
 	},
 };
 
@@ -134,7 +138,14 @@ export default function RootLayout({
 					href="https://fonts.gstatic.com"
 					crossOrigin="anonymous"
 				/>
-				<link rel="preconnect" href="https://cms.olahbola.com" />
+				{/* crossOrigin required so CMS image requests use keep-alive connection and bypass CORS preflight */}
+				<link
+					rel="preconnect"
+					href="https://cms.olahbola.com"
+					crossOrigin="anonymous"
+				/>
+				{/* DNS prefetch for 3rd-party leaderboard API - only used after scroll */}
+				<link rel="dns-prefetch" href="https://api.mainhero.id" />
 
 				{/* JSON-LD Structured Data - Server Rendered */}
 				<GlobalSeoScripts />

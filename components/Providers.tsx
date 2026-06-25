@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useState, type ReactNode } from 'react';
 import { useSecurityGuards } from '@/hooks/useSecurityGuards';
+import CookieBanner from '@/components/cookie-banner/CookieBanner';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -49,6 +50,7 @@ export function Providers({ children }: ProvidersProps) {
           },
         }}
       />
+      <CookieBanner />
     </QueryClientProvider>
   );
 }

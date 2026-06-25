@@ -162,15 +162,6 @@ body {
 	font-style: normal !important;
 }
 
-/* Banner backgrounds */
-.bg-mobile-banner {
-	background-image: url("/images/home/banner-quiz-mobile.webp");
-}
-
-.bg-desktop-banner {
-	background-image: url("/images/home/banner-quiz.webp");
-}
-
 /* Glassmorphism Effects */
 .glass-panel {
 	background: rgba(255, 255, 255, 0.02);
@@ -240,10 +231,18 @@ body {
 	background-color: #050505;
 	background-image:
 		linear-gradient(rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.85)),
-		radial-gradient(circle at 50% 50%, rgba(0, 194, 177, 0.06) 0%, transparent 70%),
+		radial-gradient(
+			circle at 50% 50%,
+			rgba(0, 194, 177, 0.06) 0%,
+			transparent 70%
+		),
 		linear-gradient(rgba(0, 194, 177, 0.03) 1px, transparent 1px),
 		linear-gradient(90deg, rgba(0, 194, 177, 0.03) 1px, transparent 1px);
-	background-size: auto, 100% 100%, 40px 40px, 40px 40px;
+	background-size:
+		auto,
+		100% 100%,
+		40px 40px,
+		40px 40px;
 }
 
 /* Grid Pattern Background */

@@ -202,6 +202,8 @@ export function BannerSlider({
 													slide.title?.parts?.join(" ") ||
 													"Banner"
 												}
+												width={1920}
+												height={1080}
 												className={`w-full h-full object-cover object-center ${
 													slide.type === "event"
 														? ""
@@ -223,6 +225,8 @@ export function BannerSlider({
 													slide.title?.parts?.join(" ") ||
 													"Banner"
 												}
+												width={750}
+												height={1334}
 												className={`w-full h-full object-cover object-center ${
 													slide.type === "event"
 														? ""

@@ -78,7 +78,7 @@ export function NavigationBar() {
 						<img
 							width={150}
 							height={35}
-							src="/images/logo/olahbola-logo.png"
+							src={`${isDark ? "/images/logo/olahbola-logo.png" : "/images/logo/olahbola-logo-dark.png"}`}
 							alt="Olahbola Logo"
 							loading="eager"
 							fetchPriority="high"

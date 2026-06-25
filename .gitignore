@@ -41,3 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 .history
+
+# lighthouse
+/.lighthouse-tmp/
+/lighthouse-*.json
+dev.log
+docs/lighthouse-report-mobile.json
+docs/lighthouse/

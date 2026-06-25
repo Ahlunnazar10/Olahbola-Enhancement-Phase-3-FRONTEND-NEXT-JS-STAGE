@@ -1,0 +1,14 @@
+# Olahbola.com ads.txt
+# File ini mendaftarkan penjual resmi (authorized sellers) untuk inventory iklan di domain ini.
+# Updated: 2026-06-23
+#
+# Setelah akun Google AdSense disetujui, tambahkan baris berikut dengan ID penayang Anda:
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+#
+# Penjelasan format:
+#   - Field 1: Domain seller (mis. google.com)
+#   - Field 2: Account ID seller (pub-xxx untuk AdSense)
+#   - Field 3: Jenis relationship (DIRECT = publisher punya akun langsung, RESELLER = pihak ketiga)
+#   - Field 4: TAG ID (kode unik Google untuk inventory publisher)
+#
+# Untuk dokumentasi lebih lanjut: https://iabtechlab.com/ads-txt/

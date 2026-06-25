@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "@/lib/api/client";
@@ -9,10 +10,22 @@ import { useAuthStore } from "@/stores/authStore";
 import { useUIStore } from "@/stores/uiStore";
 import type { Article, Interview } from "@/types";
 import { ArrowRight, Play, Circle, ArrowUpRight } from "lucide-react";
-import {
-	BannerSlider,
-	type BannerSlide,
-} from "@/components/banner-slider/BannerSlider";
+import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
+
+// BannerSlider pulls in Swiper (~30KB gzipped) + a dozen sub-modules.
+// Defer it so the heavy JS doesn't block the critical rendering path.
+const BannerSlider = dynamic(
+	() =>
+		import("@/components/banner-slider/BannerSlider").then((m) => ({
+			default: m.BannerSlider,
+		})),
+	{
+		ssr: false,
+		loading: () => (
+			<div className="absolute inset-0 w-full h-full bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]" />
+		),
+	},
+);
 
 interface HeroPlayPlayer {
 	_id: string;
@@ -1496,6 +1509,7 @@ export default function HomePage() {
 										alt={articles[0]?.title || "Featured article"}
 										fill
 										sizes="(max-width: 768px) 100vw, 50vw"
+										quality={75}
 										style={{ objectFit: "cover" }}
 										className="transition-transform duration-700 group-hover:scale-110"
 									/>
@@ -1665,6 +1679,7 @@ export default function HomePage() {
 									href="https://www.tiktok.com/@olahbolacom"
 									target="_blank"
 									rel="noopener noreferrer"
+									aria-label="Kunjungi OlahBola di TikTok"
 									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
 								>
 									<svg
@@ -1681,6 +1696,7 @@ export default function HomePage() {
 									href="https://www.instagram.com/olahbolacom"
 									target="_blank"
 									rel="noopener noreferrer"
+									aria-label="Kunjungi OlahBola di Instagram"
 									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
 								>
 									<svg
@@ -1697,6 +1713,7 @@ export default function HomePage() {
 									href="https://www.facebook.com/olahbolacom"
 									target="_blank"
 									rel="noopener noreferrer"
+									aria-label="Kunjungi OlahBola di Facebook"
 									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
 								>
 									<svg
@@ -1713,6 +1730,7 @@ export default function HomePage() {
 									href="https://www.youtube.com/@olahbolacom"
 									target="_blank"
 									rel="noopener noreferrer"
+									aria-label="Kunjungi OlahBola di YouTube"
 									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
 								>
 									<svg

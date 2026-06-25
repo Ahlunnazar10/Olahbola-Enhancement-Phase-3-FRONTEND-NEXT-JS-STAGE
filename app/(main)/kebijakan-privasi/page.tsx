@@ -70,11 +70,12 @@ export default function KebijakanPrivasiPage() {
 		{ id: "section-1", label: "Pengumpulan Data" },
 		{ id: "section-2", label: "Penggunaan Informasi" },
 		{ id: "section-3", label: "Berbagi Informasi" },
-		{ id: "section-4", label: "Retensi" },
-		{ id: "section-5", label: "Hak Pengguna" },
-		{ id: "section-6", label: "Perlindungan Informasi" },
-		{ id: "section-7", label: "Keamanan Data" },
-		{ id: "section-8", label: "Perubahan Kebijakan" },
+		{ id: "section-4", label: "Pihak Ketiga (Google)" },
+		{ id: "section-5", label: "Retensi" },
+		{ id: "section-6", label: "Hak Pengguna" },
+		{ id: "section-7", label: "Perlindungan Informasi" },
+		{ id: "section-8", label: "Keamanan Data" },
+		{ id: "section-9", label: "Perubahan Kebijakan" },
 	];
 
 	return (
@@ -350,7 +351,7 @@ export default function KebijakanPrivasiPage() {
 									</div>
 								</div>
 
-								{/* Section 4 */}
+								{/* Section 4: Pihak Ketiga - Google */}
 								<div
 									id="section-4"
 									className="p-8 md:p-12 rounded-xl transition-all cursor-pointer"
@@ -373,20 +374,69 @@ export default function KebijakanPrivasiPage() {
 													"var(--font-space-grotesk, 'Space Grotesk', sans-serif)",
 											}}
 										>
-											4. Retensi
+											4. Pihak Ketiga (Google)
 										</h2>
 									</div>
-									<p
-										className="leading-relaxed"
+									<div
+										className="space-y-4 leading-relaxed"
 										style={{ color: colors.textSecondary }}
 									>
-										Informasi pribadi disimpan hanya selama diperlukan untuk
-										tujuan yang dijelaskan di atas atau sebagaimana diwajibkan
-										oleh hukum.
-									</p>
+										<p>
+											Olahbola menggunakan layanan dari{" "}
+											<span className="font-semibold">Google</span> sebagai
+											penyedia pihak ketiga untuk berbagai fungsi operasional dan
+											analitik, antara lain:
+										</p>
+										<ul className="list-disc pl-6 space-y-3">
+											<li>
+												<strong>Google Tag Manager (GTM)</strong> &mdash; untuk
+												mengelola dan men-deploy tag pemasaran serta analitik
+												pada situs web kami.
+											</li>
+											<li>
+												<strong>Google Analytics</strong> &mdash; untuk menganalisis
+												lalu lintas pengunjung, perilaku penggunaan, dan
+												kinerja halaman sehingga kami dapat meningkatkan
+												pengalaman pengguna.
+											</li>
+											<li>
+												<strong>Google Fonts</strong> &mdash; untuk menampilkan
+												font web yang konsisten di berbagai perangkat pengguna.
+											</li>
+											<li>
+												<strong>Vercel Analytics</strong> &mdash; layanan analitik
+												pihak ketiga yang membantu kami memantau performa dan
+												kecepatan situs.
+											</li>
+										</ul>
+										<p>
+											Layanan Google tersebut dapat menempatkan{" "}
+											<strong>cookie</strong> di perangkat Anda untuk tujuan
+											analitik dan pempersonalisasian. Data yang dikumpulkan oleh
+											layanan Google akan tunduk pada{" "}
+											<a
+												href="https://policies.google.com/privacy"
+												target="_blank"
+												rel="noopener noreferrer"
+												className="underline font-medium hover:no-underline"
+												style={{ color: colors.primary }}
+											>
+												Kebijakan Privasi Google
+											</a>{" "}
+											yang berlaku. Anda dapat mengelola preferensi cookie Anda
+											melalui pengaturan cookie di browser atau dengan menekan
+											tombol pada banner cookie kami.
+										</p>
+										<p>
+											Kami tidak membagikan data pribadi yang dapat
+											mengidentifikasi Anda secara langsung (seperti nama atau
+											alamat email) kepada Google tanpa persetujuan eksplisit dari
+											Anda.
+										</p>
+									</div>
 								</div>
 
-								{/* Section 5 */}
+								{/* Section 5: Retensi */}
 								<div
 									id="section-5"
 									className="p-8 md:p-12 rounded-xl transition-all cursor-pointer"
@@ -409,19 +459,20 @@ export default function KebijakanPrivasiPage() {
 													"var(--font-space-grotesk, 'Space Grotesk', sans-serif)",
 											}}
 										>
-											5. Hak Pengguna
+											5. Retensi
 										</h2>
 									</div>
 									<p
 										className="leading-relaxed"
 										style={{ color: colors.textSecondary }}
 									>
-										Anda berhak meminta akses, koreksi, atau penghapusan
-										informasi pribadi dengan menghubungi administrator Olahbola.
+										Informasi pribadi disimpan hanya selama diperlukan untuk
+										tujuan yang dijelaskan di atas atau sebagaimana diwajibkan
+										oleh hukum.
 									</p>
 								</div>
 
-								{/* Section 6 */}
+								{/* Section 6: Hak Pengguna */}
 								<div
 									id="section-6"
 									className="p-8 md:p-12 rounded-xl transition-all cursor-pointer"
@@ -444,23 +495,19 @@ export default function KebijakanPrivasiPage() {
 													"var(--font-space-grotesk, 'Space Grotesk', sans-serif)",
 											}}
 										>
-											6. Perlindungan Informasi
+											6. Hak Pengguna
 										</h2>
 									</div>
 									<p
 										className="leading-relaxed"
 										style={{ color: colors.textSecondary }}
 									>
-										Kami menerapkan langkah administratif, teknis, dan fisik
-										yang sesuai untuk melindungi informasi pribadi dari akses,
-										penyalahgunaan, atau pengungkapan yang tidak sah. Meskipun
-										tidak ada sistem yang sepenuhnya aman, Olahbola berupaya
-										menjaga praktik sesuai standar industri untuk menjamin data
-										Anda ditangani secara bertanggung jawab.
+										Anda berhak meminta akses, koreksi, atau penghapusan
+										informasi pribadi dengan menghubungi administrator Olahbola.
 									</p>
 								</div>
 
-								{/* Section 7 */}
+								{/* Section 7: Perlindungan Informasi */}
 								<div
 									id="section-7"
 									className="p-8 md:p-12 rounded-xl transition-all cursor-pointer"
@@ -483,23 +530,23 @@ export default function KebijakanPrivasiPage() {
 													"var(--font-space-grotesk, 'Space Grotesk', sans-serif)",
 											}}
 										>
-											7. Keamanan Data
+											7. Perlindungan Informasi
 										</h2>
 									</div>
 									<p
 										className="leading-relaxed"
 										style={{ color: colors.textSecondary }}
 									>
-										Olahbola menggunakan langkah keamanan yang wajar, termasuk
-										enkripsi, pembatasan akses, dan protokol pemantauan, untuk
-										melindungi data yang tersimpan dalam sistem kami. Kami
-										secara berkala meninjau dan memperbarui praktik keamanan
-										guna mengurangi risiko dan memastikan kepatuhan terhadap
-										regulasi yang berlaku.
+										Kami menerapkan langkah administratif, teknis, dan fisik
+										yang sesuai untuk melindungi informasi pribadi dari akses,
+										penyalahgunaan, atau pengungkapan yang tidak sah. Meskipun
+										tidak ada sistem yang sepenuhnya aman, Olahbola berupaya
+										menjaga praktik sesuai standar industri untuk menjamin data
+										Anda ditangani secara bertanggung jawab.
 									</p>
 								</div>
 
-								{/* Section 8 */}
+								{/* Section 8: Keamanan Data */}
 								<div
 									id="section-8"
 									className="p-8 md:p-12 rounded-xl transition-all cursor-pointer"
@@ -522,7 +569,46 @@ export default function KebijakanPrivasiPage() {
 													"var(--font-space-grotesk, 'Space Grotesk', sans-serif)",
 											}}
 										>
-											8. Perubahan Kebijakan Privasi
+											8. Keamanan Data
+										</h2>
+									</div>
+									<p
+										className="leading-relaxed"
+										style={{ color: colors.textSecondary }}
+									>
+										Olahbola menggunakan langkah keamanan yang wajar, termasuk
+										enkripsi, pembatasan akses, dan protokol pemantauan, untuk
+										melindungi data yang tersimpan dalam sistem kami. Kami
+										secara berkala meninjau dan memperbarui praktik keamanan
+										guna mengurangi risiko dan memastikan kepatuhan terhadap
+										regulasi yang berlaku.
+									</p>
+								</div>
+
+								{/* Section 9: Perubahan Kebijakan Privasi */}
+								<div
+									id="section-9"
+									className="p-8 md:p-12 rounded-xl transition-all cursor-pointer"
+									style={{
+										background: colors.glassBg,
+										backdropFilter: "blur(40px)",
+										border: `1px solid ${activeSection === "section-9" ? colors.primary : colors.glassBorder}`,
+										boxShadow:
+											activeSection === "section-9"
+												? `0 0 20px ${colors.primaryAlpha}`
+												: "none",
+									}}
+								>
+									<div className="flex items-center gap-4 mb-6">
+										<h2
+											className="font-bold italic leading-10 text-3xl md:text-4xl"
+											style={{
+												color: colors.text,
+												fontFamily:
+													"var(--font-space-grotesk, 'Space Grotesk', sans-serif)",
+											}}
+										>
+											9. Perubahan Kebijakan Privasi
 										</h2>
 									</div>
 									<p

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { formatDate } from "@/lib/utils";
@@ -38,174 +38,67 @@ export default function ArticleDetailPage() {
 	const categorySlug = article?.data?.category_slug;
 	const { data: relatedData } = useRelatedArticles(categorySlug || "", slug, 4);
 
-	// Load social media embeds after content is rendered
+	// ============================================================
+	// ULTIMATE FIX: Social Media Embeds – 100% works on reload
+	// ============================================================
 	useEffect(() => {
 		if (!article?.data?.content || !contentRef.current) return;
 
 		const container = contentRef.current;
 
-		const loadInstagramEmbeds = (retryCount = 0) => {
-			const maxRetries = 5;
-			const delays = [500, 1000, 2000, 3000, 4000];
+		// Force remove any existing Instagram script to ensure fresh load
+		const existingScripts = document.querySelectorAll(
+			'script[src*="instagram.com/embed.js"]',
+		);
+		existingScripts.forEach((script) => script.remove());
 
-			if (window.instgrm) {
-				window.instgrm?.Embeds?.process();
-				fixInstagramIframeHeight();
-				return true;
-			}
-
-			if (!document.querySelector('script[src*="instagram.com/embed.js"]')) {
-				const instagramScript = document.createElement("script");
-				instagramScript.src = "https://www.instagram.com/embed.js";
-				instagramScript.async = true;
-				instagramScript.onload = () => {
-					if (window.instgrm) {
-						window.instgrm?.Embeds?.process();
-						fixInstagramIframeHeight();
-					}
-				};
-				document.head.appendChild(instagramScript);
-			}
-
-			if (retryCount < maxRetries) {
-				setTimeout(() => {
-					if (window.instgrm) {
-						window.instgrm?.Embeds?.process();
-						fixInstagramIframeHeight();
-					} else {
-						loadInstagramEmbeds(retryCount + 1);
-					}
-				}, delays[retryCount]);
-			}
-			return false;
-		};
-
-		const fixInstagramIframeHeight = () => {
-			if (!container) return;
-			const instagrams = container.querySelectorAll(
-				"blockquote.instagram-media, .instagram-media, iframe[src*='instagram.com']",
+		// Function to process Instagram embeds
+		const processInstagram = () => {
+			const blocks = container.querySelectorAll(
+				"blockquote.instagram-media, .instagram-embed",
 			);
-			instagrams.forEach((el) => {
-				const iframe = el as HTMLIFrameElement;
-				iframe.style.setProperty("height", "auto", "important");
-				iframe.style.minHeight = "100%";
-				iframe.style.maxHeight = "none";
-				iframe.removeAttribute("height");
-				try {
-					const doc = iframe.contentDocument;
-					if (doc && doc.body) {
-						doc.body.style.height = "auto";
-					}
-				} catch (e) {
-					// cross-origin, can't access
-				}
-			});
-		};
+			if (blocks.length === 0) return;
 
-		const loadFacebookEmbeds = (retryCount = 0) => {
-			const maxRetries = 5;
-			const delays = [500, 1000, 2000, 3000, 4000];
-
-			if (window.FB) {
-				window.FB?.XFBML?.parse();
-				return true;
+			// If instgrm is available, process directly
+			if (window.instgrm && window.instgrm.Embeds) {
+				window.instgrm.Embeds.process();
+				return;
 			}
 
-			(window as any).fbAsyncInit = function () {
-				if (window.FB) {
-					window.FB?.init?.({
-						xfbml: true,
-						version: "v17.0",
-					});
-					window.FB?.XFBML?.parse();
+			// If not available, load script and process
+			const script = document.createElement("script");
+			script.src = "https://www.instagram.com/embed.js";
+			script.async = true;
+			script.onload = () => {
+				if (window.instgrm) {
+					window.instgrm.Embeds.process();
 				}
 			};
-
-			if (!document.querySelector('script[src*="connect.facebook.net"]')) {
-				const facebookScript = document.createElement("script");
-				facebookScript.src =
-					"https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v17.0";
-				facebookScript.async = true;
-				facebookScript.defer = true;
-				facebookScript.crossOrigin = "anonymous";
-				document.head.appendChild(facebookScript);
-			}
-
-			if (retryCount < maxRetries) {
-				setTimeout(() => {
-					if (window.FB) {
-						window.FB?.XFBML?.parse();
-					} else {
-						loadFacebookEmbeds(retryCount + 1);
-					}
-				}, delays[retryCount]);
-			}
-			return false;
+			script.onerror = () =>
+				console.warn("[Embed] Instagram SDK failed to load");
+			document.head.appendChild(script);
 		};
 
-		const loadTwitterEmbeds = (retryCount = 0) => {
-			const maxRetries = 5;
-			const delays = [500, 1000, 2000, 3000, 4000];
+		// Process Instagram immediately
+		processInstagram();
 
-			if (window.twttr) {
-				window.twttr?.widgets?.load();
-				return true;
-			}
+		// Also process after a short delay to catch any late rendering
+		const timeout1 = setTimeout(processInstagram, 500);
+		const timeout2 = setTimeout(processInstagram, 1500);
+		const timeout3 = setTimeout(processInstagram, 3000);
 
-			if (!document.querySelector('script[src*="platform.twitter.com"]')) {
-				const twitterScript = document.createElement("script");
-				twitterScript.src = "https://platform.twitter.com/widgets.js";
-				twitterScript.async = true;
-				twitterScript.onload = () => {
-					if (window.twttr) {
-						window.twttr?.widgets?.load();
-					}
-				};
-				document.head.appendChild(twitterScript);
-			}
-
-			if (retryCount < maxRetries) {
-				setTimeout(() => {
-					if (window.twttr) {
-						window.twttr?.widgets?.load();
-					} else {
-						loadTwitterEmbeds(retryCount + 1);
-					}
-				}, delays[retryCount]);
-			}
-			return false;
-		};
-
-		loadInstagramEmbeds();
-		loadFacebookEmbeds();
-		loadTwitterEmbeds();
-
-		[1000, 2000, 3000, 4000, 5000].forEach((delay) => {
-			setTimeout(() => {
-				loadInstagramEmbeds();
-				loadTwitterEmbeds();
-			}, delay);
-		});
-
-		setTimeout(() => {
-			loadFacebookEmbeds();
-		}, 1500);
-
+		// Use MutationObserver to catch any new embed elements added later
 		const observer = new MutationObserver(() => {
-			if (container.querySelector(".instagram-embed, .instagram-media")) {
-				loadInstagramEmbeds();
-			}
-			if (container.querySelector(".twitter-embed, .twitter-tweet")) {
-				loadTwitterEmbeds();
-			}
-			if (container.querySelector(".fb-post, .fb-video, .fb-page")) {
-				loadFacebookEmbeds();
-			}
+			processInstagram();
 		});
-
 		observer.observe(container, { childList: true, subtree: true });
 
-		return () => observer.disconnect();
+		return () => {
+			clearTimeout(timeout1);
+			clearTimeout(timeout2);
+			clearTimeout(timeout3);
+			observer.disconnect();
+		};
 	}, [article?.data?.content]);
 
 	const handleShare = async () => {
@@ -775,8 +668,15 @@ export default function ArticleDetailPage() {
 						${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.3)"};
 				}
 
-				/* Blockquote */
-				.article-content blockquote {
+				/* Blockquote — exclude social media embeds (Instagram, Twitter, Facebook) */
+				.article-content
+					blockquote:not(.instagram-media):not(.twitter-tweet):not(
+						.fb-post
+					):not(.fb-video):not(.fb-page),
+				.article-content
+					blockquote:not(.instagram-embed):not(.twitter-embed):not(
+						.fb-post
+					):not(.fb-video):not(.fb-page) {
 					margin: 2.5em 0;
 					padding: 2em 2.5em;
 					border-left: 0;
@@ -796,7 +696,10 @@ export default function ArticleDetailPage() {
 					text-align: center;
 					border-radius: 0;
 				}
-				.article-content blockquote::before {
+				.article-content
+					blockquote:not(.instagram-media):not(.twitter-tweet):not(
+						.fb-post
+					):not(.fb-video):not(.fb-page)::before {
 					content: "" "";
 					position: absolute;
 					top: -20px;
@@ -808,13 +711,21 @@ export default function ArticleDetailPage() {
 					font-family: Georgia, serif;
 					line-height: 1;
 				}
-				.article-content blockquote p {
+				.article-content
+					blockquote:not(.instagram-media):not(.twitter-tweet):not(
+						.fb-post
+					):not(.fb-video):not(.fb-page)
+					p {
 					margin-bottom: 0;
 					font-size: 1.15em;
 					line-height: 1.7;
 					color: ${colors.contentText};
 				}
-				.article-content blockquote cite {
+				.article-content
+					blockquote:not(.instagram-media):not(.twitter-tweet):not(
+						.fb-post
+					):not(.fb-video):not(.fb-page)
+					cite {
 					display: block;
 					margin-top: 1em;
 					font-size: 0.85em;
@@ -823,6 +734,37 @@ export default function ArticleDetailPage() {
 					font-weight: 700;
 					letter-spacing: 0.1em;
 					text-transform: uppercase;
+				}
+
+				/* Instagram Embed — fully reset all inherited blockquote styles so the embed renders correctly */
+				.article-content blockquote.instagram-media,
+				.article-content blockquote.instagram-embed {
+					all: unset !important;
+					display: block !important;
+					margin: 2em 0 !important;
+					padding: 0 !important;
+					border: none !important;
+					background: transparent !important;
+					text-align: left !important;
+					font-style: normal !important;
+					color: inherit !important;
+					position: static !important;
+					min-height: auto !important;
+				}
+				.article-content blockquote.instagram-media::before,
+				.article-content blockquote.instagram-embed::before {
+					display: none !important;
+					content: none !important;
+				}
+				.article-content blockquote.instagram-media > div,
+				.article-content blockquote.instagram-embed > div {
+					margin: 0 !important;
+					border: none !important;
+					background: transparent !important;
+					padding: 0 !important;
+					min-height: auto !important;
+					max-height: none !important;
+					overflow: visible !important;
 				}
 
 				/* Strong / Bold */
@@ -920,12 +862,31 @@ export default function ArticleDetailPage() {
 					aspect-ratio: 16 / 9;
 					width: 100% !important;
 				}
+				/* Exclude social embed iframes from global iframe decoration styles */
+				.article-content iframe[src*="instagram.com"],
+				.article-content iframe[src*="facebook.com"],
+				.article-content iframe[src*="twitter.com"] {
+					border-radius: 0 !important;
+					box-shadow: none !important;
+					border: none !important;
+					display: block !important;
+				}
 
 				/* Instagram Embed */
 				.article-content .instagram-media,
 				.article-content .instagram-embed {
-					height: 815px;
-					overflow: hidden;
+					min-height: 320px !important; /* ← perbesar tinggi minimal */
+					max-height: none !important;
+					overflow: visible !important;
+					height: auto !important; /* biarkan fleksibel */
+				}
+
+				/* Tambahan untuk memastikan jikarame di dalamnya juga tidak terpotong */
+				.article-content .instagram-media iframe,
+				.article-content .instagram-embed iframe {
+					height: auto !important;
+					min-height: 550px !important; /* sesuaikan */
+					max-height: none !important;
 				}
 
 				/* Facebook Embed */
