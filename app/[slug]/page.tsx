@@ -70,7 +70,8 @@ export default function ArticleDetailPage() {
 			script.src = "https://www.instagram.com/embed.js";
 			script.async = true;
 			script.onload = () => {
-				if (window.instgrm) {
+				// ✅ FIX: tambahkan optional chaining dan pengecekan
+				if (window.instgrm?.Embeds) {
 					window.instgrm.Embeds.process();
 				}
 			};
