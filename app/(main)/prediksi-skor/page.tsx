@@ -241,7 +241,7 @@ export default function PrediksiSkorPage() {
 	const { isAuthenticated, user } = useAuthStore();
 	const isDark = theme === "dark";
 
-	const [activePhase, setActivePhase] = useState("group_stage");
+	const [activePhase, setActivePhase] = useState("round_of_32");
 	const [activeGroup, setActiveGroup] = useState("A");
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
@@ -294,15 +294,7 @@ export default function PrediksiSkorPage() {
 	}, [isAnyLoading, initialLoadDone]);
 	const showInitialOverlay = !initialLoadDone;
 
-	// Set initial active phase from API (first active phase)
-	useEffect(() => {
-		if (phasesData?.data) {
-			const firstActive = (phasesData.data as Phase[]).find((p) => p.is_active);
-			if (firstActive) {
-				setActivePhase(firstActive.slug);
-			}
-		}
-	}, [phasesData]);
+	// No automatic phase override — default stays as round_of_32
 
 	const groups = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
