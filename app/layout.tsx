@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import {
 	Plus_Jakarta_Sans,
 	Fira_Code,
@@ -9,8 +8,8 @@ import {
 import { Providers } from "@/components/Providers";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next";
 import { GlobalSeoScripts } from "@/components/seo/SeoScriptsServer";
+import { LazyScripts } from "@/components/LazyScripts";
 
 const GTM_ID = "GTM-FC96C4T4";
 
@@ -25,7 +24,7 @@ const ADSENSE_CLIENT =
 
 // ------------------------------------------------------------------
 // Font loading strategy:
-// - Plus Jakarta Sans 400 normal is inlined via next/font → preload
+// - Plus Jakarta Sans 400 normal is inlined via next/font â†’ preload
 // - All other weights & secondary fonts load asynchronously via
 //   a single Google Fonts CSS import, avoiding render-blocking FOUT
 // ------------------------------------------------------------------
@@ -140,40 +139,39 @@ export default function RootLayout({
 			className={`${plusJakartaSans.variable} ${firaCode.variable} ${spaceGrotesk.variable} ${lexend.variable} h-full antialiased`}
 		>
 			<head>
-				{/* DNS-prefetch for origins used lazily after initial paint */}
-				<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-				<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+				{/* Preconnect to critical origins (CMS for LCP images, GTM/AdSense for analytics) */}
 				<link rel="dns-prefetch" href="https://cms.olahbola.com" />
+				<link rel="preconnect" href="https://cms.olahbola.com" crossOrigin="anonymous" />
 				<link rel="dns-prefetch" href="https://api.mainhero.id" />
 				<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 				<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+				<link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
-				{/* Lazy-load all secondary fonts via async stylesheet import */}
+				{/* Preload LCP image so it starts downloading immediately */}
 				<link
-					rel="preconnect"
-					href="https://fonts.googleapis.com"
+					rel="preload"
+					as="image"
+					href="/images/home/banner-9-mobile.webp"
+					type="image/webp"
+					fetchPriority="high"
+					media="(max-width: 767px)"
 				/>
 				<link
-					rel="preconnect"
-					href="https://fonts.gstatic.com"
-					crossOrigin="anonymous"
-				/>
-
-				{/* AdSense SDK — load after hydration for better LCP */}
-				<Script
-					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-					strategy="afterInteractive"
-					crossOrigin="anonymous"
+					rel="preload"
+					as="image"
+					href="/images/home/banner-9.webp"
+					type="image/webp"
+					fetchPriority="high"
+					media="(min-width: 768px)"
 				/>
 			</head>
 			<body className="min-h-full flex flex-col">
-				<Analytics />
-
-				{/* GTM — lazy on page load, runs after interactive */}
-				<Script
-					id="gtm-script"
-					strategy="lazyOnload"
-					src={`https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`}
+				{/* Lazy load ad/analytics scripts after user interaction or 4s idle */}
+				<LazyScripts
+					adsenseClient={ADSENSE_CLIENT}
+					gtmId={GTM_ID}
+					adsenseDelay={5000}
+					gtmDelay={6500}
 				/>
 
 				{/* Google Tag Manager (noscript) */}

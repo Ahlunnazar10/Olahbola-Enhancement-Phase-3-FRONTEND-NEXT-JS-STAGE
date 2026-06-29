@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "@/lib/api/client";
@@ -11,21 +10,7 @@ import { useUIStore } from "@/stores/uiStore";
 import type { Article, Interview } from "@/types";
 import { ArrowRight, Play, Circle, ArrowUpRight } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
-
-// BannerSlider pulls in Swiper (~30KB gzipped) + a dozen sub-modules.
-// Defer it so the heavy JS doesn't block the critical rendering path.
-const BannerSlider = dynamic(
-	() =>
-		import("@/components/banner-slider/BannerSlider").then((m) => ({
-			default: m.BannerSlider,
-		})),
-	{
-		ssr: false,
-		loading: () => (
-			<div className="absolute inset-0 w-full h-full bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]" />
-		),
-	},
-);
+import { BannerSlider } from "@/components/banner-slider/BannerSlider";
 
 interface HeroPlayPlayer {
 	_id: string;
@@ -78,23 +63,23 @@ function useSectionInView(threshold = 0.1) {
 }
 
 const brandLogos = [
-	"/images/brand-logo/Bundesliga.png",
-	"/images/brand-logo/laliga.png",
-	"/images/brand-logo/Eredivisie.png",
-	"/images/brand-logo/Mandiri.png",
-	"/images/brand-logo/Amartha.png",
-	"/images/brand-logo/Indomilk.png",
-	"/images/brand-logo/Aqua.png",
-	"/images/brand-logo/Lifeboy.png",
-	"/images/brand-logo/Oppo.png",
-	"/images/brand-logo/Shopee.png",
-	"/images/brand-logo/maxstream.png",
-	"/images/brand-logo/mizone.png",
-	"/images/brand-logo/djarum-super.png",
-	"/images/brand-logo/Rcti.png",
-	"/images/brand-logo/Eafc.png",
-	"/images/brand-logo/Vidio.png",
-	"/images/brand-logo/Traveloka.png",
+	"/images/brand-logo/Bundesliga.webp",
+	"/images/brand-logo/laliga.webp",
+	"/images/brand-logo/Eredivisie.webp",
+	"/images/brand-logo/Mandiri.webp",
+	"/images/brand-logo/Amartha.webp",
+	"/images/brand-logo/Indomilk.webp",
+	"/images/brand-logo/Aqua.webp",
+	"/images/brand-logo/Lifeboy.webp",
+	"/images/brand-logo/Oppo.webp",
+	"/images/brand-logo/Shopee.webp",
+	"/images/brand-logo/maxstream.webp",
+	"/images/brand-logo/mizone.webp",
+	"/images/brand-logo/djarum-super.webp",
+	"/images/brand-logo/Rcti.webp",
+	"/images/brand-logo/Eafc.webp",
+	"/images/brand-logo/Vidio.webp",
+	"/images/brand-logo/Traveloka.webp",
 ];
 
 function formatDurationId(input: string): string {
@@ -479,7 +464,7 @@ export default function HomePage() {
 				text: "Lihat Klasemen",
 				href: "/games#leaderboard",
 			},
-			eventRewardImage: "/images/home/home-prize.png",
+			eventRewardImage: "/images/home/home-prize.webp",
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 

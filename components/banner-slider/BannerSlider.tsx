@@ -139,31 +139,33 @@ export function BannerSlider({
 
 	const isAutoPlaying = showControls && autoPlay;
 
+	const swiperProps = {
+		modules: [Navigation, Autoplay, EffectFade],
+		slidesPerView: 1,
+		spaceBetween: 0,
+		effect: "fade" as const,
+		fadeEffect: { crossFade: true },
+		autoplay: isAutoPlaying
+			? {
+					delay: autoPlayInterval,
+					disableOnInteraction: false,
+					pauseOnMouseEnter: true,
+				}
+			: false,
+		preloadImages: false,
+		lazy: true,
+		navigation: showControls,
+		className: "banner-slider w-full! h-full!",
+		speed: 800,
+		loop: showControls,
+		watchOverflow: true,
+	} as Parameters<typeof Swiper>[0];
+
 	return (
 		<div className={`relative w-full h-full ${className}`}>
 			<Swiper
 				ref={swiperRef}
-				modules={[Navigation, Autoplay, EffectFade]}
-				slidesPerView={1}
-				spaceBetween={0}
-				effect="fade"
-				fadeEffect={{ crossFade: true }}
-				autoplay={
-					isAutoPlaying
-						? {
-								delay: autoPlayInterval,
-
-								disableOnInteraction: false,
-
-								pauseOnMouseEnter: true,
-							}
-						: false
-				}
-				navigation={showControls}
-				className="banner-slider w-full! h-full!"
-				speed={800}
-				loop={showControls}
-				watchOverflow={true}
+				{...swiperProps}
 			>
 				{slides.map((slide, index) => (
 					<SwiperSlide key={slide.id} className="w-full! h-full! list-none!">
