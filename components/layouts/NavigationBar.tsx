@@ -8,6 +8,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useLogout } from "@/hooks/queries/useAuth";
 import { useUIStore } from "@/stores/uiStore";
 import { GoogleTranslate } from "@/components/GoogleTranslate/GoogleTranslate";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -75,13 +76,14 @@ export function NavigationBar() {
 				<div className="w-full flex items-center justify-between h-21 px-4 md:px-6 lg:px-8">
 					{/* Logo - Left */}
 					<Link href="/">
-						<img
+						<Image
+							src={isDark ? "/images/logo/olahbola-logo.png" : "/images/logo/olahbola-logo-dark.png"}
+							alt="Olahbola Logo"
 							width={150}
 							height={35}
-							src={`${isDark ? "/images/logo/olahbola-logo.png" : "/images/logo/olahbola-logo-dark.png"}`}
-							alt="Olahbola Logo"
 							loading="eager"
 							fetchPriority="high"
+							sizes="150px"
 						/>
 					</Link>
 
@@ -260,6 +262,9 @@ export function NavigationBar() {
 						className="w-37.5 md:w-52.5 h-8.75 md:h-11.25 mt-2 mb-5"
 						src="/images/logo/olahbola-logo.png"
 						alt="Olahbola Logo"
+						width={260}
+						height={60}
+						loading="eager"
 					/>
 
 					{/* Navigation Links */}
@@ -390,6 +395,9 @@ export function NavigationBar() {
 						className="w-75 md:w-125 mt-auto"
 						src="/images/home/banner-1.webp"
 						alt="Banner 1"
+						width={500}
+						height={100}
+						loading="lazy"
 					/>
 				</div>
 			</div>

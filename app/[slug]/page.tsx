@@ -194,7 +194,7 @@ export default function ArticleDetailPage() {
 
 	return (
 		<div
-			className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
+			className={`min-h-screen relative transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
 		>
 			{/* Theme Toggle */}
 			<ThemeToggle />
@@ -365,8 +365,8 @@ export default function ArticleDetailPage() {
 					</article>
 
 					{/* Sidebar - Sticky/Float */}
-					<aside className="lg:col-span-4">
-						<div className="sticky top-5 space-y-6">
+					<aside className="lg:col-span-4 sticky top-5 self-start h-fit">
+						<div className="space-y-6">
 							{/* Popular Articles */}
 							<div
 								className={`p-6 rounded-xl transition-all duration-300 ${isDark ? "glass-panel border border-white/5" : "bg-white shadow-lg border border-gray-200"}`}
@@ -457,7 +457,7 @@ export default function ArticleDetailPage() {
 							</div>
 
 							{/* Promo Section */}
-							<div
+							{/* <div
 								className={`h-fit rounded-2xl overflow-hidden group shadow-2xl ${isDark ? "" : "shadow-lg"}`}
 							>
 								<a href="https://www.igvault.id/home">
@@ -467,7 +467,7 @@ export default function ArticleDetailPage() {
 										alt="Promo"
 									/>
 								</a>
-							</div>
+							</div> */}
 						</div>
 					</aside>
 				</div>

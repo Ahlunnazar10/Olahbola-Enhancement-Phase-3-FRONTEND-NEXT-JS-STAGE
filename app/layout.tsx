@@ -23,8 +23,12 @@ const ADSENSE_CLIENT =
 	process.env.NEXT_PUBLIC_ADSENSE_CLIENT ||
 	"ca-pub-8005120082355722";
 
-// Only preload the primary font - reduce critical path
-// Only 400 and 700 normal are needed for initial paint — italic + light weights deferred to avoid CLS
+// ------------------------------------------------------------------
+// Font loading strategy:
+// - Plus Jakarta Sans 400 normal is inlined via next/font → preload
+// - All other weights & secondary fonts load asynchronously via
+//   a single Google Fonts CSS import, avoiding render-blocking FOUT
+// ------------------------------------------------------------------
 const plusJakartaSans = Plus_Jakarta_Sans({
 	variable: "--font-plus-jakarta",
 	subsets: ["latin"],
@@ -34,13 +38,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 	preload: true,
 });
 
-// Other fonts - lazy loaded
 const firaCode = Fira_Code({
 	variable: "--font-fira-code",
 	subsets: ["latin"],
 	weight: ["400"],
 	display: "swap",
-	preload: false,
 });
 
 const spaceGrotesk = Space_Grotesk({
@@ -48,7 +50,6 @@ const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],
 	weight: ["400", "700"],
 	display: "swap",
-	preload: false,
 });
 
 const lexend = Lexend({
@@ -56,7 +57,6 @@ const lexend = Lexend({
 	subsets: ["latin"],
 	weight: ["400"],
 	display: "swap",
-	preload: false,
 });
 
 export const metadata: Metadata = {
@@ -140,37 +140,36 @@ export default function RootLayout({
 			className={`${plusJakartaSans.variable} ${firaCode.variable} ${spaceGrotesk.variable} ${lexend.variable} h-full antialiased`}
 		>
 			<head>
-				{/* Preconnect for external resources - critical for performance */}
-				<link rel="preconnect" href="https://fonts.googleapis.com" />
+				{/* DNS-prefetch for origins used lazily after initial paint */}
+				<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+				<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+				<link rel="dns-prefetch" href="https://cms.olahbola.com" />
+				<link rel="dns-prefetch" href="https://api.mainhero.id" />
+				<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+				<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+
+				{/* Lazy-load all secondary fonts via async stylesheet import */}
+				<link
+					rel="preconnect"
+					href="https://fonts.googleapis.com"
+				/>
 				<link
 					rel="preconnect"
 					href="https://fonts.gstatic.com"
 					crossOrigin="anonymous"
 				/>
-				{/* crossOrigin required so CMS image requests use keep-alive connection and bypass CORS preflight */}
-				<link
-					rel="preconnect"
-					href="https://cms.olahbola.com"
-					crossOrigin="anonymous"
-				/>
-				{/* DNS prefetch for 3rd-party leaderboard API - only used after scroll */}
-				<link rel="dns-prefetch" href="https://api.mainhero.id" />
 
-				{/* Google AdSense - raw <script> so AdSense crawler can detect it in the static HTML.
-				    Plain script tag is rendered server-side directly into the HTML response. */}
-				<script
-					async
+				{/* AdSense SDK — load after hydration for better LCP */}
+				<Script
 					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+					strategy="afterInteractive"
 					crossOrigin="anonymous"
 				/>
-
-				{/* JSON-LD Structured Data - Server Rendered */}
-				<GlobalSeoScripts />
 			</head>
 			<body className="min-h-full flex flex-col">
 				<Analytics />
 
-				{/* Google Tag Manager - Load after page is interactive (lazyOnload) */}
+				{/* GTM — lazy on page load, runs after interactive */}
 				<Script
 					id="gtm-script"
 					strategy="lazyOnload"

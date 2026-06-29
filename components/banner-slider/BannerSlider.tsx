@@ -337,8 +337,11 @@ export function BannerSlider({
 											<img
 												src="/images/home/banner-1.webp"
 												alt="Banner Image"
+												width={440}
+												height={440}
 												className="w-full h-full object-cover"
 												loading="lazy"
+												decoding="async"
 											/>
 										</div>
 									</div>
@@ -486,6 +489,9 @@ export function BannerSlider({
 												src={slide.eventRewardImage}
 												className="h-100 md:h-135 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
 												loading="lazy"
+												width={540}
+												height={540}
+												decoding="async"
 											/>
 										</div>
 									)}

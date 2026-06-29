@@ -614,7 +614,7 @@ function ArtikelContent() {
 						</div>
 
 						{/* Promo Section */}
-						<div
+						{/* <div
 							className={`h-fit rounded-2xl overflow-hidden group ${isDark ? "" : "shadow-lg"}`}
 						>
 							<a href="https://www.igvault.id/home">
@@ -624,7 +624,7 @@ function ArtikelContent() {
 									alt="Promo"
 								/>
 							</a>
-						</div>
+						</div> */}
 					</div>
 				</aside>
 			</div>

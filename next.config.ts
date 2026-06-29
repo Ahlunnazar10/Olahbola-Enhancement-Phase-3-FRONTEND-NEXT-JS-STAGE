@@ -41,16 +41,23 @@ const nextConfig: NextConfig = {
 				hostname: "localhost",
 			},
 		],
-		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-		formats: ["image/avif", "image/webp"],
+		deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+		imageSizes: [36, 48, 64, 96, 128, 256, 384],
+		formats: ["image/webp"],
+		dangerouslyAllowSVG: true,
+		contentDispositionType: "inline",
+		unoptimized: process.env.NODE_ENV === "development",
+		minimumCacheTTL: 60,
 	},
-	// Transpile swiper package for better tree-shaking
 	transpilePackages: ["swiper"],
-	// Experimental features for better performance
+
+	// Tree-shake known packages with many sub-export paths
 	experimental: {
-		optimizeCss: true,
+		optimizePackageImports: ["lucide-react", "swiper", "react-intersection-observer"],
 	},
+
+	compress: true,
+	reactStrictMode: true,
 };
 
 export default nextConfig;

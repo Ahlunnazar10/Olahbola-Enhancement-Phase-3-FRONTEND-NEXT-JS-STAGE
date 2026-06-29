@@ -99,7 +99,9 @@ const brandLogos = [
 
 function formatDurationId(input: string): string {
 	if (!input) return "-";
-	const match = input.trim().match(/^(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?$/i);
+	const match = input
+		.trim()
+		.match(/^(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?$/i);
 	if (!match) return input;
 	const [, h, m, s] = match;
 	const parts: string[] = [];
@@ -603,117 +605,6 @@ export default function HomePage() {
 		<div
 			className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-[#dfe4e0]" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
 		>
-			<style jsx global>{`
-				@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Lexend:wght@300..800&display=swap");
-
-				.glass-panel {
-					background: ${isDark
-						? "rgba(255, 255, 255, 0.05)"
-						: "rgba(0, 0, 0, 0.05)"};
-					backdrop-filter: blur(20px);
-					border: 1px solid
-						${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
-				}
-
-				.neon-glow-primary {
-					box-shadow: 0 0 15px rgba(67, 222, 204, 0.3);
-				}
-
-				.neon-glow-secondary {
-					box-shadow: 0 0 15px rgba(254, 157, 0, 0.3);
-				}
-
-				.text-glow {
-					text-shadow: 0 0 10px rgba(67, 222, 204, 0.5);
-				}
-
-				@keyframes scroll-left {
-					0% {
-						transform: translateX(0);
-					}
-					100% {
-						transform: translateX(-50%);
-					}
-				}
-
-				.animate-scroll-left {
-					animation: scroll-left 30s linear infinite;
-				}
-
-				.animate-scroll-left:hover {
-					animation-play-state: paused;
-				}
-
-				@keyframes float {
-					0%,
-					100% {
-						transform: translateY(0px);
-					}
-					50% {
-						transform: translateY(-20px);
-					}
-				}
-
-				@keyframes pulse-glow {
-					0%,
-					100% {
-						box-shadow: 0 0 20px rgba(67, 222, 204, 0.3);
-					}
-					50% {
-						box-shadow: 0 0 40px rgba(67, 222, 204, 0.5);
-					}
-				}
-
-				@keyframes shimmer {
-					0% {
-						background-position: -200% 0;
-					}
-					100% {
-						background-position: 200% 0;
-					}
-				}
-
-				@keyframes bounce-subtle {
-					0%,
-					100% {
-						transform: translateY(0);
-					}
-					50% {
-						transform: translateY(-5px);
-					}
-				}
-
-				@keyframes slide-up {
-					0% {
-						opacity: 0;
-						transform: translateY(20px);
-					}
-					100% {
-						opacity: 1;
-						transform: translateY(0);
-					}
-				}
-
-				.animate-slide-up {
-					animation: slide-up 0.6s ease-out forwards;
-				}
-
-				.animate-bounce-subtle {
-					animation: bounce-subtle 2s ease-in-out infinite;
-				}
-
-				.shimmer {
-					background: linear-gradient(
-						90deg,
-						rgba(255, 255, 255, 0.05) 25%,
-						rgba(255, 255, 255, 0.1) 50%,
-						rgba(255, 255, 255, 0.05) 75%
-					);
-					background-size: 200% 100%;
-					animation: shimmer 1.5s infinite;
-				}
-			`}</style>
-
 			{/* Background Pattern */}
 			<div
 				className="fixed inset-0 pointer-events-none"
@@ -1642,7 +1533,7 @@ export default function HomePage() {
 				</section>
 
 				{/* Ads Banner */}
-				<section className="w-full py-4 px-6 md:px-16">
+				{/* <section className="w-full py-4 px-6 md:px-16">
 					<a
 						href="https://heroplay.igvault.id/"
 						target="_blank"
@@ -1658,7 +1549,7 @@ export default function HomePage() {
 							className="rounded-xl"
 						/>
 					</a>
-				</section>
+				</section> */}
 
 				{/* Social Media Section */}
 				<section

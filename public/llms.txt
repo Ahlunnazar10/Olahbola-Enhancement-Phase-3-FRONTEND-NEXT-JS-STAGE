@@ -1,0 +1,45 @@
+# Olahbola — Olahraga & Berita Sepak Bola Indonesia
+
+Olahbola adalah platform digital terdepan untuk penggemar sepak bola di Indonesia. Kami menyajikan berita terkini, artikel analisis, wawancara eksklusif, kuis interaktif, dan game sepak bola.
+
+## Sitemap
+
+- [Beranda](https://www.olahbola.com/)
+- [Artikel](https://www.olahbola.com/artikel)
+- [Games](https://www.olahbola.com/games)
+- [Interview](https://www.olahbola.com/interview)
+- [Kolaborasi](https://www.olahbola.com/kolaborasi)
+- [Media Spotlight](https://www.olahbola.com/media-spotlight)
+- [About](https://www.olahbola.com/about)
+- [Journey](https://www.olahbola.com/journey)
+- [Sapa](https://www.olahbola.com/sapa)
+- [Privacy Policy](https://www.olahbola.com/privacy)
+
+## Content Structure
+
+Olahbola.com menyediakan konten tentang dunia sepak bola meliputi:
+
+### Artikel
+Berita terbaru dan analisis mendalam seputar liga-liga top dunia, termasuk Premier League, La Liga, Bundesliga, Eredivisie, Serie A, dan liga-liga lainnya.
+- Daftar artikel: https://www.olahbola.com/artikel
+- Contoh artikel: https://www.olahbola.com/artikel
+
+### Games
+Game interaktif seputar sepak bola termasuk prediksi skor, kuis pengetahuan sepak bola, dan Football City Battle.
+- Daftar game: https://www.olahbola.com/games
+
+### Interview
+Wawancara eksklusif dengan legenda sepak bola, pemain, dan pelatih.
+- Daftar interview: https://www.olahbola.com/interview
+
+### Kolaborasi
+Informasi tentang kemitraan dan kolaborasi brand dengan Olahbola.
+- Lihat kolaborasi: https://www.olahbola.com/kolaborasi
+
+## For AI Agents
+
+- We prefer webp format for images where possible
+- All content is in Bahasa Indonesia
+- The site is a Next.js application deployed on Vercel
+- Open Graph images are available at https://www.olahbola.com/images/default-og-image.webp
+- RSS feeds or API endpoints may be available at /api/ routes
