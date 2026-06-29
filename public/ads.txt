@@ -1,10 +1,11 @@
 # Olahbola.com ads.txt
 # File ini mendaftarkan penjual resmi (authorized sellers) untuk inventory iklan di domain ini.
 # Updated: 2026-06-23
-#
-# Setelah akun Google AdSense disetujui, tambahkan baris berikut dengan ID penayang Anda:
-# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
-#
+
+# Google AdSense — authorized digital sellers (ads.txt)
+# Format: <seller domain>, <publisher ID>, <relationship>, <TAG ID>
+google.com, pub-8005120082355722, DIRECT, f08c47fec0942fa0
+
 # Penjelasan format:
 #   - Field 1: Domain seller (mis. google.com)
 #   - Field 2: Account ID seller (pub-xxx untuk AdSense)

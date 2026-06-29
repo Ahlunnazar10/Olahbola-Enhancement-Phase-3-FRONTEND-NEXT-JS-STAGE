@@ -15,10 +15,13 @@ import { GlobalSeoScripts } from "@/components/seo/SeoScriptsServer";
 const GTM_ID = "GTM-FC96C4T4";
 
 // ------------------------------------------------------------------
-// AdSense
+// AdSense publisher ID (used for the global adsbygoogle SDK)
+// Env var is preferred; fall back to the production ID so the
+// script tag is never empty in any deployment.
 // ------------------------------------------------------------------
 const ADSENSE_CLIENT =
-	process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-8005120082355722";
+	process.env.NEXT_PUBLIC_ADSENSE_CLIENT ||
+	"ca-pub-8005120082355722";
 
 // Only preload the primary font - reduce critical path
 // Only 400 and 700 normal are needed for initial paint — italic + light weights deferred to avoid CLS
@@ -153,11 +156,11 @@ export default function RootLayout({
 				{/* DNS prefetch for 3rd-party leaderboard API - only used after scroll */}
 				<link rel="dns-prefetch" href="https://api.mainhero.id" />
 
-				{/* Google AdSense - global snippet loaded once for the whole site */}
-				<Script
+				{/* Google AdSense - raw <script> so AdSense crawler can detect it in the static HTML.
+				    Plain script tag is rendered server-side directly into the HTML response. */}
+				<script
 					async
 					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-					strategy="afterInteractive"
 					crossOrigin="anonymous"
 				/>
 
