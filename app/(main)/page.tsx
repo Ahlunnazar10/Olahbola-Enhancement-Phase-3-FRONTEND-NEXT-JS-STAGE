@@ -613,7 +613,7 @@ export default function HomePage() {
 					/>
 				</section>
 
-				{/*  FOOTBALL CITY BATTLE LEADERBOARD  */}
+				{/*  LIVE LEADERBOARD  */}
 				<section
 					ref={heroPlayRef}
 					className="relative w-full overflow-hidden"
@@ -1283,22 +1283,52 @@ export default function HomePage() {
 									</div>
 								)}
 
-								{/* CTA Button - Gen-Z Style */}
-								<div className="text-center mt-10">
-									<a
-										href="https://www.mainhero.id"
-										target="_blank"
-										rel="noopener noreferrer"
-										className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
-										style={{
-											background: heroPlayColors.gradientCTA,
-											color: isDark ? "#003732" : "#ffffff",
-											boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
-										}}
-									>
-										Ikuti Pertandingan Sekarang
-										<ArrowRight className="size-5" />
-									</a>
+								{/* CTA Buttons - Conditional per leaderboard type */}
+								<div className="text-center mt-10 space-y-3">
+									{leaderboardType === "football" && (
+										<a
+											href="https://www.mainhero.id"
+											target="_blank"
+											rel="noopener noreferrer"
+											className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
+											style={{
+												background: heroPlayColors.gradientCTA,
+												color: isDark ? "#003732" : "#ffffff",
+												boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
+											}}
+										>
+											Ikuti Pertandingan Sekarang
+											<ArrowRight className="size-5" />
+										</a>
+									)}
+									{leaderboardType === "prediksi" && (
+										<Link
+											href="/prediksi-skor"
+											className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
+											style={{
+												background: heroPlayColors.gradientCTA,
+												color: isDark ? "#003732" : "#ffffff",
+												boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
+											}}
+										>
+											Prediksi Skor Sekarang
+											<ArrowRight className="size-5" />
+										</Link>
+									)}
+									{leaderboardType === "quiz" && (
+										<Link
+											href="/quiz"
+											className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
+											style={{
+												background: heroPlayColors.gradientCTA,
+												color: isDark ? "#003732" : "#ffffff",
+												boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
+											}}
+										>
+											Main Kuis Sekarang
+											<ArrowRight className="size-5" />
+										</Link>
+									)}
 								</div>
 							</div>
 						) : (
