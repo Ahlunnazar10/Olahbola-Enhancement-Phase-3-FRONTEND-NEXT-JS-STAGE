@@ -32,7 +32,7 @@ export default function SeoHead({
 	noIndex = false,
 }: SeoHeadProps) {
 	const baseUrl = "https://www.olahbola.com";
-	const defaultImage = "/og-image.svg";
+	const defaultImage = "/og-image.png";
 	const fullImage = image?.startsWith("http")
 		? image
 		: image

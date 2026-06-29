@@ -215,7 +215,7 @@ function LoadingOverlay() {
 							className="transition-[stroke-dashoffset] duration-100 ease-out"
 						/>
 					</svg>
-					<span className="relative font-medium italic text-xl text-[#43decc] tabular-nums">
+					<span className="relative font-medium italic text-xl text-primary tabular-nums">
 						{progress}%
 					</span>
 				</div>

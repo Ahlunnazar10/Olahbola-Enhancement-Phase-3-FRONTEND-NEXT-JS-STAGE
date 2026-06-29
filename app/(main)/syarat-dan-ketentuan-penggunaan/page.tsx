@@ -287,11 +287,11 @@ export default function SyaratDanKetentuanPage() {
 									>
 										<li>
 											Akses terhadap konten, berita, dan fitur interaktif
-											seputar sepeda.
+											seputar sepak bola.
 										</li>
 										<li>
 											Partisipasi dalam kuis dan aktivitas komunitas bagi
-											penggemar sepeda.
+											penggemar sepak bola.
 										</li>
 										<li>
 											Kesempatan untuk beriklan di Situs, dengan persetujuan dan
