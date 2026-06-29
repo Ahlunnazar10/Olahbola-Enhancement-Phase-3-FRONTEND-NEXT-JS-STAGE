@@ -14,6 +14,12 @@ import { GlobalSeoScripts } from "@/components/seo/SeoScriptsServer";
 
 const GTM_ID = "GTM-FC96C4T4";
 
+// ------------------------------------------------------------------
+// AdSense
+// ------------------------------------------------------------------
+const ADSENSE_CLIENT =
+	process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-8005120082355722";
+
 // Only preload the primary font - reduce critical path
 // Only 400 and 700 normal are needed for initial paint — italic + light weights deferred to avoid CLS
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -146,6 +152,14 @@ export default function RootLayout({
 				/>
 				{/* DNS prefetch for 3rd-party leaderboard API - only used after scroll */}
 				<link rel="dns-prefetch" href="https://api.mainhero.id" />
+
+				{/* Google AdSense - global snippet loaded once for the whole site */}
+				<Script
+					async
+					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+					strategy="afterInteractive"
+					crossOrigin="anonymous"
+				/>
 
 				{/* JSON-LD Structured Data - Server Rendered */}
 				<GlobalSeoScripts />
