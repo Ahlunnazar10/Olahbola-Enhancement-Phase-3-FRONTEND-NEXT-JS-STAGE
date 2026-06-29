@@ -394,12 +394,12 @@ export default function HomePage() {
 	const leaderboardTitleMap: Record<LeaderboardType, string> = {
 		football: "FOOTBALL CITY BATTLE",
 		prediksi: "PREDIKSI SKOR",
-		quiz: "OLAHBOLA QUIZ",
+		quiz: "OLAHBOLA KUIS",
 	};
 	const leaderboardLabelMap: Record<LeaderboardType, string> = {
 		football: "Football City Battle",
 		prediksi: "Prediksi Skor",
-		quiz: "Olahbola Quiz",
+		quiz: "Olahbola Kuis",
 	};
 
 	// HeroPlay colors - matching site theme
