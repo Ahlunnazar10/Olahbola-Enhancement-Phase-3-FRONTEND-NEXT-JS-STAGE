@@ -19,8 +19,7 @@ const GTM_ID = "GTM-FC96C4T4";
 // script tag is never empty in any deployment.
 // ------------------------------------------------------------------
 const ADSENSE_CLIENT =
-	process.env.NEXT_PUBLIC_ADSENSE_CLIENT ||
-	"ca-pub-8005120082355722";
+	process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "ca-pub-8005120082355722";
 
 // ------------------------------------------------------------------
 // Font loading strategy:
@@ -110,7 +109,14 @@ export const metadata: Metadata = {
 	},
 	icons: {
 		icon: "/favicon.png",
-		apple: "/favicon.png",
+		apple: "/images/logo/icon-192.png",
+		other: [
+			{
+				sizes: "512x512",
+				url: "/images/logo/icon-512.png",
+				type: "image/png",
+			},
+		],
 	},
 	robots: {
 		index: true,
@@ -141,7 +147,11 @@ export default function RootLayout({
 			<head>
 				{/* Preconnect to critical origins (CMS for LCP images, GTM/AdSense for analytics) */}
 				<link rel="dns-prefetch" href="https://cms.olahbola.com" />
-				<link rel="preconnect" href="https://cms.olahbola.com" crossOrigin="anonymous" />
+				<link
+					rel="preconnect"
+					href="https://cms.olahbola.com"
+					crossOrigin="anonymous"
+				/>
 				<link rel="dns-prefetch" href="https://api.mainhero.id" />
 				<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 				<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />

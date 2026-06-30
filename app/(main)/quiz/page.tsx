@@ -707,7 +707,7 @@ export default function QuizPage() {
 					<div
 						className={`relative z-10 w-full max-w-md rounded-3xl border p-6 shadow-2xl transition-colors duration-300 ${
 							isDark
-								? "bg-[#0a0f0d] border-[rgba(0,194,177,0.3)]"
+								? "bg-surface-container-lowest border-[rgba(0,194,177,0.3)]"
 								: "bg-white border-[rgba(10,124,110,0.25)]"
 						}`}
 					>
