@@ -15,6 +15,7 @@ import {
 	Star,
 	Bell,
 	ChevronRight,
+	Info,
 } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -468,7 +469,7 @@ export default function PrediksiSkorPage() {
 
 			<main className="pt-10 md:pt-18 relative">
 				{/* Hero Section */}
-				<section className="max-w-7xl mx-auto px-6 md:px-8 text-center mb-6 md:mb-16 relative">
+				<section className="max-w-7xl mx-auto px-6 md:px-8 text-center mb-6  relative">
 					<div
 						className="absolute -top-12 left-1/2 -translate-x-1/2 w-70 h-70 rounded-full blur-[80px]"
 						style={{ background: primaryAlpha }}
@@ -548,6 +549,42 @@ export default function PrediksiSkorPage() {
 						</div>
 					</div>
 				</section>
+
+				{/* Knockout Info Box — show only in knockout phases (not group stage) */}
+				{activePhase !== "group_stage" && (
+					<section className="max-w-7xl mx-auto px-6 md:px-8 mb-6 md:mb-6">
+						<div
+							className="flex items-start gap-3 px-5 py-4 rounded-2xl border"
+							style={{
+								background: colors.predictionBg,
+								borderColor: colors.primary30,
+							}}
+						>
+							<Info
+								className="size-5 shrink-0 mt-0.5"
+								style={{ color: primary }}
+							/>
+							<div>
+								<p
+									className="text-sm font-bold leading-snug"
+									style={{ color: primary }}
+								>
+									Catatan Skor
+								</p>
+								<p
+									className="text-xs mt-0.5 leading-relaxed"
+									style={{ color: textSecondary }}
+								>
+									Skor dihitung hingga{" "}
+									<strong style={{ color: text }}>extra-time</strong>. Adu
+									penalti tidak diperhitungkan. Jika pertandingan berakhir seri
+									setelah extra-time, maka dianggap sebagai{" "}
+									<strong style={{ color: text }}>pertandingan seri</strong>.
+								</p>
+							</div>
+						</div>
+					</section>
+				)}
 
 				{/* Phase Tabs */}
 				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-4 md:mb-8 overflow-x-auto">

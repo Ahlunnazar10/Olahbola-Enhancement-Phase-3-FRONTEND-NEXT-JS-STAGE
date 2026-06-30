@@ -152,8 +152,6 @@ export function BannerSlider({
 					pauseOnMouseEnter: true,
 				}
 			: false,
-		preloadImages: false,
-		lazy: true,
 		navigation: showControls,
 		className: "banner-slider w-full! h-full!",
 		speed: 800,
