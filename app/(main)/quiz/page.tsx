@@ -313,7 +313,7 @@ export default function QuizPage() {
 	return (
 		<div
 			data-theme={theme}
-			className={`min-h-screen velocity-mesh transition-colors duration-300 ${isDark ? "bg-[#050505]" : "bg-[#f5f5f5]"}`}
+			className={`relative min-h-screen velocity-mesh overflow-x-hidden transition-colors duration-300 ${isDark ? "bg-[#050505]" : "bg-[#f5f5f5]"}`}
 		>
 			{/* Loader Overlay: tampil saat sedang memuat data event sessions */}
 			{sessionsLoading && <LoadingOverlay />}
