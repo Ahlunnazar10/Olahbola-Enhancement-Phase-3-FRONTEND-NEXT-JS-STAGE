@@ -255,7 +255,10 @@ export default function PrediksiSkorPage() {
 
 	// Show login prompt modal once for unauthenticated visitors on first visit
 	useEffect(() => {
-		if (isAuthenticated) return;
+		if (isAuthenticated) {
+			setShowLoginPrompt(false);
+			return;
+		}
 		if (typeof window === "undefined") return;
 		const seen = sessionStorage.getItem("prediksi-skor:loginPromptSeen");
 		if (seen) return;
