@@ -225,7 +225,7 @@ export default function ArticleDetailPage() {
 
 			{/* Content Layer */}
 			<section
-				className={`relative z-30 -mt-1 px-6 md:px-12 pb-24 max-w-screen-2xl mx-auto`}
+				className={`relative z-30 -mt-1 px-3 md:px-12 pb-24 max-w-screen-2xl mx-auto`}
 			>
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 					{/* Main Article Body */}
@@ -877,6 +877,7 @@ export default function ArticleDetailPage() {
 				.article-content .instagram-media,
 				.article-content .instagram-embed {
 					min-height: 320px !important; /* ← perbesar tinggi minimal */
+					min-width: 250px !important; /* ← perbesar lebar minimal */
 					max-height: none !important;
 					overflow: visible !important;
 					height: auto !important; /* biarkan fleksibel */

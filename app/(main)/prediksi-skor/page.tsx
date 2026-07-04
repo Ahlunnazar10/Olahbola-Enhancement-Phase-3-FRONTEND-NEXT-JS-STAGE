@@ -242,7 +242,7 @@ export default function PrediksiSkorPage() {
 	const { isAuthenticated, user } = useAuthStore();
 	const isDark = theme === "dark";
 
-	const [activePhase, setActivePhase] = useState("round_of_32");
+	const [activePhase, setActivePhase] = useState("round_of_16");
 	const [activeGroup, setActiveGroup] = useState("A");
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
@@ -298,7 +298,7 @@ export default function PrediksiSkorPage() {
 	}, [isAnyLoading, initialLoadDone]);
 	const showInitialOverlay = !initialLoadDone;
 
-	// No automatic phase override — default stays as round_of_32
+	// No automatic phase override — default stays as round_of_16
 
 	const groups = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
