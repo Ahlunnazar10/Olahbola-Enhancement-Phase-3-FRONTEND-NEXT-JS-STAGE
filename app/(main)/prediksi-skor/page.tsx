@@ -242,7 +242,7 @@ export default function PrediksiSkorPage() {
 	const { isAuthenticated, user } = useAuthStore();
 	const isDark = theme === "dark";
 
-	const [activePhase, setActivePhase] = useState("round_of_16");
+	const [activePhase, setActivePhase] = useState("quarter_final");
 	const [activeGroup, setActiveGroup] = useState("A");
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
@@ -298,7 +298,12 @@ export default function PrediksiSkorPage() {
 	}, [isAnyLoading, initialLoadDone]);
 	const showInitialOverlay = !initialLoadDone;
 
-	// No automatic phase override — default stays as round_of_16
+	// Points text changes per phase group
+	const EARLY_PHASES = ["group_stage", "round_of_32", "round_of_16"];
+	const isEarlyPhase = EARLY_PHASES.includes(activePhase);
+	const pointsSubtitle = isEarlyPhase
+		? "*Tebak akurat dapat 10 poin, tebak pemenang / tebak skor dapat 5 poin, jika salah dapat 0 poin"
+		: "*Tebak akurat dapat 20 poin, tebak pemenang / tebak skor dapat 10 poin, jika salah dapat 0 poin";
 
 	const groups = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
@@ -491,8 +496,7 @@ export default function PrediksiSkorPage() {
 							className="block mt-1 text-xs italic font-normal tracking-normal"
 							style={{ color: textSecondary }}
 						>
-							*Tebak akurat dapat 10 poin, tebak pemenang / tebak skor dapat 5
-							poin, jika salah dapat 0 poin
+							{pointsSubtitle}
 						</span>
 					</h1>
 
