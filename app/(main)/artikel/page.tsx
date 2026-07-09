@@ -6,6 +6,7 @@ import { Loader2, ArrowRight, Search, Eye, Zap } from "lucide-react";
 import Link from "next/link";
 import { ArticleCardSkeleton } from "@/components/article/ArticleCard";
 import { PopularArticleCardSkeleton } from "@/components/article/PopularArticleCard";
+import AdSlot from "@/components/ads/AdSlot";
 import {
 	useArticles,
 	useArticleCategories,
@@ -547,6 +548,15 @@ function ArtikelContent() {
 							<p>Anda telah melihat semua artikel</p>
 						</div>
 					)}
+
+					{/* Games Unit Ad — Article Feed Footer */}
+					<div className="md:col-span-2 my-6">
+						<AdSlot
+							client="ca-pub-8005120082355722"
+							slot="5316243141"
+							format="auto"
+						/>
+					</div>
 				</div>
 
 				{/* Trending Sidebar with Enhanced Glassmorphism */}
