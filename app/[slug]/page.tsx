@@ -13,6 +13,7 @@ import {
 import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { notFound } from "next/navigation";
+import AdSlot from "@/components/ads/AdSlot";
 import {
 	ArrowLeft,
 	Calendar,
@@ -315,6 +316,17 @@ export default function ArticleDetailPage() {
 								__html: articleData.content,
 							}}
 						/>
+
+						{/* In-Article Ad */}
+						<div className="my-10">
+							<AdSlot
+								slot="6570861900"
+								format="fluid"
+								responsive={true}
+								label="Advertisement"
+								lazyLoad={true}
+							/>
+						</div>
 
 						{/* Related Articles (Inside Main Content) */}
 						{relatedArticles.length > 0 && (
