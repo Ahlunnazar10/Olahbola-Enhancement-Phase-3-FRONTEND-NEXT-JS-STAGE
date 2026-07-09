@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
+import AdSlot from "@/components/ads/AdSlot";
 import {
 	usePhases,
 	useMatches,
@@ -709,6 +710,17 @@ export default function PrediksiSkorPage() {
 						</div>
 					</section>
 				)}
+
+				{/* Prediksi Skor Index Ad — Between Phase/Group Tabs and Matches */}
+				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-6">
+					<div className="flex justify-center">
+						<AdSlot
+							client="ca-pub-8005120082355722"
+							slot="1631159327"
+							format="auto"
+						/>
+					</div>
+				</section>
 
 				{/* Matches Grid */}
 				{activeTab === "matches" && (
