@@ -11,6 +11,7 @@ import type { Article, Interview } from "@/types";
 import { ArrowRight, Play, Circle, ArrowUpRight } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
 import { BannerSlider } from "@/components/banner-slider/BannerSlider";
+import AdSlot from "@/components/ads/AdSlot";
 
 interface HeroPlayPlayer {
 	_id: string;
@@ -1347,6 +1348,19 @@ export default function HomePage() {
 								</p>
 							</div>
 						)}
+					</div>
+				</section>
+
+				{/* Olahbola First Ad Unit - below hero leaderboard */}
+				<section className="w-full py-4 px-6 md:px-16">
+					<div className="max-w-480 mx-auto">
+						<AdSlot
+							slot="5851008301"
+							format="auto"
+							responsive={true}
+							label="Advertisement"
+							lazyLoad={true}
+						/>
 					</div>
 				</section>
 
