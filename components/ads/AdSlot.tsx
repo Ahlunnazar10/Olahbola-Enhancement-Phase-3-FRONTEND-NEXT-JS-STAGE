@@ -98,7 +98,7 @@ export default function AdSlot({
 	return (
 		<div
 			className={`ad-slot my-4 ${className}`}
-			style={{ minHeight: `${minHeight}px`, ...style }}
+			style={{ width: "100%", minHeight: `${minHeight}px`, ...style }}
 		>
 			{label && (
 				<div className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 text-center">
@@ -118,7 +118,10 @@ export default function AdSlot({
 				className="adsbygoogle"
 				style={{
 					display: "block",
+					width: "100%",
 					textAlign: "center",
+					margin: "0 auto",
+					minHeight: `${minHeight}px`,
 					...style,
 				}}
 				data-ad-client={client}

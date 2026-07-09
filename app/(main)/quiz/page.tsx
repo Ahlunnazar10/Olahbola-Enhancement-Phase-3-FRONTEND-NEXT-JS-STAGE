@@ -359,13 +359,12 @@ export default function QuizPage() {
 
 			{/* World Cup Kuis Ads */}
 			<section className="max-w-7xl mx-auto px-4 md:px-8 mb-8">
-				<div className="flex justify-center">
-					<AdSlot
-						client="ca-pub-8005120082355722"
-						slot="7781634700"
-						format="auto"
-					/>
-				</div>
+				<AdSlot
+					client="ca-pub-8005120082355722"
+					slot="7781634700"
+					format="auto"
+					minHeight={120}
+				/>
 			</section>
 
 			<main className="relative pt-12 pb-12 px-4 md:px-8 max-w-7xl mx-auto z-10">
