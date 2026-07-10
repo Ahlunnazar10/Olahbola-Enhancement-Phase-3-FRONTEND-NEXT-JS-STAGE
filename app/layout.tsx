@@ -181,11 +181,11 @@ export default function RootLayout({
 				/>
 			</head>
 			<body className="min-h-full flex flex-col">
-				{/* Lazy load ad/analytics scripts after user interaction or short idle */}
+				{/* Lazy load analytics scripts after user interaction or short idle.
+				    AdSense is loaded directly by each AdSlot to match Google's
+				    recommended pattern (script load → push). */}
 				<LazyScripts
-					adsenseClient={ADSENSE_CLIENT}
 					gtmId={GTM_ID}
-					adsenseDelay={2000}
 					gtmDelay={6500}
 				/>
 

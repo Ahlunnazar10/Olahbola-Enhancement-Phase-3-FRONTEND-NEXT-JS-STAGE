@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
+import { useEffect, useRef, useState } from "react";
 
 declare global {
 	interface Window {
@@ -55,7 +55,7 @@ export default function AdSlot({
 	responsive = true,
 	label = "Advertisement",
 	lazyLoad = false,
-	loadScript = false,
+	loadScript = true,
 	fallback,
 	minHeight = 90,
 }: AdSlotProps) {
@@ -66,8 +66,8 @@ export default function AdSlot({
 	const [scriptReady, setScriptReady] = useState(false);
 	const [slotWidth, setSlotWidth] = useState(0);
 
-	// Track consent. We poll once on mount AND listen for changes so any slot
-	// (even ones mounted before consent is given) re-evaluates when user accepts.
+	// Track consent. Poll on mount AND listen for changes so slots mounted
+	// before user accepts re-evaluate when consent is given.
 	useEffect(() => {
 		setHasConsent(hasAcceptedConsent());
 		const onConsent = () => setHasConsent(hasAcceptedConsent());
@@ -79,9 +79,10 @@ export default function AdSlot({
 		};
 	}, []);
 
-	// Detect when adsbyglobal script has loaded (either via LazyScripts or this slot's Script tag)
+	// When this AdSlot owns the <Script>, wait for its onLoad.
+	// When another component (LazyScripts) loaded the SDK, poll for it.
 	useEffect(() => {
-		if (loadScript) return; // onLoad on <Script> below will flip state
+		if (loadScript) return;
 		let cancelled = false;
 		const tick = () => {
 			if (cancelled) return;
@@ -97,7 +98,8 @@ export default function AdSlot({
 		};
 	}, [loadScript]);
 
-	// IntersectionObserver for lazy slots
+	// Lazy render via IntersectionObserver — also give a generous rootMargin so
+	// the slot is rendered well before it scrolls into view.
 	useEffect(() => {
 		if (!lazyLoad) return;
 		const el = insRef.current?.parentElement;
@@ -112,17 +114,22 @@ export default function AdSlot({
 					observer.disconnect();
 				}
 			},
-			{ rootMargin: "200px" },
+			{ rootMargin: "300px" },
 		);
 		observer.observe(el);
 		return () => observer.disconnect();
 	}, [lazyLoad]);
 
-	// Measure width so format="auto" has a real value to size against
+	// Measure the actual rendered width. For format="auto" AdSense needs a real
+	// non-zero width to determine which ad size to serve. We use ResizeObserver
+	// so layout changes (orientation, container reflow) re-trigger the push.
 	useEffect(() => {
 		const el = insRef.current;
 		if (!el) return;
-		const measure = () => setSlotWidth(el.offsetWidth || 0);
+		const measure = () => {
+			const w = el.offsetWidth || el.getBoundingClientRect().width || 0;
+			setSlotWidth(w);
+		};
 		measure();
 		const ro = new ResizeObserver(measure);
 		ro.observe(el);
@@ -133,21 +140,21 @@ export default function AdSlot({
 		};
 	}, []);
 
-	// Push once when ready, consented, and width is valid
+	// Push once when ready, consented, and width is valid.
 	useEffect(() => {
 		if (!shouldRender || !hasConsent || !client) return;
 		if (!scriptReady || pushedRef.current) return;
 		const el = insRef.current;
 		if (!el) return;
 
-		// Don't double-push if AdSense already filled this slot
+		// Skip if AdSense already filled this slot (auto-fill mode marked it)
 		const status = el.getAttribute("data-adsbygoogle-status");
 		if (status === "done" || status === "filled") {
 			pushedRef.current = true;
 			return;
 		}
 
-		// For responsive ads, AdSense requires the slot to have layout size
+		// Responsive ads need a real layout width before AdSense can size them.
 		if (responsive && format === "auto" && slotWidth < 120) {
 			return;
 		}
@@ -172,7 +179,7 @@ export default function AdSlot({
 		responsive,
 	]);
 
-	// Reset push guard if consent was revoked — so the slot can re-push on next accept
+	// Reset push guard if consent was revoked so the slot can re-push on accept.
 	useEffect(() => {
 		if (!hasConsent) pushedRef.current = false;
 	}, [hasConsent]);
@@ -182,10 +189,7 @@ export default function AdSlot({
 	}
 
 	return (
-		<div
-			className={`ad-slot my-4 w-full ${className}`}
-			style={{ minHeight: `${minHeight}px`, ...style }}
-		>
+		<div className={`ad-slot my-4 w-full ${className}`} style={style}>
 			{loadScript && (
 				<Script
 					async
@@ -193,7 +197,9 @@ export default function AdSlot({
 					strategy="afterInteractive"
 					crossOrigin="anonymous"
 					onLoad={() => setScriptReady(true)}
-					onError={() => console.error("[AdSlot] AdSense SDK failed to load")}
+					onError={() =>
+						console.error("[AdSlot] AdSense SDK failed to load")
+					}
 				/>
 			)}
 
@@ -209,7 +215,6 @@ export default function AdSlot({
 				style={{
 					display: "block",
 					width: "100%",
-					minHeight: `${minHeight}px`,
 					...style,
 				}}
 				data-ad-client={client}
@@ -217,6 +222,11 @@ export default function AdSlot({
 				data-ad-format={format}
 				data-full-width-responsive={responsive ? "true" : "false"}
 			/>
+
+			{/* Reserve a tiny bit of layout space so the <ins> has dimensions
+			    before AdSense fills it. Done as a sibling rather than a
+			    style on the <ins> so we don't override AdSense's own sizing. */}
+			<div style={{ minHeight }} aria-hidden />
 
 			{fallback && <div className="mt-2">{fallback}</div>}
 		</div>

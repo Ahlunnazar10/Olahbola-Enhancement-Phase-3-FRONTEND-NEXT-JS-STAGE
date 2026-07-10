@@ -1360,7 +1360,7 @@ export default function HomePage() {
 							responsive={true}
 							label="Advertisement"
 							lazyLoad={false}
-							loadScript={false}
+							loadScript={true}
 						/>
 					</div>
 				</section>
