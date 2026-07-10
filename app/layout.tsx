@@ -176,11 +176,11 @@ export default function RootLayout({
 				/>
 			</head>
 			<body className="min-h-full flex flex-col">
-				{/* Lazy load ad/analytics scripts after user interaction or 4s idle */}
+				{/* Lazy load ad/analytics scripts after user interaction or short idle */}
 				<LazyScripts
 					adsenseClient={ADSENSE_CLIENT}
 					gtmId={GTM_ID}
-					adsenseDelay={5000}
+					adsenseDelay={2000}
 					gtmDelay={6500}
 				/>
 

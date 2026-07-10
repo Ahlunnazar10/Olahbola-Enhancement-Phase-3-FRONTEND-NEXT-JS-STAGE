@@ -1359,7 +1359,8 @@ export default function HomePage() {
 							format="auto"
 							responsive={true}
 							label="Advertisement"
-							lazyLoad={true}
+							lazyLoad={false}
+							loadScript={true}
 						/>
 					</div>
 				</section>

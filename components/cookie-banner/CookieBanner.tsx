@@ -13,11 +13,10 @@ const COPIED_KEY = "olahbola-cookie-consent";
 function setConsent(value: "accepted" | "declined") {
 	localStorage.setItem(COOKIE_CONSENT_KEY, value);
 	localStorage.setItem(COPIED_KEY, value);
-	// Trigger a soft navigation to re-evaluate consent state
-	// We use a tiny setTimeout so the state update batches correctly
-	setTimeout(() => {
-		window.location.reload();
-	}, 0);
+
+	// Notify all AdSlot components in the same page that consent changed.
+	// This avoids a full reload and lets ads push immediately.
+	window.dispatchEvent(new CustomEvent("olahbola:consent-changed"));
 
 	// Push AdSense ad slots if accepted
 	if (value === "accepted" && typeof window !== "undefined") {
@@ -93,7 +92,10 @@ export default function CookieBanner() {
 					{/* Buttons */}
 					<div className="flex items-center gap-2 flex-shrink-0">
 						<button
-							onClick={() => setConsent("accepted")}
+							onClick={() => {
+								setConsent("accepted");
+								setShowBanner(false);
+							}}
 							className={`px-5 py-2.5 rounded-full text-sm font-bold uppercase tracking-wider transition-all active:scale-95 ${
 								isDark
 									? "bg-[#43decc] text-[#003732] hover:bg-[#3cc2b2]"
@@ -103,7 +105,10 @@ export default function CookieBanner() {
 							TERIMA
 						</button>
 						<button
-							onClick={() => setConsent("declined")}
+							onClick={() => {
+								setConsent("declined");
+								setShowBanner(false);
+							}}
 							className={`px-5 py-2.5 rounded-full text-sm font-bold uppercase tracking-wider transition-all border active:scale-95 ${
 								isDark
 									? "border-white/20 text-[#bbcac6] hover:bg-white/5"
@@ -113,7 +118,10 @@ export default function CookieBanner() {
 							TOLAK
 						</button>
 						<button
-							onClick={() => setConsent("declined")}
+							onClick={() => {
+								setConsent("declined");
+								setShowBanner(false);
+							}}
 							className={`p-2.5 rounded-full transition-all ${
 								isDark ? "hover:bg-white/5 text-white/50" : "hover:bg-gray-100 text-gray-400"
 							}`}

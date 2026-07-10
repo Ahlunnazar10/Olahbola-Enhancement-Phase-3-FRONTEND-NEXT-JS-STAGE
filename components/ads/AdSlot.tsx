@@ -1,7 +1,7 @@
 "use client";
 
-import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
+import Script from "next/script";
 import { usePathname } from "next/navigation";
 
 declare global {
@@ -9,6 +9,8 @@ declare global {
 		adsbygoogle: any[];
 	}
 }
+
+export const ADSENSE_CONSENT_EVENT = "olahbola:consent-changed";
 
 type AdFormat =
 	| "auto"
@@ -27,6 +29,7 @@ interface AdSlotProps {
 	responsive?: boolean;
 	label?: string;
 	lazyLoad?: boolean;
+	loadScript?: boolean;
 	fallback?: React.ReactNode;
 	minHeight?: number;
 }
@@ -40,25 +43,35 @@ export default function AdSlot({
 	responsive = true,
 	label = "Advertisement",
 	lazyLoad = false,
+	loadScript = false,
 	fallback,
 	minHeight = 90,
 }: AdSlotProps) {
 	const adRef = useRef<HTMLModElement>(null);
+	const pushedRef = useRef(false);
 	const pathname = usePathname();
 	const [hasConsent, setHasConsent] = useState(false);
 	const [shouldRender, setShouldRender] = useState(!lazyLoad);
 
 	useEffect(() => {
-		try {
-			/* Check BOTH keys — cookie-banner stores "cookie_consent_given" OR "olahbola-cookie-consent",
-			   old cookie-consent stored "accept/accept", new cookie-banner stores "accepted/declined" */
-			const modern = localStorage.getItem("olahbola-cookie-consent");
-			const legacy = localStorage.getItem("cookie_consent_given");
-			const isAccepted = modern === "accept" || modern === "accepted" || legacy === "accepted";
-			setHasConsent(isAccepted);
-		} catch (e) {
-			setHasConsent(false);
-		}
+		const checkConsent = () => {
+			try {
+				const modern = localStorage.getItem("olahbola-cookie-consent");
+				const legacy = localStorage.getItem("cookie_consent_given");
+				const isAccepted =
+					modern === "accept" ||
+					modern === "accepted" ||
+					legacy === "accepted";
+				setHasConsent(isAccepted);
+			} catch {
+				setHasConsent(false);
+			}
+		};
+
+		checkConsent();
+		window.addEventListener(ADSENSE_CONSENT_EVENT, checkConsent);
+		return () =>
+			window.removeEventListener(ADSENSE_CONSENT_EVENT, checkConsent);
 	}, []);
 
 	useEffect(() => {
@@ -83,13 +96,23 @@ export default function AdSlot({
 
 	useEffect(() => {
 		if (!shouldRender || !hasConsent || !client) return;
+		if (!adRef.current) return;
+		if (pushedRef.current) return;
 
 		try {
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
+			pushedRef.current = true;
 		} catch (err) {
 			console.error("AdSense push failed:", err);
 		}
 	}, [pathname, shouldRender, hasConsent, client]);
+
+	// Reset push guard if consent was revoked — so the slot can re-push on next accept
+	useEffect(() => {
+		if (!hasConsent) {
+			pushedRef.current = false;
+		}
+	}, [hasConsent]);
 
 	if (!client) {
 		return fallback ? <div className={className}>{fallback}</div> : null;
@@ -97,30 +120,30 @@ export default function AdSlot({
 
 	return (
 		<div
-			className={`ad-slot my-4 ${className}`}
-			style={{ width: "100%", minHeight: `${minHeight}px`, ...style }}
+			className={`ad-slot my-4 w-full ${className}`}
+			style={{ minHeight: `${minHeight}px`, ...style }}
 		>
+			{loadScript && (
+				<Script
+					async
+					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
+					strategy="afterInteractive"
+					crossOrigin="anonymous"
+				/>
+			)}
+
 			{label && (
 				<div className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 text-center">
 					{label}
 				</div>
 			)}
 
-			<Script
-				async
-				src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
-				strategy="afterInteractive"
-				crossOrigin="anonymous"
-			/>
-
 			<ins
 				ref={adRef}
-				className="adsbygoogle"
+				className="adsbygoogle block w-full text-center mx-auto"
 				style={{
 					display: "block",
 					width: "100%",
-					textAlign: "center",
-					margin: "0 auto",
 					minHeight: `${minHeight}px`,
 					...style,
 				}}
