@@ -56,7 +56,10 @@ export default function AdSlot({
 	minHeight = 90,
 }: AdSlotProps) {
 	const adRef = useRef<HTMLModElement>(null);
-	const pushedRef = useRef(false);
+	const pushedRef = useRef<{ pushed: boolean; lastWidth: number }>({
+		pushed: false,
+		lastWidth: 0,
+	});
 	const pathname = usePathname();
 	const [hasConsent, setHasConsent] = useState(false);
 	const [shouldRender, setShouldRender] = useState(!lazyLoad);
@@ -156,7 +159,7 @@ export default function AdSlot({
 		if (!shouldRender || !hasConsent || !client) return;
 		if (!scriptReady) return;
 		if (!adRef.current) return;
-		if (pushedRef.current) return;
+		if (pushedRef.current.pushed) return;
 
 		// If AdSense's auto-fill mode already filled this slot (via a previous
 		// push from elsewhere on the page), the SDK marks the <ins> with
@@ -164,7 +167,7 @@ export default function AdSlot({
 		// "All 'ins' elements ... already have ads in them".
 		const status = adRef.current.getAttribute("data-adsbygoogle-status");
 		if (status === "done" || status === "filled") {
-			pushedRef.current = true;
+			pushedRef.current.pushed = true;
 			console.info(`[AdSlot:${slot}] already filled (status=${status})`);
 			return;
 		}
@@ -181,7 +184,8 @@ export default function AdSlot({
 
 		try {
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
-			pushedRef.current = true;
+			pushedRef.current.pushed = true;
+			pushedRef.current.lastWidth = slotWidth;
 			console.info(`[AdSlot:${slot}] pushed`, {
 				hasConsent,
 				scriptReady,
@@ -196,7 +200,8 @@ export default function AdSlot({
 	// Reset push guard if consent was revoked — so the slot can re-push on next accept
 	useEffect(() => {
 		if (!hasConsent) {
-			pushedRef.current = false;
+			pushedRef.current.pushed = false;
+			pushedRef.current.lastWidth = 0;
 		}
 	}, [hasConsent]);
 
@@ -204,18 +209,10 @@ export default function AdSlot({
 	// This handles cases where the container reflows after the first push
 	// (e.g. responsive breakpoint changes, mobile rotation).
 	useEffect(() => {
-		if (pushedRef.current && slotWidth > 100) {
-			const lastWidth = pushedRef.current.__lastWidth || 0;
-			if (Math.abs(slotWidth - lastWidth) > 50) {
-				pushedRef.current = false;
+		if (pushedRef.current.pushed && slotWidth > 100) {
+			if (Math.abs(slotWidth - pushedRef.current.lastWidth) > 50) {
+				pushedRef.current.pushed = false;
 			}
-		}
-	}, [slotWidth]);
-
-	// Track width we pushed at
-	useEffect(() => {
-		if (pushedRef.current) {
-			pushedRef.current.__lastWidth = slotWidth;
 		}
 	}, [slotWidth]);
 
