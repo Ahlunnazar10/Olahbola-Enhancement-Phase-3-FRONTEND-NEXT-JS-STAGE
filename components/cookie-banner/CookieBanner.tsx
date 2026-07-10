@@ -4,23 +4,19 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
 import { Cookie, X } from "lucide-react";
+import { ADSENSE_CONSENT_EVENT } from "@/components/ads/AdSlot";
 
 const COOKIE_CONSENT_KEY = "cookie_consent_given";
-/* Cookie-banner stores cookie_consent_given; old AdSlot/cookie-consent reads olahbola-cookie-consent.
-   We mirror both keys so ads are pushed regardless of which key is checked. */
 const COPIED_KEY = "olahbola-cookie-consent";
 
 function setConsent(value: "accepted" | "declined") {
-	localStorage.setItem(COOKIE_CONSENT_KEY, value);
-	localStorage.setItem(COPIED_KEY, value);
-
-	// Notify all AdSlot components in the same page that consent changed.
-	// Each AdSlot will then push itself once via the consent-changed event.
-	// We do NOT push adsbygoogle here — doing so triggers AdSense's auto-fill
-	// mode which marks every <ins class="adsbygoogle"> as "done" before our
-	// AdSlot components get a chance to push, causing
-	// "All 'ins' elements ... already have ads in them" errors.
-	window.dispatchEvent(new CustomEvent("olahbola:consent-changed"));
+	try {
+		localStorage.setItem(COOKIE_CONSENT_KEY, value);
+		localStorage.setItem(COPIED_KEY, value);
+	} catch {}
+	// Broadcast — every AdSlot listens and re-evaluates the consent state.
+	// AdSlot owns the adsbygoogle.push() call; we never call it from here.
+	window.dispatchEvent(new CustomEvent(ADSENSE_CONSENT_EVENT));
 }
 
 export default function CookieBanner() {
@@ -29,10 +25,10 @@ export default function CookieBanner() {
 	const [showBanner, setShowBanner] = useState(false);
 
 	useEffect(() => {
-		const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
-		if (!consent) {
-			setShowBanner(true);
-		}
+		try {
+			const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+			if (!consent) setShowBanner(true);
+		} catch {}
 	}, []);
 
 	if (!showBanner) return null;
@@ -51,7 +47,6 @@ export default function CookieBanner() {
 				}`}
 			>
 				<div className="flex flex-col md:flex-row items-center gap-4">
-					{/* Icon */}
 					<div
 						className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${
 							isDark
@@ -62,7 +57,6 @@ export default function CookieBanner() {
 						<Cookie className="w-6 h-6" />
 					</div>
 
-					{/* Text */}
 					<p
 						className={`text-sm leading-relaxed flex-1 text-center md:text-left ${
 							isDark ? "text-[#bbcac6]" : "text-[#4a4a4a]"
@@ -71,7 +65,7 @@ export default function CookieBanner() {
 						Situs ini menggunakan{" "}
 						<span className="font-semibold">cookie</span> dan teknologi pelacakan serupa untuk
 						meningkatkan pengalaman browsing, menganalisis lalu lintas, dan menampilkan konten yang
-						relevan. Dengan melanjutkan penggunaan situs ini, Anda menyetujui penggunaan cookie
+						 relevan. Dengan melanjutkan penggunaan situs ini, Anda menyetujui penggunaan cookie
 						seperti yang diuraikan dalam{" "}
 						<Link
 							href="/kebijakan-privasi"
@@ -84,7 +78,6 @@ export default function CookieBanner() {
 						kami.
 					</p>
 
-					{/* Buttons */}
 					<div className="flex items-center gap-2 flex-shrink-0">
 						<button
 							onClick={() => {

@@ -2,22 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
-import { usePathname } from "next/navigation";
 
 declare global {
 	interface Window {
 		adsbygoogle: any[];
 	}
-}
-
-export const ADSENSE_CONSENT_EVENT = "olahbola:consent-changed";
-
-function isSdkReady(): boolean {
-	if (typeof window === "undefined") return false;
-	// adsbygoogle.js defines window.adsbygoogle as an array AND when fully loaded
-	// the SDK exposes a non-array object with push/loaded flags. We treat it as
-	// ready as soon as the array exists (script tag injected).
-	return Array.isArray(window.adsbygoogle);
 }
 
 type AdFormat =
@@ -42,6 +31,21 @@ interface AdSlotProps {
 	minHeight?: number;
 }
 
+export const ADSENSE_CONSENT_EVENT = "olahbola:consent-changed";
+
+function hasAcceptedConsent(): boolean {
+	if (typeof window === "undefined") return false;
+	try {
+		return (
+			localStorage.getItem("cookie_consent_given") === "accepted" ||
+			localStorage.getItem("olahbola-cookie-consent") === "accepted" ||
+			localStorage.getItem("olahbola-cookie-consent") === "accept"
+		);
+	} catch {
+		return false;
+	}
+}
+
 export default function AdSlot({
 	slot,
 	client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
@@ -55,174 +59,123 @@ export default function AdSlot({
 	fallback,
 	minHeight = 90,
 }: AdSlotProps) {
-	const adRef = useRef<HTMLModElement>(null);
-	const pushedRef = useRef<{ pushed: boolean; lastWidth: number }>({
-		pushed: false,
-		lastWidth: 0,
-	});
-	const pathname = usePathname();
+	const insRef = useRef<HTMLModElement>(null);
+	const pushedRef = useRef(false);
 	const [hasConsent, setHasConsent] = useState(false);
 	const [shouldRender, setShouldRender] = useState(!lazyLoad);
 	const [scriptReady, setScriptReady] = useState(false);
 	const [slotWidth, setSlotWidth] = useState(0);
 
+	// Track consent. We poll once on mount AND listen for changes so any slot
+	// (even ones mounted before consent is given) re-evaluates when user accepts.
 	useEffect(() => {
-		const checkConsent = () => {
-			try {
-				const modern = localStorage.getItem("olahbola-cookie-consent");
-				const legacy = localStorage.getItem("cookie_consent_given");
-				const isAccepted =
-					modern === "accept" ||
-					modern === "accepted" ||
-					legacy === "accepted";
-				setHasConsent(isAccepted);
-			} catch {
-				setHasConsent(false);
-			}
+		setHasConsent(hasAcceptedConsent());
+		const onConsent = () => setHasConsent(hasAcceptedConsent());
+		window.addEventListener(ADSENSE_CONSENT_EVENT, onConsent);
+		window.addEventListener("storage", onConsent);
+		return () => {
+			window.removeEventListener(ADSENSE_CONSENT_EVENT, onConsent);
+			window.removeEventListener("storage", onConsent);
 		};
-
-		checkConsent();
-		window.addEventListener(ADSENSE_CONSENT_EVENT, checkConsent);
-		return () =>
-			window.removeEventListener(ADSENSE_CONSENT_EVENT, checkConsent);
 	}, []);
 
-	// Detect when the global SDK is ready (in case LazyScripts loaded it before this component mounted)
+	// Detect when adsbyglobal script has loaded (either via LazyScripts or this slot's Script tag)
 	useEffect(() => {
-		if (loadScript) return; // we own the Script tag — onLoad handler will flip state
-
+		if (loadScript) return; // onLoad on <Script> below will flip state
 		let cancelled = false;
-		const check = () => {
+		const tick = () => {
 			if (cancelled) return;
-			if (isSdkReady()) {
+			if (Array.isArray(window.adsbygoogle)) {
 				setScriptReady(true);
 				return;
 			}
-			setTimeout(check, 200);
+			setTimeout(tick, 100);
 		};
-		check();
+		tick();
 		return () => {
 			cancelled = true;
 		};
 	}, [loadScript]);
 
+	// IntersectionObserver for lazy slots
 	useEffect(() => {
-		if (!lazyLoad || !adRef.current) return;
-
+		if (!lazyLoad) return;
+		const el = insRef.current?.parentElement;
+		if (!el || typeof IntersectionObserver === "undefined") {
+			setShouldRender(true);
+			return;
+		}
 		const observer = new IntersectionObserver(
 			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						setShouldRender(true);
-						observer.disconnect();
-					}
-				});
+				if (entries.some((e) => e.isIntersecting)) {
+					setShouldRender(true);
+					observer.disconnect();
+				}
 			},
 			{ rootMargin: "200px" },
 		);
-
-		observer.observe(adRef.current);
-
+		observer.observe(el);
 		return () => observer.disconnect();
 	}, [lazyLoad]);
 
-	// Measure the actual rendered width of the <ins> element.
-	// format="auto" needs a real width — pushing into a 0-width container makes
-	// AdSense return no fill and leaves the slot empty.
+	// Measure width so format="auto" has a real value to size against
 	useEffect(() => {
-		const el = adRef.current;
+		const el = insRef.current;
 		if (!el) return;
-
-		const measure = () => {
-			// offsetWidth includes padding+border; getBoundingClientRect().width does
-			// not. For a properly-laid-out <ins> with width:100%, offsetWidth gives
-			// the actual visible width that AdSense will inherit.
-			const w = el.offsetWidth || el.getBoundingClientRect().width || 0;
-			setSlotWidth(w);
-		};
-
-		// Delay first measurement to next frame so layout has settled
-		const raf = requestAnimationFrame(measure);
-
+		const measure = () => setSlotWidth(el.offsetWidth || 0);
+		measure();
 		const ro = new ResizeObserver(measure);
 		ro.observe(el);
-
 		window.addEventListener("resize", measure);
 		return () => {
-			cancelAnimationFrame(raf);
 			ro.disconnect();
 			window.removeEventListener("resize", measure);
 		};
 	}, []);
 
+	// Push once when ready, consented, and width is valid
 	useEffect(() => {
 		if (!shouldRender || !hasConsent || !client) return;
-		if (!scriptReady) return;
-		if (!adRef.current) return;
-		if (pushedRef.current.pushed) return;
+		if (!scriptReady || pushedRef.current) return;
+		const el = insRef.current;
+		if (!el) return;
 
-		// If AdSense's auto-fill mode already filled this slot (via a previous
-		// push from elsewhere on the page), the SDK marks the <ins> with
-		// data-adsbygoogle-status="done". Pushing again throws
-		// "All 'ins' elements ... already have ads in them".
-		const status = adRef.current.getAttribute("data-adsbygoogle-status");
+		// Don't double-push if AdSense already filled this slot
+		const status = el.getAttribute("data-adsbygoogle-status");
 		if (status === "done" || status === "filled") {
-			pushedRef.current.pushed = true;
-			console.info(`[AdSlot:${slot}] already filled (status=${status})`);
+			pushedRef.current = true;
 			return;
 		}
 
-		// For "auto" format, AdSense requires a non-zero width to determine ad size.
-		// If parent container has 0 width (e.g. inside a collapsed flex/grid),
-		// skip the push — the ResizeObserver will retrigger when it grows.
-		if (format === "auto" && slotWidth < 100) {
-			console.info(
-				`[AdSlot:${slot}] waiting for width (current=${slotWidth})`,
-			);
+		// For responsive ads, AdSense requires the slot to have layout size
+		if (responsive && format === "auto" && slotWidth < 120) {
 			return;
 		}
 
 		try {
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
-			pushedRef.current.pushed = true;
-			pushedRef.current.lastWidth = slotWidth;
-			console.info(`[AdSlot:${slot}] pushed`, {
-				hasConsent,
-				scriptReady,
-				width: slotWidth,
-				client: client?.slice(0, 12),
-			});
+			pushedRef.current = true;
+			if (process.env.NODE_ENV !== "production") {
+				console.info(`[AdSlot:${slot}] pushed`, { width: slotWidth });
+			}
 		} catch (err) {
-			console.error("AdSense push failed:", err);
+			console.error("[AdSlot]", slot, "push failed:", err);
 		}
-	}, [pathname, shouldRender, hasConsent, client, scriptReady, slotWidth, slot, format]);
+	}, [
+		shouldRender,
+		hasConsent,
+		client,
+		scriptReady,
+		slotWidth,
+		slot,
+		format,
+		responsive,
+	]);
 
 	// Reset push guard if consent was revoked — so the slot can re-push on next accept
 	useEffect(() => {
-		if (!hasConsent) {
-			pushedRef.current.pushed = false;
-			pushedRef.current.lastWidth = 0;
-		}
+		if (!hasConsent) pushedRef.current = false;
 	}, [hasConsent]);
-
-	// Re-push when width grows past what we initially pushed with.
-	// This handles cases where the container reflows after the first push
-	// (e.g. responsive breakpoint changes, mobile rotation).
-	useEffect(() => {
-		if (pushedRef.current.pushed && slotWidth > 100) {
-			if (Math.abs(slotWidth - pushedRef.current.lastWidth) > 50) {
-				pushedRef.current.pushed = false;
-			}
-		}
-	}, [slotWidth]);
-
-	const handleScriptLoad = () => {
-		setScriptReady(true);
-	};
-
-	const handleScriptError = () => {
-		console.error("AdSense SDK failed to load");
-	};
 
 	if (!client) {
 		return fallback ? <div className={className}>{fallback}</div> : null;
@@ -239,8 +192,8 @@ export default function AdSlot({
 					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
 					strategy="afterInteractive"
 					crossOrigin="anonymous"
-					onLoad={handleScriptLoad}
-					onError={handleScriptError}
+					onLoad={() => setScriptReady(true)}
+					onError={() => console.error("[AdSlot] AdSense SDK failed to load")}
 				/>
 			)}
 
@@ -251,7 +204,7 @@ export default function AdSlot({
 			)}
 
 			<ins
-				ref={adRef}
+				ref={insRef}
 				className="adsbygoogle block w-full text-center mx-auto"
 				style={{
 					display: "block",
@@ -262,7 +215,7 @@ export default function AdSlot({
 				data-ad-client={client}
 				data-ad-slot={slot}
 				data-ad-format={format}
-				data-full-width-responsive={responsive.toString()}
+				data-full-width-responsive={responsive ? "true" : "false"}
 			/>
 
 			{fallback && <div className="mt-2">{fallback}</div>}
