@@ -155,6 +155,11 @@ export default function RootLayout({
 				<link rel="dns-prefetch" href="https://api.mainhero.id" />
 				<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 				<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+				<link
+					rel="preconnect"
+					href="https://pagead2.googlesyndication.com"
+					crossOrigin="anonymous"
+				/>
 				<link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
 				{/* Preload LCP image so it starts downloading immediately */}

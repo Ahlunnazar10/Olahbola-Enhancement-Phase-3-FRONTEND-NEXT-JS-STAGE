@@ -12,6 +12,14 @@ declare global {
 
 export const ADSENSE_CONSENT_EVENT = "olahbola:consent-changed";
 
+function isSdkReady(): boolean {
+	if (typeof window === "undefined") return false;
+	// adsbygoogle.js defines window.adsbygoogle as an array AND when fully loaded
+	// the SDK exposes a non-array object with push/loaded flags. We treat it as
+	// ready as soon as the array exists (script tag injected).
+	return Array.isArray(window.adsbygoogle);
+}
+
 type AdFormat =
 	| "auto"
 	| "horizontal"
@@ -52,6 +60,7 @@ export default function AdSlot({
 	const pathname = usePathname();
 	const [hasConsent, setHasConsent] = useState(false);
 	const [shouldRender, setShouldRender] = useState(!lazyLoad);
+	const [scriptReady, setScriptReady] = useState(false);
 
 	useEffect(() => {
 		const checkConsent = () => {
@@ -73,6 +82,25 @@ export default function AdSlot({
 		return () =>
 			window.removeEventListener(ADSENSE_CONSENT_EVENT, checkConsent);
 	}, []);
+
+	// Detect when the global SDK is ready (in case LazyScripts loaded it before this component mounted)
+	useEffect(() => {
+		if (loadScript) return; // we own the Script tag — onLoad handler will flip state
+
+		let cancelled = false;
+		const check = () => {
+			if (cancelled) return;
+			if (isSdkReady()) {
+				setScriptReady(true);
+				return;
+			}
+			setTimeout(check, 200);
+		};
+		check();
+		return () => {
+			cancelled = true;
+		};
+	}, [loadScript]);
 
 	useEffect(() => {
 		if (!lazyLoad || !adRef.current) return;
@@ -96,16 +124,22 @@ export default function AdSlot({
 
 	useEffect(() => {
 		if (!shouldRender || !hasConsent || !client) return;
+		if (!scriptReady) return;
 		if (!adRef.current) return;
 		if (pushedRef.current) return;
 
 		try {
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
 			pushedRef.current = true;
+			console.info(`[AdSlot:${slot}] pushed`, {
+				hasConsent,
+				scriptReady,
+				client: client?.slice(0, 12),
+			});
 		} catch (err) {
 			console.error("AdSense push failed:", err);
 		}
-	}, [pathname, shouldRender, hasConsent, client]);
+	}, [pathname, shouldRender, hasConsent, client, scriptReady, slot]);
 
 	// Reset push guard if consent was revoked — so the slot can re-push on next accept
 	useEffect(() => {
@@ -113,6 +147,14 @@ export default function AdSlot({
 			pushedRef.current = false;
 		}
 	}, [hasConsent]);
+
+	const handleScriptLoad = () => {
+		setScriptReady(true);
+	};
+
+	const handleScriptError = () => {
+		console.error("AdSense SDK failed to load");
+	};
 
 	if (!client) {
 		return fallback ? <div className={className}>{fallback}</div> : null;
@@ -129,6 +171,8 @@ export default function AdSlot({
 					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
 					strategy="afterInteractive"
 					crossOrigin="anonymous"
+					onLoad={handleScriptLoad}
+					onError={handleScriptError}
 				/>
 			)}
 
