@@ -61,6 +61,7 @@ export default function AdSlot({
 	const [hasConsent, setHasConsent] = useState(false);
 	const [shouldRender, setShouldRender] = useState(!lazyLoad);
 	const [scriptReady, setScriptReady] = useState(false);
+	const [slotWidth, setSlotWidth] = useState(0);
 
 	useEffect(() => {
 		const checkConsent = () => {
@@ -122,11 +123,61 @@ export default function AdSlot({
 		return () => observer.disconnect();
 	}, [lazyLoad]);
 
+	// Measure the actual rendered width of the <ins> element.
+	// format="auto" needs a real width — pushing into a 0-width container makes
+	// AdSense return no fill and leaves the slot empty.
+	useEffect(() => {
+		const el = adRef.current;
+		if (!el) return;
+
+		const measure = () => {
+			// offsetWidth includes padding+border; getBoundingClientRect().width does
+			// not. For a properly-laid-out <ins> with width:100%, offsetWidth gives
+			// the actual visible width that AdSense will inherit.
+			const w = el.offsetWidth || el.getBoundingClientRect().width || 0;
+			setSlotWidth(w);
+		};
+
+		// Delay first measurement to next frame so layout has settled
+		const raf = requestAnimationFrame(measure);
+
+		const ro = new ResizeObserver(measure);
+		ro.observe(el);
+
+		window.addEventListener("resize", measure);
+		return () => {
+			cancelAnimationFrame(raf);
+			ro.disconnect();
+			window.removeEventListener("resize", measure);
+		};
+	}, []);
+
 	useEffect(() => {
 		if (!shouldRender || !hasConsent || !client) return;
 		if (!scriptReady) return;
 		if (!adRef.current) return;
 		if (pushedRef.current) return;
+
+		// If AdSense's auto-fill mode already filled this slot (via a previous
+		// push from elsewhere on the page), the SDK marks the <ins> with
+		// data-adsbygoogle-status="done". Pushing again throws
+		// "All 'ins' elements ... already have ads in them".
+		const status = adRef.current.getAttribute("data-adsbygoogle-status");
+		if (status === "done" || status === "filled") {
+			pushedRef.current = true;
+			console.info(`[AdSlot:${slot}] already filled (status=${status})`);
+			return;
+		}
+
+		// For "auto" format, AdSense requires a non-zero width to determine ad size.
+		// If parent container has 0 width (e.g. inside a collapsed flex/grid),
+		// skip the push — the ResizeObserver will retrigger when it grows.
+		if (format === "auto" && slotWidth < 100) {
+			console.info(
+				`[AdSlot:${slot}] waiting for width (current=${slotWidth})`,
+			);
+			return;
+		}
 
 		try {
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -134,12 +185,13 @@ export default function AdSlot({
 			console.info(`[AdSlot:${slot}] pushed`, {
 				hasConsent,
 				scriptReady,
+				width: slotWidth,
 				client: client?.slice(0, 12),
 			});
 		} catch (err) {
 			console.error("AdSense push failed:", err);
 		}
-	}, [pathname, shouldRender, hasConsent, client, scriptReady, slot]);
+	}, [pathname, shouldRender, hasConsent, client, scriptReady, slotWidth, slot, format]);
 
 	// Reset push guard if consent was revoked — so the slot can re-push on next accept
 	useEffect(() => {
@@ -147,6 +199,25 @@ export default function AdSlot({
 			pushedRef.current = false;
 		}
 	}, [hasConsent]);
+
+	// Re-push when width grows past what we initially pushed with.
+	// This handles cases where the container reflows after the first push
+	// (e.g. responsive breakpoint changes, mobile rotation).
+	useEffect(() => {
+		if (pushedRef.current && slotWidth > 100) {
+			const lastWidth = pushedRef.current.__lastWidth || 0;
+			if (Math.abs(slotWidth - lastWidth) > 50) {
+				pushedRef.current = false;
+			}
+		}
+	}, [slotWidth]);
+
+	// Track width we pushed at
+	useEffect(() => {
+		if (pushedRef.current) {
+			pushedRef.current.__lastWidth = slotWidth;
+		}
+	}, [slotWidth]);
 
 	const handleScriptLoad = () => {
 		setScriptReady(true);

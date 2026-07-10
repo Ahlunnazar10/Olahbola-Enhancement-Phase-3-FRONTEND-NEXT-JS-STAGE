@@ -15,17 +15,12 @@ function setConsent(value: "accepted" | "declined") {
 	localStorage.setItem(COPIED_KEY, value);
 
 	// Notify all AdSlot components in the same page that consent changed.
-	// This avoids a full reload and lets ads push immediately.
+	// Each AdSlot will then push itself once via the consent-changed event.
+	// We do NOT push adsbygoogle here — doing so triggers AdSense's auto-fill
+	// mode which marks every <ins class="adsbygoogle"> as "done" before our
+	// AdSlot components get a chance to push, causing
+	// "All 'ins' elements ... already have ads in them" errors.
 	window.dispatchEvent(new CustomEvent("olahbola:consent-changed"));
-
-	// Push AdSense ad slots if accepted
-	if (value === "accepted" && typeof window !== "undefined") {
-		try {
-			(window.adsbygoogle = window.adsbygoogle || []).push({});
-		} catch (e) {
-			console.error("AdSense push failed:", e);
-		}
-	}
 }
 
 export default function CookieBanner() {
