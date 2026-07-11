@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Loader2, Play, ChevronRight } from "lucide-react";
 import { useInterviews } from "@/hooks/queries/useContent";
 import { useUIStore } from "@/stores/uiStore";
+import AdSlot from "@/components/ads/AdSlot";
 
 function InterviewContent() {
 	const { theme } = useUIStore();
@@ -127,6 +128,16 @@ function InterviewContent() {
 					</p>
 				</section>
 
+				{/* Interview Display Ads */}
+				<section className="max-w-7xl mx-auto mb-8">
+					<AdSlot
+						client="ca-pub-8005120082355722"
+						slot="5049665169"
+						format="auto"
+						minHeight={120}
+					/>
+				</section>
+
 				{/* Bento Grid Video Gallery */}
 				<div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
 					{/* Featured Card (Large) - col-span-8 */}
@@ -233,6 +244,16 @@ function InterviewContent() {
 						))}
 					</div>
 				)}
+
+				{/* Interview Display Ads - Footer */}
+				<section className="max-w-7xl mx-auto mt-12">
+					<AdSlot
+						client="ca-pub-8005120082355722"
+						slot="5049665169"
+						format="auto"
+						minHeight={120}
+					/>
+				</section>
 
 				{/* Pagination/Load More */}
 				<div className="mt-16 flex justify-center">
