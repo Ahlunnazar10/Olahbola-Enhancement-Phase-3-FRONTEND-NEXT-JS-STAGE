@@ -243,7 +243,7 @@ export default function PrediksiSkorPage() {
 	const { isAuthenticated, user } = useAuthStore();
 	const isDark = theme === "dark";
 
-	const [activePhase, setActivePhase] = useState("quarter_final");
+	const [activePhase, setActivePhase] = useState("semi_final");
 	const [activeGroup, setActiveGroup] = useState("A");
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
@@ -299,12 +299,26 @@ export default function PrediksiSkorPage() {
 	}, [isAnyLoading, initialLoadDone]);
 	const showInitialOverlay = !initialLoadDone;
 
-	// Points text changes per phase group
-	const EARLY_PHASES = ["group_stage", "round_of_32", "round_of_16"];
-	const isEarlyPhase = EARLY_PHASES.includes(activePhase);
-	const pointsSubtitle = isEarlyPhase
-		? "*Tebak akurat dapat 10 poin, tebak pemenang / tebak skor dapat 5 poin, jika salah dapat 0 poin"
-		: "*Tebak akurat dapat 20 poin, tebak pemenang / tebak skor dapat 10 poin, jika salah dapat 0 poin";
+	// Points text changes per phase
+	const POINTS_TEXT: Record<string, string> = {
+		group_stage:
+			"*Tebak akurat dapat 10 poin, tebak pemenang / tebak skor dapat 5 poin, jika salah dapat 0 poin",
+		round_of_32:
+			"*Tebak akurat dapat 10 poin, tebak pemenang / tebak skor dapat 5 poin, jika salah dapat 0 poin",
+		round_of_16:
+			"*Tebak akurat dapat 10 poin, tebak pemenang / tebak skor dapat 5 poin, jika salah dapat 0 poin",
+		quarter_final:
+			"*Tebak akurat dapat 20 poin, tebak pemenang / tebak skor dapat 10 poin, jika salah dapat 0 poin",
+		semi_final:
+			"*Tebak akurat dapat 30 poin, tebak pemenang / tebak skor dapat 15 poin, jika salah dapat 0 poin",
+		third_place:
+			"*Tebak akurat dapat 40 poin, tebak pemenang / tebak skor dapat 20 poin, jika salah dapat 0 poin",
+		final:
+			"*Tebak akurat dapat 50 poin, tebak pemenang / tebak skor dapat 25 poin, jika salah dapat 0 poin",
+	};
+	const pointsSubtitle =
+		POINTS_TEXT[activePhase] ??
+		"*Tebak akurat dapat 20 poin, tebak pemenang / tebak skor dapat 10 poin, jika salah dapat 0 poin";
 
 	const groups = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
