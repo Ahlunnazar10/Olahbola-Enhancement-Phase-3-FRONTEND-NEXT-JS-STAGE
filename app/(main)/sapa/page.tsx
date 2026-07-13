@@ -8,7 +8,6 @@ import { apiClient } from "@/lib/api/client";
 import { endpoints } from "@/lib/api/endpoints";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/uiStore";
-import AdSlot from "@/components/ads/AdSlot";
 
 export default function SapaPage() {
 	const { theme } = useUIStore();
@@ -86,16 +85,6 @@ export default function SapaPage() {
 					Ayo hubungi kami, Bersama kita susun strategi, saling umpan, dan cetak
 					gol cantik lewat kolaborasi yang solid.
 				</p>
-			</section>
-
-			{/* Sapa Display Ads */}
-			<section className="relative z-10 px-8 max-w-7xl mx-auto mb-8">
-				<AdSlot
-					client="ca-pub-8005120082355722"
-					slot="1076394049"
-					format="auto"
-					minHeight={120}
-				/>
 			</section>
 
 			{/* Main Content Grid */}
@@ -354,16 +343,6 @@ export default function SapaPage() {
 						</form>
 					</div>
 				</div>
-			</section>
-
-			{/* Sapa Display Ads - Footer */}
-			<section className="relative z-10 px-8 pb-16 max-w-7xl mx-auto">
-				<AdSlot
-					client="ca-pub-8005120082355722"
-					slot="1076394049"
-					format="auto"
-					minHeight={120}
-				/>
 			</section>
 		</div>
 	);

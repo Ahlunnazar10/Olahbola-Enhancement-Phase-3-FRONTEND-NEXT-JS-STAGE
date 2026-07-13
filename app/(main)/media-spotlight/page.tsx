@@ -5,7 +5,6 @@ import { ArrowRight, Mail, Handshake, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { mediaHighlights, getAllHighlights } from "@/src/data/mediaHighlights";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
-import AdSlot from "@/components/ads/AdSlot";
 
 export default function MediaSpotlightPage() {
 	const { theme } = useUIStore();
@@ -130,16 +129,6 @@ export default function MediaSpotlightPage() {
 							kolaborasi kreatif bersama media, brand dan komunitas sepak bola.
 						</p>
 					</div>
-				</section>
-
-				{/* Media Spotlight Display Ads */}
-				<section className="px-6 md:px-8 lg:px-16 max-w-7xl mx-auto mb-12">
-					<AdSlot
-						client="ca-pub-8005120082355722"
-						slot="3075871428"
-						format="auto"
-						minHeight={120}
-					/>
 				</section>
 
 				{/* Featured Spotlight */}
@@ -297,16 +286,6 @@ export default function MediaSpotlightPage() {
 							</a>
 						))}
 					</div>
-				</section>
-
-				{/* Media Spotlight Display Ads - Bottom */}
-				<section className="px-6 md:px-8 lg:px-16 max-w-7xl mx-auto mb-16">
-					<AdSlot
-						client="ca-pub-8005120082355722"
-						slot="3075871428"
-						format="auto"
-						minHeight={120}
-					/>
 				</section>
 
 				{/* Collaboration CTA */}

@@ -72,7 +72,9 @@
       "Bash(sed -n '928,934p' \"app/\\(main\\)/page.tsx\")",
       "WebSearch",
       "Bash(ls \"C:/Users/Pongo/.claude/projects/e--DEVELOPER-NEXT-olahbola/memory/\")",
-      "Read(//c/Users/Pongo/.claude/projects/e--DEVELOPER-NEXT-olahbola/memory/**)"
+      "Read(//c/Users/Pongo/.claude/projects/e--DEVELOPER-NEXT-olahbola/memory/**)",
+      "WebFetch(domain:www.olahbola.com)",
+      "WebFetch(domain:pagead2.googlesyndication.com)"
     ],
     "additionalDirectories": [
       "E:\\DEVELOPER\\NEXT\\olahbola\\app\\(main)\\artikel\\[slug]"

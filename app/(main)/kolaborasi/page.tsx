@@ -6,7 +6,6 @@ import { Suspense } from "react";
 import { Loader2, ChevronRight } from "lucide-react";
 import { useKolaborasis } from "@/hooks/queries/useContent";
 import { useUIStore } from "@/stores/uiStore";
-import AdSlot from "@/components/ads/AdSlot";
 
 function KolaborasiContent() {
 	const { theme } = useUIStore();
@@ -193,16 +192,6 @@ function KolaborasiContent() {
 								))}
 							</div>
 
-							{/* Kolaborasi Display Ads */}
-							<div className="max-w-7xl mx-auto mb-12">
-								<AdSlot
-									client="ca-pub-8005120082355722"
-									slot="4580524784"
-									format="auto"
-									minHeight={120}
-								/>
-							</div>
-
 							{/* Next Page Button */}
 							{hasMore && (
 								<div className="flex justify-center py-4">
@@ -264,16 +253,6 @@ function KolaborasiContent() {
 							</div>
 						</div>
 					</div>
-				</div>
-
-				{/* Kolaborasi Display Ads - Footer */}
-				<div className="max-w-7xl mx-auto pb-16 px-8">
-					<AdSlot
-						client="ca-pub-8005120082355722"
-						slot="4580524784"
-						format="auto"
-						minHeight={120}
-					/>
 				</div>
 			</section>
 		</>
