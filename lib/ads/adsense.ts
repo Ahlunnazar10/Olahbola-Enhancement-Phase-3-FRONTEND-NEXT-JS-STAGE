@@ -27,7 +27,8 @@ let injected = false;
 let ready = false;
 const readyWaiters: Array<() => void> = [];
 
-const ADSENSE_SRC_PREFIX = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
+const ADSENSE_SRC_PREFIX =
+	"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
 
 export function loadAdsense(client: string): void {
 	if (typeof window === "undefined" || !client) return;
