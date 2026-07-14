@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import {
 	Plus_Jakarta_Sans,
 	Fira_Code,
@@ -197,6 +198,18 @@ export default function RootLayout({
 				/>
 
 				<Providers>{children}</Providers>
+
+				{/* AdSense SDK — global script for auto ads.
+				    Loaded beforeInteractive so it ships in server HTML
+				    and is available by the time any client-side AdSlot mounts.
+				    The `id` matches the one checked in lib/ads/adsense.ts
+				    so loadAdsense() knows the script is already present. */}
+				<Script
+					id="adsbygoogle-script"
+					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+					strategy="beforeInteractive"
+					crossOrigin="anonymous"
+				/>
 				<Toaster
 					position="top-right"
 					reverseOrder={false}
