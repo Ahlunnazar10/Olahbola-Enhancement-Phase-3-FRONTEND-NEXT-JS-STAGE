@@ -40,7 +40,32 @@ export function loadAdsense(client: string): void {
 		document.querySelector(`script[src^="${ADSENSE_SRC_PREFIX}"]`)
 	) {
 		injected = true;
-		markReadyWhenPresent();
+		// Script is in the DOM. It might be loading or already loaded. Listen
+		// for its load event if we can, otherwise fall back to polling.
+		const existingScript = document.getElementById(
+			"adsbygoogle-script",
+		) as HTMLScriptElement | null;
+		if (existingScript) {
+			if (existingScript.dataset.loaded === "true") {
+				markReady();
+			} else {
+				existingScript.addEventListener(
+					"load",
+					() => {
+						existingScript.dataset.loaded = "true";
+						markReady();
+					},
+					{ once: true },
+				);
+				// Also poll as a safety net for the case where the script
+				// loaded before we attached the listener.
+				markReadyWhenPresent();
+			}
+		} else {
+			markReadyWhenPresent();
+		}
+		// Initialise the queue so any pushes before the SDK loads aren't lost.
+		window.adsbygoogle = window.adsbygoogle || [];
 		return;
 	}
 
@@ -53,6 +78,7 @@ export function loadAdsense(client: string): void {
 	script.crossOrigin = "anonymous";
 
 	script.addEventListener("load", () => {
+		script.dataset.loaded = "true";
 		// AdSense defines window.adsbygoogle when it finishes loading. It may
 		// already exist as a queue (we initialise it ourselves below) so we
 		// simply notify waiters.

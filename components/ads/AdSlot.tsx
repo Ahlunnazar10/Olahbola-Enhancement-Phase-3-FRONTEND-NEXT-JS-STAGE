@@ -43,6 +43,18 @@ function hasAcceptedConsent(): boolean {
 	}
 }
 
+function hasDeclinedConsent(): boolean {
+	if (typeof window === "undefined") return false;
+	try {
+		const v =
+			localStorage.getItem("cookie_consent_given") ||
+			localStorage.getItem("olahbola-cookie-consent");
+		return v === "declined" || v === "decline";
+	} catch {
+		return false;
+	}
+}
+
 export default function AdSlot({
 	slot,
 	client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
@@ -57,15 +69,15 @@ export default function AdSlot({
 }: AdSlotProps) {
 	const insRef = useRef<HTMLModElement>(null);
 	const pushedRef = useRef(false);
-	const [hasConsent, setHasConsent] = useState(false);
+	const [hasConsent, setHasConsent] = useState(true);
 	const [shouldRender, setShouldRender] = useState(!lazyLoad);
 	const [slotWidth, setSlotWidth] = useState(0);
 
-	// Track consent. Poll on mount AND listen for changes so slots mounted
-	// before the user accepts re-evaluate when consent is granted.
+	// Track consent. Default to true (ads show) — only block when
+	// user has explicitly clicked "TOLAK" (declined) via the cookie banner.
 	useEffect(() => {
-		setHasConsent(hasAcceptedConsent());
-		const onConsent = () => setHasConsent(hasAcceptedConsent());
+		setHasConsent(!hasDeclinedConsent());
+		const onConsent = () => setHasConsent(!hasDeclinedConsent());
 		window.addEventListener(ADSENSE_CONSENT_EVENT, onConsent);
 		window.addEventListener("storage", onConsent);
 		return () => {
@@ -123,9 +135,13 @@ export default function AdSlot({
 		};
 	}, []);
 
-	// Push once when: rendered, consented, width is valid, SDK is ready, and
-	// AdSense hasn't already filled this slot. The push itself is queued in the
+	// Push once when: rendered, consented, width is valid, and AdSense
+	// hasn't already filled this slot. The push itself is queued in the
 	// singleton loader, so calling it before the SDK is ready is safe.
+	// We attempt push as soon as `shouldRender` becomes true. On the first
+	// render we try immediately; if the SDK isn't ready yet we schedule it
+	// after a microtask timeout so the browser has time to finish loading
+	// the `beforeInteractive` script injected in layout.
 	useEffect(() => {
 		if (!shouldRender || !hasConsent || !client) return;
 		if (pushedRef.current) return;
@@ -158,10 +174,22 @@ export default function AdSlot({
 			}
 		};
 
+		// Direct push if SDK is already ready.
 		if (isAdsenseReady()) {
 			tryPush();
 		} else {
-			whenAdsenseReady(tryPush);
+			// The `next/script` `beforeInteractive` script will finish loading
+			// shortly. Use a microtask fallback (setTimeout 0) to retry once
+			// after the current render cycle so the browser has time to process
+			// the SDK load. If still not ready, fall back to whenAdsenseReady.
+			setTimeout(() => {
+				if (pushedRef.current) return;
+				if (isAdsenseReady()) {
+					tryPush();
+				} else {
+					whenAdsenseReady(tryPush);
+				}
+			}, 0);
 		}
 	}, [shouldRender, hasConsent, client, slotWidth, slot, format, responsive]);
 
