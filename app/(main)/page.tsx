@@ -1354,12 +1354,25 @@ export default function HomePage() {
 				{/* Olahbola First Ad Unit - below hero leaderboard */}
 				<section className="w-full py-4 px-6 md:px-16">
 					<div className="max-w-480 mx-auto">
-						<AdSlot
-							slot="5851008301"
-							format="auto"
-							responsive={true}
-							label="Advertisement"
-							lazyLoad={false}
+						{/* TODO: remove this inline test and restore AdSlot */}
+						<script
+							async
+							src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8005120082355722"
+							crossOrigin="anonymous"
+						></script>
+						<ins
+							className="adsbygoogle block w-full text-center mx-auto"
+							style={{ display: "block", width: "100%" }}
+							data-ad-client="ca-pub-8005120082355722"
+							data-ad-slot="5851008301"
+							data-ad-format="auto"
+							data-full-width-responsive="true"
+						></ins>
+						<script
+							// biome-ignore lint: AdSense push — required by Google
+							dangerouslySetInnerHTML={{
+								__html: "(adsbygoogle = window.adsbygoogle || []).push({});",
+							}}
 						/>
 					</div>
 				</section>
