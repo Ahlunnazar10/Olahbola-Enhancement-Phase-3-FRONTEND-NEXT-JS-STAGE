@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "@/lib/api/client";
 import { useAuthStore } from "@/stores/authStore";
@@ -1351,29 +1352,20 @@ export default function HomePage() {
 					</div>
 				</section>
 
-				{/* Olahbola First Ad Unit - below hero leaderboard */}
-				<section className="w-full py-4 px-6 md:px-16">
-					<div className="max-w-480 mx-auto">
-						{/* TODO: remove this inline test and restore AdSlot */}
-						<script
-							async
-							src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8005120082355722"
-							crossOrigin="anonymous"
-						></script>
-						<ins
-							className="adsbygoogle block w-full text-center mx-auto"
-							style={{ display: "block", width: "100%" }}
-							data-ad-client="ca-pub-8005120082355722"
-							data-ad-slot="5851008301"
-							data-ad-format="auto"
-							data-full-width-responsive="true"
-						></ins>
-						<script
-							// biome-ignore lint: AdSense push — required by Google
-							dangerouslySetInnerHTML={{
-								__html: "(adsbygoogle = window.adsbygoogle || []).push({});",
-							}}
-						/>
+				{/* ===== GOOGLE ADS SECTION ===== */}
+				<section className="py-6 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
+					<div className="max-w-4xl mx-auto">
+						<div className="text-center">
+							<AdSlot
+								slot="5851008301"
+								format="auto"
+								responsive={true}
+								label="ADVERTISMENT"
+								className="mx-auto"
+								minHeight={120}
+								lazyLoad={false}
+							/>
+						</div>
 					</div>
 				</section>
 
