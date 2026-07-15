@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Trophy, Star, Clock } from "lucide-react";
-import AdSlot from "@/components/ads/AdSlot";
 import { useAuthStore } from "@/stores/authStore";
 import {
 	useQuizSummary,
@@ -355,16 +354,6 @@ export default function QuizPage() {
 						{hasLiveSession ? "MAIN SEKARANG!" : "SEGERA HADIR"}
 					</button>
 				</div>
-			</section>
-
-			{/* World Cup Kuis Ads */}
-			<section className="max-w-7xl mx-auto px-4 md:px-8 mb-8">
-				<AdSlot
-					client="ca-pub-8005120082355722"
-					slot="7781634700"
-					format="auto"
-					minHeight={120}
-				/>
 			</section>
 
 			<main className="relative pt-12 pb-12 px-4 md:px-8 max-w-7xl mx-auto z-10">
