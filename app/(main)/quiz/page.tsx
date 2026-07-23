@@ -12,6 +12,9 @@ import {
 	useQuizMyGlobalRank,
 } from "@/hooks/queries/useQuiz";
 import { useUIStore } from "@/stores/uiStore";
+import { EventEndedBanner } from "@/components/games/EventEndedBanner";
+import { QuizWorldCupLeaderboard } from "@/components/games/QuizWorldCupLeaderboard";
+import { EVENT_STATUS } from "@/lib/games/eventStatus";
 
 const WORLD_CUP_EVENT_SLUG = "world-cup-2026";
 const MAX_NAME_WORDS = 2;
@@ -310,6 +313,261 @@ export default function QuizPage() {
 		);
 	}
 
+	// ============================================================
+	// ENDED STATE VIEW
+	// ============================================================
+	if (EVENT_STATUS.quiz.isEnded) {
+		return (
+			<div
+				data-theme={theme}
+				className={`relative min-h-screen velocity-mesh overflow-x-hidden transition-colors duration-300 ${isDark ? "bg-[#050505]" : "bg-[#f5f5f5]"}`}
+			>
+				{/* Background Blobs */}
+				<div
+					className={`vibrant-blob top-[10%] -left-40 ${isDark ? "bg-primary" : "bg-[#0a7c6e]"}`}
+				/>
+				<div
+					className={`vibrant-blob top-[40%] -right-40 ${isDark ? "bg-tertiary-container" : "bg-[#b3461a]/30"}`}
+				/>
+				<div
+					className={`vibrant-blob bottom-[10%] left-1/2 -translate-x-1/2 ${isDark ? "bg-primary-container" : "bg-[#0a7c6e]/30"}`}
+				/>
+
+				{/* Hero Section */}
+				<section className="relative w-full lg:h-90 overflow-hidden  group shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+					<div className="absolute inset-0 z-0">
+						<img
+							alt="Football Stadium"
+							src="/images/quiz/quiz-bg.webp"
+							className="w-full h-full object-cover grayscale brightness-50 contrast-125 transition-transform duration-1000 group-hover:scale-105"
+						/>
+					</div>
+					<div className="absolute inset-0 bg-linear-to-t from-surface via-transparent to-transparent z-10" />
+					<div className="relative z-20 flex flex-col items-center justify-center min-h-100 lg:h-full text-center p-6 py-12 lg:py-0">
+						<h1 className="quiz-hero-title italic-bold font-bold text-white mb-6 leading-none neon-text">
+							KUIS
+							<br />
+							<span className="text-[#1FE6DA]">TEATER BOLA DUNIA</span>
+						</h1>
+					</div>
+				</section>
+
+				<main className="relative max-w-5xl mx-auto px-6 md:px-8 pt-12  pb-16 space-y-12">
+					<section className="text-center space-y-4">
+						<EventEndedBanner isDark={isDark} variant="full" />
+					</section>
+
+					<section>
+						<div className="text-center mb-6">
+							<h2
+								className={`text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-1 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+							>
+								Final Klasemen Akhir
+							</h2>
+							<p
+								className="text-xs font-bold uppercase tracking-widest"
+								style={{
+									color: isDark
+										? "rgba(255,255,255,0.4)"
+										: "rgba(26,26,26,0.4)",
+								}}
+							>
+								Olahbola Teater Bola Dunia Season 1 Ended
+							</p>
+						</div>
+						<QuizWorldCupLeaderboard isDark={isDark} />
+					</section>
+				</main>
+
+				<style jsx global>{`
+					/* ================================
+				   LIGHT MODE OVERRIDES
+				   Ganti semua teal primer (#1FE6DA / primary) ke #0A7C6E
+				   hanya saat data-theme="light" di root quiz page
+				   ================================ */
+					[data-theme="light"] .text-primary,
+					[data-theme="light"] .text-primary-fixed-dim {
+						color: #0a7c6e !important;
+					}
+					[data-theme="light"] .bg-primary {
+						background-color: #0a7c6e !important;
+					}
+					[data-theme="light"] .border-primary {
+						border-color: rgba(10, 124, 110, 0.5) !important;
+					}
+					[data-theme="light"] .border-primary\/20 {
+						border-color: rgba(10, 124, 110, 0.2) !important;
+					}
+					[data-theme="light"] .border-primary\/30 {
+						border-color: rgba(10, 124, 110, 0.35) !important;
+					}
+					[data-theme="light"] .border-primary\/40 {
+						border-color: rgba(10, 124, 110, 0.45) !important;
+					}
+					[data-theme="light"] .border-primary\/60 {
+						border-color: rgba(10, 124, 110, 0.7) !important;
+					}
+					[data-theme="light"] .bg-primary\/10 {
+						background-color: rgba(10, 124, 110, 0.1) !important;
+					}
+					[data-theme="light"] .bg-primary\/20 {
+						background-color: rgba(10, 124, 110, 0.2) !important;
+					}
+					[data-theme="light"] .bg-primary\/30 {
+						background-color: rgba(10, 124, 110, 0.3) !important;
+					}
+					[data-theme="light"] .from-primary,
+					[data-theme="light"] .to-primary {
+						--tw-gradient-from: #0a7c6e !important;
+						--tw-gradient-to: rgba(10, 124, 110, 0) !important;
+					}
+					[data-theme="light"] .fill-primary {
+						fill: #0a7c6e !important;
+					}
+					[data-theme="light"] .ring-primary {
+						--tw-ring-color: #0a7c6e !important;
+					}
+					[data-theme="light"] .shadow-\[0_0_8px_\#00C2B1\] {
+						box-shadow: 0 0 8px rgba(10, 124, 110, 0.55) !important;
+					}
+					[data-theme="light"] .shadow-\[0_0_15px_rgba\(0\,194\,177\,0\.3\)\] {
+						box-shadow: 0 0 15px rgba(10, 124, 110, 0.3) !important;
+					}
+					[data-theme="light"] .shadow-\[0_0_20px_rgba\(0\,194\,177\,0\.3\)\] {
+						box-shadow: 0 0 20px rgba(10, 124, 110, 0.3) !important;
+					}
+					[data-theme="light"] .shadow-\[0_0_25px_rgba\(0\,194\,177\,0\.4\)\] {
+						box-shadow: 0 0 25px rgba(10, 124, 110, 0.35) !important;
+					}
+					[data-theme="light"] .shadow-\[0_0_30px_rgba\(0\,194\,177\,0\.15\)\] {
+						box-shadow: 0 0 30px rgba(10, 124, 110, 0.15) !important;
+					}
+					[data-theme="light"] .hover\:bg-primary:hover {
+						background-color: #0a7c6e !important;
+						color: #ffffff !important;
+					}
+					[data-theme="light"] .hover\:text-primary:hover {
+						color: #0a7c6e !important;
+					}
+					[data-theme="light"] .hover\:brightness-110:hover {
+						filter: brightness(1) saturate(1.1) !important;
+					}
+
+					/* ================================
+				   HERO TITLE RESPONSIVE
+				   text-display-xl = 72px (terlalu besar di mobile)
+				   Mobile: 36px, sm: 48px, md: 60px, lg: 72px
+				   ================================ */
+					.quiz-hero-title {
+						font-size: 36px;
+						line-height: 1.05;
+						letter-spacing: -0.02em;
+					}
+					@media (min-width: 640px) {
+						.quiz-hero-title {
+							font-size: 48px;
+							line-height: 1.05;
+							letter-spacing: -0.03em;
+						}
+					}
+					@media (min-width: 768px) {
+						.quiz-hero-title {
+							font-size: 60px;
+							line-height: 1.1;
+							letter-spacing: -0.04em;
+						}
+					}
+					@media (min-width: 1024px) {
+						.quiz-hero-title {
+							font-size: 72px;
+							line-height: 1.1;
+							letter-spacing: -0.04em;
+						}
+					}
+
+					/* style sama seperti sebelumnya – tidak diubah */
+					.velocity-mesh {
+						background-color: ${isDark ? "#050505" : "#f5f5f5"};
+						background-image: radial-gradient(
+							circle at 2px 2px,
+							${isDark
+								? "rgba(0, 194, 177, 0.05) 1px"
+								: "rgba(10, 124, 110, 0.05) 1px"},
+							transparent 0
+						);
+						background-size: 40px 40px;
+					}
+					.glass-card {
+						background: ${isDark
+							? "rgba(10, 15, 13, 0.7)"
+							: "rgba(255, 255, 255, 0.8)"};
+						backdrop-filter: blur(40px);
+						border: 1px solid
+							${isDark ? "rgba(0, 194, 177, 0.2)" : "rgba(10, 124, 110, 0.2)"};
+						transition: all 0.3s ease;
+					}
+					.glass-card:hover {
+						border-color: ${isDark
+							? "rgba(0, 194, 177, 0.5)"
+							: "rgba(10, 124, 110, 0.5)"};
+						box-shadow: 0 0 30px
+							${isDark ? "rgba(0, 194, 177, 0.15)" : "rgba(10, 124, 110, 0.15)"};
+					}
+					.neon-border {
+						border: 2px solid ${isDark ? "#00c2b1" : "#0a7c6e"};
+						box-shadow: 0 0 25px
+							${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.4)"};
+					}
+					.glass-card .neon-text,
+					.neon-text {
+						text-shadow:
+							0 0 10px
+								${isDark
+									? "rgba(64, 220, 202, 0.5)"
+									: "rgba(10, 124, 110, 0.4)"},
+							0 0 20px
+								${isDark
+									? "rgba(64, 220, 202, 0.3)"
+									: "rgba(10, 124, 110, 0.2)"};
+					}
+					.neon-glow-btn {
+						box-shadow: 0 0 25px
+							${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.4)"};
+					}
+					.italic-bold {
+						font-style: italic;
+						text-transform: uppercase;
+					}
+					@keyframes float {
+						0%,
+						100% {
+							transform: translateY(0);
+						}
+						50% {
+							transform: translateY(-10px);
+						}
+					}
+					.animate-float {
+						animation: float 4s ease-in-out infinite;
+					}
+					.vibrant-blob {
+						position: absolute;
+						width: 400px;
+						height: 400px;
+						filter: blur(100px);
+						opacity: 0.15;
+						border-radius: 50%;
+						z-index: 0;
+						pointer-events: none;
+					}
+				`}</style>
+			</div>
+		);
+	}
+
+	// ============================================================
+	// NORMAL VIEW
+	// ============================================================
 	return (
 		<div
 			data-theme={theme}

@@ -29,26 +29,7 @@ interface HeroPlayPlayer {
 	rank: number;
 }
 
-interface PrediksiLeaderboardEntry {
-	rank: number;
-	user_id: string;
-	user_name: string;
-	profile_picture: string | null;
-	total_points: number;
-	total_predictions: number;
-	exact_scores: number;
-}
-
-interface QuizLeaderboardEntry {
-	rank: number;
-	user_id: string;
-	name: string;
-	email: string;
-	total_points: number;
-	total_duration_formatted: string;
-}
-
-type LeaderboardType = "football" | "prediksi" | "quiz";
+type LeaderboardType = "football" | "teaterAsean";
 
 interface LeaderboardRow {
 	rank: number;
@@ -57,6 +38,16 @@ interface LeaderboardRow {
 	profilePicture: string | null;
 	subtitle?: string;
 	score: number;
+}
+
+interface TeaterAseanLeaderboardEntry {
+	rank: number;
+	user_id: string;
+	user_name: string;
+	profile_picture: string | null;
+	total_points: number;
+	total_predictions: number;
+	exact_scores: number;
 }
 
 function useSectionInView(threshold = 0.1) {
@@ -83,20 +74,6 @@ const brandLogos = [
 	"/images/brand-logo/Vidio.png",
 	"/images/brand-logo/Traveloka.png",
 ];
-
-function formatDurationId(input: string): string {
-	if (!input) return "-";
-	const match = input
-		.trim()
-		.match(/^(?:(\d+)h)?\s*(?:(\d+)m)?\s*(?:(\d+)s)?$/i);
-	if (!match) return input;
-	const [, h, m, s] = match;
-	const parts: string[] = [];
-	if (h) parts.push(`${h} jam`);
-	if (m) parts.push(`${m} menit`);
-	if (s) parts.push(`${s} detik`);
-	return parts.length ? parts.join(" ") : input;
-}
 
 export default function HomePage() {
 	const { user, isAuthenticated } = useAuthStore();
@@ -125,16 +102,11 @@ export default function HomePage() {
 	// Leaderboard Switcher State
 	const [leaderboardType, setLeaderboardType] =
 		useState<LeaderboardType>("football");
-	const [prediksiLeaderboard, setPrediksiLeaderboard] = useState<
-		PrediksiLeaderboardEntry[]
+	const [teaterAseanLeaderboard, setTeaterAseanLeaderboard] = useState<
+		TeaterAseanLeaderboardEntry[]
 	>([]);
-	const [prediksiLoading, setPrediksiLoading] = useState(false);
-	const [prediksiError, setPrediksiError] = useState<string | null>(null);
-	const [quizLeaderboard, setQuizLeaderboard] = useState<
-		QuizLeaderboardEntry[]
-	>([]);
-	const [quizLoading, setQuizLoading] = useState(false);
-	const [quizError, setQuizError] = useState<string | null>(null);
+	const [teaterAseanLoading, setTeaterAseanLoading] = useState(false);
+	const [teaterAseanError, setTeaterAseanError] = useState<string | null>(null);
 
 	const { ref: articleRef, inView: articleVisible } = useSectionInView(0.1);
 	const { ref: socmedRef, inView: socmedVisible } = useSectionInView(0.1);
@@ -203,16 +175,16 @@ export default function HomePage() {
 		}
 	};
 
-	const fetchPrediksiLeaderboard = async () => {
-		if (prediksiLoading) return;
+	const fetchTeaterAseanLeaderboard = async () => {
+		if (teaterAseanLoading) return;
 
-		setPrediksiLoading(true);
-		setPrediksiError(null);
+		setTeaterAseanLoading(true);
+		setTeaterAseanError(null);
 
 		try {
 			const apiUrl =
 				process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com";
-			const response = await fetch(`${apiUrl}/api/v1/world-cup/leaderboard`, {
+			const response = await fetch(`${apiUrl}/api/v1/teater-bola/leaderboard`, {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
@@ -225,57 +197,24 @@ export default function HomePage() {
 			}
 
 			const json = await response.json();
-			if (json.success && Array.isArray(json.data)) {
-				setPrediksiLeaderboard(json.data.slice(0, 10));
+			const raw = Array.isArray(json?.data)
+				? json.data
+				: Array.isArray(json?.data?.leaderboard)
+					? json.data.leaderboard
+					: [];
+			if (json?.success !== false && raw.length) {
+				setTeaterAseanLeaderboard(raw.slice(0, 10) as TeaterAseanLeaderboardEntry[]);
+			} else if (json?.success !== false && raw.length === 0) {
+				setTeaterAseanLeaderboard([]);
 			} else {
-				throw new Error(json.message || "Failed to fetch prediksi leaderboard");
+				throw new Error(json?.message || "Failed to fetch teater asean leaderboard");
 			}
 		} catch (err) {
-			console.error("Error fetching prediksi leaderboard:", err);
-			setPrediksiError("Gagal memuat papan skor prediksi.");
-			setPrediksiLeaderboard([]);
+			console.error("Error fetching teater asean leaderboard:", err);
+			setTeaterAseanError("Gagal memuat papan skor Teater Bola Asean.");
+			setTeaterAseanLeaderboard([]);
 		} finally {
-			setPrediksiLoading(false);
-		}
-	};
-
-	const fetchQuizLeaderboard = async () => {
-		if (quizLoading) return;
-
-		setQuizLoading(true);
-		setQuizError(null);
-
-		try {
-			const apiUrl =
-				process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com";
-			const eventSlug = "world-cup-2026";
-			const response = await fetch(
-				`${apiUrl}/api/quiz-world-cup/leaderboard/global?event_slug=${eventSlug}`,
-				{
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-						Accept: "application/json",
-					},
-				},
-			);
-
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const json = await response.json();
-			if (json.success && Array.isArray(json.data)) {
-				setQuizLeaderboard(json.data);
-			} else {
-				throw new Error(json.message || "Failed to fetch quiz leaderboard");
-			}
-		} catch (err) {
-			console.error("Error fetching quiz leaderboard:", err);
-			setQuizError("Gagal memuat papan skor kuis.");
-			setQuizLeaderboard([]);
-		} finally {
-			setQuizLoading(false);
+			setTeaterAseanLoading(false);
 		}
 	};
 
@@ -293,17 +232,10 @@ export default function HomePage() {
 		}
 	}, [heroPlayVisible]);
 
-	// Fetch Prediksi Skor leaderboard when section is visible
+	// Fetch Teater Bola Asean leaderboard when section is visible
 	useEffect(() => {
-		if (heroPlayVisible && leaderboardType === "prediksi") {
-			fetchPrediksiLeaderboard();
-		}
-	}, [heroPlayVisible, leaderboardType]);
-
-	// Fetch Quiz leaderboard when section is visible
-	useEffect(() => {
-		if (heroPlayVisible && leaderboardType === "quiz") {
-			fetchQuizLeaderboard();
+		if (heroPlayVisible && leaderboardType === "teaterAsean") {
+			fetchTeaterAseanLeaderboard();
 		}
 	}, [heroPlayVisible, leaderboardType]);
 
@@ -315,8 +247,7 @@ export default function HomePage() {
 		type: LeaderboardType,
 		data:
 			| HeroPlayPlayer[]
-			| PrediksiLeaderboardEntry[]
-			| QuizLeaderboardEntry[]
+			| TeaterAseanLeaderboardEntry[]
 			| undefined,
 	): LeaderboardRow[] => {
 		if (!data) return [];
@@ -332,8 +263,8 @@ export default function HomePage() {
 						subtitle: p.user.city || "-",
 						score: p.totalScore,
 					}));
-			case "prediksi":
-				return ((data as unknown as PrediksiLeaderboardEntry[]) ?? [])
+			case "teaterAsean":
+				return ((data as unknown as TeaterAseanLeaderboardEntry[]) ?? [])
 					.sort((a, b) => a.rank - b.rank)
 					.map((p, i) => ({
 						rank: i + 1,
@@ -341,17 +272,6 @@ export default function HomePage() {
 						name: p.user_name,
 						profilePicture: p.profile_picture,
 						subtitle: `Prediksi: ${p.total_predictions} · Tepat: ${p.exact_scores}`,
-						score: p.total_points,
-					}));
-			case "quiz":
-				return ((data as unknown as QuizLeaderboardEntry[]) ?? [])
-					.sort((a, b) => a.rank - b.rank)
-					.map((p, i) => ({
-						rank: i + 1,
-						userId: p.user_id,
-						name: p.name,
-						profilePicture: null,
-						subtitle: formatDurationId(p.total_duration_formatted),
 						score: p.total_points,
 					}));
 			default:
@@ -365,43 +285,27 @@ export default function HomePage() {
 				"football",
 				heroPlayLeaderboard.length ? heroPlayLeaderboard : undefined,
 			);
-		if (leaderboardType === "prediksi")
-			return normalizeRows(
-				"prediksi",
-				prediksiLeaderboard.length ? prediksiLeaderboard : undefined,
-			);
 		return normalizeRows(
-			"quiz",
-			quizLeaderboard.length ? quizLeaderboard : undefined,
+			"teaterAsean",
+			teaterAseanLeaderboard.length ? teaterAseanLeaderboard : undefined,
 		);
 	}, [
 		leaderboardType,
 		heroPlayLeaderboard,
-		prediksiLeaderboard,
-		quizLeaderboard,
+		teaterAseanLeaderboard,
 	]);
 
 	const activeLoading =
-		leaderboardType === "football"
-			? heroPlayLoading
-			: leaderboardType === "prediksi"
-				? prediksiLoading
-				: quizLoading;
+		leaderboardType === "football" ? heroPlayLoading : teaterAseanLoading;
 	const activeError =
-		leaderboardType === "football"
-			? heroPlayError
-			: leaderboardType === "prediksi"
-				? prediksiError
-				: quizError;
+		leaderboardType === "football" ? heroPlayError : teaterAseanError;
 	const leaderboardTitleMap: Record<LeaderboardType, string> = {
 		football: "FOOTBALL CITY BATTLE",
-		prediksi: "PREDIKSI SKOR",
-		quiz: "OLAHBOLA KUIS",
+		teaterAsean: "TEATER BOLA ASEAN PREDIKSI SKOR",
 	};
 	const leaderboardLabelMap: Record<LeaderboardType, string> = {
 		football: "Football City Battle",
-		prediksi: "Prediksi Skor",
-		quiz: "Olahbola Kuis",
+		teaterAsean: "Teater Bola Asean Prediksi Skor",
 	};
 
 	// HeroPlay colors - matching site theme
@@ -728,7 +632,7 @@ export default function HomePage() {
 									backdropFilter: "blur(20px)",
 								}}
 							>
-								{(["football", "prediksi", "quiz"] as LeaderboardType[]).map(
+								{(["football", "teaterAsean"] as LeaderboardType[]).map(
 									(type) => {
 										const isActive = leaderboardType === type;
 										return (
@@ -1303,9 +1207,9 @@ export default function HomePage() {
 											<ArrowRight className="size-5" />
 										</a>
 									)}
-									{leaderboardType === "prediksi" && (
+									{leaderboardType === "teaterAsean" && (
 										<Link
-											href="/prediksi-skor"
+											href="/teater-bola-asean-2026"
 											className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
 											style={{
 												background: heroPlayColors.gradientCTA,
@@ -1314,20 +1218,6 @@ export default function HomePage() {
 											}}
 										>
 											Prediksi Skor Sekarang
-											<ArrowRight className="size-5" />
-										</Link>
-									)}
-									{leaderboardType === "quiz" && (
-										<Link
-											href="/quiz"
-											className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
-											style={{
-												background: heroPlayColors.gradientCTA,
-												color: isDark ? "#003732" : "#ffffff",
-												boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
-											}}
-										>
-											Main Kuis Sekarang
 											<ArrowRight className="size-5" />
 										</Link>
 									)}

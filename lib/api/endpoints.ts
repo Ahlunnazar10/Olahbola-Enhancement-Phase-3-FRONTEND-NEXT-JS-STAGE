@@ -83,6 +83,20 @@ export const endpoints = {
 	quizWorldCupMySessionRank: (sessionId: string, eventSlug: string = "world-cup-2026") =>
 		"/api/quiz-world-cup/my-rank/session/" + sessionId + "?event_slug=" + eventSlug,
 
+	// Prediction - Teater Bola Asean 2026
+	teaterBolaAseanPhases: "/api/v1/teater-bola/phases",
+	teaterBolaAseanTeams: "/api/v1/teater-bola/teams",
+	teaterBolaAseanMatches: "/api/v1/teater-bola/matches",
+	teaterBolaAseanMatchDetail: (matchId: string) =>
+		"/api/v1/teater-bola/matches/" + matchId,
+	teaterBolaAseanLeaderboard: "/api/v1/teater-bola/leaderboard",
+	teaterBolaAseanPredict: "/api/v1/teater-bola/predict",
+	teaterBolaAseanPredictions: "/api/v1/teater-bola/predictions",
+	teaterBolaAseanMatchesWithPrediction:
+		"/api/v1/teater-bola/matches-with-prediction",
+	teaterBolaAseanMyRank: "/api/v1/teater-bola/me/rank",
+	teaterBolaAseanMySummary: "/api/v1/teater-bola/me/summary",
+
 	// Quiz - Event
 	eventActive: "/api/v1/events/active",
 	eventLevels: (eventId: string) => "/api/v1/events/" + eventId,

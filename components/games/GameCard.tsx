@@ -4,12 +4,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Lock } from "lucide-react";
 
+type EventState = "live" | "coming-soon" | "ended";
+
 interface GameCardProps {
 	title: string;
 	subtitle: string;
 	description: string;
 	href: string;
 	isActive: boolean;
+	eventState?: EventState;
 	iconSrc?: string;
 	bgImage?: string;
 	accentColor: string;
@@ -23,17 +26,23 @@ export function GameCard({
 	description,
 	href,
 	isActive,
+	eventState = "live",
 	iconSrc,
 	bgImage,
 	accentColor,
 	isDark,
 	tags = [],
 }: GameCardProps) {
-	// Sesuai sample: glass-card dengan hover effect + background image dengan overlay
+	const isEnded = eventState === "ended";
+
+	// Saat ended, tetap clickable (user memilih "Bisa di-klik → ke detail page")
+	const clickable = isActive;
 	const cardStyle: React.CSSProperties = {
 		backdropFilter: "blur(40px)",
-		border: isActive
-			? `1px solid ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(10, 124, 110, 0.35)"}`
+		border: clickable
+			? isEnded
+				? `1px solid ${isDark ? "rgba(255, 215, 0, 0.3)" : "rgba(180, 83, 9, 0.25)"}`
+				: `1px solid ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(10, 124, 110, 0.35)"}`
 			: `1px dashed ${isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.15)"}`,
 		transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
 	};
@@ -41,32 +50,38 @@ export function GameCard({
 	const cardContent = (
 		<div
 			className={`relative overflow-hidden group h-full rounded-4xl p-8 ${
-				!isActive ? "opacity-80" : ""
+				!clickable ? "opacity-80" : ""
 			}`}
 			style={cardStyle}
 		>
-			{/* Background image dengan overlay shadow (sesuai sample) */}
+			{/* Background image dengan overlay shadow */}
 			{bgImage && (
 				<div
 					className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
 					style={{
-						backgroundImage: isActive
-							? isDark
-								? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url("${bgImage}")`
-								: `linear-gradient(rgba(10, 50, 45, 0.75), rgba(10, 50, 45, 0.9)), url("${bgImage}")`
+						backgroundImage: clickable
+							? isEnded
+								? `linear-gradient(rgba(40, 30, 0, 0.75), rgba(20, 15, 0, 0.9)), url("${bgImage}")`
+								: isDark
+									? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url("${bgImage}")`
+									: `linear-gradient(rgba(10, 50, 45, 0.75), rgba(10, 50, 45, 0.9)), url("${bgImage}")`
 							: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url("${bgImage}")`,
 					}}
 				/>
 			)}
-			{/* Fallback glass background (jika tidak ada bgImage) */}
+			{/* Fallback glass background */}
 			{!bgImage && (
 				<div
 					className="absolute inset-0 z-0"
 					style={{
-						background: isActive
-							? isDark
-								? "rgba(255, 255, 255, 0.03)"
-								: "rgba(255, 255, 255, 0.6)"
+						background: clickable
+							? isEnded
+								? isDark
+									? "rgba(255, 215, 0, 0.03)"
+									: "rgba(180, 83, 9, 0.04)"
+								: isDark
+									? "rgba(255, 255, 255, 0.03)"
+									: "rgba(255, 255, 255, 0.6)"
 							: isDark
 								? "rgba(255, 255, 255, 0.02)"
 								: "rgba(255, 255, 255, 0.4)",
@@ -74,9 +89,9 @@ export function GameCard({
 				/>
 			)}
 
-			{/* Status badge - Live Now / Coming Soon */}
+			{/* Status badge - Live Now / Coming Soon / Event Berakhir */}
 			<div className="absolute top-6 right-6 flex items-center gap-2 z-10">
-				{isActive ? (
+				{clickable && !isEnded ? (
 					<>
 						<span className="relative flex h-3 w-3">
 							<span
@@ -95,6 +110,19 @@ export function GameCard({
 							Live Now
 						</span>
 					</>
+				) : isEnded ? (
+					<span
+						className="text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full"
+						style={{
+							border: `1px solid ${isDark ? "rgba(255, 215, 0, 0.4)" : "rgba(180, 83, 9, 0.3)"}`,
+							color: isDark ? "#FFD700" : "#B45309",
+							background: isDark
+								? "rgba(255, 215, 0, 0.06)"
+								: "rgba(180, 83, 9, 0.05)",
+						}}
+					>
+						Event Berakhir
+					</span>
 				) : (
 					<span
 						className="text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full"
@@ -113,7 +141,7 @@ export function GameCard({
 			{/* Subtitle */}
 			<h3
 				className="text-xs font-black tracking-widest uppercase mb-2 relative z-10"
-				style={{ color: accentColor }}
+				style={{ color: isEnded ? (isDark ? "#FFD700" : "#B45309") : accentColor }}
 			>
 				{subtitle}
 			</h3>
@@ -122,7 +150,7 @@ export function GameCard({
 			<h2
 				className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-3 relative z-10"
 				style={{
-					color: isActive
+					color: clickable
 						? "#ffffff"
 						: isDark
 							? "rgba(255, 255, 255, 0.4)"
@@ -132,58 +160,74 @@ export function GameCard({
 				{title}
 			</h2>
 
-			{/* Description */}
-			<p
-				className="text-sm leading-relaxed max-w-88 mb-8 relative z-10"
-				style={{
-					color: isActive
-						? "rgba(255, 255, 255, 0.85)"
-						: isDark
-							? "rgba(255, 255, 255, 0.3)"
-							: "rgba(26, 26, 26, 0.4)",
-				}}
-			>
-				{description}
-			</p>
+			{/* Description - sembunyikan saat ended (sesuai requirement: card ended hanya tampilkan title + subtitle) */}
+			{!isEnded && (
+				<p
+					className="text-sm leading-relaxed max-w-88 mb-8 relative z-10"
+					style={{
+						color: clickable
+							? "rgba(255, 255, 255, 0.85)"
+							: isDark
+								? "rgba(255, 255, 255, 0.3)"
+								: "rgba(26, 26, 26, 0.4)",
+					}}
+				>
+					{description}
+				</p>
+			)}
 
-			{/* CTA - Score Now / Challenge Accepted */}
-			<div className="mt-12 relative z-10">
+			{/* CTA - Score Now / Challenge Accepted / Lihat Klasemen */}
+			<div className={`mt-${isEnded ? "4" : "12"} relative z-10`}>
 				<button
 					className="flex items-center gap-2 font-black italic tracking-widest uppercase text-sm group-hover:translate-x-2 transition-transform"
 					style={{
-						color: isActive
-							? accentColor
+						color: clickable
+							? isEnded
+								? isDark
+									? "#FFD700"
+									: "#B45309"
+								: accentColor
 							: isDark
 								? "rgba(255, 255, 255, 0.3)"
 								: "rgba(26, 26, 26, 0.35)",
-						cursor: isActive ? "pointer" : "not-allowed",
+						cursor: clickable ? "pointer" : "not-allowed",
 					}}
-					disabled={!isActive}
+					disabled={!clickable}
 				>
-					<span>{isActive ? "Cetak Gol Sekarang!" : "Segera Hadir!"}</span>
-					{isActive ? (
+					<span>
+						{clickable
+							? isEnded
+								? "Lihat Klasemen Akhir"
+								: "Cetak Gol Sekarang!"
+							: "Segera Hadir!"}
+					</span>
+					{clickable && !isEnded ? (
 						<ArrowRight className="w-4 h-4" />
-					) : (
+					) : !clickable ? (
 						<Lock className="w-4 h-4" />
-					)}
+					) : null}
+					{isEnded ? <ArrowRight className="w-4 h-4" /> : null}
 				</button>
 			</div>
 
-			{/* Decorative bottom-right glow - hanya untuk card aktif */}
+			{/* Decorative bottom-right glow - hanya untuk live, bukan ended */}
 			<div
 				className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full pointer-events-none z-0"
 				style={{
-					background: isActive
-						? `radial-gradient(circle, ${accentColor}1a 0%, transparent 70%)`
-						: "transparent",
+					background:
+						clickable && !isEnded
+							? `radial-gradient(circle, ${accentColor}1a 0%, transparent 70%)`
+							: isEnded
+								? `radial-gradient(circle, ${isDark ? "rgba(255, 215, 0, 0.1)" : "rgba(180, 83, 9, 0.08)"} 0%, transparent 70%)`
+								: "transparent",
 					filter: "blur(80px)",
-					opacity: isActive ? 0.5 : 0,
+					opacity: clickable ? (isEnded ? 0.35 : 0.5) : 0,
 				}}
 			/>
 		</div>
 	);
 
-	if (!isActive) {
+	if (!clickable) {
 		return (
 			<div className="cursor-not-allowed h-full" aria-disabled>
 				{cardContent}

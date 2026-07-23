@@ -4,6 +4,9 @@ import { useUIStore } from "@/stores/uiStore";
 import { GameCard } from "@/components/games/GameCard";
 import { PublicLeaderboard } from "@/components/games/PublicLeaderboard";
 import { QuizWorldCupLeaderboard } from "@/components/games/QuizWorldCupLeaderboard";
+import { TeaterBolaAseanLeaderboard } from "@/components/games/TeaterBolaAseanLeaderboard";
+import { EventEndedBanner } from "@/components/games/EventEndedBanner";
+import { EVENT_STATUS } from "@/lib/games/eventStatus";
 import { Play, Sparkles, Trophy, Zap } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
@@ -133,7 +136,7 @@ export function GamesPageContent() {
 
 			<div className="relative max-w-7xl mx-auto px-6 py-12">
 				{/* Hero Section */}
-				<section className="text-center mb-10 md:mb-24 space-y-6">
+				<section className="text-center mb-10 md:mb-14 space-y-6">
 					<div
 						className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
 						style={{
@@ -182,15 +185,31 @@ export function GamesPageContent() {
 					</p>
 				</section>
 
-				{/* Game Cards Grid - 2 kolom */}
-				<section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-10 md:mb-24">
-					{/* Prediksi Skor - Score Predictor (Active) */}
+				{/* Active Game Cards Grid - 1 kolom */}
+				<section className="grid grid-cols-1 gap-4 md:gap-8 mb-6 md:mb-8">
+					{/* Prediksi Skor - Score Predictor */}
+					<GameCard
+						title="Prediksi Skor"
+						subtitle="Teater Bola Asean 2026"
+						description="Tebak skor pertandingan Teater Bola Asean. Raih poin untuk setiap match dan jadilah si paling tau bola!"
+						href="/teater-bola-asean-2026"
+						isActive={true}
+						bgImage="/images/games/teater-bola-asean-prediction-bg.webp"
+						accentColor={accent}
+						isDark={isDark}
+					/>
+				</section>
+
+				{/* Inactive Game Cards Grid - 2 kolom */}
+				<section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-6 md:mb-18">
+					{/* Prediksi Skor - Score Predictor */}
 					<GameCard
 						title="Prediksi Skor"
 						subtitle="Teater Bola Dunia"
 						description="Tebak skor pertandingan Teater Bola Dunia. Raih poin untuk setiap match dan jadilah si paling tau bola!"
 						href="/prediksi-skor"
 						isActive={true}
+						eventState={EVENT_STATUS.prediksiSkor.isEnded ? "ended" : "live"}
 						bgImage="/images/games/prediction-bg.webp"
 						accentColor={accent}
 						isDark={isDark}
@@ -203,6 +222,7 @@ export function GamesPageContent() {
 						description="Ikuti olahbola kuis, adu pengetahuan seputar sepak bola, dan buktikan kamu si paling jago bola!"
 						href="/quiz"
 						isActive={true}
+						eventState={EVENT_STATUS.quiz.isEnded ? "ended" : "live"}
 						bgImage="/images/games/quiz-bg.webp"
 						accentColor={accent}
 						isDark={isDark}
@@ -524,12 +544,12 @@ export function GamesPageContent() {
 					</div>
 				</section>
 
-				{/* Leaderboard Section - Side by side: Prediksi Skor | Quiz World Cup */}
+				{/* Leaderboard Section - Teater Bola Asean | Prediksi Skor | Quiz World Cup */}
 				<section
-					className="grid grid-cols-1 md:grid-cols-2 gap-6"
+					className="grid grid-cols-1 md:grid-cols-1 mb-10"
 					id="leaderboard"
 				>
-					{/* Prediksi Skor Leaderboard */}
+					{/* Teater Bola Asean Leaderboard */}
 					<div
 						className="rounded-3xl md:rounded-[40px] p-6 md:p-8 relative overflow-hidden"
 						style={{
@@ -545,7 +565,7 @@ export function GamesPageContent() {
 								className="text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-2"
 								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
 							>
-								Klasemen Prediksi Skor
+								Klasemen Teater Bola Asean
 							</h2>
 							<p
 								className="text-xs font-bold tracking-widest uppercase"
@@ -555,74 +575,11 @@ export function GamesPageContent() {
 										: "rgba(26, 26, 26, 0.5)",
 								}}
 							>
-								Live sementara — Olahbola Teater Bola Dunia Season 1
+								Live sementara — Teater Bola Asean 2026 Prediksi Skor
 							</p>
 						</div>
 
-						<PublicLeaderboard isDark={isDark} />
-
-						<div className="mt-8 text-center">
-							<Link
-								href="/prediksi-skor"
-								className="inline-flex items-center gap-2 px-8 py-2.5 rounded-full font-black italic tracking-widest text-xs uppercase transition-all hover:scale-105"
-								style={{
-									background: `${accent}1a`,
-									border: `1px solid ${accent}66`,
-									color: accent,
-								}}
-							>
-								<Zap className="w-3.5 h-3.5" />
-								<span>Main Prediksi Skor</span>
-							</Link>
-						</div>
-					</div>
-
-					{/* Quiz World Cup Leaderboard */}
-					<div
-						className="rounded-3xl md:rounded-[40px] p-6 md:p-8 relative overflow-hidden"
-						style={{
-							background: isDark
-								? "rgba(255, 255, 255, 0.03)"
-								: "rgba(255, 255, 255, 0.55)",
-							backdropFilter: "blur(40px)",
-							border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.08)"}`,
-						}}
-					>
-						<div className="mb-6 md:mb-8">
-							<h2
-								className="text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-2"
-								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
-							>
-								Klasemen Kuis
-							</h2>
-							<p
-								className="text-xs font-bold tracking-widest uppercase"
-								style={{
-									color: isDark
-										? "rgba(255, 255, 255, 0.4)"
-										: "rgba(26, 26, 26, 0.5)",
-								}}
-							>
-								Live sementara — Olahbola Teater Bola Dunia Season 1
-							</p>
-						</div>
-
-						<QuizWorldCupLeaderboard isDark={isDark} />
-
-						<div className="mt-8 text-center">
-							<Link
-								href="/quiz"
-								className="inline-flex items-center gap-2 px-8 py-2.5 rounded-full font-black italic tracking-widest text-xs uppercase transition-all hover:scale-105"
-								style={{
-									background: `${accent}1a`,
-									border: `1px solid ${accent}66`,
-									color: accent,
-								}}
-							>
-								<Zap className="w-3.5 h-3.5" />
-								<span>Main Kuis</span>
-							</Link>
-						</div>
+						<TeaterBolaAseanLeaderboard isDark={isDark} />
 					</div>
 				</section>
 			</div>

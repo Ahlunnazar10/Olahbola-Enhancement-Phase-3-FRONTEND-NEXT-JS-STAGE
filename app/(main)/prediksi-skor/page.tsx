@@ -32,6 +32,9 @@ import {
 	type Match,
 	type LeaderboardEntry,
 } from "@/hooks/queries/usePredictions";
+import { PublicLeaderboard } from "@/components/games/PublicLeaderboard";
+import { EventEndedBanner } from "@/components/games/EventEndedBanner";
+import { EVENT_STATUS } from "@/lib/games/eventStatus";
 import toast from "react-hot-toast";
 
 // ============================================================
@@ -473,6 +476,79 @@ export default function PrediksiSkorPage() {
 		return "draw";
 	}, [homeScore, awayScore]);
 
+	// ============================================================
+	// ENDED STATE VIEW
+	// ============================================================
+	if (EVENT_STATUS.prediksiSkor.isEnded) {
+		return (
+			<div
+				className="min-h-screen pb-24 md:pb-12"
+				style={{ background: bg, color: text }}
+			>
+				{/* Velocity Mesh Background */}
+				<div
+					className="fixed inset-0 z-0 opacity-5 pointer-events-none"
+					style={{
+						backgroundImage: `repeating-linear-gradient(45deg, ${primary} 0, ${primary} 1px, transparent 0, transparent 50%)`,
+						backgroundSize: "100px 100px",
+					}}
+				/>
+
+				<main className="pt-10 md:pt-18 relative max-w-5xl mx-auto px-6 md:px-8 space-y-12">
+					{/* Hero Section — replaced with ended banner */}
+					<section className="text-center space-y-4">
+						<h1
+							className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase"
+							style={{ color: text, fontFamily: "Space Grotesk, sans-serif" }}
+						>
+							Prediksi Skor <br />
+							<span style={{ color: primary }}>Teater Bola Dunia</span>
+						</h1>
+						<EventEndedBanner isDark={isDark} variant="full" />
+					</section>
+
+					{/* Finals Podium */}
+					<section>
+						<div className="text-center mb-6">
+							<h2
+								className="text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-1"
+								style={{ color: text }}
+							>
+								Final Klasemen Akhir
+							</h2>
+							<p
+								className="text-xs font-bold uppercase tracking-widest"
+								style={{ color: textSecondary }}
+							>
+								Olahbola Teater Bola Dunia Season 1 Ended
+							</p>
+						</div>
+						<PublicLeaderboard isDark={isDark} />
+					</section>
+
+					{/* Placeholder untuk phases/matches yang disembunyikan — tidak dirender */}
+				</main>
+
+				<style jsx global>{`
+					@keyframes fadeIn {
+						from {
+							opacity: 0;
+						}
+						to {
+							opacity: 1;
+						}
+					}
+					.animate-fadeIn {
+						animation: fadeIn 0.3s ease-out;
+					}
+				`}</style>
+			</div>
+		);
+	}
+
+	// ============================================================
+	// NORMAL VIEW
+	// ============================================================
 	return (
 		<div
 			className="min-h-screen pb-24 md:pb-12"
