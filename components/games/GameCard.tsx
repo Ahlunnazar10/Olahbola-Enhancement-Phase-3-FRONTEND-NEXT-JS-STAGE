@@ -140,8 +140,10 @@ export function GameCard({
 
 			{/* Subtitle */}
 			<h3
-				className="text-xs font-black tracking-widest uppercase mb-2 relative z-10"
-				style={{ color: isEnded ? (isDark ? "#FFD700" : "#B45309") : accentColor }}
+				className="text-xs font-black tracking-widest uppercase mb-2 relative z-10 mt-7 md:mt-2"
+				style={{
+					color: isEnded ? (isDark ? "#FFD700" : "#B45309") : accentColor,
+				}}
 			>
 				{subtitle}
 			</h3>

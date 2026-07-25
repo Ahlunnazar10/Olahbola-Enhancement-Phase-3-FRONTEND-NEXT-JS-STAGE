@@ -642,7 +642,7 @@ export default function TeaterBolaAseanPage() {
 								<button
 									key={g}
 									onClick={() => setActiveGroup(g)}
-									className="w-12 h-12 rounded-xl font-bold text-lg transition-all"
+									className="w-44 h-12 rounded-xl font-bold text-lg transition-all"
 									style={
 										activeGroup === g
 											? {
@@ -656,7 +656,7 @@ export default function TeaterBolaAseanPage() {
 												}
 									}
 								>
-									{g}
+									Group {g}
 								</button>
 							))}
 						</div>
