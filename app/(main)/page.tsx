@@ -208,7 +208,7 @@ export default function HomePage() {
 		slides.push({
 			id: "event-teater-bola-asean",
 			type: "event" as const,
-			imageFallback: "/images/home/teater-bola-bg.webp",
+			imageFallback: "/images/home/teater-bola-asean-bg.webp",
 			// Reuse desktop background for mobile until a dedicated mobile asset is available.
 			// BannerSlider renders the mobile <img> only when imageMobileFallback is set.
 			imageMobileFallback: "/images/home/teater-bola-bg.webp",
@@ -263,7 +263,7 @@ export default function HomePage() {
 		setFeaturedLoading(true);
 		try {
 			const response = await apiClient.get(
-				"/api/v1/article/resmi-dimulai-football-city-battle-olahbola-meriah",
+				"/api/v1/article/piala-presiden-2026-8-tim-rp6-miliar",
 			);
 			if (response.data.status === "success") {
 				setFeaturedArticle(response.data.data);
