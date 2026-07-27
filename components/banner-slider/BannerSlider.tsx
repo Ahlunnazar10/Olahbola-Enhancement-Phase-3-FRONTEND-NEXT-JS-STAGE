@@ -161,10 +161,7 @@ export function BannerSlider({
 
 	return (
 		<div className={`relative w-full h-full ${className}`}>
-			<Swiper
-				ref={swiperRef}
-				{...swiperProps}
-			>
+			<Swiper ref={swiperRef} {...swiperProps}>
 				{slides.map((slide, index) => (
 					<SwiperSlide key={slide.id} className="w-full! h-full! list-none!">
 						{/* Background - First slide loads eagerly, others lazy */}
@@ -261,10 +258,10 @@ export function BannerSlider({
 												? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent"
 												: "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
 										: slide.type === "event"
-											? "bg-linear-to-t from-[#050505] via-transparent to-[#050505]/40"
+											? "bg-linear-to-t from-[#050505]/10 via-transparent to-[#050505]/10"
 											: `bg-linear-to-r ${
 													isDark
-														? "from-black via-[#0f1412]/60 to-transparent"
+														? "from-black via-[#0f1412]/20 to-transparent"
 														: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
 												}`
 							}`}
@@ -348,7 +345,7 @@ export function BannerSlider({
 								</div>
 							</div>
 						) : slide.type === "event" ? (
-							/* Event Type - Teater Bola Dunia */
+							/* Event Type - Teater Bola Asean */
 
 							<div className="relative z-10 w-full max-w-360 mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-14 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center h-full">
 								{/* Left Content: Typography & CTA */}
@@ -367,7 +364,7 @@ export function BannerSlider({
 											</span>
 
 											<span
-												className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+												className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 											>
 												{slide.eventBadge}
 											</span>

@@ -73,11 +73,15 @@ export function NavigationBar() {
 							: "bg-white/90 backdrop-blur-xs shadow-sm",
 				)}
 			>
-				<div className="w-full flex items-center justify-between h-21 px-4 md:px-6 lg:px-8">
+				<div className="w-full flex items-center justify-between h-21 px-4 md:px-6 lg:px-14">
 					{/* Logo - Left */}
 					<Link href="/">
 						<Image
-							src={isDark ? "/images/logo/olahbola-logo.png" : "/images/logo/olahbola-logo-dark.png"}
+							src={
+								isDark
+									? "/images/logo/olahbola-logo.png"
+									: "/images/logo/olahbola-logo-dark.png"
+							}
 							alt="Olahbola Logo"
 							width={150}
 							height={35}
@@ -165,47 +169,9 @@ export function NavigationBar() {
 					<div className="hidden lg:flex items-center gap-4">
 						{/* CTA Buttons - Desktop */}
 						<div className="flex items-center gap-3">
-							{/* Main Hero Button */}
-							<a
-								data-gtm-cta="Main City Battle!"
-								href="https://www.mainhero.id"
-								target="_blank"
-								rel="noopener noreferrer"
-								className={cn(
-									"group relative overflow-hidden px-5 py-2.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-300",
-									"bg-linear-to-r from-[#00c2b1] to-[#00a89a] text-black",
-									"shadow-[0_0_20px_rgba(0,194,177,0.4)] hover:shadow-[0_0_35px_rgba(0,194,177,0.7)]",
-									"hover:scale-105 active:scale-95",
-									isDark
-										? "border border-[#00c2b1]/30"
-										: "border border-[#0a7c6e]/30",
-								)}
-							>
-								<span className="relative z-10 flex items-center gap-2">
-									<svg
-										className="w-4 h-4"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth={2}
-											d="M13 10V3L4 14h7v7l9-11h-7z"
-										/>
-									</svg>
-									Main City Battle!
-								</span>
-								{/* Shine effect */}
-								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
-							</a>
-
-							{/* Berlangganan Button */}
-							<a
-								data-gtm-cta="Berlangganan!"
-								href="https://heroplay.igvault.id/subscription"
-								target="_blank"
+							{/* Teater Bola Asean 2026! Button */}
+							<Link
+								href="/teater-bola-asean-2026"
 								rel="noopener noreferrer"
 								className={cn(
 									"group relative overflow-hidden px-5 py-2.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-300",
@@ -218,24 +184,11 @@ export function NavigationBar() {
 								)}
 							>
 								<span className="relative z-10 flex items-center gap-2">
-									<svg
-										className="w-4 h-4"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth={2}
-											d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-										/>
-									</svg>
-									Berlangganan!
+									Teater Bola Asean 2026
 								</span>
 								{/* Shine effect */}
 								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
-							</a>
+							</Link>
 						</div>
 					</div>
 				</div>
@@ -305,51 +258,13 @@ export function NavigationBar() {
 
 					{/* CTA Buttons - Mobile */}
 					<div className="flex flex-col gap-2 mb-4">
-						{/* Main City Battle Button */}
-						<a
-							href="https://www.mainhero.id"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="flex items-center justify-center gap-1.5 px-3 py-2 bg-[#00c2b1] text-black font-bold rounded-lg text-xs hover:bg-[#00d4c7] transition-colors"
-						>
-							<svg
-								className="w-3 h-3"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M13 10V3L4 14h7v7l9-11h-7z"
-								/>
-							</svg>
-							Main City Battle!
-						</a>
-
-						{/* Berlangganan Button */}
-						<a
-							href="https://heroplay.igvault.id/subscription"
-							target="_blank"
-							rel="noopener noreferrer"
+						{/* Teater Bola Asean 2026 Button */}
+						<Link
+							href="/teater-bola-asean-2026"
 							className="flex items-center justify-center gap-1.5 px-3 py-2 bg-[#ffaa00] text-black font-bold rounded-lg text-xs hover:bg-[#ffb727] transition-colors"
 						>
-							<svg
-								className="w-3 h-3"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-								/>
-							</svg>
-							Berlangganan!
-						</a>
+							Teater Bola Asean 2026
+						</Link>
 					</div>
 
 					{/* Logout Button */}
