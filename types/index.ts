@@ -355,6 +355,197 @@ export interface PasswordUpdateData {
 	password_confirmation: string;
 }
 
+// Guess Who types
+export type GuessWhoTier = "perfect" | "partial" | "typo" | "wrong";
+
+export interface GuessWhoTierBreakdown {
+	perfect: number;
+	partial: number;
+	typo: number;
+	wrong: number;
+}
+
+export interface GuessWhoScoringTier {
+	tier: GuessWhoTier;
+	points: number;
+	label: string;
+}
+
+export interface GuessWhoLevelConfig {
+	id: number;
+	level: number;
+	name: string;
+	description: string;
+	duration_seconds: number;
+	max_clues: number;
+	questions_count: number;
+	is_unlocked: boolean;
+	best_score: number;
+}
+
+export interface GuessWhoConfig {
+	levels: GuessWhoLevelConfig[];
+	scoring_tiers: GuessWhoScoringTier[];
+	max_clues_per_level: number;
+}
+
+export interface GuessWhoQuestion {
+	question_id: string;
+	image_url: string;
+	description: string;
+	jersey_number: number | null;
+	clues_used: number;
+}
+
+export interface GuessWhoDemoQuestion {
+	question_id: string;
+	image_url: string;
+	description: string;
+	clue_initials: string;
+	correct_answer: string;
+	jersey_number: number | null;
+}
+
+export interface GuessWhoSession {
+	session_id: string;
+	level: number;
+	level_name: string;
+	duration_seconds: number;
+	total_questions: number;
+	started_at: string;
+	expires_at: string;
+	current_question_index: number;
+	current_score: number;
+	clues_remaining: number;
+	remaining_time_seconds: number;
+	is_finished: boolean;
+	questions: GuessWhoQuestion[];
+}
+
+export interface GuessWhoAnswerResult {
+	tier: GuessWhoTier;
+	points_earned: number;
+	total_score: number;
+	matched_name: string | null;
+	correct: boolean;
+}
+
+export interface GuessWhoSessionSnapshot {
+	session_id: string;
+	level: number;
+	level_name: string;
+	current_score: number;
+	current_question_index: number;
+	clues_remaining: number;
+	remaining_time_seconds: number;
+	is_finished: boolean;
+}
+
+export interface GuessWhoAnswerResponse {
+	result: GuessWhoAnswerResult;
+	session: GuessWhoSessionSnapshot;
+	next_question: GuessWhoQuestion | null;
+}
+
+export interface GuessWhoClueResponse {
+	initials: string;
+	player_name_hint: string;
+	clues_remaining: number;
+}
+
+export interface GuessWhoSessionStatus {
+	session_id: string;
+	level: number;
+	status: "in_progress" | "completed" | "expired";
+	total_score: number;
+	total_questions: number;
+	answered_count: number;
+	remaining_seconds: number;
+	tier_breakdown: GuessWhoTierBreakdown;
+}
+
+export interface GuessWhoMyRank {
+	rank: number | null;
+	total_points: number;
+	best_level: number | null;
+	total_sessions: number;
+}
+
+export interface GuessWhoLevelProgress {
+	highest_completed_level: number;
+	highest_unlocked_level: number;
+	max_level: number;
+	completed_levels: number[];
+	unlocked_levels: number[];
+}
+
+export interface GuessWhoLeaderboardEntry {
+	rank: number;
+	user_id: string;
+	name: string;
+	profile_picture: string | null;
+	level: number;
+	total_points: number;
+	duration_seconds: number;
+}
+
+// Payment - Midtrans types
+export interface MidtransConfig {
+	client_key: string;
+	snap_js_url: string;
+	snap_script_url: string;
+	environment: "sandbox" | "production";
+	is_configured: boolean;
+	bundle_price_idr: number;
+	bundle_type: string;
+	event_slug: string;
+}
+
+export interface SnapTokenResponse {
+	snap_token: string;
+	order_id: string;
+	transaction_id: string | null;
+	redirect_url: string;
+	amount_idr: number;
+	currency: string;
+	client_key: string;
+	snap_js_url: string;
+}
+
+export type MidtransTransactionStatus =
+	| "capture"
+	| "settlement"
+	| "pending"
+	| "deny"
+	| "cancel"
+	| "expire";
+
+export interface PaymentStatusData {
+	order_id: string;
+	transaction_id: string;
+	transaction_status: MidtransTransactionStatus;
+	payment_type: string;
+	gross_amount: string;
+	settlement_time: string | null;
+	local: {
+		status: string;
+		paid_at: string;
+	};
+}
+
+export interface AccessCheckData {
+	has_access: boolean;
+	bundle_type: string | null;
+	purchased_at: string | null;
+	event_slug: string;
+	price_idr: number;
+	pending_payment: {
+		invoice_id: string | null;
+		invoice_url: string | null;
+		expires_at: string | null;
+	};
+}
+
 // Extended Window types for embed libraries
 declare global {
 	interface Window {
@@ -373,6 +564,17 @@ declare global {
 			XFBML?: {
 				parse: (element?: HTMLElement) => void;
 			};
+		};
+		snap?: {
+			pay: (
+				snapToken: string,
+				options: {
+					onSuccess?: (result: { finish_redirect_url?: string }) => void;
+					onPending?: (result: { finish_redirect_url?: string }) => void;
+					onError?: (result: { finish_redirect_url?: string }) => void;
+					onClose?: () => void;
+				},
+			) => void;
 		};
 	}
 }

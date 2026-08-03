@@ -3,7 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2, Rocket, Settings, Mail, Lock } from "lucide-react";
+import {
+	Eye,
+	EyeOff,
+	Loader2,
+	Rocket,
+	Settings,
+	Mail,
+	Lock,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import {
 	useLogin,
@@ -152,12 +160,18 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#111111]" : "bg-[#f5f5f5]"}`}>
+		<div
+			className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#111111]" : "bg-[#f5f5f5]"}`}
+		>
 			{/* Background Grid Pattern */}
-			<div className={`fixed inset-0 pointer-events-none ${isDark ? "bg-grid-pattern" : "bg-grid-pattern-light"}`} />
+			<div
+				className={`fixed inset-0 pointer-events-none ${isDark ? "bg-grid-pattern" : "bg-grid-pattern-light"}`}
+			/>
 
 			{/* Blobs */}
-			<div className={`blob top-[-10%] left-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`} />
+			<div
+				className={`blob top-[-10%] left-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`}
+			/>
 			<div
 				className={`blob bottom-[-20%] right-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`}
 				style={{ animationDelay: "2s" }}
@@ -165,10 +179,9 @@ export default function LoginPage() {
 			<div
 				className={`blob top-[30%] left-[40%] ${isDark ? "opacity-50" : "opacity-30"}`}
 				style={{
-					background:
-						isDark
-							? "radial-gradient(circle, rgba(255, 143, 99, 0.15) 0%, rgba(0, 0, 0, 0) 70%)"
-							: "radial-gradient(circle, rgba(216, 83, 26, 0.12) 0%, rgba(0, 0, 0, 0) 70%)",
+					background: isDark
+						? "radial-gradient(circle, rgba(255, 143, 99, 0.15) 0%, rgba(0, 0, 0, 0) 70%)"
+						: "radial-gradient(circle, rgba(216, 83, 26, 0.12) 0%, rgba(0, 0, 0, 0) 70%)",
 				}}
 			/>
 
@@ -176,15 +189,21 @@ export default function LoginPage() {
 				className={`absolute bottom-[20%] left-[10%] floating-element hidden lg:block ${isDark ? "opacity-20" : "opacity-15"}`}
 				style={{ animationDelay: "1s" }}
 			>
-				<Rocket className={`size-12 ${isDark ? "text-primary/10" : "text-[#0a7c6e]/10"}`} />
+				<Rocket
+					className={`size-12 ${isDark ? "text-primary/10" : "text-[#0a7c6e]/10"}`}
+				/>
 			</div>
 
 			<div
 				className={`absolute top-[20%] right-[5%] floating-element hidden lg:block ${isDark ? "opacity-30" : "opacity-20"}`}
 				style={{ animationDelay: "3s" }}
 			>
-				<div className={`p-6 rounded-full flex items-center justify-center ${isDark ? "glass-card border border-primary/40" : "bg-white/80 border border-[#0a7c6e]/30 shadow-lg"}`}>
-					<Settings className={`size-10 ${isDark ? "text-primary animate-spin" : "text-[#0a7c6e]"}`} />
+				<div
+					className={`p-6 rounded-full flex items-center justify-center ${isDark ? "glass-card border border-primary/40" : "bg-white/80 border border-[#0a7c6e]/30 shadow-lg"}`}
+				>
+					<Settings
+						className={`size-10 ${isDark ? "text-primary animate-spin" : "text-[#0a7c6e]"}`}
+					/>
 				</div>
 			</div>
 
@@ -192,7 +211,9 @@ export default function LoginPage() {
 				className={`absolute bottom-[10%] right-[15%] floating-element hidden lg:block ${isDark ? "opacity-20" : "opacity-15"}`}
 				style={{ animationDelay: "2s" }}
 			>
-				<div className={`font-mono text-xs flex flex-col gap-1 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+				<div
+					className={`font-mono text-xs flex flex-col gap-1 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+				>
 					<span>&gt; LOAD_ENV_PROD</span>
 					<span>&gt; FETCH_USER_DATA</span>
 					<span>&gt; HANDSHAKE_SUCCESS</span>
@@ -208,23 +229,39 @@ export default function LoginPage() {
 					{/* Left Side: Visual Narrative */}
 					<div className="hidden md:flex flex-col gap-8">
 						<div className="space-y-2">
-							<h1 className={`font-display-xl text-display-xl leading-none italic uppercase ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
+							<h1
+								className={`font-display-xl text-display-xl leading-none italic uppercase ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+							>
 								STAY
 								<br />
-								<span className={`${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}>UNSTOPPABLE</span>
+								<span
+									className={`${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
+								>
+									UNSTOPPABLE
+								</span>
 							</h1>
 						</div>
-						<p className={`font-body-lg max-w-md leading-relaxed ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+						<p
+							className={`font-body-lg max-w-md leading-relaxed ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+						>
 							Terhubung dengan Olahbola, temukan konten terbaik, banyak event
 							menarik dan disini tempatnya si penggila bola!
 						</p>
 						<div className="flex gap-6 items-center">
-							<div className={`px-6 py-4 rounded-2xl flex items-center gap-4 border-l-4 ${isDark ? "glass-card border-l-primary" : "bg-white shadow-md border-l-[#0a7c6e]"}`}>
+							<div
+								className={`px-6 py-4 rounded-2xl flex items-center gap-4 border-l-4 ${isDark ? "glass-card border-l-primary" : "bg-white shadow-md border-l-[#0a7c6e]"}`}
+							>
 								<div className="relative">
-									<div className={`w-3 h-3 rounded-full ${isDark ? "bg-primary animate-ping" : "bg-[#0a7c6e]"} absolute inset-0`} />
-									<div className={`w-3 h-3 rounded-full ${isDark ? "bg-primary" : "bg-[#0a7c6e]"} relative`} />
+									<div
+										className={`w-3 h-3 rounded-full ${isDark ? "bg-primary animate-ping" : "bg-[#0a7c6e]"} absolute inset-0`}
+									/>
+									<div
+										className={`w-3 h-3 rounded-full ${isDark ? "bg-primary" : "bg-[#0a7c6e]"} relative`}
+									/>
 								</div>
-								<span className={`font-label-bold uppercase tracking-[0.2em] text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+								<span
+									className={`font-label-bold uppercase tracking-[0.2em] text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								>
 									12.4K Pengguna Aktif
 								</span>
 							</div>
@@ -234,13 +271,19 @@ export default function LoginPage() {
 					{/* Right Side: Login Card */}
 					<div className="relative">
 						{/* Additional card glow/background elements */}
-						<div className={`absolute -inset-1 ${isDark ? "bg-linear-to-r from-primary/50 to-[#ff8f63]/30 blur opacity-25" : "bg-linear-to-r from-[#0a7c6e]/30 to-[#b3461a]/20 blur opacity-20"} rounded-[2.5rem]`} />
-						<div className={`p-10 md:p-14 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}>
+						<div
+							className={`absolute -inset-1 ${isDark ? "bg-linear-to-r from-primary/50 to-[#ff8f63]/30 blur opacity-25" : "bg-linear-to-r from-[#0a7c6e]/30 to-[#b3461a]/20 blur opacity-20"} rounded-[2.5rem]`}
+						/>
+						<div
+							className={`p-6 md:p-14 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}
+						>
 							{/* Subtle glass pattern overlay */}
 							<div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
 
 							<div className="text-center mb-8 relative z-10">
-								<h2 className={`font-headline-lg text-headline-lg italic mb-2 tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}>
+								<h2
+									className={`font-headline-lg text-headline-lg italic mb-2 tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
+								>
 									Login Now!
 								</h2>
 							</div>
@@ -248,8 +291,12 @@ export default function LoginPage() {
 							<form onSubmit={handleSubmit} className="space-y-6 relative z-10">
 								{/* Email Verification Notice */}
 								{showResendVerification && (
-									<div className={`p-4 rounded-xl mb-4 ${isDark ? "bg-yellow-500/20 border border-yellow-500" : "bg-yellow-50 border border-yellow-200"}`}>
-										<p className={`text-sm mb-3 ${isDark ? "text-yellow-300" : "text-yellow-700"}`}>
+									<div
+										className={`p-4 rounded-xl mb-4 ${isDark ? "bg-yellow-500/20 border border-yellow-500" : "bg-yellow-50 border border-yellow-200"}`}
+									>
+										<p
+											className={`text-sm mb-3 ${isDark ? "text-yellow-300" : "text-yellow-700"}`}
+										>
 											Email Anda belum diverifikasi.
 										</p>
 										<div className="flex flex-col gap-2">
@@ -289,39 +336,47 @@ export default function LoginPage() {
 
 								{/* Email/Phone Input */}
 								<div className="space-y-2 group">
-									<label className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+									<label
+										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+									>
 										Email atau Nomor Telepon
 									</label>
 									<div className="relative">
-										<Mail className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+										<Mail
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+										/>
 										<input
 											type="text"
 											value={emailOrPhone}
 											onChange={(e) => setEmailOrPhone(e.target.value)}
 											placeholder="nama@olahbola.com"
-											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-[#3c4a47] focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-4`}
+											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-4`}
 										/>
 									</div>
 								</div>
 
 								{/* Password Input */}
 								<div className="space-y-2 group">
-									<label className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+									<label
+										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+									>
 										Kata Sandi
 									</label>
 									<div className="relative">
-										<Lock className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+										<Lock
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+										/>
 										<input
 											type={showPassword ? "text" : "password"}
 											value={password}
 											onChange={(e) => setPassword(e.target.value)}
 											placeholder="••••••••"
-											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-[#3c4a47] focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-12 py-4`}
+											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-12 py-4`}
 										/>
 										<button
 											type="button"
 											onClick={() => setShowPassword(!showPassword)}
-											className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer transition-colors ${isDark ? "text-[#bbcac6] hover:text-primary" : "text-[#5a5a5a] hover:text-[#0a7c6e]"}`}
+											className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer transition-colors ${isDark ? "text-on-surface-variant hover:text-primary" : "text-[#5a5a5a] hover:text-[#0a7c6e]"}`}
 										>
 											{showPassword ? (
 												<EyeOff className="w-5 h-5" />
@@ -361,9 +416,13 @@ export default function LoginPage() {
 								{!showResendVerification && (
 									<div className="relative flex items-center justify-center my-5">
 										<div className="absolute inset-0 flex items-center">
-											<div className={`w-full border-t ${isDark ? "border-white/10" : "border-gray-200"}`} />
+											<div
+												className={`w-full border-t ${isDark ? "border-white/10" : "border-gray-200"}`}
+											/>
 										</div>
-										<span className={`relative px-4 text-[10px] font-label-bold tracking-[0.2em] ${isDark ? "bg-[#1a1a1a] text-[#bbcac6]" : "bg-white/90 text-[#5a5a5a]"}`}>
+										<span
+											className={`relative px-4 text-[10px] font-label-bold tracking-[0.2em] ${isDark ? "bg-[#1a1a1a] text-on-surface-variant" : "bg-white/90 text-[#5a5a5a]"}`}
+										>
 											ATAU MASUK DENGAN
 										</span>
 									</div>
@@ -399,14 +458,16 @@ export default function LoginPage() {
 												/>
 											</svg>
 										)}
-										MASUK DENGAN GOOGLE
+										AKUN GOOGLE
 									</button>
 								)}
 							</form>
 
 							{/* Register Link */}
 							{!showResendVerification && (
-								<p className={`text-center mt-10 text-[11px] tracking-wider uppercase ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+								<p
+									className={`text-center mt-10 text-[11px] tracking-wider uppercase ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+								>
 									BELUM PUNYA AKUN?{" "}
 									<Link
 										href="/register"

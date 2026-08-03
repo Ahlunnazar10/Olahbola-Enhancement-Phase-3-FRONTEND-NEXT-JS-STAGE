@@ -154,6 +154,23 @@ export const endpoints = {
 	jerseyRewardClaim: "/api/v1/jersey-reward/claim",
 	jerseyRewardClaimHistory: "/api/v1/jersey-reward/claim-history",
 
+	// Guess Who (proxied via app/api/guess-who/[...path]/route.ts)
+	guessWhoConfig: "/api/guess-who/config",
+	guessWhoDemo: "/api/guess-who/demo",
+	guessWhoLeaderboard: "/api/guess-who/leaderboard",
+	guessWhoStart: (level: number) => `/api/guess-who/start/${level}`,
+	guessWhoAnswer: (sessionId: string) =>
+		`/api/guess-who/session/${sessionId}/answer`,
+	guessWhoClue: (sessionId: string, questionId: string) =>
+		`/api/guess-who/session/${sessionId}/clue/${questionId}`,
+	guessWhoRematch: (level: number) => `/api/guess-who/rematch/${level}`,
+	guessWhoResume: (sessionId: string) => `/api/guess-who/session/${sessionId}`,
+	guessWhoStatus: (sessionId: string) =>
+		`/api/guess-who/session/${sessionId}/status`,
+	guessWhoMySessions: "/api/guess-who/my-sessions",
+	guessWhoMyRank: "/api/guess-who/my-rank",
+	guessWhoLevelProgress: "/api/guess-who/level-progress",
+
 	// Prizes
 	prizes: "/api/v1/prizes",
 
@@ -176,6 +193,13 @@ export const endpoints = {
 	// Sapa
 	sapa: "/api/v1/sapa",
 	sapaCreate: "/api/v1/sapa",
+
+	// Payment - Midtrans
+	paymentMidtransConfig: "/api/v1/payment/midtrans/config",
+	paymentMidtransSnapToken: "/api/v1/payment/midtrans/snap-token",
+	paymentMidtransStatus: (orderId: string) =>
+		"/api/v1/payment/midtrans/status/" + orderId,
+	paymentAccessCheck: "/api/v1/payment/access/check",
 };
 
 export type Endpoint = typeof endpoints;

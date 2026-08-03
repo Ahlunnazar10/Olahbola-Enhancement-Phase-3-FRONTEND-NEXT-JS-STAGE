@@ -85,11 +85,13 @@ export function generateId(): string {
 export function getImageUrl(path: string | null | undefined): string {
 	if (!path) return "/placeholder.png";
 	if (path.startsWith("http")) return path;
+	// /images/ is served by Next.js public folder, not Laravel
+	if (path.startsWith("/images/")) return path;
 	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${path}`;
 }
 
 export function getProfilePictureUrl(path: string | null | undefined): string {
-	if (!path) return "/icons/football-player.svg";
+	if (!path) return "/icons/football-player.png";
 	if (path.startsWith("http")) return path;
 	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${path}`;
 }
