@@ -30,12 +30,15 @@ export function usePaymentStatus(orderId: string) {
 		enabled: !!orderId,
 		refetchInterval: (query) => {
 			const status = query.state.data?.transaction_status;
+			// Stop polling for final states: settlement, deny, cancel, expire
 			if (status === "settlement" || status === "deny" || status === "cancel" || status === "expire") {
 				return false;
 			}
+			// Continue polling for pending/capture states
 			return 2000;
 		},
-		retry: false,
+		retry: 3,
+		staleTime: 10000,
 	});
 }
 

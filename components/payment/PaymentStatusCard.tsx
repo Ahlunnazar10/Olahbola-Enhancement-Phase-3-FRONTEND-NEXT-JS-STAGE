@@ -190,80 +190,102 @@ export function PaymentStatusCard({
 					{config.description}
 				</p>
 
-				{statusData.transaction_status === "settlement" && (
-					<div
-						className={`w-full rounded-2xl p-4 mb-6 text-left space-y-3 ${
-							isDark ? "bg-black/20" : "bg-white/60"
-						}`}
-					>
-						<div className="flex justify-between items-center">
-							<span
-								className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
-							>
-								Order ID
-							</span>
-							<span
-								className={`text-sm font-mono font-semibold ${
-									isDark ? "text-white" : "text-[#1a1a1a]"
-								}`}
-							>
-								{statusData.order_id}
-							</span>
-						</div>
-						<div className="flex justify-between items-center">
-							<span
-								className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
-							>
-								Jumlah Dibayar
-							</span>
-							<span
-								className={`text-sm font-semibold ${
-									isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"
-								}`}
-							>
-								Rp {parseInt(statusData.gross_amount).toLocaleString("id-ID")}
-							</span>
-						</div>
-						<div className="flex justify-between items-center">
-							<span
-								className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
-							>
-								Metode Pembayaran
-							</span>
-							<div
-								className={`flex items-center gap-2 text-sm font-medium ${
-									isDark ? "text-white" : "text-[#1a1a1a]"
-								}`}
-							>
-								<CreditCard className="w-4 h-4" />
-								{statusData.payment_type.replace("_", " ")}
-							</div>
-						</div>
-						{statusData.settlement_time && (
-							<div className="flex justify-between items-center">
-								<span
-									className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
-								>
-									Waktu Pembayaran
-								</span>
-								<div
-									className={`flex items-center gap-2 text-sm ${
-										isDark ? "text-white" : "text-[#1a1a1a]"
-									}`}
-								>
-									<Calendar className="w-4 h-4" />
-									{new Date(statusData.settlement_time).toLocaleString("id-ID", {
-										day: "2-digit",
-										month: "2-digit",
-										year: "numeric",
-										hour: "2-digit",
-										minute: "2-digit",
-									})}
-								</div>
-							</div>
-						)}
+				{/* Invoice Details - show for all transaction states */}
+				<div
+					className={`w-full rounded-2xl p-4 mb-6 text-left space-y-3 ${
+						isDark ? "bg-black/20" : "bg-white/60"
+					}`}
+				>
+					{/* Order ID */}
+					<div className="flex justify-between items-center">
+						<span className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+							Order ID
+						</span>
+						<span
+							className={`text-sm font-mono font-semibold ${
+								isDark ? "text-white" : "text-[#1a1a1a]"
+							}`}
+						>
+							{statusData.order_id}
+						</span>
 					</div>
-				)}
+
+					{/* Amount */}
+					<div className="flex justify-between items-center">
+						<span className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+							Jumlah Pembayaran
+						</span>
+						<span
+							className={`text-sm font-semibold ${
+								isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"
+							}`}
+						>
+							Rp {parseInt(statusData.gross_amount).toLocaleString("id-ID")}
+						</span>
+					</div>
+
+					{/* Payment Method */}
+					<div className="flex justify-between items-center">
+						<span className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+							Metode Pembayaran
+						</span>
+						<div
+							className={`flex items-center gap-2 text-sm font-medium ${
+								isDark ? "text-white" : "text-[#1a1a1a]"
+							}`}
+						>
+							<CreditCard className="w-4 h-4" />
+							{statusData.payment_type.replace("_", " ")}
+						</div>
+					</div>
+
+					{/* Settlement/Payment Time */}
+					<div className="flex justify-between items-center">
+						<span className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+							{statusData.settlement_time
+								? "Waktu Pembayaran"
+								: "Waktu Transaksi"}
+						</span>
+						<div
+							className={`flex items-center gap-2 text-sm ${
+								isDark ? "text-white" : "text-[#1a1a1a]"
+							}`}
+						>
+							<Calendar className="w-4 h-4" />
+							{statusData.local?.paid_at
+								? new Date(statusData.local.paid_at).toLocaleString("id-ID", {
+									day: "2-digit",
+									month: "2-digit",
+									year: "numeric",
+									hour: "2-digit",
+									minute: "2-digit",
+								})
+								: statusData.settlement_time
+								? new Date(statusData.settlement_time).toLocaleString("id-ID", {
+									day: "2-digit",
+									month: "2-digit",
+									year: "numeric",
+									hour: "2-digit",
+									minute: "2-digit",
+								})
+								: "-"}
+						</div>
+					</div>
+
+					{/* Transaction ID */}
+					{statusData.transaction_id && (
+						<div className="flex justify-between items-center">
+							<span className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+								Transaction ID
+							</span>
+							<span
+								className={`text-xs font-mono ${isDark ? "text-white/50" : "text-[#5a5a5a]"}`}
+							>
+								{statusData.transaction_id}
+							</span>
+						</div>
+					)}
+				</div>
 
 				<div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
 					{statusData.transaction_status === "settlement" && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
@@ -21,10 +21,18 @@ export default function PaymentStatusPage({ params }: PaymentStatusPageProps) {
 	const isDark = theme === "dark";
 	const { data: status, isLoading, refetch } = usePaymentStatus(orderId);
 	const { refetch: refetchAccess } = useCheckAccess();
+	const [isPolling, setIsPolling] = useState(true);
 
 	const isPendingCapture =
 		status?.transaction_status === "pending" ||
 		status?.transaction_status === "capture";
+
+	// Stop polling for final states
+	useEffect(() => {
+		if (status && !["pending", "capture"].includes(status.transaction_status)) {
+			setIsPolling(false);
+		}
+	}, [status]);
 
 	useEffect(() => {
 		if (status?.transaction_status === "settlement") {
@@ -57,13 +65,13 @@ export default function PaymentStatusPage({ params }: PaymentStatusPageProps) {
 
 				<PaymentStatusCard
 					statusData={status ?? null}
-					isLoading={isLoading || (isPendingCapture && !status)}
+					isLoading={isLoading || (isPendingCapture && !status && isPolling)}
 					isDark={isDark}
 					onRetry={() => refetch()}
 					onBack={() => router.push("/payment")}
 				/>
 
-				{isPendingCapture && (
+				{isPolling && isPendingCapture && (
 					<div className="text-center mt-6">
 						<Loader2
 							className={`w-4 h-4 animate-spin inline-block mr-2 ${
@@ -73,7 +81,7 @@ export default function PaymentStatusPage({ params }: PaymentStatusPageProps) {
 						<span
 							className={`text-xs ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}
 						>
-							Memeriksa status otomatis setiap 2 detik
+							Memeriksa status otomatis setiap 2 detik...
 						</span>
 					</div>
 				)}
