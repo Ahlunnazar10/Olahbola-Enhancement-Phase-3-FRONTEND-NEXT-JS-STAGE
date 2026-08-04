@@ -3,10 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
-import {
-	useMidtransConfig,
-	useCheckAccess,
-} from "@/hooks/queries/usePayment";
+import { useMidtransConfig, useCheckAccess } from "@/hooks/queries/usePayment";
 import { MidtransPaymentButton } from "@/components/payment/MidtransPaymentButton";
 import { Crown, Loader2, CheckCircle2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -45,7 +42,7 @@ export default function PaymentPage() {
 			>
 				<Loader2
 					className={`w-10 h-10 animate-spin ${
-						isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"
+						isDark ? "text-primary-container" : "text-[#0a7c6e]"
 					}`}
 				/>
 			</div>
@@ -63,14 +60,14 @@ export default function PaymentPage() {
 					<div
 						className={`rounded-3xl p-8 border ${
 							isDark
-								? "bg-[#1c211e]/80 backdrop-blur-md border-[#00c2b1]/30"
+								? "bg-surface-container/80 backdrop-blur-md border-primary-container/30"
 								: "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"
 						}`}
 					>
 						<div className="text-center">
 							<CheckCircle2
 								className={`w-16 h-16 mx-auto mb-4 ${
-									isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"
+									isDark ? "text-primary-container" : "text-[#0a7c6e]"
 								}`}
 							/>
 							<h2
@@ -92,7 +89,7 @@ export default function PaymentPage() {
 								onClick={() => router.push("/")}
 								className={`w-full py-3 rounded-xl text-sm font-bold uppercase tracking-wider transition-all hover:scale-[1.02] ${
 									isDark
-										? "bg-[#00c2b1] text-black shadow-[0_0_25px_rgba(64,220,202,0.4)]"
+										? "bg-primary-container text-black shadow-[0_0_25px_rgba(64,220,202,0.4)]"
 										: "bg-[#0a7c6e] text-white hover:bg-[#095a50] shadow-lg"
 								}`}
 							>
@@ -116,7 +113,7 @@ export default function PaymentPage() {
 					<div
 						className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-4 ${
 							isDark
-								? "bg-[#00c2b1]/20 text-[#00c2b1]"
+								? "bg-primary-container/20 text-primary-container"
 								: "bg-[#0a7c6e]/20 text-[#0a7c6e]"
 						}`}
 					>
@@ -128,7 +125,9 @@ export default function PaymentPage() {
 						}`}
 					>
 						Olahbola{" "}
-						<span className={isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"}>
+						<span
+							className={isDark ? "text-primary-container" : "text-[#0a7c6e]"}
+						>
 							Premium
 						</span>
 					</h1>
@@ -147,13 +146,13 @@ export default function PaymentPage() {
 						<div
 							className={`rounded-3xl p-8 border ${
 								isDark
-									? "bg-[#1c211e]/80 backdrop-blur-md border-white/10"
+									? "bg-surface-container/80 backdrop-blur-md border-white/10"
 									: "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"
 							}`}
 						>
 							<Loader2
 								className={`w-10 h-10 animate-spin mx-auto ${
-									isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"
+									isDark ? "text-primary-container" : "text-[#0a7c6e]"
 								}`}
 							/>
 						</div>
@@ -162,7 +161,7 @@ export default function PaymentPage() {
 							<div
 								className={`rounded-3xl p-8 border transition-all duration-300 ${
 									isDark
-										? "bg-[#1c211e]/80 backdrop-blur-md border-[#00c2b1]/30 shadow-[0_0_40px_rgba(0,194,177,0.15)]"
+										? "bg-surface-container/80 backdrop-blur-md border-primary-container/30 shadow-[0_0_40px_rgba(0,194,177,0.15)]"
 										: "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"
 								}`}
 							>
@@ -194,7 +193,7 @@ export default function PaymentPage() {
 										</span>
 										<span
 											className={`font-display-xl ${
-												isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"
+												isDark ? "text-primary-container" : "text-[#0a7c6e]"
 											}`}
 										>
 											{(config?.bundle_price_idr ?? 10000).toLocaleString(
@@ -221,7 +220,7 @@ export default function PaymentPage() {
 										<div key={feature} className="flex items-center gap-3">
 											<CheckCircle2
 												className={`w-5 h-5 shrink-0 ${
-													isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"
+													isDark ? "text-primary-container" : "text-[#0a7c6e]"
 												}`}
 											/>
 											<span
@@ -244,7 +243,7 @@ export default function PaymentPage() {
 									}}
 									className={`w-full ${
 										isDark
-											? "bg-[#00c2b1] text-black shadow-[0_0_25px_rgba(64,220,202,0.4)] hover:shadow-[0_0_35px_rgba(64,220,202,0.6)]"
+											? "bg-primary-container text-black shadow-[0_0_25px_rgba(64,220,202,0.4)] hover:shadow-[0_0_35px_rgba(64,220,202,0.6)]"
 											: "bg-[#0a7c6e] text-white hover:bg-[#095a50] shadow-lg"
 									}`}
 								>

@@ -19,24 +19,33 @@ export function useMidtransSnap() {
 			try {
 				await paymentApi.getMidtransConfig();
 				const snapTokenData = await paymentApi.createSnapToken(bundleType);
-				const { snap_token, snap_js_url } = snapTokenData;
+				const { snap_token, snap_js_url, order_id } = snapTokenData;
+
+				// Store order_id in localStorage for redirect after payment
+				if (typeof window !== "undefined") {
+					localStorage.setItem("pending_order_id", order_id);
+				}
 
 				if (!window.snap) {
 					await loadMidtransSnap(snap_js_url);
-					// After loading, window.snap should be available
 					if (!window.snap) {
 						throw new Error("Snap.js failed to initialize");
 					}
 				}
 
+				// Define finish URL (override Midtrans dashboard setting)
+				const finishUrl = `${window.location.origin}/payment/finish`;
+
 				window.snap.pay(snap_token, {
 					onSuccess: (result) => {
 						setLoading(false);
-						callbacks?.onSuccess?.(result);
+						// Redirect to our finish page with order_id in query
+						window.location.href = `${finishUrl}?order_id=${order_id}`;
 					},
 					onPending: (result) => {
 						setLoading(false);
-						callbacks?.onPending?.(result);
+						// Pending payment - redirect to finish page
+						window.location.href = `${finishUrl}?order_id=${order_id}`;
 					},
 					onError: (result) => {
 						setLoading(false);
