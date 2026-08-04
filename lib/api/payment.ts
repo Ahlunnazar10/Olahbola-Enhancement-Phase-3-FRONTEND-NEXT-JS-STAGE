@@ -59,20 +59,64 @@ export const paymentApi = {
 	},
 
 	async getPaymentStatus(orderId: string): Promise<PaymentStatusData> {
-		const response = await apiClient.get<{ success: boolean; data: PaymentStatusData }>(
-			endpoints.paymentMidtransStatus(orderId),
+		// Use fetch instead of apiClient to avoid axios interceptor redirect on 401
+		const token = getAuthToken();
+		const response = await fetch(
+			`${API_BASE_URL}${endpoints.paymentMidtransStatus(orderId)}`,
+			{
+				method: "GET",
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token || ""}`,
+				},
+				cache: "no-cache",
+			},
 		);
-		if (!response.data?.data) {
+
+		if (response.status === 401) {
+			throw Object.assign(new Error("Unauthorized — silakan login ulang"), {
+				response: { status: 401 },
+			});
+		}
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch payment status (${response.status})`);
+		}
+
+		const json = await response.json();
+		if (!json?.data) {
 			throw new Error("Gagal memuat status pembayaran");
 		}
-		return response.data.data;
+		return json.data as PaymentStatusData;
 	},
 
 	async checkAccess(): Promise<AccessCheckData> {
-		const response = await apiClient.get<{ success: boolean; data: AccessCheckData }>(
-			endpoints.paymentAccessCheck,
+		// Use fetch instead of apiClient to avoid axios interceptor redirect on 401
+		const token = getAuthToken();
+		const response = await fetch(
+			`${API_BASE_URL}${endpoints.paymentAccessCheck}`,
+			{
+				method: "GET",
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token || ""}`,
+				},
+				cache: "no-cache",
+			},
 		);
-		if (!response.data?.data) {
+
+		if (response.status === 401) {
+			throw Object.assign(new Error("Unauthorized — silakan login ulang"), {
+				response: { status: 401 },
+			});
+		}
+
+		if (!response.ok) {
+			throw new Error(`Failed to check access (${response.status})`);
+		}
+
+		const json = await response.json();
+		if (!json?.data) {
 			return {
 				has_access: false,
 				bundle_type: null,
@@ -86,6 +130,6 @@ export const paymentApi = {
 				},
 			};
 		}
-		return response.data.data;
+		return json.data as AccessCheckData;
 	},
 };

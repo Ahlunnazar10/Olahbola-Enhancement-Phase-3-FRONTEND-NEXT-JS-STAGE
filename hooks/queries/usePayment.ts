@@ -39,6 +39,7 @@ export function usePaymentStatus(orderId: string) {
 		},
 		retry: 3,
 		staleTime: 10000,
+		refetchOnWindowFocus: false,
 	});
 }
 
