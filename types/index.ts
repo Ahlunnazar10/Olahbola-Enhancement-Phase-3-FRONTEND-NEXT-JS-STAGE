@@ -524,10 +524,22 @@ export interface PaymentStatusData {
 	order_id: string;
 	transaction_id: string;
 	transaction_status: MidtransTransactionStatus;
+	transaction_time: string | null;
+	status_code: string | null;
+	status_message: string | null;
+	fraud_status: string | null;
 	payment_type: string;
 	gross_amount: string;
+	currency: string;
 	settlement_time: string | null;
-	local: {
+	expiry_time: string | null;
+	payment_channel: string | null;
+	// Midtrans custom fields
+	custom_field_1: string | null;
+	custom_field_2: string | null;
+	custom_field_3: string | null;
+	// Local data from Laravel
+	local?: {
 		status: string;
 		paid_at: string;
 	};

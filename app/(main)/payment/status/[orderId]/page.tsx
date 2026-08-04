@@ -5,10 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, XCircle, LogIn, RefreshCw, ArrowLeft } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
-import {
-	usePaymentStatus,
-	useCheckAccess,
-} from "@/hooks/queries/usePayment";
+import { usePaymentStatus, useCheckAccess } from "@/hooks/queries/usePayment";
 import { PaymentStatusCard } from "@/components/payment/PaymentStatusCard";
 
 interface PaymentStatusPageProps {
@@ -35,7 +32,8 @@ export default function PaymentStatusPage({ params }: PaymentStatusPageProps) {
 	}, [status, refetchAccess]);
 
 	const isUnauthorized =
-		(error as { response?: { status?: number } } | null)?.response?.status === 401;
+		(error as { response?: { status?: number } } | null)?.response?.status ===
+		401;
 
 	// Handle error (e.g., 401 unauthorized)
 	if (error && !status) {
@@ -65,7 +63,7 @@ export default function PaymentStatusPage({ params }: PaymentStatusPageProps) {
 					<div
 						className={`rounded-3xl p-8 border text-center ${
 							isDark
-								? "bg-[#1c211e]/80 backdrop-blur-md border-red-500/30"
+								? "bg-surface-container/80 backdrop-blur-md border-red-500/30"
 								: "bg-white/90 backdrop-blur-md shadow-xl border border-red-200"
 						}`}
 					>
@@ -138,8 +136,7 @@ export default function PaymentStatusPage({ params }: PaymentStatusPageProps) {
 					<p
 						className={`text-sm ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
 					>
-						Order ID:{" "}
-						<span className="font-mono font-semibold">{orderId}</span>
+						Order ID: <span className="font-mono font-semibold">{orderId}</span>
 					</p>
 				</div>
 
@@ -155,7 +152,7 @@ export default function PaymentStatusPage({ params }: PaymentStatusPageProps) {
 					<div className="text-center mt-6">
 						<Loader2
 							className={`w-4 h-4 animate-spin inline-block mr-2 ${
-								isDark ? "text-[#00c2b1]" : "text-[#0a7c6e]"
+								isDark ? "text-primary-container" : "text-[#0a7c6e]"
 							}`}
 						/>
 						<span

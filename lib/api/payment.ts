@@ -84,10 +84,12 @@ export const paymentApi = {
 		}
 
 		const json = await response.json();
-		if (!json?.data) {
+		// Handle both nested (Laravel) and flat (direct Midtrans) response formats
+		const data = json?.data ?? json;
+		if (!data) {
 			throw new Error("Gagal memuat status pembayaran");
 		}
-		return json.data as PaymentStatusData;
+		return data as PaymentStatusData;
 	},
 
 	async checkAccess(): Promise<AccessCheckData> {
