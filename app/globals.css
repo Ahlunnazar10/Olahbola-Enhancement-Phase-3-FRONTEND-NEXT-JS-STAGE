@@ -206,6 +206,16 @@ body {
 	border-color: rgba(67, 222, 204, 0.4);
 }
 
+/* Static variant — same look but no hover shimmer or border change */
+.glass-card-static {
+	background: rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(50px);
+	border: 1px solid rgba(67, 222, 204, 0.3);
+	box-shadow:
+		0 8px 32px 0 rgba(0, 0, 0, 0.8),
+		inset 0 0 32px rgba(67, 222, 204, 0.05);
+}
+
 /* Neon Glow */
 .neon-glow {
 	text-shadow: 0 0 15px rgba(67, 222, 204, 0.6);

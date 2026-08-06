@@ -3,7 +3,20 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2, Rocket, Settings, User, Mail, Phone, MapPin, Lock, Timer, Check } from "lucide-react";
+import {
+	Eye,
+	EyeOff,
+	Loader2,
+	Rocket,
+	Settings,
+	User,
+	Mail,
+	Phone,
+	MapPin,
+	Lock,
+	Timer,
+	Check,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { useRegister } from "@/hooks/queries/useAuth";
 import { cn } from "@/lib/utils";
@@ -113,7 +126,9 @@ export default function RegisterPage() {
 			await registerMutation.mutateAsync(payload);
 
 			if (registerVia === "email") {
-				toast.success("Registrasi berhasil! Silakan cek email untuk verifikasi.");
+				toast.success(
+					"Registrasi berhasil! Silakan cek email untuk verifikasi.",
+				);
 				router.push("/login");
 			} else {
 				toast.success("Registrasi berhasil! Akun Anda sudah aktif.");
@@ -127,12 +142,18 @@ export default function RegisterPage() {
 	};
 
 	return (
-		<div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#111111]" : "bg-[#f5f5f5]"}`}>
+		<div
+			className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#111111]" : "bg-[#f5f5f5]"}`}
+		>
 			{/* Background Grid Pattern */}
-			<div className={`fixed inset-0 pointer-events-none ${isDark ? "bg-grid-pattern" : "bg-grid-pattern-light"}`} />
+			<div
+				className={`fixed inset-0 pointer-events-none ${isDark ? "bg-grid-pattern" : "bg-grid-pattern-light"}`}
+			/>
 
 			{/* Blobs */}
-			<div className={`blob top-[-10%] left-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`} />
+			<div
+				className={`blob top-[-10%] left-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`}
+			/>
 			<div
 				className={`blob bottom-[-20%] right-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`}
 				style={{ animationDelay: "2s" }}
@@ -140,39 +161,11 @@ export default function RegisterPage() {
 			<div
 				className={`blob top-[30%] left-[40%] ${isDark ? "opacity-50" : "opacity-30"}`}
 				style={{
-					background:
-						isDark
-							? "radial-gradient(circle, rgba(255, 143, 99, 0.15) 0%, rgba(0, 0, 0, 0) 70%)"
-							: "radial-gradient(circle, rgba(216, 83, 26, 0.12) 0%, rgba(0, 0, 0, 0) 70%)",
+					background: isDark
+						? "radial-gradient(circle, rgba(255, 143, 99, 0.15) 0%, rgba(0, 0, 0, 0) 70%)"
+						: "radial-gradient(circle, rgba(216, 83, 26, 0.12) 0%, rgba(0, 0, 0, 0) 70%)",
 				}}
 			/>
-
-			<div
-				className={`absolute bottom-[20%] left-[10%] floating-element hidden lg:block ${isDark ? "opacity-20" : "opacity-15"}`}
-				style={{ animationDelay: "1s" }}
-			>
-				<Rocket className={`size-12 ${isDark ? "text-primary/10" : "text-[#0a7c6e]/10"}`} />
-			</div>
-
-			<div
-				className={`absolute top-[20%] right-[5%] floating-element hidden lg:block ${isDark ? "opacity-30" : "opacity-20"}`}
-				style={{ animationDelay: "3s" }}
-			>
-				<div className={`p-6 rounded-full flex items-center justify-center ${isDark ? "glass-card border border-primary/40" : "bg-white/80 border border-[#0a7c6e]/30 shadow-lg"}`}>
-					<Settings className={`size-10 ${isDark ? "text-primary animate-spin" : "text-[#0a7c6e]"}`} />
-				</div>
-			</div>
-
-			<div
-				className={`absolute bottom-[10%] right-[15%] floating-element hidden lg:block ${isDark ? "opacity-20" : "opacity-15"}`}
-				style={{ animationDelay: "2s" }}
-			>
-				<div className={`font-mono text-xs flex flex-col gap-1 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
-					<span>&gt; LOAD_ENV_PROD</span>
-					<span>&gt; FETCH_USER_DATA</span>
-					<span>&gt; HANDSHAKE_SUCCESS</span>
-				</div>
-			</div>
 
 			{/* Main Content */}
 			<main className="min-h-screen flex items-center justify-center px-4 md:px-0 relative z-10">
@@ -182,23 +175,39 @@ export default function RegisterPage() {
 					{/* Left Side: Visual Narrative */}
 					<div className="hidden md:flex flex-col gap-8">
 						<div className="space-y-2">
-							<h1 className={`font-display-xl text-display-xl leading-none italic uppercase ${isDark ? "text-white" : "text-[#1a1a1a]"}`}>
+							<h1
+								className={`font-display-xl text-display-xl leading-none italic uppercase ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+							>
 								JOIN
 								<br />
-								<span className={`${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}>THE GAME</span>
+								<span
+									className={`${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
+								>
+									THE GAME
+								</span>
 							</h1>
 						</div>
-						<p className={`font-body-lg max-w-md leading-relaxed ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+						<p
+							className={`font-body-lg max-w-md leading-relaxed ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+						>
 							Buat akun Olahbola dan mulai tantang dirimu dengan kuis seru,
 							kumpulkan poin, dan rajanya bola di Indonesia!
 						</p>
 						<div className="flex gap-6 items-center">
-							<div className={`px-6 py-4 rounded-2xl flex items-center gap-4 border-l-4 ${isDark ? "glass-card border-l-primary" : "bg-white shadow-md border-l-[#0a7c6e]"}`}>
+							<div
+								className={`px-6 py-4 rounded-2xl flex items-center gap-4 border-l-4 ${isDark ? "glass-card border-l-primary" : "bg-white shadow-md border-l-[#0a7c6e]"}`}
+							>
 								<div className="relative">
-									<div className={`w-3 h-3 rounded-full ${isDark ? "bg-primary animate-ping" : "bg-[#0a7c6e]"} absolute inset-0`} />
-									<div className={`w-3 h-3 rounded-full ${isDark ? "bg-primary" : "bg-[#0a7c6e]"} relative`} />
+									<div
+										className={`w-3 h-3 rounded-full ${isDark ? "bg-primary animate-ping" : "bg-[#0a7c6e]"} absolute inset-0`}
+									/>
+									<div
+										className={`w-3 h-3 rounded-full ${isDark ? "bg-primary" : "bg-[#0a7c6e]"} relative`}
+									/>
 								</div>
-								<span className={`font-label-bold uppercase tracking-[0.2em] text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+								<span
+									className={`font-label-bold uppercase tracking-[0.2em] text-sm ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								>
 									12.4K Pengguna Aktif
 								</span>
 							</div>
@@ -208,20 +217,28 @@ export default function RegisterPage() {
 					{/* Right Side: Register Card */}
 					<div className="relative">
 						{/* Card glow/background elements */}
-						<div className={`absolute -inset-1 ${isDark ? "bg-linear-to-r from-primary/50 to-[#ff8f63]/30 blur opacity-25" : "bg-linear-to-r from-[#0a7c6e]/30 to-[#b3461a]/20 blur opacity-20"} rounded-[2.5rem]`} />
-						<div className={`p-10 md:p-14 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}>
+						<div
+							className={`absolute -inset-1 ${isDark ? "bg-linear-to-r from-primary/50 to-[#ff8f63]/30 blur opacity-25" : "bg-linear-to-r from-[#0a7c6e]/30 to-[#b3461a]/20 blur opacity-20"} rounded-[2.5rem]`}
+						/>
+						<div
+							className={`p-10 md:p-14 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}
+						>
 							{/* Subtle glass pattern overlay */}
 							<div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
 
 							<div className="text-center mb-8 relative z-10">
-								<h2 className={`font-headline-lg text-headline-lg italic mb-2 tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}>
+								<h2
+									className={`font-headline-lg text-headline-lg italic mb-2 tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
+								>
 									Daftar Sekarang!
 								</h2>
 							</div>
 
 							<form onSubmit={handleSubmit} className="space-y-5 relative z-10">
 								{/* Register Via Toggle */}
-								<div className={`flex gap-2 mb-2 p-1 rounded-xl ${isDark ? "glass-card" : "bg-white shadow-sm border border-gray-200"}`}>
+								<div
+									className={`flex gap-2 mb-2 p-1 rounded-xl ${isDark ? "glass-card" : "bg-white shadow-sm border border-gray-200"}`}
+								>
 									<button
 										type="button"
 										onClick={() => setRegisterVia("email")}
@@ -258,11 +275,15 @@ export default function RegisterPage() {
 
 								{/* Name Input */}
 								<div className="space-y-2 group">
-									<label className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+									<label
+										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+									>
 										Nama Lengkap
 									</label>
 									<div className="relative">
-										<User className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+										<User
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										/>
 										<input
 											type="text"
 											value={name}
@@ -276,11 +297,15 @@ export default function RegisterPage() {
 								{/* Email Input */}
 								{registerVia === "email" && (
 									<div className="space-y-2 group">
-										<label className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+										<label
+											className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										>
 											Alamat Email
 										</label>
 										<div className="relative">
-											<Mail className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+											<Mail
+												className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											/>
 											<input
 												type="email"
 												value={email}
@@ -295,11 +320,15 @@ export default function RegisterPage() {
 								{/* Phone Input */}
 								{registerVia === "phone" && (
 									<div className="space-y-2 group">
-										<label className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+										<label
+											className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										>
 											Nomor Telepon
 										</label>
 										<div className="relative">
-											<Phone className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+											<Phone
+												className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											/>
 											<input
 												type="tel"
 												value={phone}
@@ -319,16 +348,22 @@ export default function RegisterPage() {
 
 								{/* City Autocomplete */}
 								<div className="space-y-2 group">
-									<label className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+									<label
+										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+									>
 										Kota
 									</label>
 									<div className="relative">
-										<MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+										<MapPin
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										/>
 										<input
 											type="text"
 											value={city}
 											onChange={(e) => setCity(e.target.value)}
-											onFocus={() => city.length >= 2 && setShowCityDropdown(true)}
+											onFocus={() =>
+												city.length >= 2 && setShowCityDropdown(true)
+											}
 											onBlur={() => {
 												// Delay to allow click on suggestion
 												setTimeout(() => setShowCityDropdown(false), 200);
@@ -358,11 +393,15 @@ export default function RegisterPage() {
 
 								{/* Password Input */}
 								<div className="space-y-2 group">
-									<label className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+									<label
+										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+									>
 										Kata Sandi
 									</label>
 									<div className="relative">
-										<Lock className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+										<Lock
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										/>
 										<input
 											type={showPassword ? "text" : "password"}
 											value={password}
@@ -398,11 +437,15 @@ export default function RegisterPage() {
 
 								{/* Confirm Password Input */}
 								<div className="space-y-2 group">
-									<label className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+									<label
+										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+									>
 										Konfirmasi Password
 									</label>
 									<div className="relative">
-										<Timer className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+										<Timer
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										/>
 										<input
 											type={showConfirmPassword ? "text" : "password"}
 											value={confirmPassword}
@@ -412,7 +455,9 @@ export default function RegisterPage() {
 										/>
 										<button
 											type="button"
-											onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+											onClick={() =>
+												setShowConfirmPassword(!showConfirmPassword)
+											}
 											className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer transition-colors ${isDark ? "text-[#bbcac6] hover:text-primary" : "text-[#5a5a5a] hover:text-[#0a7c6e]"}`}
 										>
 											{showConfirmPassword ? (
@@ -453,10 +498,22 @@ export default function RegisterPage() {
 											<Check className="text-black size-3.5" strokeWidth={3} />
 										)}
 									</span>
-									<span className={`text-[10px] leading-relaxed text-start select-none ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} onClick={() => setAgreeToTerms(!agreeToTerms)}>
+									<span
+										className={`text-[10px] leading-relaxed text-start select-none ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										onClick={() => setAgreeToTerms(!agreeToTerms)}
+									>
 										Dengan membuat akun, saya menyetujui{" "}
-										<span className={isDark ? "text-primary" : "text-[#0a7c6e]"}>Kebijakan Privasi</span> dan{" "}
-										<span className={isDark ? "text-primary" : "text-[#0a7c6e]"}>Syarat & Ketentuan</span>
+										<span
+											className={isDark ? "text-primary" : "text-[#0a7c6e]"}
+										>
+											Kebijakan Privasi
+										</span>{" "}
+										dan{" "}
+										<span
+											className={isDark ? "text-primary" : "text-[#0a7c6e]"}
+										>
+											Syarat & Ketentuan
+										</span>
 									</span>
 								</label>
 
@@ -485,7 +542,9 @@ export default function RegisterPage() {
 							</form>
 
 							{/* Login Link */}
-							<p className={`text-center mt-8 text-[11px] tracking-wider uppercase ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+							<p
+								className={`text-center mt-8 text-[11px] tracking-wider uppercase ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+							>
 								SUDAH PUNYA AKUN?{" "}
 								<Link
 									href="/login"

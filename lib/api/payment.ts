@@ -124,7 +124,7 @@ export const paymentApi = {
 				bundle_type: null,
 				purchased_at: null,
 				event_slug: "world-cup-2026",
-				price_idr: 10000,
+				price_idr: 30000,
 				pending_payment: {
 					invoice_id: null,
 					invoice_url: null,

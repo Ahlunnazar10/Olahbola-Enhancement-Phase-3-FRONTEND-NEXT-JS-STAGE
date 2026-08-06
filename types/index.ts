@@ -395,6 +395,8 @@ export interface GuessWhoQuestion {
 	description: string;
 	jersey_number: number | null;
 	clues_used: number;
+	clue_initials?: string;
+	correct_answer?: string;
 }
 
 export interface GuessWhoDemoQuestion {
@@ -487,6 +489,8 @@ export interface GuessWhoLeaderboardEntry {
 	level: number;
 	total_points: number;
 	duration_seconds: number;
+	total_attempts: number;
+	correct_answers: number;
 }
 
 // Payment - Midtrans types

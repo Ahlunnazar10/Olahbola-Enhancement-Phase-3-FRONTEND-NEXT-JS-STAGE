@@ -196,7 +196,7 @@ export default function PaymentPage() {
 												isDark ? "text-primary-container" : "text-[#0a7c6e]"
 											}`}
 										>
-											{(config?.bundle_price_idr ?? 10000).toLocaleString(
+											{(config?.bundle_price_idr ?? 30000).toLocaleString(
 												"id-ID",
 											)}
 										</span>

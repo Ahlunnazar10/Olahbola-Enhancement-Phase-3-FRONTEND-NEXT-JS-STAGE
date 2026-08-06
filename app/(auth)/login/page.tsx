@@ -185,41 +185,6 @@ export default function LoginPage() {
 				}}
 			/>
 
-			<div
-				className={`absolute bottom-[20%] left-[10%] floating-element hidden lg:block ${isDark ? "opacity-20" : "opacity-15"}`}
-				style={{ animationDelay: "1s" }}
-			>
-				<Rocket
-					className={`size-12 ${isDark ? "text-primary/10" : "text-[#0a7c6e]/10"}`}
-				/>
-			</div>
-
-			<div
-				className={`absolute top-[20%] right-[5%] floating-element hidden lg:block ${isDark ? "opacity-30" : "opacity-20"}`}
-				style={{ animationDelay: "3s" }}
-			>
-				<div
-					className={`p-6 rounded-full flex items-center justify-center ${isDark ? "glass-card border border-primary/40" : "bg-white/80 border border-[#0a7c6e]/30 shadow-lg"}`}
-				>
-					<Settings
-						className={`size-10 ${isDark ? "text-primary animate-spin" : "text-[#0a7c6e]"}`}
-					/>
-				</div>
-			</div>
-
-			<div
-				className={`absolute bottom-[10%] right-[15%] floating-element hidden lg:block ${isDark ? "opacity-20" : "opacity-15"}`}
-				style={{ animationDelay: "2s" }}
-			>
-				<div
-					className={`font-mono text-xs flex flex-col gap-1 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-				>
-					<span>&gt; LOAD_ENV_PROD</span>
-					<span>&gt; FETCH_USER_DATA</span>
-					<span>&gt; HANDSHAKE_SUCCESS</span>
-				</div>
-			</div>
-
 			{/* Main Content */}
 			<main className="min-h-screen flex items-center justify-center px-4 md:px-0 relative z-10">
 				{/* Theme Toggle */}
