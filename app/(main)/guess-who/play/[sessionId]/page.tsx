@@ -12,9 +12,15 @@ import { LoadingOverlay } from "@/components/guess-who/shared/LoadingOverlay";
 import {
 	formatTime,
 	EMPTY_BREAKDOWN,
+	scoreGameplayAnswer,
 	type TierBreakdown,
 } from "@/lib/guessWho/scoring";
 import { saveSessionState } from "@/lib/guessWho/storage";
+import {
+	clearQuestionCache,
+	loadQuestionCache,
+	normalizeAnswer,
+} from "@/lib/guessWho/cache";
 import type {
 	GuessWhoAnswerResult,
 	GuessWhoClueResponse,
@@ -85,6 +91,7 @@ export default function GuessWhoPlayPage({
 		breakdown: TierBreakdown,
 		level: number,
 	) => {
+		clearQuestionCache();
 		const qs = new URLSearchParams({
 			level: String(level),
 			score: String(score),
@@ -132,6 +139,17 @@ function PlayGame({
 	const [totalQuestions, setTotalQuestions] = useState(5);
 	const [allQuestions, setAllQuestions] = useState<GuessWhoQuestion[]>([]);
 
+	const [cachedQuestions, setCachedQuestions] = useState<
+		Array<{
+			question_id: string;
+			image_url: string;
+			description: string;
+			jersey_number: number | null;
+			clue_initials: string;
+			correct_answer: string;
+		} | null> | null
+	>(null);
+
 	// Anchor-based absolute timer
 	const timerAnchorMsRef = useRef(0);
 	const totalDurationSRef = useRef(0);
@@ -148,6 +166,16 @@ function PlayGame({
 		Array<{ tier: string; correct: boolean }>
 	>([]);
 	const countdownSfxPlayedRef = useRef(false);
+	const cachedQuestionsRef = useRef<
+		Array<{
+			question_id: string;
+			image_url: string;
+			description: string;
+			jersey_number: number | null;
+			clue_initials: string;
+			correct_answer: string;
+		} | null> | null
+	>(null);
 
 	const { playBacksound, stopBacksound, playSFX } = useGuessWhoSound();
 
@@ -191,6 +219,28 @@ function PlayGame({
 		retry: 1,
 	});
 
+	// Load cached questions from sessionStorage on mount.
+	// cache is pre-populated by the level-selection page before navigation.
+	useEffect(() => {
+		const cache = loadQuestionCache(sessionId);
+		if (cache) {
+			setCachedQuestions(
+				cache.questions.map((q) => ({
+					question_id: q.question_id,
+					image_url: q.image_url,
+					description: q.description,
+					jersey_number: q.jersey_number,
+					clue_initials: q.clue_initials,
+					correct_answer: q.correct_answer,
+				})),
+			);
+		}
+	}, [sessionId]);
+
+	useEffect(() => {
+		cachedQuestionsRef.current = cachedQuestions;
+	}, [cachedQuestions]);
+
 	// Populate state when session data arrives (only when session_id actually changes)
 	useEffect(() => {
 		if (!session) return;
@@ -225,6 +275,7 @@ function PlayGame({
 			setTimer(remaining);
 			if (remaining <= 0) {
 				finishedRef.current = true;
+				clearQuestionCache();
 				onFinish(scoreRef.current, breakdownRef.current, levelRef.current);
 			}
 			// Countdown SFX (play once when timer hits 10)
@@ -290,144 +341,99 @@ function PlayGame({
 		submittingRef.current = true;
 		pendingAnswerRef.current = true;
 		setSubmitting(true);
-		try {
-			const res = await apiGuessWhoClient.post(
-				endpoints.guessWhoAnswer(sessionId),
-				{ answer },
-			);
-			if (!res.data?.success)
-				throw new Error(res.data?.message ?? "Submit gagal");
-			const data = res.data as {
-				result: GuessWhoAnswerResult;
-				session: any;
-				next_question: {
-					id: string;
-					jersey_image_url: string;
-					question: string;
-					jersey_number: number | null;
-					clue_initials?: string;
-				} | null;
-			};
-			const mappedNextQuestion: GuessWhoQuestion | null = data.next_question
-				? {
-						question_id: data.next_question.id,
-						image_url: data.next_question.jersey_image_url,
-						description: data.next_question.question,
-						jersey_number: data.next_question.jersey_number,
-						clues_used: 0,
-					}
-				: null;
-			setLastResult(data.result);
-			setAnswered(true);
-			answeredRef.current = true;
-			submittingRef.current = false;
 
-			// Record answer for streak SFX.
-			// Tier-based correctness: perfect/partial/typo all count as a correct guess.
-			const tier = data.result.tier;
-			const correct = tier === "perfect" || tier === "partial" || tier === "typo";
-			answerHistoryRef.current.push({ tier, correct });
-
-			// Play SFX based on tier + streak.
-			// Rules:
-			//   perfect → "benar", streak of 2 correct → "ambil-sendiri-pialanya"
-			//   typo    → "yah-kocak-oke-lanjut"
-			//   partial → "benar"
-			//   wrong   → "salah", streak of 2 wrong → "bisa-main-gak-sih"
-			const recent = answerHistoryRef.current.slice(-2);
-			const isStreak = (
-				arr: typeof recent,
-				pred: (h: typeof arr[0]) => boolean,
-			) => arr.length === 2 && arr.every(pred);
-
-			if (correct) {
-				if (tier === "perfect") {
-					if (isStreak(recent, (h) => h.correct)) {
-						playSFX("ambil-sendiri-pialanya");
-					} else {
-						playSFX("benar");
-					}
-				} else if (tier === "typo") {
-					playSFX("yah-kocak-oke-lanjut");
-				} else {
-					// partial
-					playSFX("benar");
-				}
-			} else {
-				// wrong
-				if (isStreak(recent, (h) => !h.correct)) {
-					playSFX("bisa-main-gak-sih");
-				} else {
-					playSFX("salah");
-				}
-			}
-
-			setBreakdown((b) => ({
-				...b,
-				[data.result.tier]: b[data.result.tier] + 1,
-			}));
-
-			if (mappedNextQuestion) {
-				const newRemaining = Math.round(
-					data.session.remaining_time_seconds ??
-						data.session.countdown_seconds ??
-						data.session.duration_seconds,
-				);
-				const recalibratedTotal =
-					newRemaining > 0 ? newRemaining : (session?.duration_seconds ?? 90);
-				setTimeout(() => {
-					setScore(data.session.current_score ?? data.session.score ?? 0);
-					timerAnchorMsRef.current = Date.now();
-					totalDurationSRef.current = recalibratedTotal;
-					setCluesRemaining(data.session.clues_remaining ?? cluesRemaining);
-					setQuestionIndex((i) => i + 1);
-					setCurrentQuestion(mappedNextQuestion);
-					setSubmitting(false);
-					pendingAnswerRef.current = false;
-				}, 1500);
-			} else {
-				setTimeout(() => {
-					if (!finishedRef.current) {
-						finishedRef.current = true;
-						onFinish(
-							data.session.current_score,
-							{
-								...breakdownRef.current,
-								[data.result.tier]: breakdownRef.current[data.result.tier] + 1,
-							},
-							levelRef.current,
-						);
-					}
-					setSubmitting(false);
-					pendingAnswerRef.current = false;
-				}, 1500);
-			}
-		} catch (err: unknown) {
-			const axiosErr = err as AxiosError<{ message?: string }>;
-			const status = axiosErr?.response?.status;
-			const msg =
-				err && typeof err === "object" && "message" in err
-					? (err as { message: string }).message
-					: "Gagal submit jawaban";
-
-			console.error("[handleSubmit] error:", err);
-
-			if (status === 410) {
-				submittingRef.current = false;
-				pendingAnswerRef.current = false;
-				setSubmitting(false);
-				toast.error("Waktu bermain habis. Hasil disimpan.");
-				if (!finishedRef.current) {
-					finishedRef.current = true;
-					onFinish(scoreRef.current, breakdownRef.current, levelRef.current);
-				}
-			} else {
-				toast.error(msg);
-				submittingRef.current = false;
-				pendingAnswerRef.current = false;
-				setSubmitting(false);
+		// INSTANT scoring — ambil dari cache, bukan server.
+		// Ini dilakukan sebelum POST ke server agar UI merespons seketika.
+		let instantTier: GuessWhoAnswerResult["tier"] = "wrong";
+		let instantPoints = 0;
+		const cached = cachedQuestionsRef.current?.find(
+			(q): q is NonNullable<typeof q> => q?.question_id === currentQuestion?.question_id,
+		);
+		if (cached) {
+			const normAnswer = normalizeAnswer(answer);
+			const normCorrect = normalizeAnswer(cached.correct_answer);
+			if (normAnswer && normAnswer === normCorrect) {
+				instantTier = "perfect";
+				instantPoints = 50;
+			} else if (cached.clue_initials) {
+				const r = scoreGameplayAnswer(answer, cached.clue_initials);
+				instantTier = r.tier as GuessWhoAnswerResult["tier"];
+				instantPoints = r.points;
 			}
 		}
+
+		const newScore = scoreRef.current + instantPoints;
+		const finalResult: GuessWhoAnswerResult = {
+			tier: instantTier,
+			points_earned: instantPoints,
+			total_score: newScore,
+			matched_name: null,
+			correct: instantTier !== "wrong",
+		};
+
+		// Update UI seketika — tidak menunggu server sama sekali.
+		setLastResult(finalResult);
+		setAnswered(true);
+		answeredRef.current = true;
+		setScore(newScore);
+		setSubmitting(false);
+
+		// SFX & streak tracking.
+		const tier = finalResult.tier;
+		const correct = tier === "perfect" || tier === "partial" || tier === "typo";
+		answerHistoryRef.current.push({ tier, correct });
+		const recent = answerHistoryRef.current.slice(-2);
+		const isStreak = (
+			arr: typeof recent,
+			pred: (h: typeof arr[0]) => boolean,
+		) => arr.length === 2 && arr.every(pred);
+		if (correct) {
+			if (tier === "perfect" && isStreak(recent, (h) => h.correct)) {
+				playSFX("ambil-sendiri-pialanya");
+			} else {
+				playSFX("benar");
+			}
+		} else {
+			if (isStreak(recent, (h) => !h.correct)) {
+				playSFX("bisa-main-gak-sih");
+			} else {
+				playSFX("salah");
+			}
+		}
+		setBreakdown((b) => ({
+			...b,
+			[finalResult.tier]: b[finalResult.tier] + 1,
+		}));
+
+		// Fire-and-forget POST ke server — tidak menunda UI.
+		// Server akan menerima jawaban untuk sinkronisasi leaderboard,
+		// tapi kita tidak menunggu respons-nya.
+		apiGuessWhoClient.post(endpoints.guessWhoAnswer(sessionId), { answer })
+			.catch((err) =>
+				console.error("[handleSubmit] background sync failed:", err),
+			);
+
+		// Navigasi ke soal berikutnya setelah 1.5s (feedback visual).
+		setTimeout(() => {
+			const nextCached = cachedQuestionsRef.current?.[questionIndex + 1];
+			if (nextCached) {
+				setQuestionIndex((i) => i + 1);
+				setCurrentQuestion({
+					question_id: nextCached.question_id,
+					image_url: nextCached.image_url,
+					description: nextCached.description,
+					jersey_number: nextCached.jersey_number,
+					clues_used: 0,
+				});
+			} else {
+				if (!finishedRef.current) {
+					finishedRef.current = true;
+					clearQuestionCache();
+					onFinish(newScore, breakdownRef.current, levelRef.current);
+				}
+			}
+			pendingAnswerRef.current = false;
+		}, 1500);
 	};
 
 	const handleRequestClue = async () => {
@@ -441,30 +447,26 @@ function PlayGame({
 			!currentQuestion.question_id
 		) {
 			if (!currentQuestion?.question_id) {
-				console.warn(
-					"[handleRequestClue] question_id is empty, currentQuestion:",
-					currentQuestion,
-				);
+				console.warn("[handleRequestClue] question_id kosong");
 			}
 			return;
 		}
-		try {
-			const res = await apiGuessWhoClient.post(
-				endpoints.guessWhoClue(sessionId, currentQuestion.question_id),
-			);
-			if (!res.data?.success)
-				throw new Error(res.data?.message ?? "Ambil petunjuk gagal");
-			const clue = res.data.clue as GuessWhoClueResponse;
-			setRevealedClue(clue.initials || clue.player_name_hint);
-			setCluesRemaining(clue.clues_remaining);
-		} catch (err: unknown) {
-			const msg =
-				err && typeof err === "object" && "message" in err
-					? (err as { message: string }).message
-					: "Gagal ambil petunjuk";
-			console.error("[handleRequestClue] error:", err);
-			toast.error(msg);
+
+		// INSTANT: ambil clue dari cache, tampilkan seketika.
+		const cached = cachedQuestionsRef.current?.find(
+			(q): q is NonNullable<typeof q> => q?.question_id === currentQuestion?.question_id,
+		);
+		if (cached?.clue_initials) {
+			setRevealedClue(cached.clue_initials);
+			setCluesRemaining((c) => Math.max(0, c - 1));
 		}
+
+		// Fire-and-forget POST ke server — tidak menunda UI.
+		apiGuessWhoClient.post(
+			endpoints.guessWhoClue(sessionId, currentQuestion.question_id),
+		).catch((err) =>
+			console.error("[handleRequestClue] background sync failed:", err),
+		);
 	};
 
 	const [answer, setAnswer] = useState("");

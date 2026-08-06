@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { useAuthStore } from "@/stores/authStore";
 import { useUIStore } from "@/stores/uiStore";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +13,11 @@ import {
 	useGuessWhoAttemptCounts,
 } from "@/hooks/queries/useGuessWho";
 import { clearSessionState, loadSessionState } from "@/lib/guessWho/storage";
+import {
+  buildCacheFromQuestions,
+  clearQuestionCache,
+  saveQuestionCache,
+} from "@/lib/guessWho/cache";
 import type { GuessWhoSession } from "@/types";
 import type { TierBreakdown } from "@/lib/guessWho/scoring";
 import {
@@ -26,6 +32,7 @@ import { VawDemoScreen } from "@/components/guess-who/screens/VawDemoScreen";
 import { VawGameplayScreen } from "@/components/guess-who/screens/VawGameplayScreen";
 import { VawResultScreen } from "@/components/guess-who/screens/VawResultScreen";
 import { VawLoginModal } from "@/components/guess-who/modals/VawLoginModal";
+import { LoadingOverlay } from "@/components/guess-who/shared/LoadingOverlay";
 
 type AppMode = "intro" | "demo" | "playing" | "result";
 
@@ -39,6 +46,7 @@ export default function GuessWhoPage() {
 	const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 	const [session, setSession] = useState<GuessWhoSession | null>(null);
 	const [showLoginModal, setShowLoginModal] = useState(false);
+	const [startLoading, setStartLoading] = useState(false);
 	const [resultData, setResultData] = useState<{
 		score: number;
 		breakdown: TierBreakdown;
@@ -80,22 +88,6 @@ export default function GuessWhoPage() {
 
 	const qc = useQueryClient();
 
-	const commitNewSession = async (level: number) => {
-		try {
-			const fresh = await startMutation.mutateAsync(level);
-			setSession(fresh);
-			setMode("playing");
-			if (fresh?.session_id) {
-				// Invalidate stale session cache so play page fetches fresh data
-				qc.invalidateQueries({ queryKey: ["guess-who", "session"] });
-				router.push(`/guess-who/play/${fresh.session_id}`);
-			}
-		} catch (err) {
-			setMode("intro");
-			console.error("Start session failed:", err);
-		}
-	};
-
 	const handleStartAuthenticated = async (level: number) => {
 		setSelectedLevel(level);
 		if (!isAuthenticated) {
@@ -106,10 +98,36 @@ export default function GuessWhoPage() {
 		if (snap && snap.level === level) {
 			// Session yang belum selesai dianggap hangus — hapus dan mulai ulang.
 			clearSessionState();
-			await commitNewSession(level);
-			return;
 		}
-		await commitNewSession(level);
+		clearQuestionCache();
+		setStartLoading(true);
+		try {
+			const fresh = await startMutation.mutateAsync(level);
+
+			// Simpan semua pertanyaan + clue_initials + correct_answer ke cache
+			const cacheData = buildCacheFromQuestions(
+				fresh.session_id,
+				fresh.level,
+				fresh.duration_seconds,
+				fresh.total_questions,
+				fresh.clues_remaining,
+				fresh.questions,
+			);
+			saveQuestionCache(cacheData);
+
+			setSession(fresh);
+			setMode("playing");
+			if (fresh?.session_id) {
+				// Invalidate stale session cache so play page fetches fresh data
+				qc.invalidateQueries({ queryKey: ["guess-who", "session"] });
+				router.push(`/guess-who/play/${fresh.session_id}`);
+			}
+		} catch (err) {
+			setStartLoading(false);
+			console.error("Start session failed:", err);
+			toast.error("Gagal memulai permainan. Coba lagi.");
+			setMode("intro");
+		}
 	};
 
 	const handleDailyPlay = () => {
@@ -135,6 +153,7 @@ export default function GuessWhoPage() {
 		level: number,
 	) => {
 		clearSessionState();
+		clearQuestionCache();
 		// Invalidate stale session cache so "lanjutkan" won't appear for finished session
 		qc.invalidateQueries({ queryKey: ["guess-who", "session"] });
 		// Refresh level progress so completed_levels + unlocked_levels update immediately
@@ -150,6 +169,7 @@ export default function GuessWhoPage() {
 	const handlePlayAgain = () => {
 		if (!resultData) return;
 		clearSessionState();
+		clearQuestionCache();
 		qc.invalidateQueries({ queryKey: ["guess-who", "session"] });
 		// Refresh level progress so completed_levels + unlocked_levels are up to date
 		qc.invalidateQueries({ queryKey: ["guess-who", "level-progress"] });
@@ -339,6 +359,8 @@ export default function GuessWhoPage() {
 			{showLoginModal && (
 				<VawLoginModal onClose={() => setShowLoginModal(false)} />
 			)}
+
+			{startLoading && <LoadingOverlay message="Menyimpan data soal..." />}
 		</div>
 	);
 }
