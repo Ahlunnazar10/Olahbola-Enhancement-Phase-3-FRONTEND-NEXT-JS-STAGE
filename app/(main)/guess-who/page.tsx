@@ -14,9 +14,9 @@ import {
 } from "@/hooks/queries/useGuessWho";
 import { clearSessionState, loadSessionState } from "@/lib/guessWho/storage";
 import {
-  buildCacheFromQuestions,
-  clearQuestionCache,
-  saveQuestionCache,
+	buildCacheFromQuestions,
+	clearQuestionCache,
+	saveQuestionCache,
 } from "@/lib/guessWho/cache";
 import type { GuessWhoSession } from "@/types";
 import type { TierBreakdown } from "@/lib/guessWho/scoring";
@@ -55,8 +55,7 @@ export default function GuessWhoPage() {
 
 	const { data: config, isLoading: configLoading } = useGuessWhoConfig();
 	const startMutation = useGuessWhoStart();
-	const { data: levelProgress, isLoading: levelProgressLoading } =
-		useGuessWhoLevelProgress();
+	const { data: levelProgress } = useGuessWhoLevelProgress();
 	const attemptCounts = useGuessWhoAttemptCounts();
 
 	const meshRef = useRef<HTMLDivElement | null>(null);
@@ -87,6 +86,40 @@ export default function GuessWhoPage() {
 	}, []);
 
 	const qc = useQueryClient();
+
+	const sorted = (config?.levels ?? []).slice().sort((a, b) => a.level - b.level);
+	const completedSet = new Set(levelProgress?.completed_levels ?? []);
+	const unlockedSet = new Set(levelProgress?.unlocked_levels ?? []);
+	const highestUnlocked = levelProgress?.highest_unlocked_level ?? 1;
+	const highestCompleted = levelProgress?.highest_completed_level ?? 0;
+	const maxLevel = levelProgress?.max_level ?? 5;
+	const isAllComplete = highestCompleted >= maxLevel;
+	const isHighestUnlockedDone = completedSet.has(highestUnlocked);
+	const activeLevel = isHighestUnlockedDone ? 1 : highestUnlocked;
+
+	const levelCards = sorted.map((level, index) => {
+		const isCompleted = completedSet.has(level.level);
+		const isUnlocked = unlockedSet.has(level.level);
+		const isLocked = !isUnlocked;
+		const isActive = !isAllComplete && level.level === activeLevel;
+		return (
+			<VawLevelCard
+				key={level.id}
+				level={level}
+				index={index}
+				isActive={isActive}
+				isLocked={isLocked}
+				attemptCount={attemptCounts[level.level] ?? 0}
+				isCompleted={isCompleted}
+				onStart={() => handleStartAuthenticated(level.id)}
+			/>
+		);
+	});
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+	}, [mode]);
 
 	const handleStartAuthenticated = async (level: number) => {
 		setSelectedLevel(level);
@@ -235,7 +268,7 @@ export default function GuessWhoPage() {
 
 								{isAuthenticated && (
 									<>
-										{configLoading || levelProgressLoading || !levelProgress ? (
+										{configLoading ? (
 											<div className="mt-2">
 												<h3 className="font-headline-md text-xl mb-4 uppercase tracking-wider">
 													Semua Level
@@ -246,71 +279,16 @@ export default function GuessWhoPage() {
 													))}
 												</div>
 											</div>
-										) : (
-											config &&
-											config.levels.length > 0 && (
-												<div className="mt-2">
-													<h3 className="font-headline-md text-xl mb-4 uppercase tracking-wider">
-														Semua Level
-													</h3>
-													<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-														{(() => {
-															const sorted = [...config.levels].sort(
-																(a, b) => a.level - b.level,
-															);
-															const completedSet = new Set(
-																levelProgress?.completed_levels ?? [],
-															);
-															const unlockedSet = new Set(
-																levelProgress?.unlocked_levels ?? [],
-															);
-															const highestUnlocked =
-																levelProgress?.highest_unlocked_level ?? 1;
-															const highestCompleted =
-																levelProgress?.highest_completed_level ?? 0;
-															const maxLevel = levelProgress?.max_level ?? 5;
-															// All levels are truly complete only when the user has
-															// finished the highest-level game. Unlocked ≠ completed.
-															const isAllComplete =
-																highestCompleted >= maxLevel;
-															// Which level gets the active highlight:
-															//  • Highest unlocked level (the next one to beat), unless
-															//    it's already been completed — then fall back to 1.
-															const isHighestUnlockedDone =
-																completedSet.has(highestUnlocked);
-															const activeLevel = isHighestUnlockedDone
-																? 1
-																: highestUnlocked;
-															return sorted.map((level, index) => {
-																const isCompleted = completedSet.has(
-																	level.level,
-																);
-																const isUnlocked = unlockedSet.has(level.level);
-																const isLocked = !isUnlocked;
-																const isActive =
-																	!isAllComplete && level.level === activeLevel;
-																return (
-																	<VawLevelCard
-																		key={level.id}
-																		level={level}
-																		index={index}
-																		isActive={isActive}
-																		isLocked={isLocked}
-																		attemptCount={
-																			attemptCounts[level.level] ?? 0
-																		}
-																		isCompleted={isCompleted}
-																		onStart={() =>
-																			handleStartAuthenticated(level.id)
-																		}
-																	/>
-																);
-															});
-														})()}
-													</div>
+										) : config && config.levels.length > 0 ? (
+											<div className="mt-2">
+												<h3 className="font-headline-md text-xl mb-4 uppercase tracking-wider">
+													Semua Level
+												</h3>
+												<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+													{levelCards}
 												</div>
-											)
-										)}
+											</div>
+										) : null}
 									</>
 								)}
 							</section>
@@ -360,7 +338,7 @@ export default function GuessWhoPage() {
 				<VawLoginModal onClose={() => setShowLoginModal(false)} />
 			)}
 
-			{startLoading && <LoadingOverlay message="Menyimpan data soal..." />}
+			{startLoading && <LoadingOverlay message="Tunggu bentar ya..." />}
 		</div>
 	);
 }

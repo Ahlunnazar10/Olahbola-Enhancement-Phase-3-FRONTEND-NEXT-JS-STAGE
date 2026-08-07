@@ -139,16 +139,14 @@ function PlayGame({
 	const [totalQuestions, setTotalQuestions] = useState(5);
 	const [allQuestions, setAllQuestions] = useState<GuessWhoQuestion[]>([]);
 
-	const [cachedQuestions, setCachedQuestions] = useState<
-		Array<{
-			question_id: string;
-			image_url: string;
-			description: string;
-			jersey_number: number | null;
-			clue_initials: string;
-			correct_answer: string;
-		} | null> | null
-	>(null);
+	const [cachedQuestions, setCachedQuestions] = useState<Array<{
+		question_id: string;
+		image_url: string;
+		description: string;
+		jersey_number: number | null;
+		clue_initials: string;
+		correct_answer: string;
+	} | null> | null>(null);
 
 	// Anchor-based absolute timer
 	const timerAnchorMsRef = useRef(0);
@@ -162,26 +160,30 @@ function PlayGame({
 	const answeredRef = useRef(false);
 	const submittingRef = useRef(false);
 	const pendingAnswerRef = useRef(false);
-	const answerHistoryRef = useRef<
-		Array<{ tier: string; correct: boolean }>
-	>([]);
+	const answerHistoryRef = useRef<Array<{ tier: string; correct: boolean }>>(
+		[],
+	);
 	const countdownSfxPlayedRef = useRef(false);
-	const cachedQuestionsRef = useRef<
-		Array<{
-			question_id: string;
-			image_url: string;
-			description: string;
-			jersey_number: number | null;
-			clue_initials: string;
-			correct_answer: string;
-		} | null> | null
-	>(null);
+	const cachedQuestionsRef = useRef<Array<{
+		question_id: string;
+		image_url: string;
+		description: string;
+		jersey_number: number | null;
+		clue_initials: string;
+		correct_answer: string;
+	} | null> | null>(null);
 
 	const { playBacksound, stopBacksound, playSFX } = useGuessWhoSound();
 
-	useEffect(() => { scoreRef.current = score; }, [score]);
-	useEffect(() => { breakdownRef.current = breakdown; }, [breakdown]);
-	useEffect(() => { levelRef.current = level; }, [level]);
+	useEffect(() => {
+		scoreRef.current = score;
+	}, [score]);
+	useEffect(() => {
+		breakdownRef.current = breakdown;
+	}, [breakdown]);
+	useEffect(() => {
+		levelRef.current = level;
+	}, [level]);
 
 	// Play backsound ONCE when currentQuestion becomes available.
 	// Triggered on session load AND on subsequent question loads.
@@ -347,7 +349,8 @@ function PlayGame({
 		let instantTier: GuessWhoAnswerResult["tier"] = "wrong";
 		let instantPoints = 0;
 		const cached = cachedQuestionsRef.current?.find(
-			(q): q is NonNullable<typeof q> => q?.question_id === currentQuestion?.question_id,
+			(q): q is NonNullable<typeof q> =>
+				q?.question_id === currentQuestion?.question_id,
 		);
 		if (cached) {
 			const normAnswer = normalizeAnswer(answer);
@@ -385,7 +388,7 @@ function PlayGame({
 		const recent = answerHistoryRef.current.slice(-2);
 		const isStreak = (
 			arr: typeof recent,
-			pred: (h: typeof arr[0]) => boolean,
+			pred: (h: (typeof arr)[0]) => boolean,
 		) => arr.length === 2 && arr.every(pred);
 		if (correct) {
 			if (tier === "perfect" && isStreak(recent, (h) => h.correct)) {
@@ -408,7 +411,8 @@ function PlayGame({
 		// Fire-and-forget POST ke server — tidak menunda UI.
 		// Server akan menerima jawaban untuk sinkronisasi leaderboard,
 		// tapi kita tidak menunggu respons-nya.
-		apiGuessWhoClient.post(endpoints.guessWhoAnswer(sessionId), { answer })
+		apiGuessWhoClient
+			.post(endpoints.guessWhoAnswer(sessionId), { answer })
 			.catch((err) =>
 				console.error("[handleSubmit] background sync failed:", err),
 			);
@@ -454,7 +458,8 @@ function PlayGame({
 
 		// INSTANT: ambil clue dari cache, tampilkan seketika.
 		const cached = cachedQuestionsRef.current?.find(
-			(q): q is NonNullable<typeof q> => q?.question_id === currentQuestion?.question_id,
+			(q): q is NonNullable<typeof q> =>
+				q?.question_id === currentQuestion?.question_id,
 		);
 		if (cached?.clue_initials) {
 			setRevealedClue(cached.clue_initials);
@@ -462,11 +467,11 @@ function PlayGame({
 		}
 
 		// Fire-and-forget POST ke server — tidak menunda UI.
-		apiGuessWhoClient.post(
-			endpoints.guessWhoClue(sessionId, currentQuestion.question_id),
-		).catch((err) =>
-			console.error("[handleRequestClue] background sync failed:", err),
-		);
+		apiGuessWhoClient
+			.post(endpoints.guessWhoClue(sessionId, currentQuestion.question_id))
+			.catch((err) =>
+				console.error("[handleRequestClue] background sync failed:", err),
+			);
 	};
 
 	const [answer, setAnswer] = useState("");
@@ -501,32 +506,40 @@ function PlayGame({
 				<div
 					className="absolute inset-0 velocity-mesh"
 					style={{
-						maskImage: "radial-gradient(circle at center, black 30%, transparent 85%)",
-						WebkitMaskImage: "radial-gradient(circle at center, black 30%, transparent 85%)",
+						maskImage:
+							"radial-gradient(circle at center, black 30%, transparent 85%)",
+						WebkitMaskImage:
+							"radial-gradient(circle at center, black 30%, transparent 85%)",
 						opacity: 0.7,
 					}}
 				/>
 				<div className="batik-overlay absolute inset-0" />
 				<div
 					className="absolute top-[-12%] left-[-8%] w-[45%] h-[45%] rounded-full"
-					style={{ background: "rgba(0, 194, 177, 0.12)", filter: "blur(150px)" }}
+					style={{
+						background: "rgba(0, 194, 177, 0.12)",
+						filter: "blur(150px)",
+					}}
 				/>
 				<div
 					className="absolute bottom-[-12%] right-[-8%] w-[40%] h-[40%] rounded-full"
-					style={{ background: "rgba(0, 194, 177, 0.08)", filter: "blur(120px)" }}
+					style={{
+						background: "rgba(0, 194, 177, 0.08)",
+						filter: "blur(120px)",
+					}}
 				/>
 			</div>
 
 			{/* Foreground content */}
 			<section className="relative z-10 max-w-3xl mx-auto pt-2 pb-16 animate-fade-up px-4 md:px-0">
-				<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center justify-between mb-6 md:mb-4">
 					<button
 						onClick={onExit}
-						className="flex items-center gap-2 font-label-bold uppercase tracking-widest text-sm hover:opacity-80"
+						className="flex items-center gap-2 font-label-bold uppercase tracking-widest text-[8px] md:text-sm hover:opacity-80"
 						style={{ color: "#00C2B1" }}
 					>
 						<ArrowLeft style={{ width: 16, height: 16 }} />
-						Keluar
+						<span className="hidden md:inline">Keluar</span>
 					</button>
 					<div className="flex items-center gap-3">
 						<span
@@ -554,7 +567,7 @@ function PlayGame({
 					</div>
 				</div>
 
-				<div className="grid grid-cols-2 gap-3 md:gap-6 mb-6">
+				<div className="grid grid-cols-2 gap-3 md:gap-6 mb-3 md:mb-6">
 					<div className="glass-card-static rounded-3xl p-0 md:p-6 flex items-center justify-center">
 						<JerseyDisplay
 							imageUrl={currentQuestion.image_url}
@@ -609,7 +622,10 @@ function PlayGame({
 									</p>
 									<p
 										className="text-xl font-black italic"
-										style={{ color: "#FFD700", textShadow: "0 0 20px rgba(255, 215, 0, 0.5)" }}
+										style={{
+											color: "#FFD700",
+											textShadow: "0 0 20px rgba(255, 215, 0, 0.5)",
+										}}
 									>
 										{revealedClue}
 									</p>
@@ -684,11 +700,15 @@ function PlayGame({
 							<button
 								type="submit"
 								disabled={
-									submitting || answered || finishedRef.current || !answer.trim()
+									submitting ||
+									answered ||
+									finishedRef.current ||
+									!answer.trim()
 								}
 								className="px-6 py-3 rounded-xl font-label-bold tracking-widest text-xs uppercase disabled:opacity-30 transition-all hover:scale-105"
 								style={{
-									background: "linear-gradient(135deg, #43decc 0%, #0a7c6e 100%)",
+									background:
+										"linear-gradient(135deg, #43decc 0%, #0a7c6e 100%)",
 									color: "#0a1412",
 									boxShadow: "0 0 20px rgba(0, 194, 177, 0.3)",
 								}}

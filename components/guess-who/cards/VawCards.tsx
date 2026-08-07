@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Image from "next/image";
 import { Play, ChevronRight, Lock, RefreshCcw, Bolt } from "lucide-react";
 import type { GuessWhoLevelConfig } from "@/types";
@@ -127,7 +128,7 @@ export function DailyChallengeCard({ onClick }: { onClick: () => void }) {
 				<div>
 					<h3 className="font-headline-md text-headline-md">Main Sekarang</h3>
 					<p className="text-sm" style={{ color: "#bbcac6" }}>
-						Main dan tembus klasemen tertinggi!
+						Main dan tembus klasemen teratas!
 					</p>
 				</div>
 			</div>
@@ -182,7 +183,7 @@ export function PracticeModeCard({ onClick }: { onClick: () => void }) {
 }
 
 // ===== VawLevelCard =====
-export function VawLevelCard({
+export const VawLevelCard = memo(function VawLevelCard({
 	level,
 	index,
 	isActive,
@@ -208,14 +209,13 @@ export function VawLevelCard({
 			)}
 		>
 			<div
-				className="absolute -top-10 -right-10 w-32 h-32 rounded-full"
+				className="absolute -top-10 -right-10 w-32 h-32 rounded-full glow-blur"
 				style={{
 					background: isActive
 						? "rgba(0, 194, 177, 0.2)"
 						: isLocked
 							? "rgba(255, 193, 132, 0.1)"
 							: "rgba(0, 194, 177, 0.05)",
-					filter: "blur(40px)",
 				}}
 				aria-hidden
 			/>
@@ -303,4 +303,4 @@ export function VawLevelCard({
 			</div>
 		</div>
 	);
-}
+});
