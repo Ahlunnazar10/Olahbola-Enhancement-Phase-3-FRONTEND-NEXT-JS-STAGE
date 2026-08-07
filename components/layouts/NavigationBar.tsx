@@ -10,6 +10,7 @@ import { useUIStore } from "@/stores/uiStore";
 import { GoogleTranslate } from "@/components/GoogleTranslate/GoogleTranslate";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { LogoutOverlay } from "@/components/layouts/LogoutOverlay";
 
 const navLinks = [
 	{ href: "/", label: "Kickoff" },
@@ -51,6 +52,8 @@ export function NavigationBar() {
 		}
 	};
 
+	const isLoggingOut = logoutMutation.isPending;
+
 	const getProfilePicture = () => {
 		if (!user?.profilePicture) return "/icons/user-circle.svg";
 		return user.isOauth
@@ -60,6 +63,7 @@ export function NavigationBar() {
 
 	return (
 		<>
+			{isLoggingOut && <LogoutOverlay />}
 			{/* Navbar */}
 			<div
 				className={cn(
@@ -120,10 +124,10 @@ export function NavigationBar() {
 									<Link
 										href={link.href}
 										className={cn(
-											`text-[16px] ${isDark ? "hover:text-[#1fe6da]" : "hover:text-[#076156]"}  transition-colors notranslate font-medium`,
+											`text-[16px] ${isDark ? "hover:text-green" : "hover:text-[#076156]"}  transition-colors notranslate font-medium`,
 											pathname === link.href
 												? isDark
-													? `text-[#1fe6da] font-semibold`
+													? `text-green font-semibold`
 													: "text-[#0a7c6e] font-semibold"
 												: isDark
 													? "text-white"
@@ -140,7 +144,7 @@ export function NavigationBar() {
 								href={isAuthenticated ? "/profile" : "/login"}
 								className={cn(
 									"transition-colors rounded-full",
-									isDark ? "text-[#1fe6da]" : "text-[#0a7c6e]",
+									isDark ? "text-green" : "text-[#0a7c6e]",
 									isDark ? "hover:text-[#1bc7bb]" : "hover:text-[#095a50]",
 								)}
 							>
@@ -227,9 +231,9 @@ export function NavigationBar() {
 								<Link
 									href={link.href}
 									className={cn(
-										"text-[16px] md:text-xl hover:text-[#1fe6da] transition-colors",
+										"text-[16px] md:text-xl hover:text-green transition-colors",
 										pathname === link.href
-											? "text-[#1fe6da] font-semibold"
+											? "text-green font-semibold"
 											: "text-white",
 									)}
 								>
@@ -246,8 +250,8 @@ export function NavigationBar() {
 									className={cn(
 										"text-[16px] md:text-xl transition-colors notranslate",
 										pathname === "/login"
-											? "text-[#1fe6da] font-semibold"
-											: "text-white hover:text-[#1fe6da]",
+											? "text-green font-semibold"
+											: "text-white hover:text-green",
 									)}
 								>
 									Login
