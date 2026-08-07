@@ -209,13 +209,14 @@ export const VawLevelCard = memo(function VawLevelCard({
 			)}
 		>
 			<div
-				className="absolute -top-10 -right-10 w-32 h-32 rounded-full glow-blur"
+				className="absolute -top-10 -right-10 w-32 h-32 rounded-full"
 				style={{
 					background: isActive
 						? "rgba(0, 194, 177, 0.2)"
 						: isLocked
 							? "rgba(255, 193, 132, 0.1)"
 							: "rgba(0, 194, 177, 0.05)",
+					filter: "blur(40px)",
 				}}
 				aria-hidden
 			/>
