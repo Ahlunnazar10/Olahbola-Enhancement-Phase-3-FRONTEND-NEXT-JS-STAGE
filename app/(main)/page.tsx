@@ -204,7 +204,25 @@ export default function HomePage() {
 	const bannerSlides: BannerSlide[] = useMemo(() => {
 		const slides: BannerSlide[] = [];
 
-		// Slide 1: Event Banner - Teater Bola Asean (AFF Edition)
+		// Slide 1: HeroPlay Kickoff Banner
+		slides.push({
+			id: "hero-play-kickoff",
+			type: "cta" as const,
+			imageFallback: "/images/heroplay-banner/banner-1.webp",
+			imageMobileFallback: "/images/heroplay-banner/banner-1-mobile.webp",
+			heroPlayLayout: {
+				highlightedWord: "Kota Mana",
+				titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
+				highlightedLineIndex: 0,
+				description: "Menangkan hadiah menarik dan buat\nkotamu bangga!",
+				descriptionMobile:
+					"Ikuti Fruit Ninja City Battle terbaru dan bawa kota kamu menuju puncak",
+				buttonText: "Main Sekarang",
+				buttonHref: "https://www.mainhero.id",
+			},
+		});
+
+		// Slide 2: Event Banner - Teater Bola Asean (AFF Edition)
 		slides.push({
 			id: "event-teater-bola-asean",
 			type: "event" as const,
@@ -230,7 +248,7 @@ export default function HomePage() {
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
-		// Slide 2: Article banner (if available)
+		// Slide 3: Article banner (if available)
 		if (featuredArticle) {
 			slides.push({
 				id: `article-${featuredArticle.id}`,
@@ -263,7 +281,7 @@ export default function HomePage() {
 		setFeaturedLoading(true);
 		try {
 			const response = await apiClient.get(
-				"/api/v1/article/piala-presiden-2026-8-tim-rp6-miliar",
+				"/api/v1/article/fakta-unik-pemain-spanyol-juara-catur-tukang-kayu",
 			);
 			if (response.data.status === "success") {
 				setFeaturedArticle(response.data.data);

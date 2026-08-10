@@ -98,6 +98,19 @@ export interface BannerSlide {
 
 		title: string;
 	}[];
+
+	// HeroPlay custom slide — used by kickoff right-aligned banners (e.g. Football City Battle).
+	// Distinct from generic cta/event because layout/text/button styling come from design spec,
+	// not the existing cta/event branches.
+	heroPlayLayout?: {
+		highlightedWord?: string; // word inside the title to wrap with a shadowed span
+		titleLines: string[]; // lines for the heading, rendered top->bottom
+		highlightedLineIndex?: number; // which line contains the highlighted word
+		description: string;
+		descriptionMobile?: string; // alternate description for mobile view
+		buttonText: string;
+		buttonHref: string;
+	};
 }
 
 interface BannerSliderProps {
@@ -259,11 +272,13 @@ export function BannerSlider({
 												: "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
 										: slide.type === "event"
 											? "bg-linear-to-t from-[#050505]/10 via-transparent to-[#050505]/10"
-											: `bg-linear-to-r ${
-													isDark
-														? "from-black via-[#0f1412]/20 to-transparent"
-														: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
-												}`
+											: slide.heroPlayLayout
+												? "bg-linear-to-r from-transparent via-transparent to-black/40"
+												: `bg-linear-to-r ${
+														isDark
+															? "from-black via-[#0f1412]/20 to-transparent"
+															: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
+													}`
 							}`}
 						/>
 
@@ -494,9 +509,72 @@ export function BannerSlider({
 									)}
 								</div>
 							</div>
+						) : slide.heroPlayLayout ? (
+							/* HeroPlay Right-Aligned Layout */
+							<div className="relative z-10 w-full h-full flex items-center">
+								<div className="relative z-20 w-full px-6 md:px-12 mr-auto ml-4 md:mr-16 lg:mr-32 text-center md:text-right mt-66 md:mt-0">
+									{/* Title with highlighted word */}
+									<h2 className="text-3xl md:text-3xl lg:text-[44px] font-bold uppercase leading-none mb-2 md:mb-4">
+										{slide.heroPlayLayout.titleLines.map((line, lineIdx) => {
+											const hasHighlight =
+												slide.heroPlayLayout!.highlightedLineIndex === lineIdx;
+											const targetWords = (
+												slide.heroPlayLayout!.highlightedWord ?? ""
+											).split(" ");
+											return (
+												<span key={lineIdx} className="block">
+													{line.split(" ").map((word, wordIdx, arr) => {
+														const isHighlighted =
+															hasHighlight && targetWords.includes(word);
+														return (
+															<span
+																key={wordIdx}
+																className={
+																	isHighlighted
+																		? "text-[#1FE6DA]"
+																		: "text-white"
+																}
+															>
+																{word}
+																{wordIdx < arr.length - 1 && " "}
+															</span>
+														);
+													})}
+												</span>
+											);
+										})}
+									</h2>
+									{/* Description */}
+									{slide.heroPlayLayout.description && (
+										<p className="text-base md:text-xl mb-4 md:mb-6 mx-auto md:mx-0">
+											{(isMobile && slide.heroPlayLayout.descriptionMobile
+												? slide.heroPlayLayout.descriptionMobile
+												: slide.heroPlayLayout.description
+											)
+												.split("\n")
+												.map((line, i, arr) => (
+													<span key={i}>
+														{line}
+														{i < arr.length - 1 && <br />}
+													</span>
+												))}
+										</p>
+									)}
+									{/* Button */}
+									{slide.heroPlayLayout.buttonText &&
+										slide.heroPlayLayout.buttonHref && (
+											<a
+												href={slide.heroPlayLayout.buttonHref}
+												target="_blank"
+												className="inline-flex items-center justify-center gap-2 px-12 py-4 rounded-xl font-bold tracking-wide text-sm md:text-base bg-[#1FE6DA] text-black shadow-[0_8px_10px_0_rgba(0,0,0,0.5)] hover:scale-105 active:scale-95 transition-all duration-300"
+											>
+												{slide.heroPlayLayout.buttonText}!
+											</a>
+										)}
+								</div>
+							</div>
 						) : slide.type === "cta" ? (
 							/* CTA Type */
-
 							<div className="relative z-10 w-full h-full flex items-center">
 								<div className="relative z-20 w-full max-w-2xl lg:max-w-4xl px-14 md:px-8 ml-auto mr-4 md:mr-16 lg:mr-32 text-center md:text-right mt-30 md:mt-0">
 									{slide.ctaTitle && (
@@ -508,7 +586,6 @@ export function BannerSlider({
 											))}
 										</h2>
 									)}
-
 									{slide.ctaSubtitle && (
 										<p className="text-sm md:text-lg font-semibold leading-relaxed mb-6 md:mb-8 max-w-lg ml-auto">
 											<span className="text-[#43decc]">
@@ -516,7 +593,6 @@ export function BannerSlider({
 											</span>
 										</p>
 									)}
-
 									{slide.ctaCtaText && slide.ctaCtaHref && (
 										<a
 											data-gtm-cta="DAFTAR SEKARANG!"
@@ -539,14 +615,11 @@ export function BannerSlider({
 														d="M13 10V3L4 14h7v7l9-11h-7z"
 													/>
 												</svg>
-
 												{slide.ctaCtaText}
 											</span>
-
 											<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
 										</a>
 									)}
-
 									{slide.ctaTerms && (
 										<Link
 											href="/syarat-dan-ketentuan-football-city-battle"
