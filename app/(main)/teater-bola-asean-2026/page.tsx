@@ -274,7 +274,7 @@ export default function TeaterBolaAseanPage() {
 	const { isAuthenticated, user } = useAuthStore();
 	const isDark = theme === "dark";
 
-	const [activePhase, setActivePhase] = useState("group_stage");
+	const [activePhase, setActivePhase] = useState("semi_final");
 	const [activeGroup, setActiveGroup] = useState("A");
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
@@ -300,7 +300,7 @@ export default function TeaterBolaAseanPage() {
 	const { data: phasesData, isLoading: phasesLoading } = usePhases();
 	const { data: matchesData, isLoading: matchesLoading } = useMatches({
 		phase: activePhase,
-		...(activePhase === "group_stage" && { group: activeGroup }),
+		...(activePhase === "semi_final" && { group: activeGroup }),
 	});
 	const { data: leaderboardData, isLoading: leaderboardLoading } =
 		useLeaderboard();
