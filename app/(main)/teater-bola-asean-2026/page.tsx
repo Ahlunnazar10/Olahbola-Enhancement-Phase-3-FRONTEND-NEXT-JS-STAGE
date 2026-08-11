@@ -300,7 +300,7 @@ export default function TeaterBolaAseanPage() {
 	const { data: phasesData, isLoading: phasesLoading } = usePhases();
 	const { data: matchesData, isLoading: matchesLoading } = useMatches({
 		phase: activePhase,
-		...(activePhase === "semi_final" && { group: activeGroup }),
+		...(activePhase === "group_stage" && { group: activeGroup }),
 	});
 	const { data: leaderboardData, isLoading: leaderboardLoading } =
 		useLeaderboard();
