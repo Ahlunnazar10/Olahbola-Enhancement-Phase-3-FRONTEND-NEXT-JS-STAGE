@@ -170,20 +170,42 @@ export function NavigationBar() {
 					</nav>
 
 					{/* Right Section - User + CTA Buttons */}
-					<div className="hidden lg:flex items-center gap-4">
+					<div className="hidden lg:flex items-center">
 						{/* CTA Buttons - Desktop */}
-						<div className="flex items-center gap-3">
-							{/* Teater Bola Asean 2026! Button */}
+						<div className="flex items-center gap-2">
+							{/* Main City Battle! Button */}
 							<Link
-								href="/teater-bola-asean-2026"
+								href="http://mainhero.id"
 								rel="noopener noreferrer"
+								target="_blank"
 								className={cn(
-									"group relative overflow-hidden px-5 py-2.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-300",
+									"group relative overflow-hidden px-4 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-300",
 									"bg-linear-to-r from-[#ffaa00] to-[#ff9500] text-black",
 									"shadow-[0_0_20px_rgba(255,170,0,0.4)] hover:shadow-[0_0_35px_rgba(255,170,0,0.7)]",
 									"hover:scale-105 active:scale-95",
 									isDark
 										? "border border-[#ffaa00]/30"
+										: "border border-[#e69500]/30",
+								)}
+							>
+								<span className="relative z-10 flex items-center gap-2">
+									Main City Battle
+								</span>
+								{/* Shine effect */}
+								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
+							</Link>
+
+							{/* Teater Bola Asean 2026! Button */}
+							<Link
+								href="/teater-bola-asean-2026"
+								rel="noopener noreferrer"
+								className={cn(
+									"group relative overflow-hidden px-4 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-300",
+									"bg-linear-to-r from-primary to-[#9FE8E2] text-black",
+									"shadow-[0_0_20px_rgba(159,232,226,0.4)] hover:shadow-[0_0_35px_rgba(159,232,226,0.7)]",
+									"hover:scale-105 active:scale-95",
+									isDark
+										? "border border-primary/30"
 										: "border border-[#e69500]/30",
 								)}
 							>
@@ -262,10 +284,18 @@ export function NavigationBar() {
 
 					{/* CTA Buttons - Mobile */}
 					<div className="flex flex-col gap-2 mb-4">
+						{/* Main City Battle Button */}
+						<Link
+							href="https://www.mainhero.id"
+							className="flex items-center justify-center gap-1.5 px-3 py-2 bg-[#ffaa00] text-black font-bold rounded-lg text-xs hover:bg-[#ffb727] transition-colors"
+						>
+							Main City Battle
+						</Link>
+
 						{/* Teater Bola Asean 2026 Button */}
 						<Link
 							href="/teater-bola-asean-2026"
-							className="flex items-center justify-center gap-1.5 px-3 py-2 bg-[#ffaa00] text-black font-bold rounded-lg text-xs hover:bg-[#ffb727] transition-colors"
+							className="flex items-center justify-center gap-1.5 px-3 py-2 bg-[#1FE6DA] text-black font-bold rounded-lg text-xs hover:bg-[#1AC9BF] transition-colors"
 						>
 							Teater Bola Asean 2026
 						</Link>
