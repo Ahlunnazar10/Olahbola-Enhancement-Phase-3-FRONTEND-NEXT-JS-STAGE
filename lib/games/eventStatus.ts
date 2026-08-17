@@ -9,10 +9,7 @@
  *   - Update `endedLabel` bila perlu (mis. "Season 2").
  */
 
-export type GameEventKey =
-	| "prediksiSkor"
-	| "quiz"
-	| "teaterBolaAsean";
+export type GameEventKey = "prediksiSkor" | "quiz" | "teaterBolaAsean";
 
 export interface GameEventStatus {
 	isEnded: boolean;
@@ -44,7 +41,7 @@ export interface EventEndedNotice {
 export const EVENT_ENDED_NOTICE: EventEndedNotice = {
 	title: "Event Telah Berakhir",
 	message:
-		"Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi admin@olahbola.com untuk mengkonfirmasi klaim hadiah.",
+		"Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi admin@olahbola.com untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.",
 	contactEmail: "admin@olahbola.com",
 	emailSubject: "Klaim Hadiah — Olahbola Teater Bola Dunia Season 1",
 };
