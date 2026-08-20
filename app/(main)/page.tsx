@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import AOS from "aos";
 import Link from "next/link";
 import Image from "next/image";
-import Script from "next/script";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "@/lib/api/client";
-import { useAuthStore } from "@/stores/authStore";
 import { useUIStore } from "@/stores/uiStore";
 import type { Article, Interview } from "@/types";
-import { ArrowRight, Play, Circle, ArrowUpRight } from "lucide-react";
+import { ArrowRight, Play, Circle } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
 import { BannerSlider } from "@/components/banner-slider/BannerSlider";
-import AdSlot from "@/components/ads/AdSlot";
 
 interface TeaterAseanLeaderboardEntry {
 	rank: number;
@@ -59,7 +57,6 @@ const brandLogos = [
 ];
 
 export default function HomePage() {
-	const { user, isAuthenticated } = useAuthStore();
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
 
@@ -81,13 +78,17 @@ export default function HomePage() {
 	const [teaterAseanLoading, setTeaterAseanLoading] = useState(false);
 	const [teaterAseanError, setTeaterAseanError] = useState<string | null>(null);
 	const [heroPlayBgLoaded, setHeroPlayBgLoaded] = useState(false);
+	const [activeBannerIndex, setActiveBannerIndex] = useState(0);
+	const heroSectionRef = useRef<HTMLElement>(null);
 
 	const { ref: articleRef, inView: articleVisible } = useSectionInView(0.1);
 	const { ref: socmedRef, inView: socmedVisible } = useSectionInView(0.1);
 	const { ref: interviewRef, inView: interviewVisible } = useSectionInView(0.1);
 	const { ref: partnerRef, inView: partnerVisible } = useSectionInView(0.1);
 	const { ref: youtubeRef, inView: youtubeVisible } = useSectionInView(0.1);
-	const { ref: heroPlayRef, inView: heroPlayVisible } = useSectionInView(0.1);
+	const heroPlayRef = useRef<HTMLElement>(null);
+	const { ref: heroPlayInViewRef, inView: heroPlayVisible } =
+		useSectionInView(0.1);
 
 	const fetchTeaterAseanLeaderboard = async () => {
 		if (teaterAseanLoading) return;
@@ -136,7 +137,6 @@ export default function HomePage() {
 		}
 	};
 
-	// Preload hero play background
 	useEffect(() => {
 		const img = new window.Image();
 		img.src = "/images/home/leaderboard-bg.webp";
@@ -328,11 +328,19 @@ export default function HomePage() {
 	};
 
 	useEffect(() => {
+		AOS.init({
+			duration: 900,
+			once: false,
+			easing: "ease-out-cubic",
+			offset: 80,
+		});
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		fetchFeaturedArticle();
 	}, []);
 
 	useEffect(() => {
 		if (articleVisible) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			fetchArticles();
 		}
 	}, [articleVisible]);
@@ -395,7 +403,10 @@ export default function HomePage() {
 
 				{/*  LIVE LEADERBOARD  */}
 				<section
-					ref={heroPlayRef}
+					ref={(node) => {
+						heroPlayRef.current = node;
+						heroPlayInViewRef(node);
+					}}
 					className="relative w-full overflow-hidden"
 					style={{
 						background: heroPlayBgLoaded
@@ -403,12 +414,13 @@ export default function HomePage() {
 							: `linear-gradient(135deg, ${heroPlayColors.bg} 0%, ${heroPlayColors.bgSecondary} 50%, ${heroPlayColors.bgSecondary} 100%)`,
 					}}
 				>
-					{/* Background Image */}
+					{/* Parallax Background Image */}
 					{heroPlayBgLoaded && (
 						<div
-							className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+							className="absolute inset-0 bg-cover bg-center bg-fixed"
 							style={{
 								backgroundImage: "url(/images/home/leaderboard-bg.webp)",
+								zIndex: 0,
 							}}
 						/>
 					)}
@@ -476,6 +488,7 @@ export default function HomePage() {
 									background: heroPlayColors.gradientBadge,
 									color: isDark ? "#003732" : "#ffffff",
 								}}
+								data-aos="fade-down"
 							>
 								<span className="notranslate">LIVE LEADERBOARD</span>
 							</div>
@@ -486,12 +499,15 @@ export default function HomePage() {
 								style={{
 									color: heroPlayColors.accent,
 								}}
+								data-aos="fade-up"
 							>
 								TEATER BOLA ASEAN PREDIKSI SKOR
 							</h2>
 							<p
 								className="text-base md:text-lg"
 								style={{ color: heroPlayColors.textSecondary }}
+								data-aos="fade-up"
+								data-aos-delay="100"
 							>
 								Klasemen Sementara Berdasarkan Peforma Teater Bola Asean
 								Prediksi Skor
@@ -584,6 +600,8 @@ export default function HomePage() {
 												border: `1px solid ${heroPlayColors.cardBorder}`,
 												marginBottom: "10px",
 											}}
+											data-aos="fade-up"
+											data-aos-delay={100}
 										>
 											<div
 												className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg"
@@ -659,6 +677,8 @@ export default function HomePage() {
 												boxShadow: `0 0 40px ${heroPlayColors.gold}30`,
 												marginBottom: "20px",
 											}}
+											data-aos="zoom-in"
+											data-aos-delay={0}
 										>
 											<div
 												className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl"
@@ -743,6 +763,8 @@ export default function HomePage() {
 									{leaderboardRows[2] && (
 										<div
 											className="relative p-5 rounded-3xl text-center order-3 transition-all duration-300 hover:scale-[1.02]"
+											data-aos="fade-up"
+											data-aos-delay={200}
 											style={{
 												background: `linear-gradient(135deg, ${heroPlayColors.cardBg} 0%, ${heroPlayColors.bronze}15 100%)`,
 												backdropFilter: "blur(20px)",
@@ -1025,7 +1047,11 @@ export default function HomePage() {
 								)}
 
 								{/* CTA Button */}
-								<div className="text-center mt-10">
+								<div
+									className="text-center mt-10"
+									data-aos="fade-up"
+									data-aos-delay="200"
+								>
 									<Link
 										href="/teater-bola-asean-2026"
 										className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
@@ -1060,7 +1086,7 @@ export default function HomePage() {
 				</section>
 
 				{/* ===== GOOGLE ADS SECTION ===== */}
-				<section className="py-6 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
+				{/* <section className="py-6 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
 					<div className="max-w-4xl mx-auto">
 						<div className="text-center">
 							<AdSlot
@@ -1074,7 +1100,7 @@ export default function HomePage() {
 							/>
 						</div>
 					</div>
-				</section>
+				</section> */}
 
 				{/* Article Section - Bento Grid */}
 				<section
@@ -1084,12 +1110,15 @@ export default function HomePage() {
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
 						<div>
 							<h2
-								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								data-aos="fade-up"
 							>
 								Fresh Off the Pitch
 							</h2>
 							<p
-								className={`uppercase tracking-widest mt-2 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+								className={`uppercase tracking-widest mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+								data-aos="fade-up"
+								data-aos-delay="100"
 							>
 								The latest from the arena
 							</p>
@@ -1097,11 +1126,13 @@ export default function HomePage() {
 							{/* Link pindah ke sini untuk mobile */}
 							<Link
 								href="/artikel"
-								className={`font-semibold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-sm mt-4 md:hidden ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+								className={`font-semibold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-sm mt-4 md:hidden ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								data-aos="fade-up"
+								data-aos-delay="200"
 							>
 								VIEW ALL{" "}
 								<ArrowRight
-									className={`size-5 mt-1 ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+									className={`size-5 mt-1 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 								/>
 							</Link>
 						</div>
@@ -1109,11 +1140,13 @@ export default function HomePage() {
 						{/* Link untuk desktop */}
 						<Link
 							href="/artikel"
-							className={`font-semibold items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-sm hidden md:flex ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+							className={`font-semibold items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-sm hidden md:flex ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+							data-aos="fade-up"
+							data-aos-delay="200"
 						>
 							VIEW ALL{" "}
 							<ArrowRight
-								className={`size-5 mt-1 ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+								className={`size-5 mt-1 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 							/>
 						</Link>
 					</div>
@@ -1124,7 +1157,7 @@ export default function HomePage() {
 									key={i}
 									className={`glass-panel animate-pulse rounded-xl ${i === 1 ? "md:col-span-2 md:row-span-2" : ""}`}
 								>
-									<div className="h-full bg-[#1c211e]" />
+									<div className="h-full bg-surface-container" />
 								</div>
 							))}
 						</div>
@@ -1134,6 +1167,7 @@ export default function HomePage() {
 							<Link
 								href={`/${articles[0]?.slug}`}
 								className="md:col-span-2 md:row-span-2 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
+								data-aos="zoom-in"
 							>
 								<div className="absolute inset-0">
 									<Image
@@ -1156,16 +1190,16 @@ export default function HomePage() {
 										{articles[0]?.title}
 									</h3>
 									<p
-										className={`mb-2 md:mb-6 line-clamp-2 ${isDark ? "text-[#bbcac6]" : "text-[#4a4a4a]"}`}
+										className={`mb-2 md:mb-6 line-clamp-2 ${isDark ? "text-on-surface-variant" : "text-[#4a4a4a]"}`}
 									>
 										{articles[0]?.excerpt}
 									</p>
 									<button
-										className={`font-black uppercase tracking-widest text-sm flex items-center gap-2 group-hover:gap-4 transition-all ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+										className={`font-black uppercase tracking-widest text-sm flex items-center gap-2 group-hover:gap-4 transition-all ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 									>
 										Read More{" "}
 										<ArrowRight
-											className={`size-5 mt-1 ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+											className={`size-5 mt-1 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 										/>
 									</button>
 								</div>
@@ -1176,6 +1210,8 @@ export default function HomePage() {
 								<Link
 									href={`/${articles[1]?.slug}`}
 									className="md:col-span-2 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
+									data-aos="fade-up"
+									data-aos-delay="100"
 								>
 									<div className="flex h-full">
 										<div className="w-1/2 p-6 flex flex-col justify-center">
@@ -1183,7 +1219,7 @@ export default function HomePage() {
 												{articles[1]?.title}
 											</h3>
 											<button
-												className={`${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"} font-black uppercase tracking-widest text-xs mt-4`}
+												className={`${isDark ? "text-primary" : "text-[#0a7c6e]"} font-black uppercase tracking-widest text-xs mt-4`}
 											>
 												Read More{" "}
 												<ArrowRight className="size-4 inline-block ml-1" />
@@ -1207,7 +1243,9 @@ export default function HomePage() {
 							{articles[2] && (
 								<Link
 									href={`/${articles[2]?.slug}`}
-									className="glass-panel relative group h-60 md:h-full overflow-hidden rounded-xl cursor-pointer hover:border-[#43decc]/50 transition-all"
+									className="glass-panel relative group h-60 md:h-full overflow-hidden rounded-xl cursor-pointer hover:border-primary/50 transition-all"
+									data-aos="fade-up"
+									data-aos-delay="200"
 								>
 									<div className="absolute inset-0">
 										<Image
@@ -1227,7 +1265,7 @@ export default function HomePage() {
 											{articles[2]?.title}
 										</h3>
 										<p
-											className={`text-xs ${isDark ? "text-[#bbcac6]" : "text-[#4a4a4a]"} mt-2 uppercase tracking-tighter`}
+											className={`text-xs ${isDark ? "text-on-surface-variant" : "text-[#4a4a4a]"} mt-2 uppercase tracking-tighter`}
 										>
 											Latest News
 										</p>
@@ -1238,7 +1276,9 @@ export default function HomePage() {
 							{articles[3] && (
 								<Link
 									href={`/${articles[3]?.slug}`}
-									className="glass-panel relative group  h-60 md:h-full overflow-hidden rounded-xl cursor-pointer hover:border-[#43decc]/50 transition-all"
+									className="glass-panel relative group  h-60 md:h-full overflow-hidden rounded-xl cursor-pointer hover:border-primary/50 transition-all"
+									data-aos="fade-up"
+									data-aos-delay="300"
 								>
 									<div className="absolute inset-0">
 										<Image
@@ -1258,7 +1298,7 @@ export default function HomePage() {
 											{articles[3]?.title}
 										</h3>
 										<p
-											className={`text-xs ${isDark ? "text-[#bbcac6]" : "text-[#4a4a4a]"} mt-2 uppercase tracking-tighter`}
+											className={`text-xs ${isDark ? "text-on-surface-variant" : "text-[#4a4a4a]"} mt-2 uppercase tracking-tighter`}
 										>
 											Latest News
 										</p>
@@ -1267,7 +1307,7 @@ export default function HomePage() {
 							)}
 						</div>
 					) : (
-						<p className="text-[#bbcac6] text-center mt-10">
+						<p className="text-on-surface-variant text-center mt-10">
 							Tidak ada artikel
 						</p>
 					)}
@@ -1299,7 +1339,8 @@ export default function HomePage() {
 				>
 					<div className="max-w-480 mx-auto">
 						<h2
-							className={`text-3xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+							className={`text-3xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+							data-aos="fade-up"
 						>
 							Yuk, Temui OlahBola di Sini!
 						</h2>
@@ -1312,7 +1353,9 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di TikTok"
-									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
+									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									data-aos="zoom-in"
+									data-aos-delay={0}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1329,7 +1372,9 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di Instagram"
-									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
+									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									data-aos="zoom-in"
+									data-aos-delay={100}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1346,7 +1391,9 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di Facebook"
-									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
+									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									data-aos="zoom-in"
+									data-aos-delay={200}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1363,7 +1410,9 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di YouTube"
-									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
+									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									data-aos="zoom-in"
+									data-aos-delay={300}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1379,7 +1428,9 @@ export default function HomePage() {
 									href="https://sck.io/u/@olahbola.com/dsnKtxg6"
 									target="_blank"
 									rel="noopener noreferrer"
-									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
+									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									data-aos="zoom-in"
+									data-aos-delay={400}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1395,7 +1446,9 @@ export default function HomePage() {
 									href="https://x.com/Olahbolacom"
 									target="_blank"
 									rel="noopener noreferrer"
-									className="bg-[#1c211e] p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-[#43decc] hover:text-[#003732] border border-white/10"
+									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									data-aos="zoom-in"
+									data-aos-delay={500}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1412,7 +1465,11 @@ export default function HomePage() {
 
 				{/* YouTube Embed Section */}
 				<section ref={youtubeRef} className="py-16 md:py-24 px-6 md:px-16">
-					<div className="max-w-480 mx-auto">
+					<div
+						className="max-w-480 mx-auto"
+						data-aos="fade-up"
+						data-aos-duration="1000"
+					>
 						{youtubeVisible && (
 							<div className="max-w-4xl mx-auto">
 								<iframe
@@ -1433,29 +1490,33 @@ export default function HomePage() {
 					<div className="max-w-480 mx-auto">
 						<div className="mb-12">
 							<h2
-								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 							>
 								Voices of the Game
 							</h2>
 							<div className="flex items-center gap-4 mt-4">
 								<span
-									className={`h-px grow ${isDark ? " bg-white/10" : "bg-[#bbcac6]"}`}
+									className={`h-px grow ${isDark ? " bg-white/10" : "bg-on-surface-variant"}`}
 								/>
-								<p className="text-[#bbcac6] uppercase tracking-widest text-sm">
+								<p
+									className="text-on-surface-variant uppercase tracking-widest text-sm"
+									data-aos="fade-up"
+									data-aos-delay="100"
+								>
 									Inside the mind of the Legends
 								</p>
 								<span
-									className={`h-px grow ${isDark ? "bg-white/10" : "bg-[#bbcac6]"}`}
+									className={`h-px grow ${isDark ? "bg-white/10" : "bg-on-surface-variant"}`}
 								/>
 							</div>
 						</div>
 
 						{interviewsLoading ? (
 							<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-								{[1, 2, 3, 4, 5, 6].map((i) => (
+								{[1, 2, 3, 4, 5].map((i) => (
 									<div
 										key={i}
-										className="aspect-9/16 bg-[#1c211e] rounded-xl animate-pulse"
+										className="aspect-9/16 bg-surface-container rounded-xl animate-pulse"
 									/>
 								))}
 							</div>
@@ -1470,6 +1531,8 @@ export default function HomePage() {
 											target="_blank"
 											rel="noopener noreferrer"
 											className="aspect-9/16 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
+											data-aos="fade-up"
+											data-aos-delay={idx * 100}
 										>
 											<Image
 												src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${interview.image}`}
@@ -1482,7 +1545,7 @@ export default function HomePage() {
 											<div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
 
 											<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-												<div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-[#43decc]/80 flex items-center justify-center text-[#003732] shadow-xl">
+												<div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary/80 flex items-center justify-center text-on-primary shadow-xl">
 													<Play className="size-4 md:size-7" />
 												</div>
 											</div>
@@ -1491,7 +1554,7 @@ export default function HomePage() {
 												<h4 className="font-semibold text-sm leading-tight uppercase">
 													{interview.title}
 												</h4>
-												<p className="text-xs text-[#43decc] mt-1 font-bold">
+												<p className="text-xs text-primary mt-1 font-bold">
 													@OlahBola
 												</p>
 											</div>
@@ -1503,7 +1566,7 @@ export default function HomePage() {
 						<div className="mt-10 flex justify-center">
 							<Link
 								href="/interview"
-								className={`inline-flex items-center gap-3 px-8 py-4 glass-panel ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}  font-bold uppercase tracking-widest text-sm rounded-full hover:bg-[#43decc]/10 transition-all group`}
+								className={`inline-flex items-center gap-3 px-8 py-4 glass-panel ${isDark ? "text-primary" : "text-[#0a7c6e]"}  font-bold uppercase tracking-widest text-sm rounded-full hover:bg-primary/10 transition-all group`}
 							>
 								VIEW ALL{" "}
 								<ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
@@ -1524,11 +1587,11 @@ export default function HomePage() {
 							</p>
 							<Link
 								href="/kolaborasi"
-								className={`${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"} font-semibold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-xs mt-3 md:mt-0`}
+								className={`${isDark ? "text-primary" : "text-[#0a7c6e]"} font-semibold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-xs mt-3 md:mt-0`}
 							>
 								VIEW ALL{" "}
 								<ArrowRight
-									className={`size-5 mt-1 ${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"}`}
+									className={`size-5 mt-1 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 								/>
 							</Link>
 						</div>

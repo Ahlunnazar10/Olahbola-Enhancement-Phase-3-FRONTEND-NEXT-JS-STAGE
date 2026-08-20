@@ -274,7 +274,7 @@ export default function TeaterBolaAseanPage() {
 	const { isAuthenticated, user } = useAuthStore();
 	const isDark = theme === "dark";
 
-	const [activePhase, setActivePhase] = useState("semi_final");
+	const [activePhase, setActivePhase] = useState("final");
 	const [activeGroup, setActiveGroup] = useState("A");
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
