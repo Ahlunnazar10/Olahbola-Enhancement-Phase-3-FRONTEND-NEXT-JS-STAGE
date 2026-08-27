@@ -185,7 +185,8 @@ export function useMyRank() {
 			const response = await apiClient.get(`${BL_API_BASE}/me/rank`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});
-			return response.data;
+			const raw = response.data?.data ?? {};
+			return typeof raw === "object" && !Array.isArray(raw) ? raw : {};
 		},
 		enabled: !!accessToken,
 		staleTime: 30 * 1000,
@@ -201,7 +202,8 @@ export function useMySummary() {
 			const response = await apiClient.get(`${BL_API_BASE}/me/summary`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});
-			return response.data;
+			const raw = response.data?.data ?? {};
+			return typeof raw === "object" && !Array.isArray(raw) ? raw : {};
 		},
 		enabled: !!accessToken,
 		staleTime: 30 * 1000,
