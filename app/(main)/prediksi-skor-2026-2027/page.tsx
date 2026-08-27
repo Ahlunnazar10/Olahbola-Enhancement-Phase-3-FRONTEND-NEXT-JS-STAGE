@@ -224,6 +224,8 @@ export default function PrediksiSkorPage() {
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
 	);
+	const [isAuthReady, setIsAuthReady] = useState(false);
+	useEffect(() => { setIsAuthReady(true); }, []);
 	const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 	const [homeScore, setHomeScore] = useState<number | "">(0);
 	const [awayScore, setAwayScore] = useState<number | "">(0);
@@ -647,7 +649,7 @@ export default function PrediksiSkorPage() {
 							(matchesData ?? []).map((match: Match) => {
 								const userPred = getUserPrediction(match.id);
 								const hasPrediction = !!userPred;
-								const isEditable = match.is_prediction_open;
+								const isEditable = match.is_prediction_open && isAuthReady && isAuthenticated;
 								const isCompleted = match.status === "completed";
 								const homeTeam = getTeamInfo(match.home_team.code);
 								const awayTeam = getTeamInfo(match.away_team.code);
