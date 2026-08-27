@@ -9,7 +9,7 @@
  *   - Update `endedLabel` bila perlu (mis. "Season 2").
  */
 
-export type GameEventKey = "prediksiSkor" | "quiz" | "teaterBolaAsean";
+export type GameEventKey = "prediksiSkor" | "quiz" | "teaterBolaAsean" | "bundesliga2026" | "ngolahBola2026";
 
 export interface GameEventStatus {
 	isEnded: boolean;
@@ -26,6 +26,14 @@ export const EVENT_STATUS: Record<GameEventKey, GameEventStatus> = {
 		endedLabel: "Event Berakhir",
 	},
 	teaterBolaAsean: {
+		isEnded: false,
+		endedLabel: "Event Berakhir",
+	},
+	bundesliga2026: {
+		isEnded: false,
+		endedLabel: "Event Berakhir",
+	},
+	ngolahBola2026: {
 		isEnded: false,
 		endedLabel: "Event Berakhir",
 	},

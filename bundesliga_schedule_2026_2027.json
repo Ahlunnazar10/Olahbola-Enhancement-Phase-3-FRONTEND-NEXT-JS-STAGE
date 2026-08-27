@@ -1,0 +1,350 @@
+{
+  "season": "2026-2027",
+  "competition": "Bundesliga",
+  "matchdays": [
+    {
+      "matchday": 1,
+      "matches": [
+        {
+          "date": "2026-08-29",
+          "day": "Saturday",
+          "time": "01:30",
+          "home_team": "Bayern Munich",
+          "home_code": "FCB",
+          "away_team": "VfB Stuttgart",
+          "away_code": "VFB"
+        },
+        {
+          "date": "2026-08-29",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "RB Leipzig",
+          "home_code": "RBL",
+          "away_team": "Borussia Mönchengladbach",
+          "away_code": "BMG"
+        },
+        {
+          "date": "2026-08-29",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Mainz",
+          "home_code": "M05",
+          "away_team": "Paderborn",
+          "away_code": "SCP"
+        },
+        {
+          "date": "2026-08-29",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Union Berlin",
+          "home_code": "FCU",
+          "away_team": "Eintracht Frankfurt",
+          "away_code": "SGE"
+        },
+        {
+          "date": "2026-08-29",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Cologne",
+          "home_code": "KOE",
+          "away_team": "Hoffenheim",
+          "away_code": "TSG"
+        },
+        {
+          "date": "2026-08-29",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Elversberg",
+          "home_code": "ELV",
+          "away_team": "Bayer Leverkusen",
+          "away_code": "B04"
+        },
+        {
+          "date": "2026-08-29",
+          "day": "Saturday",
+          "time": "23:30",
+          "home_team": "Borussia Dortmund",
+          "home_code": "BVB",
+          "away_team": "Hamburg",
+          "away_code": "HSV"
+        },
+        {
+          "date": "2026-08-30",
+          "day": "Sunday",
+          "time": "20:30",
+          "home_team": "Freiburg",
+          "home_code": "SCF",
+          "away_team": "Werder Bremen",
+          "away_code": "SVW"
+        },
+        {
+          "date": "2026-08-30",
+          "day": "Sunday",
+          "time": "22:30",
+          "home_team": "Augsburg",
+          "home_code": "FCA",
+          "away_team": "Schalke",
+          "away_code": "S04"
+        }
+      ]
+    },
+    {
+      "matchday": 2,
+      "matches": [
+        {
+          "date": "2026-09-05",
+          "day": "Saturday",
+          "time": "01:30",
+          "home_team": "VfB Stuttgart",
+          "home_code": "VFB",
+          "away_team": "Cologne",
+          "away_code": "KOE"
+        },
+        {
+          "date": "2026-09-05",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Hoffenheim",
+          "home_code": "TSG",
+          "away_team": "Borussia Dortmund",
+          "away_code": "BVB"
+        },
+        {
+          "date": "2026-09-05",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Bayer Leverkusen",
+          "home_code": "B04",
+          "away_team": "Union Berlin",
+          "away_code": "FCU"
+        },
+        {
+          "date": "2026-09-05",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Borussia Mönchengladbach",
+          "home_code": "BMG",
+          "away_team": "Elversberg",
+          "away_code": "ELV"
+        },
+        {
+          "date": "2026-09-05",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Werder Bremen",
+          "home_code": "SVW",
+          "away_team": "RB Leipzig",
+          "away_code": "RBL"
+        },
+        {
+          "date": "2026-09-05",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Paderborn",
+          "home_code": "SCP",
+          "away_team": "Freiburg",
+          "away_code": "SCF"
+        },
+        {
+          "date": "2026-09-05",
+          "day": "Saturday",
+          "time": "23:30",
+          "home_team": "Schalke",
+          "home_code": "S04",
+          "away_team": "Bayern Munich",
+          "away_code": "FCB"
+        },
+        {
+          "date": "2026-09-06",
+          "day": "Sunday",
+          "time": "20:30",
+          "home_team": "Hamburg",
+          "home_code": "HSV",
+          "away_team": "Mainz",
+          "away_code": "M05"
+        },
+        {
+          "date": "2026-09-06",
+          "day": "Sunday",
+          "time": "22:30",
+          "home_team": "Eintracht Frankfurt",
+          "home_code": "SGE",
+          "away_team": "Augsburg",
+          "away_code": "FCA"
+        }
+      ]
+    },
+    {
+      "matchday": 3,
+      "matches": [
+        {
+          "date": "2026-09-12",
+          "day": "Saturday",
+          "time": "01:30",
+          "home_team": "Union Berlin",
+          "home_code": "FCU",
+          "away_team": "Schalke",
+          "away_code": "S04"
+        },
+        {
+          "date": "2026-09-12",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Borussia Dortmund",
+          "home_code": "BVB",
+          "away_team": "Paderborn",
+          "away_code": "SCP"
+        },
+        {
+          "date": "2026-09-12",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Hoffenheim",
+          "home_code": "TSG",
+          "away_team": "VfB Stuttgart",
+          "away_code": "VFB"
+        },
+        {
+          "date": "2026-09-12",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Freiburg",
+          "home_code": "SCF",
+          "away_team": "Borussia Mönchengladbach",
+          "away_code": "BMG"
+        },
+        {
+          "date": "2026-09-12",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Augsburg",
+          "home_code": "FCA",
+          "away_team": "Bayer Leverkusen",
+          "away_code": "B04"
+        },
+        {
+          "date": "2026-09-12",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Mainz",
+          "home_code": "M05",
+          "away_team": "Eintracht Frankfurt",
+          "away_code": "SGE"
+        },
+        {
+          "date": "2026-09-12",
+          "day": "Saturday",
+          "time": "23:30",
+          "home_team": "Cologne",
+          "home_code": "KOE",
+          "away_team": "Werder Bremen",
+          "away_code": "SVW"
+        },
+        {
+          "date": "2026-09-13",
+          "day": "Sunday",
+          "time": "20:30",
+          "home_team": "RB Leipzig",
+          "home_code": "RBL",
+          "away_team": "Hamburg",
+          "away_code": "HSV"
+        },
+        {
+          "date": "2026-09-13",
+          "day": "Sunday",
+          "time": "22:30",
+          "home_team": "Elversberg",
+          "home_code": "ELV",
+          "away_team": "Bayern Munich",
+          "away_code": "FCB"
+        }
+      ]
+    },
+    {
+      "matchday": 4,
+      "matches": [
+        {
+          "date": "2026-09-19",
+          "day": "Saturday",
+          "time": "01:30",
+          "home_team": "Bayern Munich",
+          "home_code": "FCB",
+          "away_team": "Union Berlin",
+          "away_code": "FCU"
+        },
+        {
+          "date": "2026-09-19",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Eintracht Frankfurt",
+          "home_code": "SGE",
+          "away_team": "Freiburg",
+          "away_code": "SCF"
+        },
+        {
+          "date": "2026-09-19",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Borussia Mönchengladbach",
+          "home_code": "BMG",
+          "away_team": "Mainz",
+          "away_code": "M05"
+        },
+        {
+          "date": "2026-09-19",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Hamburg",
+          "home_code": "HSV",
+          "away_team": "Cologne",
+          "away_code": "KOE"
+        },
+        {
+          "date": "2026-09-19",
+          "day": "Saturday",
+          "time": "20:30",
+          "home_team": "Werder Bremen",
+          "home_code": "SVW",
+          "away_team": "Augsburg",
+          "away_code": "FCA"
+        },
+        {
+          "date": "2026-09-19",
+          "day": "Saturday",
+          "time": "23:30",
+          "home_team": "VfB Stuttgart",
+          "home_code": "VFB",
+          "away_team": "Borussia Dortmund",
+          "away_code": "BVB"
+        },
+        {
+          "date": "2026-09-20",
+          "day": "Sunday",
+          "time": "20:30",
+          "home_team": "Bayer Leverkusen",
+          "home_code": "B04",
+          "away_team": "RB Leipzig",
+          "away_code": "RBL"
+        },
+        {
+          "date": "2026-09-20",
+          "day": "Sunday",
+          "time": "22:30",
+          "home_team": "Schalke",
+          "home_code": "S04",
+          "away_team": "Elversberg",
+          "away_code": "ELV"
+        },
+        {
+          "date": "2026-09-21",
+          "day": "Monday",
+          "time": "00:30",
+          "home_team": "Paderborn",
+          "home_code": "SCP",
+          "away_team": "Hoffenheim",
+          "away_code": "TSG"
+        }
+      ]
+    }
+  ]
+}

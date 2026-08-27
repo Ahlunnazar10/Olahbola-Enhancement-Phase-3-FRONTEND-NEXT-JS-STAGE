@@ -1,0 +1,1132 @@
+{
+  "info": {
+    "name": "Bundesliga Prediction API 2026-27",
+    "description": "Complete API test collection for Bundesliga Season 2026-2027 Prediction Game\n\nBase URL: http://localhost:8000\n\nFeatures:\n- 18 Bundesliga teams with SVG logos\n- 36 matches across 4 matchdays\n- Flat scoring: exact=30pts, winner=15pts, wrong=0pts\n- No payment gateway required (full free)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "api_version",
+      "value": "api/v1/bundesliga",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Public Endpoints",
+      "item": [
+        {
+          "name": "GET All Teams",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/teams",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "teams"]
+            },
+            "description": "Get all 18 Bundesliga teams with codes and logo URLs"
+          },
+          "response": []
+        },
+        {
+          "name": "GET All Matches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/matches",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "matches"]
+            },
+            "description": "Get all 36 matches across 4 matchdays"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Matches by Matchday",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/matches?matchday=1",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "matches"],
+              "query": [
+                {
+                  "key": "matchday",
+                  "value": "1",
+                  "description": "Filter by matchday (1-4)"
+                }
+              ]
+            },
+            "description": "Get matches filtered by matchday number"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Match Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/matches/6a8ea774ad67cd575909ccb2",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "matches", "6a8ea774ad67cd575909ccb2"]
+            },
+            "description": "Get single match detail with prediction statistics\n\nMatch ID: 6a8ea774ad67cd575909ccb2 (Bayern Munich vs VfB Stuttgart, MD1)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/leaderboard",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "leaderboard"]
+            },
+            "description": "Get full leaderboard ranking\n\nNote: Returns empty array if no matches have been completed yet"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Total Participants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/total-participants",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "total-participants"]
+            },
+            "description": "Get total participant count and prediction statistics"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Authenticated Endpoints",
+      "item": [
+        {
+          "name": "PRE-REQUEST: Login to Get Token",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.sendRequest({",
+                  "  url: 'http://localhost:8000/api/v1/sanctum/token',",
+                  "  method: 'POST',",
+                  "  header: {'Content-Type': 'application/json'},",
+                  "  body: {",
+                  "    mode: 'raw',",
+                  "    raw: JSON.stringify({",
+                  "      email: 'ahlun.nazar2215@gmail.com',",
+                  "      password: 'password'",
+                  "    })",
+                  "  }",
+                  "}, function (err, response) {",
+                  "  if (!err && response.json().token) {",
+                  "    pm.environment.set('user_token', response.json().token);",
+                  "    console.log('Token obtained successfully');",
+                  "  } else {",
+                  "    console.log('Login failed:', err || response.json().message);",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/me/summary",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "me", "summary"]
+            },
+            "description": "Login endpoint to obtain authentication token for subsequent requests"
+          },
+          "response": []
+        },
+        {
+          "name": "GET My Predictions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}",
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  pm.test('Should return predictions array', () => {",
+                  "    pm.expect(res.success).to.eql(true);",
+                  "    pm.expect(res.data).to.be.an('array');",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/predictions",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "predictions"]
+            },
+            "description": "Get current user's predictions with match details"
+          },
+          "response": []
+        },
+        {
+          "name": "GET My Predictions (Upcoming Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/predictions?upcoming_only=true",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "predictions"],
+              "query": [
+                {
+                  "key": "upcoming_only",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Get only upcoming predictions (status = scheduled)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Matches with My Prediction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/matches-with-prediction",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "matches-with-prediction"]
+            },
+            "description": "Get all matches with user's prediction status for each match"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Matches with Prediction (by Matchday)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/matches-with-prediction?matchday=1",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "matches-with-prediction"],
+              "query": [
+                {
+                  "key": "matchday",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get matches with prediction filtered by matchday"
+          },
+          "response": []
+        },
+        {
+          "name": "GET My Rank",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/me/rank",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "me", "rank"]
+            },
+            "description": "Get current user's rank in the leaderboard"
+          },
+          "response": []
+        },
+        {
+          "name": "GET My Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/me/summary",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "me", "summary"]
+            },
+            "description": "Get user statistics: total points, exact scores, accuracy, etc."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Submit Prediction - Home Win",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.success) {",
+                  "    pm.test('Prediction submitted successfully', () => {",
+                  "      pm.expect(res.data).to.have.property('id');",
+                  "      pm.expect(res.data).to.have.property('match_id');",
+                  "      pm.expect(res.data.home_score_predicted).to.eql(2);",
+                  "      pm.expect(res.data.away_score_predicted).to.eql(1);",
+                  "      pm.expect(res.data.predicted_team).to.eql('Bayern Munich');",
+                  "      pm.expect(res.data.status).to.eql('pending');",
+                  "    });",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_id\": \"6a8ea774ad67cd575909ccb2\",\n  \"home_score_predicted\": 2,\n  \"away_score_predicted\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/predict",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "predict"]
+            },
+            "description": "Submit a prediction for Bayern Munich vs VfB Stuttgart (MD1)\n\nScoring:\n- Exact score: 30 points\n- Correct winner: 15 points\n- Wrong: 0 points"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Submit Prediction - Draw",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_id\": \"6a8ea774ad67cd575909ccb3\",\n  \"home_score_predicted\": 1,\n  \"away_score_predicted\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/predict",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "predict"]
+            },
+            "description": "Submit a draw prediction (1-1) for RB Leipzig vs Borussia Monchengladbach"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Submit Prediction - Away Win",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_id\": \"6a8ea774ad67cd575909ccbb\",\n  \"home_score_predicted\": 0,\n  \"away_score_predicted\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/predict",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "predict"]
+            },
+            "description": "Submit an away win prediction for VfB Stuttgart vs Cologne (MD2)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Admin Endpoints",
+      "item": [
+        {
+          "name": "PRE-REQUEST: Login as Admin",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.sendRequest({",
+                  "  url: 'http://localhost:8000/api/v1/sanctum/token',",
+                  "  method: 'POST',",
+                  "  header: {'Content-Type': 'application/json'},",
+                  "  body: {",
+                  "    mode: 'raw',",
+                  "    raw: JSON.stringify({",
+                  "      email: 'ahlun.nazar2215@gmail.com',",
+                  "      password: 'password'",
+                  "    })",
+                  "  }",
+                  "}, function (err, response) {",
+                  "  if (!err && response.json().token) {",
+                  "    pm.environment.set('admin_token', response.json().token);",
+                  "    console.log('Admin token obtained');",
+                  "  } else {",
+                  "    console.log('Admin login failed');",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/bundesliga/me/summary",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "bundesliga", "me", "summary"]
+            },
+            "description": "Login endpoint to obtain admin authentication token"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Publish Match Scores",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  const res = pm.response.json();",
+                  "  if (res.success) {",
+                  "    pm.test('Scores published successfully', () => {",
+                  "      pm.expect(res.data.match.home_score).to.eql(2);",
+                  "      pm.expect(res.data.match.away_score).to.eql(1);",
+                  "      pm.expect(res.data).to.have.property('predictions_calculated');",
+                  "      pm.expect(res.data).to.have.property('total_points_distributed');",
+                  "      pm.expect(res.data.predictions_calculated).to.be.greaterThan(0);",
+                  "    });",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_id\": \"6a8ea774ad67cd575909ccb2\",\n  \"home_score\": 2,\n  \"away_score\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/publish/scores",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "publish", "scores"]
+            },
+            "description": "Admin endpoint to publish final match scores\n\nTriggers point calculation:\n- Exact score: 30 points\n- Correct winner: 15 points\n- Wrong prediction: 0 points\n\nNote: Match status changes to 'completed' and predictions are locked."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Toggle Prediction Lock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bundesliga/matches/6a8ea774ad67cd575909ccb2/toggle-prediction",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bundesliga", "matches", "6a8ea774ad67cd575909ccb2", "toggle-prediction"]
+            },
+            "description": "Toggle prediction lock for a match (open/close predictions)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Match Predictions Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bundesliga/matches/predictions/6a8ea774ad67cd575909ccb2",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bundesliga", "matches", "predictions", "6a8ea774ad67cd575909ccb2"]
+            },
+            "description": "Get HTML table of all user predictions for a specific match"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Scheduler Unlock 3 Days",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bundesliga/scheduler/unlock-3days",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bundesliga", "scheduler", "unlock-3days"]
+            },
+            "description": "Manually trigger unlock for matches within next 3 days"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Scheduler Lock 5 Min",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bundesliga/scheduler/lock-5min",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bundesliga", "scheduler", "lock-5min"]
+            },
+            "description": "Manually trigger lock for matches starting within 5 minutes"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Upcoming Matches",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bundesliga/upcoming",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bundesliga", "upcoming"]
+            },
+            "description": "Get next 20 upcoming matches for admin dashboard"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Leaderboard Data (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bundesliga/leaderboard/data",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bundesliga", "leaderboard", "data"]
+            },
+            "description": "Get leaderboard data for admin DataTables (requires auth)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Teams Data (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bundesliga/teams/data",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bundesliga", "teams", "data"]
+            },
+            "description": "Get teams data for admin DataTables"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Matches Data (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401 || pm.response.code === 403) {",
+                  "  console.log('Unauthorized - Please login as admin first');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{admin_token}}"
+              }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/bundesliga/matches/data",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "bundesliga", "matches", "data"]
+            },
+            "description": "Get matches data for admin DataTables"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Error Cases",
+      "item": [
+        {
+          "name": "POST Submit Prediction - Missing Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 422) {",
+                  "  pm.test('Validation error returned', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.message).to.exist;",
+                  "    pm.expect(res.errors).to.exist;",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/predict",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "predict"]
+            },
+            "description": "Test validation error when submitting prediction without required fields"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Submit Prediction - Invalid Match ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 404) {",
+                  "  pm.test('Match not found error', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.eql(false);",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_id\": \"000000000000000000000000\",\n  \"home_score_predicted\": 2,\n  \"away_score_predicted\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/predict",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "predict"]
+            },
+            "description": "Test error when submitting prediction for non-existent match"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Submit Prediction - Closed Predictions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 400) {",
+                  "  pm.test('Predictions closed error', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.eql(false);",
+                  "    pm.expect(res.message).to.contain('closed');",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{
+                "key": "token",
+                "value": "{{user_token}}"
+              }]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_id\": \"6a8ea774ad67cd575909ccb2\",\n  \"home_score_predicted\": 3,\n  \"away_score_predicted\": 0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/predict",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "predict"]
+            },
+            "description": "Test error when trying to submit prediction after scores are published"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Unauthenticated Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 401) {",
+                  "  pm.test('Authentication required', () => {",
+                  "    pm.expect(pm.response.code).to.eql(401);",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/me/summary",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "me", "summary"]
+            },
+            "description": "Test that authenticated endpoints return 401 without token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 - Reference Data",
+      "item": [
+        {
+          "name": "Team IDs Reference",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/teams",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "teams"]
+            },
+            "description": "Reference: All team IDs and codes for this collection"
+          },
+          "response": []
+        },
+        {
+          "name": "Match IDs Reference",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{api_version}}/matches",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_version}}", "matches"]
+            },
+            "description": "Reference: All match IDs for this collection"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
