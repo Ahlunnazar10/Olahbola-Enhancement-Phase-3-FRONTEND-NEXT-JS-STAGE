@@ -119,7 +119,10 @@ export function useMatches(matchday: number) {
 			const response = await apiClient.get(`${BL_API_BASE}/matches`, {
 				params: { matchday },
 			});
-			return response.data;
+			const raw = Array.isArray(response.data)
+				? response.data
+				: response.data?.data ?? [];
+			return raw;
 		},
 		enabled: matchday > 0,
 		staleTime: 30 * 1000,
@@ -131,7 +134,10 @@ export function useTeams() {
 		queryKey: ["bundesliga", "teams"],
 		queryFn: async () => {
 			const response = await apiClient.get(`${BL_API_BASE}/teams`);
-			return response.data;
+			const raw = Array.isArray(response.data)
+				? response.data
+				: response.data?.data ?? [];
+			return raw;
 		},
 		staleTime: 60 * 60 * 1000,
 	});
@@ -142,7 +148,10 @@ export function useLeaderboard() {
 		queryKey: ["bundesliga", "leaderboard"],
 		queryFn: async () => {
 			const response = await apiClient.get(`${BL_API_BASE}/leaderboard`);
-			return response.data;
+			const raw = Array.isArray(response.data)
+				? response.data
+				: response.data?.data ?? [];
+			return raw;
 		},
 		staleTime: 60 * 1000,
 	});
@@ -157,9 +166,10 @@ export function useMyPredictions() {
 			const response = await apiClient.get(`${BL_API_BASE}/predictions`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});
-			return Array.isArray(response.data)
-				? { data: response.data }
-				: response.data;
+			const raw = Array.isArray(response.data)
+				? response.data
+				: response.data?.data ?? [];
+			return { data: raw };
 		},
 		enabled: !!accessToken,
 		staleTime: 0,

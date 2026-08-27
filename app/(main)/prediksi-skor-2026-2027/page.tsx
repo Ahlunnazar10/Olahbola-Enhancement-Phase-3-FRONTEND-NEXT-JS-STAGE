@@ -2,12 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import {
-	Lock,
-	Check,
-	X,
-	Trophy,
-} from "lucide-react";
+import { Lock, Check, X, Trophy } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -42,21 +37,45 @@ function MatchCardSkeleton() {
 			}}
 		>
 			<div className="flex justify-between items-center mb-8">
-				<div className={`h-3 w-24 ${s}`} style={{ background: "rgba(255,255,255,0.1)" }} />
-				<div className={`h-3 w-16 ${s}`} style={{ background: "rgba(255,255,255,0.1)" }} />
+				<div
+					className={`h-3 w-24 ${s}`}
+					style={{ background: "rgba(255,255,255,0.1)" }}
+				/>
+				<div
+					className={`h-3 w-16 ${s}`}
+					style={{ background: "rgba(255,255,255,0.1)" }}
+				/>
 			</div>
 			<div className="flex items-center justify-between gap-4 mb-10">
 				<div className="flex flex-col items-center gap-3 flex-1">
-					<div className="w-20 h-20 rounded-full" style={{ background: "rgba(255,255,255,0.1)" }} />
-					<div className={`h-4 w-20 ${s}`} style={{ background: "rgba(255,255,255,0.1)" }} />
+					<div
+						className="w-20 h-20 rounded-full"
+						style={{ background: "rgba(255,255,255,0.1)" }}
+					/>
+					<div
+						className={`h-4 w-20 ${s}`}
+						style={{ background: "rgba(255,255,255,0.1)" }}
+					/>
 				</div>
-				<div className={`h-8 w-12 ${s}`} style={{ background: "rgba(255,255,255,0.1)" }} />
+				<div
+					className={`h-8 w-12 ${s}`}
+					style={{ background: "rgba(255,255,255,0.1)" }}
+				/>
 				<div className="flex flex-col items-center gap-3 flex-1">
-					<div className="w-20 h-20 rounded-full" style={{ background: "rgba(255,255,255,0.1)" }} />
-					<div className={`h-4 w-20 ${s}`} style={{ background: "rgba(255,255,255,0.1)" }} />
+					<div
+						className="w-20 h-20 rounded-full"
+						style={{ background: "rgba(255,255,255,0.1)" }}
+					/>
+					<div
+						className={`h-4 w-20 ${s}`}
+						style={{ background: "rgba(255,255,255,0.1)" }}
+					/>
 				</div>
 			</div>
-			<div className="h-12 w-full rounded-2xl" style={{ background: "rgba(255,255,255,0.1)" }} />
+			<div
+				className="h-12 w-full rounded-2xl"
+				style={{ background: "rgba(255,255,255,0.1)" }}
+			/>
 		</div>
 	);
 }
@@ -72,28 +91,39 @@ function TeamBadge({
 	isDark: boolean;
 }) {
 	const primary = isDark ? "#43decc" : "#0a7c6e";
-	const bgColor = isDark ? "rgba(67, 222, 204, 0.15)" : "rgba(10, 124, 110, 0.15)";
-	const borderColor = isDark ? "rgba(67, 222, 204, 0.3)" : "rgba(10, 124, 110, 0.3)";
+	const bgColor = isDark
+		? "rgba(67, 222, 204, 0.15)"
+		: "rgba(10, 124, 110, 0.15)";
+	const borderColor = isDark
+		? "rgba(67, 222, 204, 0.3)"
+		: "rgba(10, 124, 110, 0.3)";
 	const textColor = isDark ? "#43decc" : "#0a7c6e";
 
 	if (team.logo_url) {
 		return (
-			<div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center border"
-				style={{ background: bgColor, borderColor }}>
+			<div
+				className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center border"
+				style={{ background: bgColor, borderColor }}
+			>
 				<img
 					src={team.logo_url}
 					alt={team.name}
 					className="w-full h-full object-cover"
-				loading="lazy"
+					loading="lazy"
 				/>
 			</div>
 		);
 	}
 
 	const words = team.name.trim().split(/\s+/);
-	const abbr = words.length === 1
-		? words[0].slice(0, 2).toUpperCase()
-		: words.map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+	const abbr =
+		words.length === 1
+			? words[0].slice(0, 2).toUpperCase()
+			: words
+					.map((w) => w[0])
+					.join("")
+					.slice(0, 2)
+					.toUpperCase();
 
 	return (
 		<div
@@ -137,10 +167,27 @@ function LoadingOverlay() {
 				}}
 			>
 				<div className="relative w-32 h-32 flex items-center justify-center">
-					<svg className="absolute inset-0 -rotate-90" viewBox="0 0 120 120" aria-hidden="true">
-						<circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" strokeWidth="8" className="text-primary/20" />
+					<svg
+						className="absolute inset-0 -rotate-90"
+						viewBox="0 0 120 120"
+						aria-hidden="true"
+					>
 						<circle
-							cx="60" cy="60" r="52" fill="none" stroke="currentColor" strokeWidth="8"
+							cx="60"
+							cy="60"
+							r="52"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="8"
+							className="text-primary/20"
+						/>
+						<circle
+							cx="60"
+							cy="60"
+							r="52"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="8"
 							strokeLinecap="round"
 							strokeDasharray={2 * Math.PI * 52}
 							strokeDashoffset={2 * Math.PI * 52 * (1 - progress / 100)}
@@ -148,11 +195,17 @@ function LoadingOverlay() {
 							className="transition-[stroke-dashoffset] duration-100 ease-out"
 						/>
 					</svg>
-					<span className="relative font-medium italic text-xl text-primary tabular-nums">{progress}%</span>
+					<span className="relative font-medium italic text-xl text-primary tabular-nums">
+						{progress}%
+					</span>
 				</div>
 				<div className="text-center space-y-1">
-					<p className="font-bold text-lg" style={{ color: "#e5e2e1" }}>Memuat Ngolah Bola...</p>
-					<p className="text-sm" style={{ color: "#bbcac6" }}>Tunggu sebentar ya!</p>
+					<p className="font-bold text-lg" style={{ color: "#e5e2e1" }}>
+						Memuat Ngolah Bola...
+					</p>
+					<p className="text-sm" style={{ color: "#bbcac6" }}>
+						Tunggu sebentar ya!
+					</p>
 				</div>
 			</div>
 		</div>
@@ -168,7 +221,9 @@ export default function PrediksiSkorPage() {
 	const isDark = theme === "dark";
 
 	const [activeMatchday, setActiveMatchday] = useState<number>(1);
-	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">("matches");
+	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
+		"matches",
+	);
 	const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 	const [homeScore, setHomeScore] = useState<number | "">(0);
 	const [awayScore, setAwayScore] = useState<number | "">(0);
@@ -190,7 +245,10 @@ export default function PrediksiSkorPage() {
 	// Fetch teams once (for logo lookup)
 	const { data: teamsData, isLoading: teamsLoading } = useTeams();
 	const teamsMap = useMemo(() => {
-		const map: Record<string, { name: string; code: string; logo_url: string | null }> = {};
+		const map: Record<
+			string,
+			{ name: string; code: string; logo_url: string | null }
+		> = {};
 		(teamsData ?? []).forEach((t: any) => {
 			map[t.code] = { name: t.name, code: t.code, logo_url: t.logo_url };
 		});
@@ -198,9 +256,12 @@ export default function PrediksiSkorPage() {
 	}, [teamsData]);
 
 	const { data: matchdaysData, isLoading: matchdaysLoading } = useMatchdays();
-	const { data: matchesData, isLoading: matchesLoading } = useMatches(activeMatchday);
-	const { data: leaderboardData, isLoading: leaderboardLoading } = useLeaderboard();
-	const { data: myPredictionsData, isLoading: myPredictionsLoading } = useMyPredictions();
+	const { data: matchesData, isLoading: matchesLoading } =
+		useMatches(activeMatchday);
+	const { data: leaderboardData, isLoading: leaderboardLoading } =
+		useLeaderboard();
+	const { data: myPredictionsData, isLoading: myPredictionsLoading } =
+		useMyPredictions();
 	const { data: myRankData, isLoading: myRankLoading } = useMyRank();
 	const { data: mySummaryData, isLoading: mySummaryLoading } = useMySummary();
 	const submitPrediction = useSubmitPrediction();
@@ -222,42 +283,82 @@ export default function PrediksiSkorPage() {
 	// Dynamic Colors
 	const colors = isDark
 		? {
-				primary: "#43decc", primaryDark: "#0a7c6e", secondary: "#0D645F",
-				primaryAlpha: "rgba(67, 222, 204, 0.15)", surface: "#131313",
-				surfaceContainer: "#201f1f", text: "#e5e2e1", textSecondary: "#bbcac6",
-				outline: "#859490", white: "#ffffff",
-				whiteAlpha5: "rgba(255, 255, 255, 0.05)", whiteAlpha10: "rgba(255, 255, 255, 0.1)",
-				bg: "#050505", cardBg: "rgba(255,255,255,0.03)", cardBorder: "rgba(255,255,255,0.07)",
-				primary15: "rgba(67, 222, 204, 0.15)", primary20: "rgba(67, 222, 204, 0.2)",
-				primary30: "rgba(67, 222, 204, 0.3)", primary40: "rgba(67, 222, 204, 0.4)",
-				primary05: "rgba(67, 222, 204, 0.05)", badgeActiveBg: "#43decc",
-				badgeActiveText: "#003732", badgeInactiveBg: "rgba(255, 255, 255, 0.05)",
-				badgeInactiveText: "#bbcac6", badgeInactiveBorder: "rgba(255, 255, 255, 0.1)",
-				lockText: "rgba(187, 202, 198, 0.4)", lockBorder: "rgba(133, 148, 144, 0.2)",
-				teamBadgeBg: "rgba(67, 222, 204, 0.15)", teamBadgeText: "#43decc",
-				teamBadgeBorder: "rgba(67, 222, 204, 0.3)", meshPattern: "#43decc",
-				glowColor: "rgba(67, 222, 204, 0.15)", predictionBg: "rgba(67, 222, 204, 0.15)",
-				buttonActiveBg: "#43decc", buttonActiveText: "#003732",
-				buttonInactiveBg: "rgba(255, 255, 255, 0.05)", buttonInactiveText: "#bbcac6",
+				primary: "#43decc",
+				primaryDark: "#0a7c6e",
+				secondary: "#0D645F",
+				primaryAlpha: "rgba(67, 222, 204, 0.15)",
+				surface: "#131313",
+				surfaceContainer: "#201f1f",
+				text: "#e5e2e1",
+				textSecondary: "#bbcac6",
+				outline: "#859490",
+				white: "#ffffff",
+				whiteAlpha5: "rgba(255, 255, 255, 0.05)",
+				whiteAlpha10: "rgba(255, 255, 255, 0.1)",
+				bg: "#050505",
+				cardBg: "rgba(255,255,255,0.03)",
+				cardBorder: "rgba(255,255,255,0.07)",
+				primary15: "rgba(67, 222, 204, 0.15)",
+				primary20: "rgba(67, 222, 204, 0.2)",
+				primary30: "rgba(67, 222, 204, 0.3)",
+				primary40: "rgba(67, 222, 204, 0.4)",
+				primary05: "rgba(67, 222, 204, 0.05)",
+				badgeActiveBg: "#43decc",
+				badgeActiveText: "#003732",
+				badgeInactiveBg: "rgba(255, 255, 255, 0.05)",
+				badgeInactiveText: "#bbcac6",
+				badgeInactiveBorder: "rgba(255, 255, 255, 0.1)",
+				lockText: "rgba(187, 202, 198, 0.4)",
+				lockBorder: "rgba(133, 148, 144, 0.2)",
+				teamBadgeBg: "rgba(67, 222, 204, 0.15)",
+				teamBadgeText: "#43decc",
+				teamBadgeBorder: "rgba(67, 222, 204, 0.3)",
+				meshPattern: "#43decc",
+				glowColor: "rgba(67, 222, 204, 0.15)",
+				predictionBg: "rgba(67, 222, 204, 0.15)",
+				buttonActiveBg: "#43decc",
+				buttonActiveText: "#003732",
+				buttonInactiveBg: "rgba(255, 255, 255, 0.05)",
+				buttonInactiveText: "#bbcac6",
 			}
 		: {
-				primary: "#0a7c6e", primaryDark: "#0a7c6e", secondary: "#0a7c6e",
-				primaryAlpha: "rgba(10, 124, 110, 0.15)", surface: "#f5f5f5",
-				surfaceContainer: "#ffffff", text: "#1a1a1a", textSecondary: "#5a5a5a",
-				outline: "#9ca3af", white: "#ffffff",
-				whiteAlpha5: "rgba(0, 0, 0, 0.05)", whiteAlpha10: "rgba(0, 0, 0, 0.1)",
-				bg: "#f8fafc", cardBg: "rgba(255, 255, 255, 0.95)", cardBorder: "rgba(0, 0, 0, 0.08)",
-				primary15: "rgba(10, 124, 110, 0.12)", primary20: "rgba(10, 124, 110, 0.15)",
-				primary30: "rgba(10, 124, 110, 0.2)", primary40: "rgba(10, 124, 110, 0.25)",
-				primary05: "rgba(10, 124, 110, 0.05)", badgeActiveBg: "#0a7c6e",
-				badgeActiveText: "#ffffff", badgeInactiveBg: "rgba(0, 0, 0, 0.04)",
-				badgeInactiveText: "#6b7280", badgeInactiveBorder: "rgba(0, 0, 0, 0.08)",
-				lockText: "rgba(107, 114, 128, 0.6)", lockBorder: "rgba(107, 114, 128, 0.15)",
-				teamBadgeBg: "rgba(10, 124, 110, 0.15)", teamBadgeText: "#0a7c6e",
-				teamBadgeBorder: "rgba(10, 124, 110, 0.3)", meshPattern: "#0a7c6e",
-				glowColor: "rgba(10, 124, 110, 0.1)", predictionBg: "rgba(10, 124, 110, 0.12)",
-				buttonActiveBg: "#0a7c6e", buttonActiveText: "#ffffff",
-				buttonInactiveBg: "rgba(0, 0, 0, 0.04)", buttonInactiveText: "#6b7280",
+				primary: "#0a7c6e",
+				primaryDark: "#0a7c6e",
+				secondary: "#0a7c6e",
+				primaryAlpha: "rgba(10, 124, 110, 0.15)",
+				surface: "#f5f5f5",
+				surfaceContainer: "#ffffff",
+				text: "#1a1a1a",
+				textSecondary: "#5a5a5a",
+				outline: "#9ca3af",
+				white: "#ffffff",
+				whiteAlpha5: "rgba(0, 0, 0, 0.05)",
+				whiteAlpha10: "rgba(0, 0, 0, 0.1)",
+				bg: "#f8fafc",
+				cardBg: "rgba(255, 255, 255, 0.95)",
+				cardBorder: "rgba(0, 0, 0, 0.08)",
+				primary15: "rgba(10, 124, 110, 0.12)",
+				primary20: "rgba(10, 124, 110, 0.15)",
+				primary30: "rgba(10, 124, 110, 0.2)",
+				primary40: "rgba(10, 124, 110, 0.25)",
+				primary05: "rgba(10, 124, 110, 0.05)",
+				badgeActiveBg: "#0a7c6e",
+				badgeActiveText: "#ffffff",
+				badgeInactiveBg: "rgba(0, 0, 0, 0.04)",
+				badgeInactiveText: "#6b7280",
+				badgeInactiveBorder: "rgba(0, 0, 0, 0.08)",
+				lockText: "rgba(107, 114, 128, 0.6)",
+				lockBorder: "rgba(107, 114, 128, 0.15)",
+				teamBadgeBg: "rgba(10, 124, 110, 0.15)",
+				teamBadgeText: "#0a7c6e",
+				teamBadgeBorder: "rgba(10, 124, 110, 0.3)",
+				meshPattern: "#0a7c6e",
+				glowColor: "rgba(10, 124, 110, 0.1)",
+				predictionBg: "rgba(10, 124, 110, 0.12)",
+				buttonActiveBg: "#0a7c6e",
+				buttonActiveText: "#ffffff",
+				buttonInactiveBg: "rgba(0, 0, 0, 0.04)",
+				buttonInactiveText: "#6b7280",
 			};
 
 	const primary = colors.primary;
@@ -314,25 +415,43 @@ export default function PrediksiSkorPage() {
 		return "draw";
 	}, [homeScore, awayScore]);
 
-	const getTeamInfo = (code: string) => teamsMap[code] ?? { name: code, code, logo_url: null };
+	const getTeamInfo = (code: string) =>
+		teamsMap[code] ?? { name: code, code, logo_url: null };
 
 	// ============================================================
 	// ENDED STATE VIEW
 	// ============================================================
 	if (EVENT_STATUS.ngolahBola2026.isEnded) {
 		return (
-			<div className="min-h-screen pb-24 md:pb-12" style={{ background: bg, color: text }}>
+			<div
+				className="min-h-screen pb-24 md:pb-12"
+				style={{ background: bg, color: text }}
+			>
 				<main className="pt-10 md:pt-18 relative max-w-5xl mx-auto px-6 md:px-8 space-y-12">
 					<section className="text-center space-y-4">
-						<h1 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase" style={{ color: text, fontFamily: "Space Grotesk, sans-serif" }}>
-							Prediksi Skor <br /><span style={{ color: primary }}>Ngolah Bola 2026/2027</span>
+						<h1
+							className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase"
+							style={{ color: text, fontFamily: "Space Grotesk, sans-serif" }}
+						>
+							Prediksi Skor <br />
+							<span style={{ color: primary }}>Ngolah Bola 2026/2027</span>
 						</h1>
 						<EventEndedBanner isDark={isDark} variant="full" />
 					</section>
 					<section>
 						<div className="text-center mb-6">
-							<h2 className="text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-1" style={{ color: text }}>Final Klasemen Akhir</h2>
-							<p className="text-xs font-bold uppercase tracking-widest" style={{ color: textSecondary }}>Ngolah Bola Season 1 Ended</p>
+							<h2
+								className="text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-1"
+								style={{ color: text }}
+							>
+								Final Klasemen Akhir
+							</h2>
+							<p
+								className="text-xs font-bold uppercase tracking-widest"
+								style={{ color: textSecondary }}
+							>
+								Ngolah Bola Season 1 Ended
+							</p>
 						</div>
 						<PublicLeaderboard isDark={isDark} />
 					</section>
@@ -345,7 +464,10 @@ export default function PrediksiSkorPage() {
 	// NORMAL VIEW
 	// ============================================================
 	return (
-		<div className="min-h-screen pb-24 md:pb-12" style={{ background: bg, color: text }}>
+		<div
+			className="min-h-screen pb-24 md:pb-12"
+			style={{ background: bg, color: text }}
+		>
 			{showInitialOverlay && <LoadingOverlay />}
 			{/* Velocity Mesh Background */}
 			<div
@@ -359,34 +481,88 @@ export default function PrediksiSkorPage() {
 			<main className="pt-10 md:pt-18 relative">
 				{/* Hero Section */}
 				<section className="max-w-7xl mx-auto px-6 md:px-8 text-center mb-6 relative">
-					<div className="absolute -top-12 left-1/2 -translate-x-1/2 w-70 h-70 rounded-full blur-[80px]" style={{ background: primaryAlpha }} />
-					<h1 className="text-4xl md:text-7xl font-bold max-w-3xl mx-auto italic uppercase tracking-tighter mb-4" style={{ color: text, fontFamily: "Space Grotesk, sans-serif" }}>
-						Prediksi Skor <br /><span style={{ color: primary }}>Ngolah Bola 2026/2027</span>
+					<div
+						className="absolute -top-12 left-1/2 -translate-x-1/2 w-70 h-70 rounded-full blur-[80px]"
+						style={{ background: primaryAlpha }}
+					/>
+					<h1
+						className="text-4xl md:text-7xl font-bold max-w-3xl mx-auto italic uppercase tracking-tighter mb-4"
+						style={{ color: text, fontFamily: "Space Grotesk, sans-serif" }}
+					>
+						Prediksi Skor <br />
+						<span style={{ color: primary }}>Bundesliga 2026/2027</span>
 					</h1>
-					<p className="text-xs italic font-normal tracking-normal mb-10" style={{ color: textSecondary }}>
-						*Tebak akurat dapat 10 poin, tebak pemenang dapat 5 poin, jika salah dapat 0 poin
+					<p
+						className="text-xs italic font-normal tracking-normal mb-10"
+						style={{ color: textSecondary }}
+					>
+						*Tebak akurat dapat 30 poin, tebak pemenang dapat 15 poin, jika
+						salah dapat 0 poin
 					</p>
 
 					{/* Stats Bento Grid */}
 					<div className="flex flex-row gap-4 max-w-4xl mx-auto overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
-						<div className="min-w-35 flex-1 p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1" style={{ background: colors.primary05, borderColor: colors.primary30 }}>
-							<div className="text-3xl font-bold mb-1" style={{ color: text }}>{mySummaryData?.total_predictions ?? 0}</div>
-							<div className="text-xs font-semibold uppercase tracking-widest" style={{ color: outline }}>Total Prediksi Kamu</div>
+						<div
+							className="min-w-35 flex-1 p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1"
+							style={{
+								background: colors.primary05,
+								borderColor: colors.primary30,
+							}}
+						>
+							<div className="text-3xl font-bold mb-1" style={{ color: text }}>
+								{mySummaryData?.total_predictions ?? 0}
+							</div>
+							<div
+								className="text-xs font-semibold uppercase tracking-widest"
+								style={{ color: outline }}
+							>
+								Total Prediksi Kamu
+							</div>
 						</div>
-						<div className="p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1" style={{ background: colors.primary05, borderColor: colors.primary30 }}>
-							<div className="text-3xl font-bold mb-1" style={{ color: text }}>{mySummaryData?.total_points?.toLocaleString() ?? 0}</div>
-							<div className="text-xs font-semibold uppercase tracking-widest" style={{ color: outline }}>Point Didapatkan</div>
+						<div
+							className="p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1"
+							style={{
+								background: colors.primary05,
+								borderColor: colors.primary30,
+							}}
+						>
+							<div className="text-3xl font-bold mb-1" style={{ color: text }}>
+								{mySummaryData?.total_points?.toLocaleString() ?? 0}
+							</div>
+							<div
+								className="text-xs font-semibold uppercase tracking-widest"
+								style={{ color: outline }}
+							>
+								Point Didapatkan
+							</div>
 						</div>
-						<div className="p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer" style={{ background: colors.primary05, borderColor: colors.primary30 }} onClick={() => setShowLeaderboardModal(true)}>
-							<div className="text-3xl font-bold mb-1" style={{ color: text }}>#{myRankData?.rank ?? "-"}</div>
-							<div className="text-xs font-semibold uppercase tracking-widest" style={{ color: outline }}>Klasemen Kamu</div>
+						<div
+							className="p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
+							style={{
+								background: colors.primary05,
+								borderColor: colors.primary30,
+							}}
+							onClick={() => setShowLeaderboardModal(true)}
+						>
+							<div className="text-3xl font-bold mb-1" style={{ color: text }}>
+								#{myRankData?.rank ?? "-"}
+							</div>
+							<div
+								className="text-xs font-semibold uppercase tracking-widest"
+								style={{ color: outline }}
+							>
+								Klasemen Kamu
+							</div>
 						</div>
 					</div>
 				</section>
 
 				{/* Matchday Tabs */}
 				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-4 md:mb-8 overflow-x-auto">
-					<div className="flex gap-3 pb-4 border-b" style={{ borderColor: whiteAlpha5 }}>
+					<div
+						className="flex gap-3 pb-4 border-b"
+						style={{ borderColor: whiteAlpha5 }}
+					>
 						{(matchdaysData ?? []).map((md: number) => {
 							const isActive = activeMatchday === md;
 							return (
@@ -394,9 +570,17 @@ export default function PrediksiSkorPage() {
 									key={md}
 									onClick={() => setActiveMatchday(md)}
 									className="px-6 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition-all"
-									style={isActive
-										? { background: colors.buttonActiveBg, color: colors.buttonActiveText }
-										: { background: colors.badgeInactiveBg, color: colors.badgeInactiveText, border: `1px solid ${colors.badgeInactiveBorder}` }
+									style={
+										isActive
+											? {
+													background: colors.buttonActiveBg,
+													color: colors.buttonActiveText,
+												}
+											: {
+													background: colors.badgeInactiveBg,
+													color: colors.badgeInactiveText,
+													border: `1px solid ${colors.badgeInactiveBorder}`,
+												}
 									}
 								>
 									Matchday {md}
@@ -408,7 +592,10 @@ export default function PrediksiSkorPage() {
 
 				{/* Tab Navigation */}
 				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-6">
-					<div className="inline-flex rounded-xl p-1" style={{ background: whiteAlpha5 }}>
+					<div
+						className="inline-flex rounded-xl p-1"
+						style={{ background: whiteAlpha5 }}
+					>
 						{(["matches", "leaderboard"] as const).map((tab) => {
 							const isActive = activeTab === tab;
 							return (
@@ -416,9 +603,13 @@ export default function PrediksiSkorPage() {
 									key={tab}
 									onClick={() => setActiveTab(tab)}
 									className="px-6 py-2 rounded-lg font-semibold text-sm transition-all"
-									style={isActive
-										? { background: colors.buttonActiveBg, color: colors.buttonActiveText }
-										: { color: colors.badgeInactiveText }
+									style={
+										isActive
+											? {
+													background: colors.buttonActiveBg,
+													color: colors.buttonActiveText,
+												}
+											: { color: colors.badgeInactiveText }
 									}
 								>
 									{tab === "matches" ? "Pertandingan" : "Klasemen"}
@@ -433,18 +624,30 @@ export default function PrediksiSkorPage() {
 					<section className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-24 md:mb-16">
 						{matchesLoading ? (
 							<>
-								{[1, 2, 3, 4].map((i) => <MatchCardSkeleton key={i} />)}
+								{[1, 2, 3, 4].map((i) => (
+									<MatchCardSkeleton key={i} />
+								))}
 							</>
 						) : (matchesData ?? []).length === 0 ? (
-							<div className="col-span-2 text-center py-16 rounded-3xl" style={{ background: whiteAlpha5, border: `1px solid ${whiteAlpha10}` }}>
-								<p className="text-xl font-bold mb-2" style={{ color: text }}>Tidak ada pertandingan</p>
-								<p className="text-sm" style={{ color: textSecondary }}>Belum ada pertandingan untuk matchday ini.</p>
+							<div
+								className="col-span-2 text-center py-16 rounded-3xl"
+								style={{
+									background: whiteAlpha5,
+									border: `1px solid ${whiteAlpha10}`,
+								}}
+							>
+								<p className="text-xl font-bold mb-2" style={{ color: text }}>
+									Tidak ada pertandingan
+								</p>
+								<p className="text-sm" style={{ color: textSecondary }}>
+									Belum ada pertandingan untuk matchday ini.
+								</p>
 							</div>
 						) : (
 							(matchesData ?? []).map((match: Match) => {
 								const userPred = getUserPrediction(match.id);
 								const hasPrediction = !!userPred;
-								const isEditable = match.is_prediction_open && isAuthenticated;
+								const isEditable = match.is_prediction_open;
 								const isCompleted = match.status === "completed";
 								const homeTeam = getTeamInfo(match.home_team.code);
 								const awayTeam = getTeamInfo(match.away_team.code);
@@ -453,24 +656,49 @@ export default function PrediksiSkorPage() {
 									<div
 										key={match.id}
 										className="match-card px-3 md:px-8 py-5 md:py-8 rounded-3xl backdrop-blur-xl border transition-all duration-300 group relative overflow-hidden"
-										style={{ background: whiteAlpha5, borderColor: whiteAlpha10 }}
+										style={{
+											background: whiteAlpha5,
+											borderColor: whiteAlpha10,
+										}}
 									>
 										{/* Date row */}
 										<div className="flex justify-between items-center mb-8 relative z-10">
-											<span className="text-[10px] md:text-xs font-semibold uppercase tracking-widest" style={{ color: outline }}>
-												{formatMatchDate(match.match_date, match.kickoff_time, "WIB")}
+											<span
+												className="text-[10px] md:text-xs font-semibold uppercase tracking-widest"
+												style={{ color: outline }}
+											>
+												{formatMatchDate(
+													match.match_date,
+													match.kickoff_time,
+													"WIB",
+												)}
 											</span>
 											{isCompleted && userPred && (
-												<div className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full" style={{
-													background: userPred.score_exact ? "rgba(34, 197, 94, 0.2)" : userPred.result_correct ? "rgba(234, 179, 8, 0.2)" : "rgba(239, 68, 68, 0.2)",
-													color: userPred.score_exact ? "#22c55e" : userPred.result_correct ? "#eab308" : "#ef4444",
-												}}>
+												<div
+													className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
+													style={{
+														background: userPred.score_exact
+															? "rgba(34, 197, 94, 0.2)"
+															: userPred.result_correct
+																? "rgba(234, 179, 8, 0.2)"
+																: "rgba(239, 68, 68, 0.2)",
+														color: userPred.score_exact
+															? "#22c55e"
+															: userPred.result_correct
+																? "#eab308"
+																: "#ef4444",
+													}}
+												>
 													+{userPred.points_earned ?? 0} pts
 												</div>
 											)}
 											{!isEditable && hasPrediction && !isCompleted && (
-												<div className="flex items-center gap-1.5" style={{ color: outline }}>
-													<Lock className="size-3.5" /><span className="text-xs font-semibold">Locked</span>
+												<div
+													className="flex items-center gap-1.5"
+													style={{ color: outline }}
+												>
+													<Lock className="size-3.5" />
+													<span className="text-xs font-semibold">Locked</span>
 												</div>
 											)}
 										</div>
@@ -479,25 +707,52 @@ export default function PrediksiSkorPage() {
 										<div className="flex items-center justify-between gap-0 mb-10 relative z-10">
 											<div className="flex flex-col items-center gap-3 flex-1">
 												<TeamBadge team={homeTeam} isDark={isDark} />
-												<span className="text-sm font-bold tracking-tight text-center" style={{ color: text }}>
+												<span
+													className="text-sm font-bold tracking-tight text-center"
+													style={{ color: text }}
+												>
 													{homeTeam.name.toUpperCase()}
 												</span>
 											</div>
 											<div className="px-4 flex flex-col items-center gap-2">
-												{isCompleted && <span className="text-xs font-bold" style={{ color: primary }}>Full-time</span>}
+												{isCompleted && (
+													<span
+														className="text-xs font-bold"
+														style={{ color: primary }}
+													>
+														Full-time
+													</span>
+												)}
 												{isCompleted ? (
-													<span className="text-2xl md:text-3xl font-black" style={{ color: text }}>{match.home_score} - {match.away_score}</span>
+													<span
+														className="text-2xl md:text-3xl font-black"
+														style={{ color: text }}
+													>
+														{match.home_score} - {match.away_score}
+													</span>
 												) : hasPrediction ? (
-													<span className="text-2xl md:text-3xl font-black" style={{ color: text }}>
-														{userPred.home_score_predicted} - {userPred.away_score_predicted}
+													<span
+														className="text-2xl md:text-3xl font-black"
+														style={{ color: text }}
+													>
+														{userPred.home_score_predicted} -{" "}
+														{userPred.away_score_predicted}
 													</span>
 												) : (
-													<span className="text-4xl font-black" style={{ color: outline }}>VS</span>
+													<span
+														className="text-4xl font-black"
+														style={{ color: outline }}
+													>
+														VS
+													</span>
 												)}
 											</div>
 											<div className="flex flex-col items-center gap-3 flex-1">
 												<TeamBadge team={awayTeam} isDark={isDark} />
-												<span className="text-sm font-bold tracking-tight text-center" style={{ color: text }}>
+												<span
+													className="text-sm font-bold tracking-tight text-center"
+													style={{ color: text }}
+												>
 													{awayTeam.name.toUpperCase()}
 												</span>
 											</div>
@@ -506,29 +761,73 @@ export default function PrediksiSkorPage() {
 										{/* Action */}
 										<div className="relative z-10">
 											{isCompleted && hasPrediction ? (
-												<div className={`w-full py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-1 border`} style={{ background: colors.primary15 }}>
-													<span className="font-bold text-center" style={{ color: primary }}>
+												<div
+													className={`w-full py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-1 border`}
+													style={{ background: colors.primary15 }}
+												>
+													<span
+														className="font-bold text-center"
+														style={{ color: primary }}
+													>
 														{`Prediksi Kamu ${userPred.home_score_predicted} - ${userPred.away_score_predicted}`}
 													</span>
 												</div>
 											) : isCompleted ? (
-												<button className="w-full py-4 text-sm md:text-base rounded-2xl font-bold flex items-center justify-center gap-2" style={{ background: colors.surfaceContainer, color: outline }} disabled>
-													<Check className="size-5" />Full-time
+												<button
+													className="w-full py-4 text-sm md:text-base rounded-2xl font-bold flex items-center justify-center gap-2"
+													style={{
+														background: colors.surfaceContainer,
+														color: outline,
+													}}
+													disabled
+												>
+													<Check className="size-5" />
+													Full-time
 												</button>
 											) : hasPrediction ? (
-												<div className="w-full py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-2" style={{ background: colors.primary15, border: `1px solid ${primary}40` }}>
+												<div
+													className="w-full py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-2"
+													style={{
+														background: colors.primary15,
+														border: `1px solid ${primary}40`,
+													}}
+												>
 													<div className="flex items-center gap-2">
-														<Check className="size-4" style={{ color: primary }} />
-														<span className="rounded-2xl font-bold" style={{ color: primary }}>Prediksi Terkirim</span>
+														<Check
+															className="size-4"
+															style={{ color: primary }}
+														/>
+														<span
+															className="rounded-2xl font-bold"
+															style={{ color: primary }}
+														>
+															Prediksi Terkirim
+														</span>
 													</div>
 												</div>
 											) : isEditable ? (
-												<button onClick={() => openModal(match)} className="w-full py-4 text-sm md:text-base rounded-2xl font-bold text-white/90 flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg group/btn" style={{ background: secondary, boxShadow: `0 4px 20px ${primaryAlpha}` }}>
+												<button
+													onClick={() => openModal(match)}
+													className="w-full py-4 text-sm md:text-base rounded-2xl font-bold text-white/90 flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg group/btn"
+													style={{
+														background: secondary,
+														boxShadow: `0 4px 20px ${primaryAlpha}`,
+													}}
+												>
 													Prediksi Skor!
 												</button>
 											) : (
-												<button className="w-full py-4 text-sm md:text-base rounded-2xl font-bold flex items-center justify-center gap-2 cursor-not-allowed opacity-60" style={{ background: whiteAlpha5, color: outline, border: `1px solid ${primary}50` }} disabled>
-													<Lock className="size-5" />Pertandingan Terkunci
+												<button
+													className="w-full py-4 text-sm md:text-base rounded-2xl font-bold flex items-center justify-center gap-2 cursor-not-allowed opacity-60"
+													style={{
+														background: whiteAlpha5,
+														color: outline,
+														border: `1px solid ${primary}50`,
+													}}
+													disabled
+												>
+													<Lock className="size-5" />
+													Pertandingan Terkunci
 												</button>
 											)}
 										</div>
@@ -545,45 +844,105 @@ export default function PrediksiSkorPage() {
 						{leaderboardLoading ? (
 							<div className="space-y-3">
 								{[1, 2, 3, 4, 5].map((i) => (
-									<div key={i} className="h-20 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,0.05)" }} />
+									<div
+										key={i}
+										className="h-20 rounded-xl animate-pulse"
+										style={{ background: "rgba(255,255,255,0.05)" }}
+									/>
 								))}
 							</div>
 						) : (
 							<>
 								{myRankData && (
-									<div className="p-6 rounded-2xl text-center mb-8 backdrop-blur-xl" style={{ background: colors.primary20, border: `2px solid ${primary}` }}>
-										<Trophy className="size-12 mx-auto mb-2" style={{ color: gold }} />
-										<p className="text-5xl font-black mb-2" style={{ color: text }}>#{myRankData.rank}</p>
-										<p className="text-lg" style={{ color: textSecondary }}>dari {myRankData.total_participants} peserta</p>
+									<div
+										className="p-6 rounded-2xl text-center mb-8 backdrop-blur-xl"
+										style={{
+											background: colors.primary20,
+											border: `2px solid ${primary}`,
+										}}
+									>
+										<Trophy
+											className="size-12 mx-auto mb-2"
+											style={{ color: gold }}
+										/>
+										<p
+											className="text-5xl font-black mb-2"
+											style={{ color: text }}
+										>
+											#{myRankData.rank}
+										</p>
+										<p className="text-lg" style={{ color: textSecondary }}>
+											dari {myRankData.total_participants} peserta
+										</p>
 									</div>
 								)}
 								<div className="space-y-3">
-									{(Array.isArray(leaderboardData) ? leaderboardData : []).map((entry: any, index: number) => {
-										const medals = ["🥇", "🥈", "🥉"];
-										const isTop3 = index < 3;
-										return (
-											<div key={entry.rank} className="p-4 rounded-xl flex items-center gap-4 transition-all" style={{
-												background: isTop3 ? (index === 0 ? `${gold}20` : index === 1 ? `${silver}20` : `${bronze}20`) : whiteAlpha5,
-												border: isTop3 ? `2px solid ${index === 0 ? gold : index === 1 ? silver : bronze}` : `1px solid ${whiteAlpha10}`,
-												transform: isTop3 ? "scale(1.02)" : "scale(1)",
-											}}>
-												<div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl" style={{
-													background: isTop3 ? (index === 0 ? gold : index === 1 ? silver : bronze) : whiteAlpha10,
-													color: isTop3 ? "#000" : text,
-												}}>
-													{medals[index] || entry.rank}
+									{(Array.isArray(leaderboardData) ? leaderboardData : []).map(
+										(entry: any, index: number) => {
+											const medals = ["🥇", "🥈", "🥉"];
+											const isTop3 = index < 3;
+											return (
+												<div
+													key={entry.rank}
+													className="p-4 rounded-xl flex items-center gap-4 transition-all"
+													style={{
+														background: isTop3
+															? index === 0
+																? `${gold}20`
+																: index === 1
+																	? `${silver}20`
+																	: `${bronze}20`
+															: whiteAlpha5,
+														border: isTop3
+															? `2px solid ${index === 0 ? gold : index === 1 ? silver : bronze}`
+															: `1px solid ${whiteAlpha10}`,
+														transform: isTop3 ? "scale(1.02)" : "scale(1)",
+													}}
+												>
+													<div
+														className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl"
+														style={{
+															background: isTop3
+																? index === 0
+																	? gold
+																	: index === 1
+																		? silver
+																		: bronze
+																: whiteAlpha10,
+															color: isTop3 ? "#000" : text,
+														}}
+													>
+														{medals[index] || entry.rank}
+													</div>
+													<div className="flex-1">
+														<p className="font-bold" style={{ color: text }}>
+															{entry.user_name}
+														</p>
+														<p
+															className="text-sm"
+															style={{ color: textSecondary }}
+														>
+															{entry.total_predictions} prediksi
+														</p>
+													</div>
+													<div className="text-right">
+														<p
+															className="text-2xl font-black"
+															style={{ color: primary }}
+														>
+															{entry.total_points}
+														</p>
+														<p
+															className="text-xs uppercase tracking-wider"
+															style={{ color: textSecondary }}
+														>
+															poin
+														</p>
+													</div>
 												</div>
-												<div className="flex-1">
-													<p className="font-bold" style={{ color: text }}>{entry.user_name}</p>
-													<p className="text-sm" style={{ color: textSecondary }}>{entry.total_predictions} prediksi</p>
-												</div>
-												<div className="text-right">
-													<p className="text-2xl font-black" style={{ color: primary }}>{entry.total_points}</p>
-													<p className="text-xs uppercase tracking-wider" style={{ color: textSecondary }}>poin</p>
-												</div>
-											</div>
-										);
-									})}
+											);
+										},
+									)}
 								</div>
 							</>
 						)}
@@ -593,40 +952,145 @@ export default function PrediksiSkorPage() {
 
 			{/* Prediction Modal */}
 			{selectedMatch && (
-				<div className="fixed inset-0 z-100 flex items-center justify-center p-4 animate-fadeIn" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }} onClick={() => setSelectedMatch(null)}>
-					<div className="w-full max-w-md p-6 rounded-3xl border relative overflow-hidden animate-scaleIn" style={{ background: colors.surface, borderColor: colors.primary30, boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)` }} onClick={(e) => e.stopPropagation()}>
-						<div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none" style={{ background: primaryAlpha }} />
-						<button onClick={(e) => { e.stopPropagation(); setSelectedMatch(null); }} className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20" style={{ background: whiteAlpha5, color: textSecondary }}>
+				<div
+					className="fixed inset-0 z-100 flex items-center justify-center p-4 animate-fadeIn"
+					style={{
+						background: "rgba(0,0,0,0.85)",
+						backdropFilter: "blur(8px)",
+					}}
+					onClick={() => setSelectedMatch(null)}
+				>
+					<div
+						className="w-full max-w-md p-6 rounded-3xl border relative overflow-hidden animate-scaleIn"
+						style={{
+							background: colors.surface,
+							borderColor: colors.primary30,
+							boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)`,
+						}}
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div
+							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
+							style={{ background: primaryAlpha }}
+						/>
+						<button
+							onClick={(e) => {
+								e.stopPropagation();
+								setSelectedMatch(null);
+							}}
+							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
+							style={{ background: whiteAlpha5, color: textSecondary }}
+						>
 							<X className="size-4" />
 						</button>
 						<div className="text-center mb-6 relative z-10">
 							<h3 className="text-xl font-bold mb-1" style={{ color: text }}>
 								{selectedMatch.home_team.name} vs {selectedMatch.away_team.name}
 							</h3>
-							<p className="text-xs" style={{ color: textSecondary }}>{formatMatchDate(selectedMatch.match_date, selectedMatch.kickoff_time, "WIB")}</p>
+							<p className="text-xs" style={{ color: textSecondary }}>
+								{formatMatchDate(
+									selectedMatch.match_date,
+									selectedMatch.kickoff_time,
+									"WIB",
+								)}
+							</p>
 						</div>
 						<div className="flex items-center justify-center gap-6 mb-6 relative z-10">
 							<div className="text-center">
-								<p className="text-xs mb-2 truncate max-w-25" style={{ color: textSecondary }}>{selectedMatch.home_team.code}</p>
-								<input type="number" value={homeScore} onChange={(e) => { const raw = e.target.value; if (raw === "") { setHomeScore(""); return; } const v = parseInt(raw); if (Number.isNaN(v)) return; setHomeScore(Math.min(99, Math.max(0, v))); }} className="w-16 h-14 text-center text-4xl font-black bg-transparent border-b-2 transition-all focus:scale-105" style={{ borderColor: outline, color: primary }} min="0" max="99" placeholder="0" />
+								<p
+									className="text-xs mb-2 truncate max-w-25"
+									style={{ color: textSecondary }}
+								>
+									{selectedMatch.home_team.code}
+								</p>
+								<input
+									type="number"
+									value={homeScore}
+									onChange={(e) => {
+										const raw = e.target.value;
+										if (raw === "") {
+											setHomeScore("");
+											return;
+										}
+										const v = parseInt(raw);
+										if (Number.isNaN(v)) return;
+										setHomeScore(Math.min(99, Math.max(0, v)));
+									}}
+									className="w-16 h-14 text-center text-4xl font-black bg-transparent border-b-2 transition-all focus:scale-105"
+									style={{ borderColor: outline, color: primary }}
+									min="0"
+									max="99"
+									placeholder="0"
+								/>
 							</div>
-							<span className="text-3xl font-black mb-4" style={{ color: outline }}>-</span>
+							<span
+								className="text-3xl font-black mb-4"
+								style={{ color: outline }}
+							>
+								-
+							</span>
 							<div className="text-center">
-								<p className="text-xs mb-2 truncate max-w-25" style={{ color: textSecondary }}>{selectedMatch.away_team.code}</p>
-								<input type="number" value={awayScore} onChange={(e) => { const raw = e.target.value; if (raw === "") { setAwayScore(""); return; } const v = parseInt(raw); if (Number.isNaN(v)) return; setAwayScore(Math.min(99, Math.max(0, v))); }} className="w-16 h-14 text-center text-4xl font-black bg-transparent border-b-2 transition-all focus:scale-105" style={{ borderColor: outline, color: primary }} min="0" max="99" placeholder="0" />
+								<p
+									className="text-xs mb-2 truncate max-w-25"
+									style={{ color: textSecondary }}
+								>
+									{selectedMatch.away_team.code}
+								</p>
+								<input
+									type="number"
+									value={awayScore}
+									onChange={(e) => {
+										const raw = e.target.value;
+										if (raw === "") {
+											setAwayScore("");
+											return;
+										}
+										const v = parseInt(raw);
+										if (Number.isNaN(v)) return;
+										setAwayScore(Math.min(99, Math.max(0, v)));
+									}}
+									className="w-16 h-14 text-center text-4xl font-black bg-transparent border-b-2 transition-all focus:scale-105"
+									style={{ borderColor: outline, color: primary }}
+									min="0"
+									max="99"
+									placeholder="0"
+								/>
 							</div>
 						</div>
 						<div className="text-center mb-5 relative z-10">
-							<p className="text-xs mb-1" style={{ color: textSecondary }}>Prediksi Kamu:</p>
+							<p className="text-xs mb-1" style={{ color: textSecondary }}>
+								Prediksi Kamu:
+							</p>
 							<p className="text-base font-bold" style={{ color: primary }}>
-								{predictedWinner === "home" ? `${selectedMatch.home_team.name} Menang` : predictedWinner === "away" ? `${selectedMatch.away_team.name} Menang` : "Seri"}
+								{predictedWinner === "home"
+									? `${selectedMatch.home_team.name} Menang`
+									: predictedWinner === "away"
+										? `${selectedMatch.away_team.name} Menang`
+										: "Seri"}
 							</p>
 						</div>
 						<div className="flex flex-col gap-2 relative z-10">
-							<button onClick={handleSubmit} disabled={submitPrediction.isPending} className="w-full py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2" style={{ background: primary, color: "#003732", boxShadow: `0 2px 15px ${primaryAlpha}` }}>
-								{submitPrediction.isPending ? "Menyimpan..." : "Simpan Prediksi"}
+							<button
+								onClick={handleSubmit}
+								disabled={submitPrediction.isPending}
+								className="w-full py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+								style={{
+									background: primary,
+									color: "#003732",
+									boxShadow: `0 2px 15px ${primaryAlpha}`,
+								}}
+							>
+								{submitPrediction.isPending
+									? "Menyimpan..."
+									: "Simpan Prediksi"}
 							</button>
-							<button onClick={() => setSelectedMatch(null)} className="w-full py-2 rounded-lg transition-all hover:opacity-80 text-sm" style={{ color: textSecondary }}>Batal</button>
+							<button
+								onClick={() => setSelectedMatch(null)}
+								className="w-full py-2 rounded-lg transition-all hover:opacity-80 text-sm"
+								style={{ color: textSecondary }}
+							>
+								Batal
+							</button>
 						</div>
 					</div>
 				</div>
@@ -634,20 +1098,63 @@ export default function PrediksiSkorPage() {
 
 			{/* Login Prompt Modal */}
 			{showLoginPrompt && (
-				<div className="fixed inset-0 z-200 flex items-center justify-center p-4 animate-fadeIn" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }} onClick={() => setShowLoginPrompt(false)}>
-					<div className="w-full max-w-sm p-6 rounded-3xl border relative overflow-hidden animate-scaleIn text-center" style={{ background: colors.surface, borderColor: colors.primary30, boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)` }} onClick={(e) => e.stopPropagation()}>
-						<div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none" style={{ background: primaryAlpha }} />
-						<button onClick={() => setShowLoginPrompt(false)} className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20" style={{ background: whiteAlpha5, color: textSecondary }}>
+				<div
+					className="fixed inset-0 z-200 flex items-center justify-center p-4 animate-fadeIn"
+					style={{
+						background: "rgba(0,0,0,0.85)",
+						backdropFilter: "blur(8px)",
+					}}
+					onClick={() => setShowLoginPrompt(false)}
+				>
+					<div
+						className="w-full max-w-sm p-6 rounded-3xl border relative overflow-hidden animate-scaleIn text-center"
+						style={{
+							background: colors.surface,
+							borderColor: colors.primary30,
+							boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)`,
+						}}
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div
+							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
+							style={{ background: primaryAlpha }}
+						/>
+						<button
+							onClick={() => setShowLoginPrompt(false)}
+							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
+							style={{ background: whiteAlpha5, color: textSecondary }}
+						>
 							<X className="size-4" />
 						</button>
 						<div className="relative z-10">
-							<div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: colors.primary15, border: `2px solid ${colors.primary30}` }}>
+							<div
+								className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+								style={{
+									background: colors.primary15,
+									border: `2px solid ${colors.primary30}`,
+								}}
+							>
 								<Lock className="size-7" style={{ color: primary }} />
 							</div>
-							<h3 className="text-xl font-black mb-2" style={{ color: text }}><span style={{ color: primary }}>Login Dulu Ya!</span></h3>
-							<p className="text-sm mb-6 leading-relaxed" style={{ color: textSecondary }}>Kamu belum login sob. Login dulu biar bisa ikut main prediksi skor Ngolah Bola 2026/2027!</p>
+							<h3 className="text-xl font-black mb-2" style={{ color: text }}>
+								<span style={{ color: primary }}>Login Dulu Ya!</span>
+							</h3>
+							<p
+								className="text-sm mb-6 leading-relaxed"
+								style={{ color: textSecondary }}
+							>
+								Kamu belum login sob. Login dulu biar bisa ikut main prediksi
+								skor Ngolah Bola 2026/2027!
+							</p>
 							<Link href="/login">
-								<div className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer" style={{ background: primary, color: "#003732", boxShadow: `0 2px 15px ${primaryAlpha}` }}>
+								<div
+									className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
+									style={{
+										background: primary,
+										color: "#003732",
+										boxShadow: `0 2px 15px ${primaryAlpha}`,
+									}}
+								>
 									Login Sekarang
 								</div>
 							</Link>
@@ -658,63 +1165,169 @@ export default function PrediksiSkorPage() {
 
 			{/* Leaderboard Modal */}
 			{showLeaderboardModal && (
-				<div className="fixed inset-0 z-100 flex items-center justify-center p-4 animate-fadeIn" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }} onClick={() => setShowLeaderboardModal(false)}>
-					<div className="w-full max-w-md max-h-[85vh] flex flex-col p-6 rounded-3xl border relative overflow-hidden animate-scaleIn" style={{ background: colors.surface, borderColor: colors.primary30, boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)` }} onClick={(e) => e.stopPropagation()}>
-						<div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none" style={{ background: primaryAlpha }} />
-						<button onClick={() => setShowLeaderboardModal(false)} className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20" style={{ background: whiteAlpha5, color: textSecondary }}>
+				<div
+					className="fixed inset-0 z-100 flex items-center justify-center p-4 animate-fadeIn"
+					style={{
+						background: "rgba(0,0,0,0.85)",
+						backdropFilter: "blur(8px)",
+					}}
+					onClick={() => setShowLeaderboardModal(false)}
+				>
+					<div
+						className="w-full max-w-md max-h-[85vh] flex flex-col p-6 rounded-3xl border relative overflow-hidden animate-scaleIn"
+						style={{
+							background: colors.surface,
+							borderColor: colors.primary30,
+							boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)`,
+						}}
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div
+							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
+							style={{ background: primaryAlpha }}
+						/>
+						<button
+							onClick={() => setShowLeaderboardModal(false)}
+							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
+							style={{ background: whiteAlpha5, color: textSecondary }}
+						>
 							<X className="size-4" />
 						</button>
 						<div className="text-center mb-5 relative z-10">
-							<h3 className="text-xl font-bold mb-1" style={{ color: text }}>Klasemen Sementara!</h3>
-							<p className="text-xs" style={{ color: textSecondary }}>Top 5 Player dengan poin tertinggi.</p>
+							<h3 className="text-xl font-bold mb-1" style={{ color: text }}>
+								Klasemen Sementara!
+							</h3>
+							<p className="text-xs" style={{ color: textSecondary }}>
+								Top 5 Player dengan poin tertinggi.
+							</p>
 						</div>
 						<div className="flex-1 overflow-y-auto space-y-2 pr-1 relative z-10">
 							{(() => {
 								const raw = leaderboardData ?? [];
 								if (!Array.isArray(raw) || raw.length === 0) {
-									return <div className="text-center py-8" style={{ color: textSecondary }}><p className="text-sm">Belum ada data leaderboard</p></div>;
-								}
-								const top5 = raw.sort((a: LeaderboardEntry, b: LeaderboardEntry) => a.rank - b.rank).slice(0, 5);
-								return top5.map((entry: LeaderboardEntry) => {
-									const isCurrentUser = user?.id !== undefined && entry.user_id === user?.id;
 									return (
-										<div key={entry.user_id} className="p-3 rounded-xl flex items-center gap-3 transition-all" style={{
-											background: isCurrentUser ? colors.primary20 : whiteAlpha5,
-											border: isCurrentUser ? `2px solid ${primary}` : `1px solid ${whiteAlpha10}`,
-										}}>
-											<div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0" style={{ background: isCurrentUser ? colors.primary30 : whiteAlpha10, color: isCurrentUser ? primary : text }}>
+										<div
+											className="text-center py-8"
+											style={{ color: textSecondary }}
+										>
+											<p className="text-sm">Belum ada data leaderboard</p>
+										</div>
+									);
+								}
+								const top5 = raw
+									.sort(
+										(a: LeaderboardEntry, b: LeaderboardEntry) =>
+											a.rank - b.rank,
+									)
+									.slice(0, 5);
+								return top5.map((entry: LeaderboardEntry) => {
+									const isCurrentUser =
+										user?.id !== undefined && entry.user_id === user?.id;
+									return (
+										<div
+											key={entry.user_id}
+											className="p-3 rounded-xl flex items-center gap-3 transition-all"
+											style={{
+												background: isCurrentUser
+													? colors.primary20
+													: whiteAlpha5,
+												border: isCurrentUser
+													? `2px solid ${primary}`
+													: `1px solid ${whiteAlpha10}`,
+											}}
+										>
+											<div
+												className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
+												style={{
+													background: isCurrentUser
+														? colors.primary30
+														: whiteAlpha10,
+													color: isCurrentUser ? primary : text,
+												}}
+											>
 												{entry.rank}
 											</div>
 											<div className="flex-1 min-w-0">
-												<p className="font-bold text-sm truncate" style={{ color: text }}>
+												<p
+													className="font-bold text-sm truncate"
+													style={{ color: text }}
+												>
 													{entry.user_name}
-													{isCurrentUser && <span className="ml-1.5 text-xs font-semibold" style={{ color: primary }}>(Kamu)</span>}
+													{isCurrentUser && (
+														<span
+															className="ml-1.5 text-xs font-semibold"
+															style={{ color: primary }}
+														>
+															(Kamu)
+														</span>
+													)}
 												</p>
-												<p className="text-xs" style={{ color: textSecondary }}>{entry.total_predictions} prediksi</p>
+												<p className="text-xs" style={{ color: textSecondary }}>
+													{entry.total_predictions} prediksi
+												</p>
 											</div>
 											<div className="text-right shrink-0">
-												<p className="text-xl font-black" style={{ color: primary }}>{entry.total_points}</p>
-												<p className="text-[10px] uppercase tracking-wider" style={{ color: textSecondary }}>poin</p>
+												<p
+													className="text-xl font-black"
+													style={{ color: primary }}
+												>
+													{entry.total_points}
+												</p>
+												<p
+													className="text-[10px] uppercase tracking-wider"
+													style={{ color: textSecondary }}
+												>
+													poin
+												</p>
 											</div>
 										</div>
 									);
 								});
 							})()}
 							{myRankData && myRankData.rank > 5 && (
-								<div className="p-3 rounded-xl flex items-center gap-3 mt-2" style={{ background: colors.primary20, border: `2px solid ${primary}` }}>
-									<div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shrink-0" style={{ background: colors.primary30, color: primary }}>
+								<div
+									className="p-3 rounded-xl flex items-center gap-3 mt-2"
+									style={{
+										background: colors.primary20,
+										border: `2px solid ${primary}`,
+									}}
+								>
+									<div
+										className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shrink-0"
+										style={{ background: colors.primary30, color: primary }}
+									>
 										#{myRankData.rank}
 									</div>
 									<div className="flex-1 min-w-0">
-										<p className="font-bold text-sm truncate" style={{ color: text }}>
+										<p
+											className="font-bold text-sm truncate"
+											style={{ color: text }}
+										>
 											{myRankData.user_name ?? "Kamu"}
-											<span className="ml-1.5 text-xs font-semibold" style={{ color: primary }}>(Kamu)</span>
+											<span
+												className="ml-1.5 text-xs font-semibold"
+												style={{ color: primary }}
+											>
+												(Kamu)
+											</span>
 										</p>
-										<p className="text-xs" style={{ color: textSecondary }}>{myRankData.total_points ?? 0} poin total</p>
+										<p className="text-xs" style={{ color: textSecondary }}>
+											{myRankData.total_points ?? 0} poin total
+										</p>
 									</div>
 									<div className="text-right shrink-0">
-										<p className="text-xl font-black" style={{ color: primary }}>{myRankData.total_points ?? 0}</p>
-										<p className="text-[10px] uppercase tracking-wider" style={{ color: textSecondary }}>poin</p>
+										<p
+											className="text-xl font-black"
+											style={{ color: primary }}
+										>
+											{myRankData.total_points ?? 0}
+										</p>
+										<p
+											className="text-[10px] uppercase tracking-wider"
+											style={{ color: textSecondary }}
+										>
+											poin
+										</p>
 									</div>
 								</div>
 							)}
@@ -724,13 +1337,53 @@ export default function PrediksiSkorPage() {
 			)}
 
 			<style jsx global>{`
-				@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-				@keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-				.animate-fadeIn { animation: fadeIn 0.2s ease-out; }
-				.animate-scaleIn { animation: scaleIn 0.3s ease-out; }
-				.match-card:hover { border-color: ${primary}60 !important; box-shadow: 0 8px 40px ${primaryAlpha}; transform: scale(1.02); }
-				@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-				.animate-pulse { background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+				@keyframes fadeIn {
+					from {
+						opacity: 0;
+					}
+					to {
+						opacity: 1;
+					}
+				}
+				@keyframes scaleIn {
+					from {
+						opacity: 0;
+						transform: scale(0.9);
+					}
+					to {
+						opacity: 1;
+						transform: scale(1);
+					}
+				}
+				.animate-fadeIn {
+					animation: fadeIn 0.2s ease-out;
+				}
+				.animate-scaleIn {
+					animation: scaleIn 0.3s ease-out;
+				}
+				.match-card:hover {
+					border-color: ${primary}60 !important;
+					box-shadow: 0 8px 40px ${primaryAlpha};
+					transform: scale(1.02);
+				}
+				@keyframes shimmer {
+					0% {
+						background-position: -200% 0;
+					}
+					100% {
+						background-position: 200% 0;
+					}
+				}
+				.animate-pulse {
+					background: linear-gradient(
+						90deg,
+						rgba(255, 255, 255, 0.05) 0%,
+						rgba(255, 255, 255, 0.1) 50%,
+						rgba(255, 255, 255, 0.05) 100%
+					);
+					background-size: 200% 100%;
+					animation: shimmer 1.5s infinite;
+				}
 			`}</style>
 		</div>
 	);
