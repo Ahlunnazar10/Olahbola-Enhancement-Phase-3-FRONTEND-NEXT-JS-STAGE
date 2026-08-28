@@ -6,6 +6,13 @@ import { ArrowRight, Lock } from "lucide-react";
 
 type EventState = "live" | "coming-soon" | "ended";
 
+export interface CardEndedNotice {
+	title: string;
+	message: string;
+	contactEmail: string;
+	emailSubject: string;
+}
+
 interface GameCardProps {
 	title: string;
 	subtitle: string;
@@ -18,6 +25,7 @@ interface GameCardProps {
 	accentColor: string;
 	isDark: boolean;
 	tags?: string[];
+	endedNotice?: CardEndedNotice;
 }
 
 export function GameCard({
@@ -32,11 +40,12 @@ export function GameCard({
 	accentColor,
 	isDark,
 	tags = [],
+	endedNotice,
 }: GameCardProps) {
 	const isEnded = eventState === "ended";
-
-	// Saat ended, tetap clickable (user memilih "Bisa di-klik → ke detail page")
+	const notice = endedNotice ?? null;
 	const clickable = isActive;
+
 	const cardStyle: React.CSSProperties = {
 		backdropFilter: "blur(40px)",
 		border: clickable
@@ -49,12 +58,9 @@ export function GameCard({
 
 	const cardContent = (
 		<div
-			className={`relative overflow-hidden group h-full rounded-4xl p-8 ${
-				!clickable ? "opacity-80" : ""
-			}`}
+			className={`relative overflow-hidden group h-full rounded-4xl p-8 ${!clickable ? "opacity-80" : ""}`}
 			style={cardStyle}
 		>
-			{/* Background image dengan overlay shadow */}
 			{bgImage && (
 				<div
 					className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
@@ -69,7 +75,6 @@ export function GameCard({
 					}}
 				/>
 			)}
-			{/* Fallback glass background */}
 			{!bgImage && (
 				<div
 					className="absolute inset-0 z-0"
@@ -89,7 +94,6 @@ export function GameCard({
 				/>
 			)}
 
-			{/* Status badge - Live Now / Coming Soon / Event Berakhir */}
 			<div className="absolute top-6 right-6 flex items-center gap-2 z-10">
 				{clickable && !isEnded ? (
 					<>
@@ -138,7 +142,6 @@ export function GameCard({
 				)}
 			</div>
 
-			{/* Subtitle */}
 			<h3
 				className="text-xs font-black tracking-widest uppercase mb-2 relative z-10 mt-7 md:mt-2"
 				style={{
@@ -148,7 +151,6 @@ export function GameCard({
 				{subtitle}
 			</h3>
 
-			{/* Title */}
 			<h2
 				className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-3 relative z-10"
 				style={{
@@ -162,7 +164,6 @@ export function GameCard({
 				{title}
 			</h2>
 
-			{/* Description - sembunyikan saat ended (sesuai requirement: card ended hanya tampilkan title + subtitle) */}
 			{!isEnded && (
 				<p
 					className="text-sm leading-relaxed max-w-88 mb-8 relative z-10"
@@ -178,7 +179,6 @@ export function GameCard({
 				</p>
 			)}
 
-			{/* CTA - Score Now / Challenge Accepted / Lihat Klasemen */}
 			<div className={`mt-${isEnded ? "4" : "12"} relative z-10`}>
 				<button
 					className="flex items-center gap-2 font-black italic tracking-widest uppercase text-sm group-hover:translate-x-2 transition-transform"
@@ -212,7 +212,6 @@ export function GameCard({
 				</button>
 			</div>
 
-			{/* Decorative bottom-right glow - hanya untuk live, bukan ended */}
 			<div
 				className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full pointer-events-none z-0"
 				style={{

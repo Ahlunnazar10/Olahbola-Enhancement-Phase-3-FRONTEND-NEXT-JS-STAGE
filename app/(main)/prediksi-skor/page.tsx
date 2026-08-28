@@ -504,7 +504,7 @@ export default function PrediksiSkorPage() {
 							Prediksi Skor <br />
 							<span style={{ color: primary }}>Teater Bola Dunia</span>
 						</h1>
-						<EventEndedBanner isDark={isDark} variant="full" />
+						<EventEndedBanner isDark={isDark} variant="full" endedNotice={EVENT_STATUS.prediksiSkor.endedNotice} />
 					</section>
 
 					{/* Finals Podium */}

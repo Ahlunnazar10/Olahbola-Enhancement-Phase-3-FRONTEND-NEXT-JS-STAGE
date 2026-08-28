@@ -202,10 +202,10 @@ function LoadingOverlay() {
 				</div>
 				<div className="text-center space-y-1">
 					<p className="font-bold text-lg" style={{ color: "#e5e2e1" }}>
-						Memuat Ngolah Bola...
+						Tunggu bentar ya!
 					</p>
 					<p className="text-sm" style={{ color: "#bbcac6" }}>
-						Tunggu sebentar ya!
+						Memuat Data Pertandingan...
 					</p>
 				</div>
 			</div>
@@ -226,7 +226,9 @@ export default function PrediksiSkorPage() {
 		"matches",
 	);
 	const [isAuthReady, setIsAuthReady] = useState(false);
-	useEffect(() => { setIsAuthReady(true); }, []);
+	useEffect(() => {
+		setIsAuthReady(true);
+	}, []);
 	const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 	const [homeScore, setHomeScore] = useState<number | "">(0);
 	const [awayScore, setAwayScore] = useState<number | "">(0);
@@ -439,7 +441,7 @@ export default function PrediksiSkorPage() {
 							Prediksi Skor <br />
 							<span style={{ color: primary }}>Ngolah Bola 2026/2027</span>
 						</h1>
-						<EventEndedBanner isDark={isDark} variant="full" />
+						<EventEndedBanner isDark={isDark} variant="full" endedNotice={null} />
 					</section>
 					<section>
 						<div className="text-center mb-6">
@@ -496,7 +498,7 @@ export default function PrediksiSkorPage() {
 						<span style={{ color: primary }}>Bundesliga 2026/2027</span>
 					</h1>
 					<p
-						className="text-xs italic font-normal tracking-normal mb-10"
+						className="text-sm italic font-normal tracking-normal mb-10"
 						style={{ color: textSecondary }}
 					>
 						*Tebak akurat dapat 30 poin, tebak pemenang dapat 15 poin, jika
@@ -650,7 +652,8 @@ export default function PrediksiSkorPage() {
 							(matchesData ?? []).map((match: Match) => {
 								const userPred = getUserPrediction(match.id);
 								const hasPrediction = !!userPred;
-								const isEditable = match.is_prediction_open && isAuthReady && isAuthenticated;
+								const isEditable =
+									match.is_prediction_open && isAuthReady && isAuthenticated;
 								const isCompleted = match.status === "completed";
 								const homeTeam = getTeamInfo(match.home_team.code);
 								const awayTeam = getTeamInfo(match.away_team.code);
@@ -846,23 +849,12 @@ export default function PrediksiSkorPage() {
 					<section className="max-w-5xl mx-auto px-6 md:px-8 mb-24 md:mb-16">
 						{/* Section Badge */}
 						<div className="text-center mb-8">
-							<div
-								className="inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.25em]"
-								style={{
-									background: `linear-gradient(135deg, ${primary} 0%, ${colors.primaryDark} 100%)`,
-									color: colors.badgeActiveText,
-								}}
+							<p
+								className="text-sm md:text-lg mt-2"
+								style={{ color: colors.textSecondary }}
 							>
-								LIVE LEADERBOARD
-							</div>
-							<h2
-								className="text-3xl md:text-5xl font-black uppercase mt-3"
-								style={{ color: primary }}
-							>
-								Prediksi Skor Bundesliga 2026/2027
-							</h2>
-							<p className="text-base md:text-lg mt-2" style={{ color: colors.textSecondary }}>
-								Klasemen Sementara Berdasarkan Performa Prediksi Skor
+								Klasemen Sementara Berdasarkan Performa Bundesliga 2026-2027
+								Prediksi Skor
 							</p>
 						</div>
 
@@ -871,428 +863,578 @@ export default function PrediksiSkorPage() {
 							<div className="max-w-5xl mx-auto">
 								<div
 									className="flex items-center gap-4 p-4 mb-6 rounded-2xl animate-pulse"
-									style={{ background: colors.cardBg, border: `1px solid ${colors.cardBorder}` }}
+									style={{
+										background: colors.cardBg,
+										border: `1px solid ${colors.cardBorder}`,
+									}}
 								>
-									<div className="w-14 h-14 rounded-full" style={{ background: `${primary}30` }} />
+									<div
+										className="w-14 h-14 rounded-full"
+										style={{ background: `${primary}30` }}
+									/>
 									<div className="flex-1 space-y-2">
-										<div className="h-5 rounded w-3/4" style={{ background: `${primary}20` }} />
-										<div className="h-4 rounded w-1/2" style={{ background: `${primary}10` }} />
+										<div
+											className="h-5 rounded w-3/4"
+											style={{ background: `${primary}20` }}
+										/>
+										<div
+											className="h-4 rounded w-1/2"
+											style={{ background: `${primary}10` }}
+										/>
 									</div>
-									<div className="h-8 rounded-lg w-24" style={{ background: `${primary}20` }} />
+									<div
+										className="h-8 rounded-lg w-24"
+										style={{ background: `${primary}20` }}
+									/>
 								</div>
 								<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 									{[1, 2, 3].map((i) => (
 										<div
 											key={i}
 											className="h-48 rounded-2xl animate-pulse"
-											style={{ background: colors.cardBg, border: `1px solid ${colors.cardBorder}` }}
+											style={{
+												background: colors.cardBg,
+												border: `1px solid ${colors.cardBorder}`,
+											}}
 										/>
 									))}
 								</div>
 							</div>
-						) : (() => {
-							const rows = ((Array.isArray(leaderboardData) ? leaderboardData : []) as any[])
-								.sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0));
-							const empty = rows.length === 0;
-							if (empty) {
+						) : (
+							(() => {
+								const rows = (
+									(Array.isArray(leaderboardData)
+										? leaderboardData
+										: []) as any[]
+								).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0));
+								const empty = rows.length === 0;
+								if (empty) {
+									return (
+										<div className="text-center py-16 max-w-md mx-auto">
+											<Circle
+												className="size-10 mx-auto mb-4"
+												style={{ color: colors.outline }}
+											/>
+											<p
+												className="text-lg font-bold mb-4"
+												style={{ color: colors.text }}
+											>
+												Belum ada data leaderboard
+											</p>
+											<p
+												className="text-sm"
+												style={{ color: colors.textSecondary }}
+											>
+												Pertandingan belum dimulai atau belum ada yang prediksi.
+											</p>
+										</div>
+									);
+								}
+
+								const accent = primary;
+								const accentLight = colors.primaryDark;
+								const gold = "#FFD700";
+								const silver = "#C0C0C0";
+								const bronze = "#CD7F32";
+								const formatScore = (s: number) =>
+									Number(s).toLocaleString("id-ID");
+
 								return (
-									<div className="text-center py-16 max-w-md mx-auto">
-										<Circle className="size-10 mx-auto mb-4" style={{ color: colors.outline }} />
-										<p className="text-lg font-bold mb-4" style={{ color: colors.text }}>
-											Belum ada data leaderboard
-										</p>
-										<p className="text-sm" style={{ color: colors.textSecondary }}>
-											Pertandingan belum dimulai atau belum ada yang prediksi.
-										</p>
-									</div>
-								);
-							}
-
-							const accent = primary;
-							const accentLight = colors.primaryDark;
-							const gold = "#FFD700";
-							const silver = "#C0C0C0";
-							const bronze = "#CD7F32";
-							const formatScore = (s: number) => Number(s).toLocaleString("id-ID");
-
-							return (
-								<>
-									{/* Top 3 Podium — Desktop Grid */}
-									<div
-										className="hidden md:grid gap-4 mb-8 items-end"
-										style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
-									>
-										{/* Rank 2 */}
-										{rows[1] && (
-											<div
-												className="relative p-5 rounded-3xl text-center order-1 transition-all duration-300 hover:scale-[1.02]"
-												style={{
-													background: `linear-gradient(135deg, ${colors.cardBg} 0%, ${silver}15 100%)`,
-													backdropFilter: "blur(20px)",
-													border: `1px solid ${colors.cardBorder}`,
-													marginBottom: "10px",
-												}}
-											>
+									<>
+										{/* Top 3 Podium — Desktop Grid */}
+										<div
+											className="hidden md:grid gap-4 mb-8 items-end"
+											style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
+										>
+											{/* Rank 2 */}
+											{rows[1] && (
 												<div
-													className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg"
+													className="relative p-5 rounded-3xl text-center order-1 transition-all duration-300 hover:scale-[1.02]"
 													style={{
-														background: `linear-gradient(135deg, ${silver} 0%, #A0A0A0 100%)`,
-														boxShadow: `0 0 20px ${silver}50`,
+														background: `linear-gradient(135deg, ${colors.cardBg} 0%, ${silver}15 100%)`,
+														backdropFilter: "blur(20px)",
+														border: `1px solid ${colors.cardBorder}`,
+														marginBottom: "10px",
 													}}
 												>
-													2
-												</div>
-												<div className="pt-5">
-													{rows[1].profile_picture ? (
-														<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
-															<Image
-																src={rows[1].profile_picture}
-																alt={rows[1].user_name}
-																fill
-																sizes="64px"
-																style={{ objectFit: "cover", borderColor: silver }}
-															/>
-														</div>
-													) : (
-														<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
-															<Image
-																src="/icons/football-player.png"
-																alt="Player Icon"
-																fill
-																sizes="64px"
-																style={{ objectFit: "cover" }}
-															/>
-														</div>
-													)}
-													<h3 className="font-bold text-lg truncate" style={{ color: colors.text }}>
-														{rows[1].user_name}
-													</h3>
-													<p className="text-sm mb-3" style={{ color: colors.textSecondary }}>
-														{`${rows[1].total_predictions ?? 0} prediksi · ${rows[1].exact_scores ?? 0} tepat`}
-													</p>
 													<div
-														className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
-														style={{ background: `${silver}20` }}
-													>
-														<Circle className="size-3.5" fill="currentColor" style={{ color: colors.text }} />
-														<span className="font-bold text-lg" style={{ color: colors.text }}>
-															{formatScore(rows[1].total_points)}
-														</span>
-													</div>
-												</div>
-											</div>
-										)}
-
-										{/* Rank 1 — Champion */}
-										{rows[0] && (
-											<div
-												className="relative p-6 rounded-3xl text-center order-2 transition-all duration-300 hover:scale-[1.03]"
-												style={{
-													background: `linear-gradient(135deg, ${colors.cardBg} 0%, ${gold}25 100%)`,
-													backdropFilter: "blur(20px)",
-													border: `2px solid ${gold}50`,
-													boxShadow: `0 0 40px ${gold}30`,
-													marginBottom: "20px",
-												}}
-											>
-												<div
-													className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl"
-													style={{
-														background: `linear-gradient(135deg, ${gold} 0%, #FFA500 100%)`,
-														boxShadow: `0 0 30px ${gold}60`,
-													}}
-												>
-													<span className="text-2xl font-black" style={{ color: "#003732" }}>1</span>
-												</div>
-												<div
-													className="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
-													style={{
-														background: `linear-gradient(135deg, ${gold} 0%, #FFA500 100%)`,
-														color: "#003732",
-													}}
-												>
-													Champion
-												</div>
-												<div className="pt-5">
-													{rows[0].profile_picture ? (
-														<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
-															<Image
-																src={rows[0].profile_picture}
-																alt={rows[0].user_name}
-																fill
-																sizes="80px"
-																style={{ objectFit: "cover", borderColor: gold }}
-															/>
-														</div>
-													) : (
-														<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
-															<Image
-																src="/icons/football-player.png"
-																alt="Player Icon"
-																fill
-																sizes="80px"
-																style={{ objectFit: "cover" }}
-															/>
-														</div>
-													)}
-													<h3 className="font-black text-xl mb-1" style={{ color: colors.text }}>
-														{rows[0].user_name}
-													</h3>
-													<p className="text-sm mb-4" style={{ color: colors.textSecondary }}>
-														{`${rows[0].total_predictions ?? 0} prediksi · ${rows[0].exact_scores ?? 0} tepat`}
-													</p>
-													<div
-														className="inline-flex items-center gap-2 px-5 py-3 rounded-full"
-														style={{ background: `${gold}25`, border: `1px solid ${gold}40` }}
-													>
-														<Circle className="size-5" fill="currentColor" style={{ color: colors.text }} />
-														<span className="font-black text-2xl" style={{ color: colors.text }}>
-															{formatScore(rows[0].total_points)}
-														</span>
-													</div>
-												</div>
-											</div>
-										)}
-
-										{/* Rank 3 */}
-										{rows[2] && (
-											<div
-												className="relative p-5 rounded-3xl text-center order-3 transition-all duration-300 hover:scale-[1.02]"
-												style={{
-													background: `linear-gradient(135deg, ${colors.cardBg} 0%, ${bronze}15 100%)`,
-													backdropFilter: "blur(20px)",
-													border: `1px solid ${colors.cardBorder}`,
-													marginBottom: "10px",
-												}}
-											>
-												<div
-													className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-													style={{
-														background: `linear-gradient(135deg, ${bronze} 0%, #A0522D 100%)`,
-														boxShadow: `0 0 15px ${bronze}40`,
-													}}
-												>
-													<span className="text-xl font-black" style={{ color: "#fff" }}>3</span>
-												</div>
-												<div className="pt-5">
-													{rows[2].profile_picture ? (
-														<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
-															<Image
-																src={rows[2].profile_picture}
-																alt={rows[2].user_name}
-																fill
-																sizes="64px"
-																style={{ objectFit: "cover", borderColor: bronze }}
-															/>
-														</div>
-													) : (
-														<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
-															<Image
-																src="/icons/football-player.png"
-																alt="Player Icon"
-																fill
-																sizes="64px"
-																style={{ objectFit: "cover" }}
-															/>
-														</div>
-													)}
-													<h3 className="font-bold text-lg truncate" style={{ color: colors.text }}>
-														{rows[2].user_name}
-													</h3>
-													<p className="text-sm mb-3" style={{ color: colors.textSecondary }}>
-														{`${rows[2].total_predictions ?? 0} prediksi · ${rows[2].exact_scores ?? 0} tepat`}
-													</p>
-													<div
-														className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
-														style={{ background: `${bronze}20` }}
-													>
-														<Circle className="size-3.5" fill="currentColor" style={{ color: colors.text }} />
-														<span className="font-bold text-lg" style={{ color: colors.text }}>
-															{formatScore(rows[2].total_points)}
-														</span>
-													</div>
-												</div>
-											</div>
-										)}
-									</div>
-
-									{/* Top 3 Mobile Cards */}
-									<div className="md:hidden space-y-4 mb-6">
-										{rows.slice(0, 3).map((player, index) => (
-											<div
-												key={player.rank}
-												className="relative flex items-center gap-4 p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
-												style={{
-													background:
-														index === 0
-															? `linear-gradient(135deg, ${colors.cardBg} 0%, ${gold}20 100%)`
-															: index === 1
-																? `linear-gradient(135deg, ${colors.cardBg} 0%, ${silver}15 100%)`
-																: `linear-gradient(135deg, ${colors.cardBg} 0%, ${bronze}15 100%)`,
-													borderColor:
-														index === 0
-															? `${gold}40`
-															: index === 1
-																? `${silver}30`
-																: `${bronze}30`,
-												}}
-											>
-												<div
-													className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-lg shrink-0"
-													style={{
-														background:
-															index === 0
-																? `linear-gradient(135deg, ${gold} 0%, #FFA500 100%)`
-																: index === 1
-																	? `linear-gradient(135deg, ${silver} 0%, #A0A0A0 100%)`
-																	: `linear-gradient(135deg, ${bronze} 0%, #A0522D 100%)`,
-														color: "#003732",
-													}}
-												>
-													{index + 1}
-												</div>
-												{player.profile_picture ? (
-													<div className="relative w-12 h-12 rounded-xl overflow-hidden border shrink-0">
-														<Image
-															src={player.profile_picture}
-															alt={player.user_name}
-															fill
-															sizes="48px"
-															style={{ objectFit: "cover" }}
-														/>
-													</div>
-												) : (
-													<div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0">
-														<Image
-															src="/icons/football-player.png"
-															alt="Player Icon"
-															fill
-															sizes="48px"
-															style={{ objectFit: "cover" }}
-														/>
-													</div>
-												)}
-												<div className="flex-1 min-w-0">
-													<h3 className="font-bold truncate" style={{ color: colors.text }}>
-														{player.user_name}
-													</h3>
-													<p className="text-sm" style={{ color: colors.textSecondary }}>
-														{`${player.total_predictions ?? 0} prediksi · ${player.exact_scores ?? 0} tepat`}
-													</p>
-												</div>
-												<div
-													className="flex items-center gap-2 px-3 py-2 rounded-full shrink-0"
-													style={{ background: `${accent}10`, border: `1px solid ${accent}30` }}
-												>
-													<Circle className="size-3.5" fill="currentColor" style={{ color: colors.text }} />
-													<span className="font-bold" style={{ color: colors.text }}>
-														{formatScore(player.total_points)}
-													</span>
-												</div>
-											</div>
-										))}
-									</div>
-
-									{/* Rank 4+ List */}
-									{rows.length > 3 && (
-										<div>
-											<div className="flex items-center gap-3 mb-4 hidden md:flex">
-												<div className="h-px flex-1" style={{ background: colors.cardBorder }} />
-												<span
-													className="text-xs font-bold uppercase tracking-widest"
-													style={{ color: colors.textSecondary }}
-												>
-													Peringkat Berikutnya
-												</span>
-												<div className="h-px flex-1" style={{ background: colors.cardBorder }} />
-											</div>
-											<div className="space-y-3">
-												{rows.slice(3, 10).map((player, index) => (
-													<div
-														key={player.rank}
-														className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
-														style={{ background: colors.cardBg, borderColor: colors.cardBorder }}
-														onMouseEnter={(e) => {
-															const el = e.currentTarget;
-															el.style.borderColor = `${accent}50`;
-															el.style.transform = "translateX(4px)";
-														}}
-														onMouseLeave={(e) => {
-															const el = e.currentTarget;
-															el.style.borderColor = colors.cardBorder;
-															el.style.transform = "translateX(0)";
+														className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg"
+														style={{
+															background: `linear-gradient(135deg, ${silver} 0%, #A0A0A0 100%)`,
+															boxShadow: `0 0 20px ${silver}50`,
 														}}
 													>
-														<div className="flex items-center gap-4">
-															<div
-																className="w-10 h-10 rounded-xl flex items-center justify-center font-bold"
-																style={{ background: `${accent}15`, color: accent }}
-															>
-																{index + 4}
+														2
+													</div>
+													<div className="pt-5">
+														{rows[1].profile_picture ? (
+															<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+																<Image
+																	src={rows[1].profile_picture}
+																	alt={rows[1].user_name}
+																	fill
+																	sizes="64px"
+																	style={{
+																		objectFit: "cover",
+																		borderColor: silver,
+																	}}
+																/>
 															</div>
-															{player.profile_picture ? (
-																<div className="relative w-10 h-10 rounded-xl overflow-hidden">
-																	<Image
-																		src={player.profile_picture}
-																		alt={player.user_name}
-																		fill
-																		sizes="40px"
-																		style={{ objectFit: "cover" }}
-																	/>
-																</div>
-															) : (
-																<div className="relative w-10 h-10 rounded-xl overflow-hidden">
-																	<Image
-																		src="/icons/football-player.png"
-																		alt="Player Icon"
-																		fill
-																		sizes="40px"
-																		style={{ objectFit: "cover" }}
-																	/>
-																</div>
-															)}
-															<div>
-																<h4 className="font-semibold" style={{ color: colors.text }}>
-																	{player.user_name}
-																</h4>
-																<p className="text-sm" style={{ color: colors.textSecondary }}>
-																	{`${player.total_predictions ?? 0} prediksi · ${player.exact_scores ?? 0} tepat`}
-																</p>
+														) : (
+															<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+																<Image
+																	src="/icons/football-player.png"
+																	alt="Player Icon"
+																	fill
+																	sizes="64px"
+																	style={{ objectFit: "cover" }}
+																/>
 															</div>
-														</div>
-														<div
-															className="flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
-															style={{ background: `${accent}10`, border: `1px solid ${accent}30` }}
+														)}
+														<h3
+															className="font-bold text-lg truncate"
+															style={{ color: colors.text }}
 														>
-															<Circle className="size-3.5" fill="currentColor" style={{ color: colors.text }} />
-															<span className="font-bold" style={{ color: colors.text }}>
-																{formatScore(player.total_points)}
+															{rows[1].user_name}
+														</h3>
+														<p
+															className="text-sm mb-3"
+															style={{ color: colors.textSecondary }}
+														>
+															{`${rows[1].total_predictions ?? 0} prediksi · ${rows[1].exact_scores ?? 0} tepat`}
+														</p>
+														<div
+															className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+															style={{ background: `${silver}20` }}
+														>
+															<Circle
+																className="size-3.5"
+																fill="currentColor"
+																style={{ color: colors.text }}
+															/>
+															<span
+																className="font-bold text-lg"
+																style={{ color: colors.text }}
+															>
+																{formatScore(rows[1].total_points)}
 															</span>
 														</div>
 													</div>
-												))}
-											</div>
-										</div>
-									)}
+												</div>
+											)}
 
-									{/* User My Rank Footer */}
-									{myRankData && myRankData.rank > 5 && (
-										<div
-											className="mt-8 p-5 rounded-2xl text-center backdrop-blur-xl border"
-											style={{ background: `${accent}10`, border: `2px solid ${accent}` }}
-										>
-											<Trophy className="size-8 mx-auto mb-2" style={{ color: gold }} />
-											<p className="text-3xl font-black" style={{ color: colors.text }}>
-												#{myRankData.rank}
-											</p>
-											<p className="text-sm mt-1" style={{ color: colors.textSecondary }}>
-												dari {myRankData.total_participants ?? 0} peserta
-											</p>
+											{/* Rank 1 — Champion */}
+											{rows[0] && (
+												<div
+													className="relative p-6 rounded-3xl text-center order-2 transition-all duration-300 hover:scale-[1.03]"
+													style={{
+														background: `linear-gradient(135deg, ${colors.cardBg} 0%, ${gold}25 100%)`,
+														backdropFilter: "blur(20px)",
+														border: `2px solid ${gold}50`,
+														boxShadow: `0 0 40px ${gold}30`,
+														marginBottom: "20px",
+													}}
+												>
+													<div
+														className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl"
+														style={{
+															background: `linear-gradient(135deg, ${gold} 0%, #FFA500 100%)`,
+															boxShadow: `0 0 30px ${gold}60`,
+														}}
+													>
+														<span
+															className="text-2xl font-black"
+															style={{ color: "#003732" }}
+														>
+															1
+														</span>
+													</div>
+													<div
+														className="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
+														style={{
+															background: `linear-gradient(135deg, ${gold} 0%, #FFA500 100%)`,
+															color: "#003732",
+														}}
+													>
+														Champion
+													</div>
+													<div className="pt-5">
+														{rows[0].profile_picture ? (
+															<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
+																<Image
+																	src={rows[0].profile_picture}
+																	alt={rows[0].user_name}
+																	fill
+																	sizes="80px"
+																	style={{
+																		objectFit: "cover",
+																		borderColor: gold,
+																	}}
+																/>
+															</div>
+														) : (
+															<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
+																<Image
+																	src="/icons/football-player.png"
+																	alt="Player Icon"
+																	fill
+																	sizes="80px"
+																	style={{ objectFit: "cover" }}
+																/>
+															</div>
+														)}
+														<h3
+															className="font-black text-xl mb-1"
+															style={{ color: colors.text }}
+														>
+															{rows[0].user_name}
+														</h3>
+														<p
+															className="text-sm mb-4"
+															style={{ color: colors.textSecondary }}
+														>
+															{`${rows[0].total_predictions ?? 0} prediksi · ${rows[0].exact_scores ?? 0} tepat`}
+														</p>
+														<div
+															className="inline-flex items-center gap-2 px-5 py-3 rounded-full"
+															style={{
+																background: `${gold}25`,
+																border: `1px solid ${gold}40`,
+															}}
+														>
+															<Circle
+																className="size-5"
+																fill="currentColor"
+																style={{ color: colors.text }}
+															/>
+															<span
+																className="font-black text-2xl"
+																style={{ color: colors.text }}
+															>
+																{formatScore(rows[0].total_points)}
+															</span>
+														</div>
+													</div>
+												</div>
+											)}
+
+											{/* Rank 3 */}
+											{rows[2] && (
+												<div
+													className="relative p-5 rounded-3xl text-center order-3 transition-all duration-300 hover:scale-[1.02]"
+													style={{
+														background: `linear-gradient(135deg, ${colors.cardBg} 0%, ${bronze}15 100%)`,
+														backdropFilter: "blur(20px)",
+														border: `1px solid ${colors.cardBorder}`,
+														marginBottom: "10px",
+													}}
+												>
+													<div
+														className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+														style={{
+															background: `linear-gradient(135deg, ${bronze} 0%, #A0522D 100%)`,
+															boxShadow: `0 0 15px ${bronze}40`,
+														}}
+													>
+														<span
+															className="text-xl font-black"
+															style={{ color: "#fff" }}
+														>
+															3
+														</span>
+													</div>
+													<div className="pt-5">
+														{rows[2].profile_picture ? (
+															<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+																<Image
+																	src={rows[2].profile_picture}
+																	alt={rows[2].user_name}
+																	fill
+																	sizes="64px"
+																	style={{
+																		objectFit: "cover",
+																		borderColor: bronze,
+																	}}
+																/>
+															</div>
+														) : (
+															<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+																<Image
+																	src="/icons/football-player.png"
+																	alt="Player Icon"
+																	fill
+																	sizes="64px"
+																	style={{ objectFit: "cover" }}
+																/>
+															</div>
+														)}
+														<h3
+															className="font-bold text-lg truncate"
+															style={{ color: colors.text }}
+														>
+															{rows[2].user_name}
+														</h3>
+														<p
+															className="text-sm mb-3"
+															style={{ color: colors.textSecondary }}
+														>
+															{`${rows[2].total_predictions ?? 0} prediksi · ${rows[2].exact_scores ?? 0} tepat`}
+														</p>
+														<div
+															className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+															style={{ background: `${bronze}20` }}
+														>
+															<Circle
+																className="size-3.5"
+																fill="currentColor"
+																style={{ color: colors.text }}
+															/>
+															<span
+																className="font-bold text-lg"
+																style={{ color: colors.text }}
+															>
+																{formatScore(rows[2].total_points)}
+															</span>
+														</div>
+													</div>
+												</div>
+											)}
 										</div>
-									)}
-								</>
-							);
-						})()}
+
+										{/* Top 3 Mobile Cards */}
+										<div className="md:hidden space-y-4 mb-6">
+											{rows.slice(0, 3).map((player, index) => (
+												<div
+													key={player.rank}
+													className="relative flex items-center gap-4 p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
+													style={{
+														background:
+															index === 0
+																? `linear-gradient(135deg, ${colors.cardBg} 0%, ${gold}20 100%)`
+																: index === 1
+																	? `linear-gradient(135deg, ${colors.cardBg} 0%, ${silver}15 100%)`
+																	: `linear-gradient(135deg, ${colors.cardBg} 0%, ${bronze}15 100%)`,
+														borderColor:
+															index === 0
+																? `${gold}40`
+																: index === 1
+																	? `${silver}30`
+																	: `${bronze}30`,
+													}}
+												>
+													<div
+														className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-lg shrink-0"
+														style={{
+															background:
+																index === 0
+																	? `linear-gradient(135deg, ${gold} 0%, #FFA500 100%)`
+																	: index === 1
+																		? `linear-gradient(135deg, ${silver} 0%, #A0A0A0 100%)`
+																		: `linear-gradient(135deg, ${bronze} 0%, #A0522D 100%)`,
+															color: "#003732",
+														}}
+													>
+														{index + 1}
+													</div>
+													{player.profile_picture ? (
+														<div className="relative w-12 h-12 rounded-xl overflow-hidden border shrink-0">
+															<Image
+																src={player.profile_picture}
+																alt={player.user_name}
+																fill
+																sizes="48px"
+																style={{ objectFit: "cover" }}
+															/>
+														</div>
+													) : (
+														<div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0">
+															<Image
+																src="/icons/football-player.png"
+																alt="Player Icon"
+																fill
+																sizes="48px"
+																style={{ objectFit: "cover" }}
+															/>
+														</div>
+													)}
+													<div className="flex-1 min-w-0">
+														<h3
+															className="font-bold truncate"
+															style={{ color: colors.text }}
+														>
+															{player.user_name}
+														</h3>
+														<p
+															className="text-sm"
+															style={{ color: colors.textSecondary }}
+														>
+															{`${player.total_predictions ?? 0} prediksi · ${player.exact_scores ?? 0} tepat`}
+														</p>
+													</div>
+													<div
+														className="flex items-center gap-2 px-3 py-2 rounded-full shrink-0"
+														style={{
+															background: `${accent}10`,
+															border: `1px solid ${accent}30`,
+														}}
+													>
+														<Circle
+															className="size-3.5"
+															fill="currentColor"
+															style={{ color: colors.text }}
+														/>
+														<span
+															className="font-bold"
+															style={{ color: colors.text }}
+														>
+															{formatScore(player.total_points)}
+														</span>
+													</div>
+												</div>
+											))}
+										</div>
+
+										{/* Rank 4+ List */}
+										{rows.length > 3 && (
+											<div>
+												<div className="items-center gap-3 mb-4 hidden md:flex">
+													<div
+														className="h-px flex-1"
+														style={{ background: colors.cardBorder }}
+													/>
+													<span
+														className="text-xs font-bold uppercase tracking-widest"
+														style={{ color: colors.textSecondary }}
+													>
+														Peringkat Berikutnya
+													</span>
+													<div
+														className="h-px flex-1"
+														style={{ background: colors.cardBorder }}
+													/>
+												</div>
+												<div className="space-y-3">
+													{rows.slice(3, 10).map((player, index) => (
+														<div
+															key={player.rank}
+															className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
+															style={{
+																background: colors.cardBg,
+																borderColor: colors.cardBorder,
+															}}
+															onMouseEnter={(e) => {
+																const el = e.currentTarget;
+																el.style.borderColor = `${accent}50`;
+																el.style.transform = "translateX(4px)";
+															}}
+															onMouseLeave={(e) => {
+																const el = e.currentTarget;
+																el.style.borderColor = colors.cardBorder;
+																el.style.transform = "translateX(0)";
+															}}
+														>
+															<div className="flex items-center gap-4">
+																<div
+																	className="w-10 h-10 rounded-xl flex items-center justify-center font-bold"
+																	style={{
+																		background: `${accent}15`,
+																		color: accent,
+																	}}
+																>
+																	{index + 4}
+																</div>
+																{player.profile_picture ? (
+																	<div className="relative w-10 h-10 rounded-xl overflow-hidden">
+																		<Image
+																			src={player.profile_picture}
+																			alt={player.user_name}
+																			fill
+																			sizes="40px"
+																			style={{ objectFit: "cover" }}
+																		/>
+																	</div>
+																) : (
+																	<div className="relative w-10 h-10 rounded-xl overflow-hidden">
+																		<Image
+																			src="/icons/football-player.png"
+																			alt="Player Icon"
+																			fill
+																			sizes="40px"
+																			style={{ objectFit: "cover" }}
+																		/>
+																	</div>
+																)}
+																<div>
+																	<h4
+																		className="font-semibold"
+																		style={{ color: colors.text }}
+																	>
+																		{player.user_name}
+																	</h4>
+																	<p
+																		className="text-sm"
+																		style={{ color: colors.textSecondary }}
+																	>
+																		{`${player.total_predictions ?? 0} prediksi · ${player.exact_scores ?? 0} tepat`}
+																	</p>
+																</div>
+															</div>
+															<div
+																className="flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
+																style={{
+																	background: `${accent}10`,
+																	border: `1px solid ${accent}30`,
+																}}
+															>
+																<Circle
+																	className="size-3.5"
+																	fill="currentColor"
+																	style={{ color: colors.text }}
+																/>
+																<span
+																	className="font-bold"
+																	style={{ color: colors.text }}
+																>
+																	{formatScore(player.total_points)}
+																</span>
+															</div>
+														</div>
+													))}
+												</div>
+											</div>
+										)}
+
+										{/* User My Rank Footer */}
+										{myRankData && myRankData.rank > 5 && (
+											<div
+												className="mt-8 p-5 rounded-2xl text-center backdrop-blur-xl border"
+												style={{
+													background: `${accent}10`,
+													border: `2px solid ${accent}`,
+												}}
+											>
+												<Trophy
+													className="size-8 mx-auto mb-2"
+													style={{ color: gold }}
+												/>
+												<p
+													className="text-3xl font-black"
+													style={{ color: colors.text }}
+												>
+													#{myRankData.rank}
+												</p>
+												<p
+													className="text-sm mt-1"
+													style={{ color: colors.textSecondary }}
+												>
+													dari {myRankData.total_participants ?? 0} peserta
+												</p>
+											</div>
+										)}
+									</>
+								);
+							})()
+						)}
 					</section>
 				)}
 			</main>

@@ -354,7 +354,7 @@ export default function QuizPage() {
 
 				<main className="relative max-w-5xl mx-auto px-6 md:px-8 pt-12  pb-16 space-y-12">
 					<section className="text-center space-y-4">
-						<EventEndedBanner isDark={isDark} variant="full" />
+						<EventEndedBanner isDark={isDark} variant="full" endedNotice={EVENT_STATUS.quiz.endedNotice} />
 					</section>
 
 					<section>

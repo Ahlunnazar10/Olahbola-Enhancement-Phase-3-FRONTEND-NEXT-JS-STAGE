@@ -410,18 +410,29 @@ export default function TeaterBolaAseanPage() {
 				className="min-h-screen pb-24 md:pb-12"
 				style={{ background: bg, color: text }}
 			>
+				{/* Velocity Mesh Background */}
+				<div
+					className="fixed inset-0 z-0 opacity-5 pointer-events-none"
+					style={{
+						backgroundImage: `repeating-linear-gradient(45deg, ${primary} 0, ${primary} 1px, transparent 0, transparent 50%)`,
+						backgroundSize: "100px 100px",
+					}}
+				/>
+
 				<main className="pt-10 md:pt-18 relative max-w-5xl mx-auto px-6 md:px-8 space-y-12">
+					{/* Hero Section — replaced with ended banner */}
 					<section className="text-center space-y-4">
 						<h1
 							className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase"
 							style={{ color: text, fontFamily: "Space Grotesk, sans-serif" }}
 						>
-							Teater Bola Asean <br />
-							<span style={{ color: primary }}>2026</span>
+							Prediksi Skor <br />
+							<span style={{ color: primary }}>Teater Bola Asean 2026</span>
 						</h1>
-						<EventEndedBanner isDark={isDark} variant="full" />
+						<EventEndedBanner isDark={isDark} variant="full" endedNotice={EVENT_STATUS.teaterBolaAsean.endedNotice} />
 					</section>
 
+					{/* Finals Podium */}
 					<section>
 						<div className="text-center mb-6">
 							<h2
@@ -434,11 +445,13 @@ export default function TeaterBolaAseanPage() {
 								className="text-xs font-bold uppercase tracking-widest"
 								style={{ color: textSecondary }}
 							>
-								Teater Bola Asean 2026 — Season 1 Ended
+								Olahbola Teater Bola Asean 2026 Ended
 							</p>
 						</div>
 						<TeaterBolaAseanLeaderboard isDark={isDark} />
 					</section>
+
+					{/* Placeholder untuk phases/matches yang disembunyikan — tidak dirender */}
 				</main>
 
 				<style jsx global>{`

@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 		"olahbola prediksi skor",
 	],
 	alternates: {
-		canonical: "/prediksi-skor-2026-2027",
+		canonical: "/bundesliga-prediksi-skor-2026-2027",
 	},
 	openGraph: {
 		title: "Prediksi Skor Ngolah Bola 2026/2027 | Olahbola",
 		description:
 			"Tebak skor pertandingan Bundesliga 2026/2027 dan buktikan kamu jagoan prediksi skor!",
-		url: "https://www.olahbola.com/prediksi-skor-2026-2027",
+		url: "https://www.olahbola.com/bundesliga-prediksi-skor-2026-2027",
 		type: "website",
 		locale: "id_ID",
 		siteName: "Olahbolacom",

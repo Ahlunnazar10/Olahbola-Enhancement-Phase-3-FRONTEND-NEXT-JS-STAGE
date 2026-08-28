@@ -3,13 +3,14 @@
 import { useUIStore } from "@/stores/uiStore";
 import { GameCard } from "@/components/games/GameCard";
 import { PublicLeaderboard } from "@/components/games/PublicLeaderboard";
-import { QuizWorldCupLeaderboard } from "@/components/games/QuizWorldCupLeaderboard";
-import { TeaterBolaAseanLeaderboard } from "@/components/games/TeaterBolaAseanLeaderboard";
 import { EventEndedBanner } from "@/components/games/EventEndedBanner";
-import { EVENT_STATUS } from "@/lib/games/eventStatus";
-import { Play, Sparkles, Trophy, Zap } from "lucide-react";
-import Link from "next/link";
+import { EVENT_STATUS, getEventEndedStatus } from "@/lib/games/eventStatus";
 import { useEffect, useRef } from "react";
+import {
+	useLeaderboard as useBLLeaderboard,
+	type LeaderboardEntry as BLLeaderboardEntry,
+} from "@/hooks/queries/useBundesliga";
+import Image from "next/image";
 
 export function GamesPageContent() {
 	const { theme } = useUIStore();
@@ -112,7 +113,7 @@ export function GamesPageContent() {
 				}
 			`}</style>
 
-			{/* Background effects - velocity mesh + blurred orbs (fixed di seluruh viewport) */}
+			{/* Background effects - velocity mesh + blurred orbs */}
 			<div
 				className="absolute inset-0 pointer-events-none overflow-hidden"
 				aria-hidden
@@ -185,47 +186,65 @@ export function GamesPageContent() {
 					</p>
 				</section>
 
-				{/* Active Game Cards Grid - 1 kolom */}
-				<section className="grid grid-cols-1 gap-4 md:gap-8 mb-6 md:mb-8">
-					{/* Prediksi Skor - Score Predictor */}
+				{/* Active Game Cards Grid - diagonal: 1 active + 2 ended */}
+				<section className="grid grid-cols-1  gap-4 md:gap-8 mb-6 md:mb-8">
+					{/* Prediksi Skor - Bundesliga 2026/2027 (ACTIVE) */}
 					<GameCard
 						title="Prediksi Skor"
-						subtitle="Teater Bola Asean 2026"
-						description="Tebak skor pertandingan Teater Bola Asean. Raih poin untuk setiap match dan jadilah si paling tau bola!"
-						href="/teater-bola-asean-2026"
+						subtitle="Bundesliga 2026/2027"
+						description="Tebak skor pertandingan Bundesliga 2026/2027. Raih poin untuk setiap match dan jadilah si paling tau bola!"
+						href="/bundesliga-prediksi-skor-2026-2027"
 						isActive={true}
-						bgImage="/images/games/teater-bola-asean-prediction-bg.webp"
+						bgImage="/images/games/bundesliga-2.jpg"
 						accentColor={accent}
 						isDark={isDark}
 					/>
 				</section>
 
-				{/* Inactive Game Cards Grid - 2 kolom */}
-				<section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-6 md:mb-18">
-					{/* Prediksi Skor - Score Predictor */}
+				{/* Inactive Game Cards Grid - 1 kolom */}
+				<section className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-18">
+					{/* Prediksi Skor - Teater Bola Asean 2026 (ENDED) */}
 					<GameCard
 						title="Prediksi Skor"
-						subtitle="Teater Bola Dunia"
-						description="Tebak skor pertandingan Teater Bola Dunia. Raih poin untuk setiap match dan jadilah si paling tau bola!"
-						href="/prediksi-skor"
+						subtitle="Teater Bola Asean 2026"
+						description=""
+						href="/teater-bola-asean-2026"
 						isActive={true}
-						eventState={EVENT_STATUS.prediksiSkor.isEnded ? "ended" : "live"}
-						bgImage="/images/games/prediction-bg.webp"
+						eventState={
+							getEventEndedStatus("teaterBolaAsean") ? "ended" : "live"
+						}
+						bgImage="/images/games/teater-bola-asean-prediction-bg.webp"
 						accentColor={accent}
 						isDark={isDark}
+						endedNotice={EVENT_STATUS.teaterBolaAsean.endedNotice}
 					/>
 
-					{/* OlahBola Kuis - Pro Quiz  */}
+					{/* OlahBola Kuis - Pro Quiz */}
 					<GameCard
 						title="OlahBola Kuis"
 						subtitle="Teater Bola Dunia"
 						description="Ikuti olahbola kuis, adu pengetahuan seputar sepak bola, dan buktikan kamu si paling jago bola!"
 						href="/quiz"
 						isActive={true}
-						eventState={EVENT_STATUS.quiz.isEnded ? "ended" : "live"}
+						eventState={getEventEndedStatus("quiz") ? "ended" : "live"}
 						bgImage="/images/games/quiz-bg.webp"
 						accentColor={accent}
 						isDark={isDark}
+						endedNotice={EVENT_STATUS.quiz.endedNotice}
+					/>
+
+					{/* Prediksi Skor - Teater Bola Dunia (ENDED) */}
+					<GameCard
+						title="Prediksi Skor"
+						subtitle="Teater Bola Dunia"
+						description=""
+						href="/prediksi-skor"
+						isActive={true}
+						eventState={getEventEndedStatus("prediksiSkor") ? "ended" : "live"}
+						bgImage="/images/games/prediction-bg.webp"
+						accentColor={accent}
+						isDark={isDark}
+						endedNotice={EVENT_STATUS.prediksiSkor.endedNotice}
 					/>
 				</section>
 
@@ -260,7 +279,6 @@ export function GamesPageContent() {
 						{/* Champion */}
 						<div className="games-glass-card rounded-4xl p-6 flex flex-col items-center text-center group">
 							<div className="relative mb-6 w-full aspect-square rounded-2xl overflow-hidden border border-white/10">
-								{/* Hover background shapes behind image */}
 								<div
 									aria-hidden
 									className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -317,7 +335,6 @@ export function GamesPageContent() {
 						{/* Runner-Up */}
 						<div className="games-glass-card rounded-4xl p-6 flex flex-col items-center text-center group">
 							<div className="relative mb-6 w-full aspect-square rounded-2xl overflow-hidden border border-white/10">
-								{/* Hover background shapes behind image */}
 								<div
 									aria-hidden
 									className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -374,7 +391,6 @@ export function GamesPageContent() {
 						{/* Elite */}
 						<div className="games-glass-card rounded-4xl p-6 flex flex-col items-center text-center group">
 							<div className="relative mb-6 w-full aspect-square rounded-2xl overflow-hidden border border-white/10">
-								{/* Hover background shapes behind image */}
 								<div
 									aria-hidden
 									className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -544,12 +560,8 @@ export function GamesPageContent() {
 					</div>
 				</section>
 
-				{/* Leaderboard Section - Teater Bola Asean | Prediksi Skor | Quiz World Cup */}
-				<section
-					className="grid grid-cols-1 md:grid-cols-1 mb-10"
-					id="leaderboard"
-				>
-					{/* Teater Bola Asean Leaderboard */}
+				{/* Leaderboard Section - Bundesliga 2026/2027 */}
+				<section className="mb-10" id="leaderboard">
 					<div
 						className="rounded-3xl md:rounded-[40px] p-6 md:p-8 relative overflow-hidden"
 						style={{
@@ -565,7 +577,7 @@ export function GamesPageContent() {
 								className="text-2xl md:text-3xl font-black italic tracking-tight uppercase mb-2"
 								style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}
 							>
-								Klasemen Teater Bola Asean
+								Klasemen Bundesliga 2026/2027
 							</h2>
 							<p
 								className="text-xs font-bold tracking-widest uppercase"
@@ -575,13 +587,278 @@ export function GamesPageContent() {
 										: "rgba(26, 26, 26, 0.5)",
 								}}
 							>
-								Live sementara — Teater Bola Asean 2026 Prediksi Skor
+								Live — Prediksi Skor Bundesliga Season 2026/2027
 							</p>
 						</div>
-
-						<TeaterBolaAseanLeaderboard isDark={isDark} />
+						<BundesligaLeaderboard isDark={isDark} accent={accent} />
 					</div>
 				</section>
+			</div>
+		</div>
+	);
+}
+
+/* --- Bundesliga Leaderboard Sub-Components --- */
+function BundesligaLeaderboard({
+	isDark,
+	accent,
+}: {
+	isDark: boolean;
+	accent: string;
+}) {
+	const { data, isLoading, isError } = useBLLeaderboard();
+	const raw = (data as any)?.data ?? [];
+	const entries: BLLeaderboardEntry[] = Array.isArray(raw) ? raw : [];
+
+	if (isLoading) {
+		return (
+			<div
+				className="text-center py-12"
+				style={{
+					color: isDark ? "rgba(255,255,255,0.3)" : "rgba(26,26,26,0.3)",
+				}}
+			>
+				Memuat klasemen...
+			</div>
+		);
+	}
+	if (isError) {
+		return (
+			<div
+				className="text-center py-12"
+				style={{
+					color: isDark ? "rgba(255,255,255,0.5)" : "rgba(26,26,26,0.5)",
+				}}
+			>
+				Gagal memuat klasemen
+			</div>
+		);
+	}
+	if (entries.length === 0) {
+		return (
+			<div
+				className="text-center py-12"
+				style={{
+					color: isDark ? "rgba(255,255,255,0.4)" : "rgba(26,26,26,0.4)",
+				}}
+			>
+				Belum ada data klasemen
+			</div>
+		);
+	}
+
+	const sorted = [...entries]
+		.sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0))
+		.slice(0, 10);
+	const top3 = sorted.slice(0, 3);
+	const rest = sorted.slice(3, 10);
+
+	return (
+		<div className="space-y-4">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+				{top3[1] && (
+					<div className="text-center">
+						<BLPodiumCard
+							entry={top3[1]}
+							rank={2}
+							isDark={isDark}
+							accent={accent}
+						/>
+					</div>
+				)}
+				{top3[0] && (
+					<div className="text-center transform md:scale-110">
+						<BLPodiumCard
+							entry={top3[0]}
+							rank={1}
+							isDark={isDark}
+							accent={accent}
+							isChampion
+						/>
+					</div>
+				)}
+				{top3[2] && (
+					<div className="text-center">
+						<BLPodiumCard
+							entry={top3[2]}
+							rank={3}
+							isDark={isDark}
+							accent={accent}
+						/>
+					</div>
+				)}
+			</div>
+			{rest.map((entry) => (
+				<BLRankRow
+					key={entry.user_id}
+					entry={entry}
+					isDark={isDark}
+					accent={accent}
+				/>
+			))}
+		</div>
+	);
+}
+
+function BLPodiumCard({
+	entry,
+	rank,
+	isDark,
+	accent,
+	isChampion,
+}: {
+	entry: BLLeaderboardEntry;
+	rank: number;
+	isDark: boolean;
+	accent: string;
+	isChampion?: boolean;
+}) {
+	const medalColors: Record<number, { ring: string; fill: string }> = {
+		1: { ring: accent, fill: "#00C2B1" },
+		2: {
+			ring: isDark ? "rgba(255,255,255,0.5)" : "rgba(26,26,26,0.3)",
+			fill: "#C0C0C0",
+		},
+		3: {
+			ring: isDark ? "rgba(255,255,255,0.5)" : "rgba(26,26,26,0.3)",
+			fill: "#CD7F32",
+		},
+	};
+	const medal = medalColors[rank];
+	return (
+		<div
+			className="rounded-3xl p-6 relative"
+			style={{
+				background: isChampion
+					? `linear-gradient(180deg, ${accent}1a 0%, transparent 100%)`
+					: isDark
+						? "rgba(255,255,255,0.02)"
+						: "rgba(255,255,255,0.03)",
+				border: `2px solid ${isChampion ? accent + "66" : (medal?.ring ?? "transparent")}`,
+				boxShadow: isChampion ? `0 20px 50px ${accent}26` : "none",
+			}}
+		>
+			{isChampion && (
+				<div
+					className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-black uppercase"
+					style={{ background: accent, color: isDark ? "#003732" : "#fff" }}
+				>
+					Champion
+				</div>
+			)}
+			<div
+				className="relative mx-auto w-20 h-20 rounded-2xl overflow-hidden mb-3"
+				style={{
+					border: `2px solid ${isChampion ? accent : (medal?.ring ?? "transparent")}`,
+				}}
+			>
+				{entry.profile_picture ? (
+					<Image
+						src={entry.profile_picture}
+						alt={entry.user_name}
+						fill
+						sizes="80px"
+						style={{ objectFit: "cover" }}
+					/>
+				) : (
+					<Image
+						src="/icons/football-player.png"
+						alt="Player"
+						fill
+						sizes="80px"
+						style={{ objectFit: "cover" }}
+					/>
+				)}
+				<div
+					className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center font-black text-xs"
+					style={{
+						background: medal?.fill ?? "#888",
+						boxShadow: `0 0 12px ${medal?.fill ?? "#888"}80`,
+					}}
+				>
+					{rank}
+				</div>
+			</div>
+			<p
+				className="font-black truncate text-sm"
+				style={{ color: isDark ? "#fff" : "#1a1a1a" }}
+				title={entry.user_name}
+			>
+				{entry.user_name}
+			</p>
+			<p className="font-black text-lg" style={{ color: accent }}>
+				{entry.total_points?.toLocaleString() ?? 0}{" "}
+				<span className="text-[10px]">PTS</span>
+			</p>
+		</div>
+	);
+}
+
+function BLRankRow({
+	entry,
+	isDark,
+	accent,
+}: {
+	entry: BLLeaderboardEntry;
+	isDark: boolean;
+	accent: string;
+}) {
+	return (
+		<div
+			className="flex items-center justify-between p-4 rounded-2xl"
+			style={{
+				background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
+				border: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)"}`,
+			}}
+		>
+			<div className="flex items-center gap-4">
+				<span
+					className="font-black italic text-lg w-6 shrink-0"
+					style={{
+						color: isDark ? "rgba(255,255,255,0.3)" : "rgba(26,26,26,0.4)",
+					}}
+				>
+					#{entry.rank ?? 0}
+				</span>
+				<div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0">
+					{entry.profile_picture ? (
+						<Image
+							src={entry.profile_picture}
+							alt={entry.user_name}
+							fill
+							sizes="40px"
+							style={{ objectFit: "cover" }}
+						/>
+					) : (
+						<Image
+							src="/icons/football-player.png"
+							alt="Player"
+							fill
+							sizes="40px"
+							style={{ objectFit: "cover" }}
+						/>
+					)}
+				</div>
+				<p
+					className="font-black truncate text-sm"
+					style={{ color: isDark ? "#fff" : "#1a1a1a" }}
+					title={entry.user_name}
+				>
+					{entry.user_name}
+				</p>
+			</div>
+			<div className="text-right shrink-0">
+				<p className="font-black" style={{ color: accent }}>
+					{entry.total_points?.toLocaleString() ?? 0}
+				</p>
+				<p
+					className="text-[8px] font-black uppercase"
+					style={{
+						color: isDark ? "rgba(255,255,255,0.3)" : "rgba(26,26,26,0.4)",
+					}}
+				>
+					Points
+				</p>
 			</div>
 		</div>
 	);

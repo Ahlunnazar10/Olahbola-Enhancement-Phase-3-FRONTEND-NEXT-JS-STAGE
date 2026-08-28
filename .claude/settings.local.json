@@ -74,7 +74,11 @@
       "Bash(ls \"C:/Users/Pongo/.claude/projects/e--DEVELOPER-NEXT-olahbola/memory/\")",
       "Read(//c/Users/Pongo/.claude/projects/e--DEVELOPER-NEXT-olahbola/memory/**)",
       "WebFetch(domain:www.olahbola.com)",
-      "WebFetch(domain:pagead2.googlesyndication.com)"
+      "WebFetch(domain:pagead2.googlesyndication.com)",
+      "Bash(cmd //c \"dir /b /s \\\\\"app\\\\\\\\\\(main\\)\\\\\\\\guess-who\\\\\"\")",
+      "Bash(dir \"app\")",
+      "Bash(dir \"app\\\\\\\\\\(main\\)\")",
+      "Bash(dir \"app\\\\\\\\\\(main\\)\\\\\\\\guess-who\")"
     ],
     "additionalDirectories": [
       "E:\\DEVELOPER\\NEXT\\olahbola\\app\\(main)\\artikel\\[slug]"
