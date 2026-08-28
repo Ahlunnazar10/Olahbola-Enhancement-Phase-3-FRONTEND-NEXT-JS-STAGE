@@ -500,7 +500,7 @@ export default function TentangKamiPage() {
 										</p>
 										<p style={{ fontStyle: "italic", opacity: 0.75 }}>
 											Tertarik berkontribusi? Kirimkan tulisan Anda ke{" "}
-											<span style={{ color: colors.primary }}>.admin@olahbola.com</span>
+											<span style={{ color: colors.primary }}>{process.env.NEXT_PUBLIC_CONTACT_EMAIL}</span>
 										</p>
 									</div>
 								</div>
@@ -543,7 +543,7 @@ export default function TentangKamiPage() {
 										<ul className="list-none pl-0 space-y-2">
 											<li style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
 												<span style={{ color: colors.text, minWidth: "60px" }}>Email:</span>
-												<span style={{ color: colors.primary }}>admin@olahbola.com</span>
+												<span style={{ color: colors.primary }}>{process.env.NEXT_PUBLIC_CONTACT_EMAIL}</span>
 											</li>
 											<li style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
 												<span style={{ color: colors.text, minWidth: "60px" }}>WhatsApp:</span>

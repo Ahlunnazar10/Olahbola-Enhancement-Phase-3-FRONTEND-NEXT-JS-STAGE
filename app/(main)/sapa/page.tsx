@@ -133,7 +133,7 @@ export default function SapaPage() {
 										<p
 											className={`text-sm md:text-md ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 										>
-											admin@olahbola.com
+											{process.env.NEXT_PUBLIC_CONTACT_EMAIL}
 										</p>
 									</div>
 								</div>

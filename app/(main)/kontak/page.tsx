@@ -20,8 +20,8 @@ const contactChannels = [
 	{
 		icon: Mail,
 		title: "Email",
-		value: "admin@olahbola.com",
-		href: "mailto:admin@olahbola.com",
+		value: process.env.NEXT_PUBLIC_CONTACT_EMAIL,
+		href: `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`,
 		description: "Untuk pertanyaan umum, kemitraan, dan pers",
 	},
 	{
@@ -72,7 +72,7 @@ export default function KontakPage() {
 			const body = encodeURIComponent(
 				`Nama: ${form.name}\nEmail: ${form.email}\nKategori: ${form.type}\n\n${form.message}`,
 			);
-			window.location.href = `mailto:admin@olahbola.com?subject=${subject}&body=${body}`;
+			window.location.href = `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}?subject=${subject}&body=${body}`;
 			setStatus("success");
 			setForm({ name: "", email: "", type: "Pertanyaan Umum", message: "" });
 		} catch {

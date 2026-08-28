@@ -249,7 +249,7 @@ export function GamesPageContent() {
 				</section>
 
 				{/* Tournament Prizes Section */}
-				<section className="mb-10 md:mb-24">
+				<section className="mb-10 md:mb-24 hidden">
 					<div className="flex flex-col items-center text-center mb-12">
 						<h2
 							className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-2"

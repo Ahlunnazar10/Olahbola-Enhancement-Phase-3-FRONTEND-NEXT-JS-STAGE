@@ -72,8 +72,8 @@ const footerLinks = {
 			icon: "whatsapp",
 		},
 		{
-			href: "mailto:admin@olahbola.com?subject=Halo%20Olahbola!",
-			label: "admin@olahbola.com",
+			href: `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}?subject=Halo%20Olahbola!`,
+			label: process.env.NEXT_PUBLIC_CONTACT_EMAIL,
 			icon: "email",
 		},
 	],

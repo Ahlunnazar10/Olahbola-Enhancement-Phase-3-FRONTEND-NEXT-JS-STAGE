@@ -1,3 +1,5 @@
+const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "admin.olahbola@gmail.com";
+
 /**
  * Status event Olahbola Teater Bola Dunia Season 1.
  *
@@ -39,8 +41,8 @@ export const EVENT_STATUS: Record<GameEventKey, GameEventStatus> = {
 		endedNotice: {
 			title: "Event Telah Berakhir",
 			message:
-				"Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi admin@olahbola.com untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.",
-			contactEmail: "admin@olahbola.com",
+				`Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi ${CONTACT_EMAIL} untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.`,
+			contactEmail: CONTACT_EMAIL,
 			emailSubject: "Klaim Hadiah — Teater Bola Dunia",
 		},
 	},
@@ -50,8 +52,8 @@ export const EVENT_STATUS: Record<GameEventKey, GameEventStatus> = {
 		endedNotice: {
 			title: "Event Telah Berakhir",
 			message:
-				"Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi admin@olahbola.com untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.",
-			contactEmail: "admin@olahbola.com",
+				`Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi ${CONTACT_EMAIL} untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.`,
+			contactEmail: CONTACT_EMAIL,
 			emailSubject: "Klaim Hadiah — Quiz Teater Bola Dunia",
 		},
 	},
@@ -60,9 +62,8 @@ export const EVENT_STATUS: Record<GameEventKey, GameEventStatus> = {
 		endedLabel: "Event Berakhir",
 		endedNotice: {
 			title: "Event Telah Berakhir",
-			message:
-				"Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi admin@olahbola.com untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 11 September 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.",
-			contactEmail: "admin@olahbola.com",
+			message: `Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi ${CONTACT_EMAIL} untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 11 September 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.`,
+			contactEmail: CONTACT_EMAIL,
 			emailSubject: "Klaim Hadiah — Teater Bola Asean 2026",
 		},
 	},

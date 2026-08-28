@@ -569,16 +569,16 @@ export default function KebijakanHakCiptaPage() {
 										>
 											Hubungi kami di{" "}
 											<a
-												href="mailto:admin@olahbola.com"
+												href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}
 												className="underline font-bold"
 												style={{ color: colors.onPrimary }}
 											>
-												admin@olahbola.com
+												{process.env.NEXT_PUBLIC_CONTACT_EMAIL}
 											</a>
 										</p>
 									</div>
 									<Link
-										href="mailto:admin@olahbola.com"
+										href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}
 										className="relative z-10 px-8 py-4 font-bold uppercase rounded-full transition-all active:scale-95"
 										style={{
 											backgroundColor: colors.onPrimary,
