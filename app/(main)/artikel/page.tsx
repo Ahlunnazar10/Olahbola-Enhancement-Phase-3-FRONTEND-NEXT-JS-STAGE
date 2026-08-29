@@ -310,7 +310,7 @@ function ArtikelContent() {
 					/>
 					<input
 						className={`w-full border rounded-xl py-4 pl-12 pr-4 font-bold text-sm tracking-widest outline-none transition-all backdrop-blur-md ${isDark ? "bg-surface-container-highest/20 border-outline-variant/30 text-white placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#0a7c6e] focus:ring-1 focus:ring-[#0a7c6e]"}`}
-						placeholder="SEARCH ARCHIVE..."
+						placeholder="CARI ARTIKEL..."
 						type="text"
 						value={localSearchInput}
 						onChange={handleSearchChange}
@@ -329,7 +329,7 @@ function ArtikelContent() {
 									: "border-[#0a7c6e]/30 bg-[#0a7c6e]/10 text-[#0a7c6e] hover:border-[#0a7c6e]/50"
 						}`}
 					>
-						LATEST
+						TERBARU
 					</button>
 					{categories?.data?.map((cat: any) => (
 						<button
@@ -550,13 +550,13 @@ function ArtikelContent() {
 					)}
 
 					{/* Games Unit Ad — Article Feed Footer */}
-					<div className="md:col-span-2 my-6">
+					{/* <div className="md:col-span-2 my-6">
 						<AdSlot
 							client="ca-pub-8005120082355722"
 							slot="5316243141"
 							format="auto"
 						/>
-					</div>
+					</div> */}
 				</div>
 
 				{/* Trending Sidebar with Enhanced Glassmorphism */}
@@ -575,7 +575,7 @@ function ArtikelContent() {
 									className={`float-anim size-7 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 									fill="currentColor"
 								/>
-								TRENDING NOW
+								ARTIKEL POPULER
 							</h2>
 							<div className="space-y-10 relative z-10">
 								{popularLoading ? (
@@ -601,7 +601,7 @@ function ArtikelContent() {
 													<span
 														className={`text-xs font-black uppercase tracking-[0.3em] ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 													>
-														TRENDING
+														VIRAL
 													</span>
 													<h4
 														className={`font-bold text-md uppercase tracking-tight leading-tight mt-1 group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}

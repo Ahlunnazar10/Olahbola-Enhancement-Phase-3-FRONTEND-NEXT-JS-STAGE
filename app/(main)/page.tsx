@@ -224,7 +224,7 @@ export default function HomePage() {
 		setFeaturedLoading(true);
 		try {
 			const response = await apiClient.get(
-				"/api/v1/article/fakta-unik-pemain-spanyol-juara-catur-tukang-kayu",
+				"/api/v1/article/musim-baru-persib-bidik-quat-trick",
 			);
 			if (response.data.status === "success") {
 				setFeaturedArticle(response.data.data);

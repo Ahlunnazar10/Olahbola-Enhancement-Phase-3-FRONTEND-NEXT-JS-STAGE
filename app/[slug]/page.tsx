@@ -436,7 +436,7 @@ export default function ArticleDetailPage() {
 							</div>
 
 							{/* Newsletter / CTA Card */}
-							<div
+							{/* <div
 								className={`rounded-xl overflow-hidden transition-all ${isDark ? "glass-panel border border-primary/20" : "bg-white shadow-lg border border-[#0a7c6e]/20"}`}
 							>
 								<div className="relative aspect-4/3 overflow-hidden">
@@ -466,7 +466,7 @@ export default function ArticleDetailPage() {
 										</button>
 									</div>
 								</div>
-							</div>
+							</div> */}
 
 							{/* Promo Section */}
 							{/* <div

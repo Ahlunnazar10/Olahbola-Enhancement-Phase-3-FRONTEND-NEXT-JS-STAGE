@@ -195,7 +195,7 @@ export function NavigationBar() {
 								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
 							</Link>
 
-							{/* Teater Bola Asean 2026! Button */}
+							{/* Bundesliga Prediction! Button */}
 							<Link
 								href="/teater-bola-asean-2026"
 								rel="noopener noreferrer"
@@ -210,7 +210,7 @@ export function NavigationBar() {
 								)}
 							>
 								<span className="relative z-10 flex items-center gap-2">
-									Teater Bola Asean 2026
+									Bundesliga Prediction
 								</span>
 								{/* Shine effect */}
 								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
@@ -292,12 +292,12 @@ export function NavigationBar() {
 							Main City Battle
 						</Link>
 
-						{/* Teater Bola Asean 2026 Button */}
+						{/* Bundesliga Prediction Button */}
 						<Link
 							href="/teater-bola-asean-2026"
 							className="flex items-center justify-center gap-1.5 px-3 py-2 bg-[#1FE6DA] text-black font-bold rounded-lg text-xs hover:bg-[#1AC9BF] transition-colors"
 						>
-							Teater Bola Asean 2026
+							Bundesliga Prediction
 						</Link>
 					</div>
 
