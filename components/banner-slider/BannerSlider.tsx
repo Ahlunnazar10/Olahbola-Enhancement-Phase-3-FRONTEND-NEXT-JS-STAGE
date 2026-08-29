@@ -315,10 +315,10 @@ export function BannerSlider({
 													className={
 														part.color === "primary"
 															? `${
-																	isDark ? "text-[#43decc]" : "text-[#0a7c6e]"
+																	isDark ? "text-primary" : "text-[#0a7c6e]"
 																} text-glow block`
 															: part.color === "accent"
-																? "text-[#fe9d00]"
+																? "text-secondary-container"
 																: isDark
 																	? "text-white"
 																	: "text-[#1a1a1a]"
@@ -334,7 +334,7 @@ export function BannerSlider({
 
 									<p
 										className={`text-sm sm:text-base md:text-lg max-w-sm sm:max-w-md md:max-w-md lg:max-w-xl mx-auto md:mx-0 ${
-											isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"
+											isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"
 										}`}
 									>
 										{slide.description}
@@ -343,7 +343,7 @@ export function BannerSlider({
 
 								<div className="flex items-center justify-center order-1 md:order-2 w-full md:w-5/12 lg:w-1/2 md:justify-end">
 									<div className="relative w-70 h-70 md:w-56 md:h-56 lg:w-110 lg:h-110">
-										<div className="absolute inset-0 bg-linear-to-br from-[#43decc]/20 to-[#fe9d00]/20 rounded-full blur-3xl" />
+										<div className="absolute inset-0 bg-linear-to-br from-primary/20 to-secondary-container/20 rounded-full blur-3xl" />
 
 										<div className="relative w-full h-full rounded-2xl overflow-hidden animate-float">
 											<img
@@ -360,9 +360,9 @@ export function BannerSlider({
 								</div>
 							</div>
 						) : slide.type === "event" ? (
-							/* Event Type - Teater Bola Asean */
+							/* Event Type - Bundesliga 2026/2027 */
 
-							<div className="relative z-10 w-full max-w-360 mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-14 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center h-full">
+							<div className="relative z-10 w-full max-w-360 mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-3 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center h-full">
 								{/* Left Content: Typography & CTA */}
 
 								<div className="lg:col-span-6 flex flex-col items-center md:items-start gap-3 md:gap-6">
@@ -395,7 +395,7 @@ export function BannerSlider({
 													key={i}
 													className={
 														part.color === "primary"
-															? `${isDark ? "text-[#43decc]" : "text-[#0a7c6e]"} text-glow block`
+															? `${isDark ? "text-primary" : "text-[#0a7c6e]"} text-glow block`
 															: isDark
 																? "text-white"
 																: "text-[#1a1a1a]"
@@ -411,7 +411,7 @@ export function BannerSlider({
 
 									{slide.eventDescription && (
 										<p
-											className={`text-sm md:text-lg font-medium max-w-xl text-center md:text-left ${isDark ? "text-[#bbcac6]" : "text-[#3a3a3a]"}`}
+											className={`text-sm md:text-lg font-medium max-w-xl text-center md:text-left ${isDark ? "text-on-surface-variant" : "text-[#3a3a3a]"}`}
 										>
 											{slide.eventDescription}
 										</p>
@@ -442,7 +442,7 @@ export function BannerSlider({
 
 								{/* Right Content: Reward Showcase */}
 
-								<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-0 pb-12 lg:py-20 -mt-8 lg:mt-0">
+								<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-0 pb-12 lg:py-20 -mt-27.5 lg:mt-0">
 									{/* Ambient glow */}
 
 									<div className="absolute inset-0 bg-primary/5 rounded-full blur-[120px] opacity-40" />
@@ -588,9 +588,7 @@ export function BannerSlider({
 									)}
 									{slide.ctaSubtitle && (
 										<p className="text-sm md:text-lg font-semibold leading-relaxed mb-6 md:mb-8 max-w-lg ml-auto">
-											<span className="text-[#43decc]">
-												{slide.ctaSubtitle}
-											</span>
+											<span className="text-primary">{slide.ctaSubtitle}</span>
 										</p>
 									)}
 									{slide.ctaCtaText && slide.ctaCtaHref && (
@@ -599,7 +597,7 @@ export function BannerSlider({
 											href={slide.ctaCtaHref}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-lg font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-[#00c2b1] to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-[#00c2b1]/40"
+											className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-lg font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-primary-container to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-primary-container/40"
 										>
 											<span className="relative z-10 flex items-center gap-3">
 												<svg
@@ -647,10 +645,10 @@ export function BannerSlider({
 													className={
 														color === "primary"
 															? `${
-																	isDark ? "text-[#43decc]" : "text-[#0a7c6e]"
+																	isDark ? "text-primary" : "text-[#0a7c6e]"
 																} text-glow block`
 															: color === "accent"
-																? "text-[#fe9d00]"
+																? "text-secondary-container"
 																: isDark
 																	? "text-white"
 																	: "text-[#1a1a1a]"
@@ -667,7 +665,7 @@ export function BannerSlider({
 
 								<p
 									className={`text-base md:text-lg max-w-xl mb-6 line-clamp-2 md:line-clamp-3 ${
-										isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"
+										isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"
 									}`}
 								>
 									{slide.excerpt}
@@ -676,7 +674,7 @@ export function BannerSlider({
 								{slide.ctaButtons?.primary?.href && (
 									<Link
 										href={slide.ctaButtons.primary.href}
-										className="inline-flex items-center gap-2 w-fit px-6 py-3 bg-[#43decc] text-[#003732] font-bold uppercase tracking-widest text-sm rounded-full hover:bg-[#5eebe8] hover:scale-105 transition-all group"
+										className="inline-flex items-center gap-2 w-fit px-6 py-3 bg-primary text-on-primary font-bold uppercase tracking-widest text-sm rounded-full hover:bg-[#5eebe8] hover:scale-105 transition-all group"
 									>
 										{slide.ctaButtons.primary.text || "Baca Selengkapnya!"}
 
@@ -697,14 +695,14 @@ export function BannerSlider({
 						onClick={() => swiperRef.current?.swiper.slidePrev()}
 						className={`absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all group ${
 							isDark
-								? "glass-panel hover:bg-[#43decc]/20"
+								? "glass-panel hover:bg-primary/20"
 								: "bg-white/80 hover:bg-white shadow-lg border border-gray-200"
 						}`}
 						aria-label="Previous slide"
 					>
 						<ChevronLeft
 							className={`size-5 md:size-6 group-hover:scale-110 transition-transform ${
-								isDark ? "text-[#43decc]" : "text-[#0a7c6e]"
+								isDark ? "text-primary" : "text-[#0a7c6e]"
 							}`}
 						/>
 					</button>
@@ -713,14 +711,14 @@ export function BannerSlider({
 						onClick={() => swiperRef.current?.swiper.slideNext()}
 						className={`absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all group ${
 							isDark
-								? "glass-panel hover:bg-[#43decc]/20"
+								? "glass-panel hover:bg-primary/20"
 								: "bg-white/80 hover:bg-white shadow-lg border border-gray-200"
 						}`}
 						aria-label="Next slide"
 					>
 						<ChevronRight
 							className={`size-5 md:size-6 group-hover:scale-110 transition-transform ${
-								isDark ? "text-[#43decc]" : "text-[#0a7c6e]"
+								isDark ? "text-primary" : "text-[#0a7c6e]"
 							}`}
 						/>
 					</button>

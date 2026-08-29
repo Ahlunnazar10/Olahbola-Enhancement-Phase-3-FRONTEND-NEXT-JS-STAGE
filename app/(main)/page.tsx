@@ -8,19 +8,10 @@ import { useInView } from "react-intersection-observer";
 import { apiClient } from "@/lib/api/client";
 import { useUIStore } from "@/stores/uiStore";
 import type { Article, Interview } from "@/types";
+import { useLeaderboard as useBLLeaderboard } from "@/hooks/queries/useBundesliga";
 import { ArrowRight, Play, Circle } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
 import { BannerSlider } from "@/components/banner-slider/BannerSlider";
-
-interface TeaterAseanLeaderboardEntry {
-	rank: number;
-	user_id: string;
-	user_name: string;
-	profile_picture: string | null;
-	total_points: number;
-	total_predictions: number;
-	exact_scores: number;
-}
 
 interface LeaderboardRow {
 	rank: number;
@@ -71,12 +62,6 @@ export default function HomePage() {
 	const [interviewDisplayCount, setInterviewDisplayCount] = useState(5);
 	const [isMobileView, setIsMobileView] = useState(false);
 
-	// Teater Bola Asean Leaderboard State
-	const [teaterAseanLeaderboard, setTeaterAseanLeaderboard] = useState<
-		TeaterAseanLeaderboardEntry[]
-	>([]);
-	const [teaterAseanLoading, setTeaterAseanLoading] = useState(false);
-	const [teaterAseanError, setTeaterAseanError] = useState<string | null>(null);
 	const [heroPlayBgLoaded, setHeroPlayBgLoaded] = useState(false);
 	const [activeBannerIndex, setActiveBannerIndex] = useState(0);
 	const heroSectionRef = useRef<HTMLElement>(null);
@@ -90,52 +75,8 @@ export default function HomePage() {
 	const { ref: heroPlayInViewRef, inView: heroPlayVisible } =
 		useSectionInView(0.1);
 
-	const fetchTeaterAseanLeaderboard = async () => {
-		if (teaterAseanLoading) return;
-
-		setTeaterAseanLoading(true);
-		setTeaterAseanError(null);
-
-		try {
-			const apiUrl =
-				process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com";
-			const response = await fetch(`${apiUrl}/api/v1/teater-bola/leaderboard`, {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-					Accept: "application/json",
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const json = await response.json();
-			const raw = Array.isArray(json?.data)
-				? json.data
-				: Array.isArray(json?.data?.leaderboard)
-					? json.data.leaderboard
-					: [];
-			if (json?.success !== false && raw.length) {
-				setTeaterAseanLeaderboard(
-					raw.slice(0, 10) as TeaterAseanLeaderboardEntry[],
-				);
-			} else if (json?.success !== false && raw.length === 0) {
-				setTeaterAseanLeaderboard([]);
-			} else {
-				throw new Error(
-					json?.message || "Failed to fetch teater asean leaderboard",
-				);
-			}
-		} catch (err) {
-			console.error("Error fetching teater asean leaderboard:", err);
-			setTeaterAseanError("Gagal memuat papan skor Teater Bola Asean.");
-			setTeaterAseanLeaderboard([]);
-		} finally {
-			setTeaterAseanLoading(false);
-		}
-	};
+	// Bundesliga Live Leaderboard
+	const blLeaderboardData = useBLLeaderboard();
 
 	useEffect(() => {
 		const img = new window.Image();
@@ -143,10 +84,10 @@ export default function HomePage() {
 		img.onload = () => setHeroPlayBgLoaded(true);
 	}, []);
 
-	// Fetch Teater Bola Asean leaderboard when section is visible
+	// Fetch Bundesliga leaderboard when section is visible
 	useEffect(() => {
 		if (heroPlayVisible) {
-			fetchTeaterAseanLeaderboard();
+			// query is auto-fetched by react-query; nothing extra needed
 		}
 	}, [heroPlayVisible]);
 
@@ -155,26 +96,28 @@ export default function HomePage() {
 	};
 
 	const normalizeRows = (
-		data: TeaterAseanLeaderboardEntry[] | undefined,
+		raw: ReturnType<typeof useBLLeaderboard> extends { data: infer D }
+			? D
+			: never,
 	): LeaderboardRow[] => {
-		if (!data) return [];
-		return [...data]
-			.sort((a, b) => a.rank - b.rank)
+		if (!raw || !Array.isArray(raw)) return [];
+		return [...raw]
+			.sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0))
+			.slice(0, 10)
 			.map((p, i) => ({
 				rank: i + 1,
-				userId: p.user_id,
+				userId: String(p.user_id ?? p.rank),
 				name: p.user_name,
 				profilePicture: p.profile_picture,
-				subtitle: `Prediksi: ${p.total_predictions} · Tepat: ${p.exact_scores}`,
-				score: p.total_points,
+				subtitle: `Prediksi: ${p.total_predictions ?? 0} · Tepat: ${p.exact_scores ?? 0}`,
+				score: p.total_points ?? p.points ?? 0,
 			}));
 	};
 
 	const leaderboardRows: LeaderboardRow[] = useMemo(() => {
-		return normalizeRows(
-			teaterAseanLeaderboard.length ? teaterAseanLeaderboard : undefined,
-		);
-	}, [teaterAseanLeaderboard]);
+		const raw: any = blLeaderboardData.data;
+		return normalizeRows(Array.isArray(raw) ? raw : []);
+	}, [blLeaderboardData.data]);
 
 	// HeroPlay colors - matching site theme
 	const heroPlayColors = {
@@ -204,7 +147,33 @@ export default function HomePage() {
 	const bannerSlides: BannerSlide[] = useMemo(() => {
 		const slides: BannerSlide[] = [];
 
-		// Slide 1: HeroPlay Kickoff Banner
+		// Slide 1: Event Banner - Bundesliga 2026/2027
+		slides.push({
+			id: "event-bundesliga",
+			type: "event" as const,
+			imageFallback: "/images/home/bundesliga-bg.webp",
+			// Reuse desktop background for mobile until a dedicated mobile asset is available.
+			// BannerSlider renders the mobile <img> only when imageMobileFallback is set.
+			imageMobileFallback: "/images/home/bundesliga-bg.webp",
+			eventBadge: "Live Match",
+			eventTitle: {
+				parts: [{ text: "BUNDESLIGA 2026/2027", color: "white" as const }],
+			},
+			eventDescription:
+				"Bundesliga prediksi skor telah dimulai! Uji akurasi pemahaman bola kamu dan dapatkan hadiah ekslusif bundesliga limited edition.",
+			eventPrimaryCta: {
+				text: "Main Sekarang",
+				href: "/games",
+			},
+			eventSecondaryCta: {
+				text: "Lihat Klasemen",
+				href: "/games#leaderboard",
+			},
+			eventRewardImage: "/images/home/home-prize.png",
+			eventRewardImageAlt: "Mystery World Cup Jersey",
+		});
+
+		// Slide 2: HeroPlay Kickoff Banner
 		slides.push({
 			id: "hero-play-kickoff",
 			type: "cta" as const,
@@ -220,32 +189,6 @@ export default function HomePage() {
 				buttonText: "Main Sekarang",
 				buttonHref: "https://www.mainhero.id",
 			},
-		});
-
-		// Slide 2: Event Banner - Teater Bola Asean (AFF Edition)
-		slides.push({
-			id: "event-teater-bola-asean",
-			type: "event" as const,
-			imageFallback: "/images/home/teater-bola-asean-bg.webp",
-			// Reuse desktop background for mobile until a dedicated mobile asset is available.
-			// BannerSlider renders the mobile <img> only when imageMobileFallback is set.
-			imageMobileFallback: "/images/home/teater-bola-bg.webp",
-			eventBadge: "Live Match",
-			eventTitle: {
-				parts: [{ text: "TEATER BOLA ASEAN", color: "white" as const }],
-			},
-			eventDescription:
-				"Teater bola Asean dimulai! Asah akurasi pemahaman bola kamu dan dapatkan hadiah mistery jersey, bola & topi limited edition.",
-			eventPrimaryCta: {
-				text: "Main Sekarang",
-				href: "/games",
-			},
-			eventSecondaryCta: {
-				text: "Lihat Klasemen",
-				href: "/games#leaderboard",
-			},
-			eventRewardImage: "/images/home/home-prize.webp",
-			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
 		// Slide 3: Article banner (if available)
@@ -501,7 +444,7 @@ export default function HomePage() {
 								}}
 								data-aos="fade-up"
 							>
-								TEATER BOLA ASEAN PREDIKSI SKOR
+								BUNDESLIGA 2026/2027
 							</h2>
 							<p
 								className="text-base md:text-lg"
@@ -509,13 +452,13 @@ export default function HomePage() {
 								data-aos="fade-up"
 								data-aos-delay="100"
 							>
-								Klasemen Sementara Berdasarkan Peforma Teater Bola Asean
-								Prediksi Skor
+								Klasemen Sementara Berdasarkan Performa Prediksi Skor Bundesliga
+								Season 2026/2027
 							</p>
 						</div>
 
 						{/* Loading State */}
-						{teaterAseanLoading ? (
+						{blLeaderboardData.isLoading ? (
 							<div className="max-w-4xl mx-auto">
 								<div
 									className="flex items-center gap-4 p-4 mb-6 rounded-2xl animate-pulse"
@@ -558,7 +501,7 @@ export default function HomePage() {
 									))}
 								</div>
 							</div>
-						) : teaterAseanError ? (
+						) : blLeaderboardData.isError ? (
 							<div className="text-center py-12 max-w-md mx-auto">
 								<div
 									className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
@@ -570,10 +513,10 @@ export default function HomePage() {
 									className="text-lg mb-4"
 									style={{ color: heroPlayColors.text }}
 								>
-									{teaterAseanError}
+									Gagal memuat klasemen Bundesliga.
 								</p>
 								<button
-									onClick={fetchTeaterAseanLeaderboard}
+									onClick={() => blLeaderboardData.refetch()}
 									className="px-6 py-3 font-bold rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
 									style={{
 										background: heroPlayColors.gradientBadge,
@@ -1053,7 +996,7 @@ export default function HomePage() {
 									data-aos-delay="200"
 								>
 									<Link
-										href="/teater-bola-asean-2026"
+										href="/games#leaderboard"
 										className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
 										style={{
 											background: heroPlayColors.gradientCTA,

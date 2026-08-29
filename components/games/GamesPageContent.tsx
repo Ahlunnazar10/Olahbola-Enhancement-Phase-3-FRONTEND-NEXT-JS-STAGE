@@ -607,7 +607,7 @@ function BundesligaLeaderboard({
 	accent: string;
 }) {
 	const { data, isLoading, isError } = useBLLeaderboard();
-	const raw = (data as any)?.data ?? [];
+	const raw = data ?? [];
 	const entries: BLLeaderboardEntry[] = Array.isArray(raw) ? raw : [];
 
 	if (isLoading) {
