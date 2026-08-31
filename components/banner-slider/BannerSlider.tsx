@@ -4,11 +4,11 @@ import Link from "next/link";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import { Navigation, Autoplay, EffectFade } from "swiper/modules";
+import { Navigation, EffectFade } from "swiper/modules";
 
 import { ChevronRight, ChevronLeft, ArrowRight, Award } from "lucide-react";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 // Import Swiper styles - use string path to avoid type resolution issues
 
@@ -99,6 +99,9 @@ export interface BannerSlide {
 		title: string;
 	}[];
 
+	// Video background (used by Game Pass / HeroPlay video slides)
+	videoSrc?: string;
+
 	// HeroPlay custom slide — used by kickoff right-aligned banners (e.g. Football City Battle).
 	// Distinct from generic cta/event because layout/text/button styling come from design spec,
 	// not the existing cta/event branches.
@@ -145,31 +148,68 @@ export function BannerSlider({
 	isMobile = false,
 }: BannerSliderProps) {
 	const swiperRef = useRef<any>(null);
+	const manualTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const totalSlides = slides.length;
-
 	const showControls = totalSlides > 1;
+	const isManualAutoPlay = showControls && autoPlay;
 
-	const isAutoPlaying = showControls && autoPlay;
+	const getActiveSlideId = (): string | null => {
+		const swiper = swiperRef.current?.swiper;
+		if (!swiper) return null;
+		const activeEl = swiper.slides[swiper.activeIndex];
+		return activeEl?.getAttribute("data-swiper-slide-index") ?? null;
+	};
+
+	const autoAdvance = () => {
+		if (!isManualAutoPlay) return;
+		const swiper = swiperRef.current?.swiper;
+		if (!swiper || swiper.destroyed) return;
+		const slideIndex = getActiveSlideId();
+		if (slideIndex === null) return;
+		const slide = slides[Number(slideIndex)];
+		const delay = slide?.videoSrc ? 10000 : autoPlayInterval;
+		manualTimer.current = setTimeout(() => {
+			swiper.slideNext();
+		}, delay);
+	};
+
+	useEffect(() => {
+		if (!isManualAutoPlay) return;
+		const swiper = swiperRef.current?.swiper;
+		if (swiper) {
+			autoAdvance();
+		} else {
+			const checkReady = () => {
+				const s = swiperRef.current?.swiper;
+				if (s) {
+					autoAdvance();
+				} else {
+					requestAnimationFrame(checkReady);
+				}
+			};
+			checkReady();
+		}
+		return () => {
+			if (manualTimer.current) clearTimeout(manualTimer.current);
+		};
+	}, [isManualAutoPlay, slides]);
 
 	const swiperProps = {
-		modules: [Navigation, Autoplay, EffectFade],
+		modules: [Navigation, EffectFade],
 		slidesPerView: 1,
 		spaceBetween: 0,
 		effect: "fade" as const,
 		fadeEffect: { crossFade: true },
-		autoplay: isAutoPlaying
-			? {
-					delay: autoPlayInterval,
-					disableOnInteraction: false,
-					pauseOnMouseEnter: true,
-				}
-			: false,
 		navigation: showControls,
 		className: "banner-slider w-full! h-full!",
 		speed: 800,
 		loop: showControls,
 		watchOverflow: true,
+		onSlideChange: () => {
+			if (manualTimer.current) clearTimeout(manualTimer.current);
+			autoAdvance();
+		},
 	} as Parameters<typeof Swiper>[0];
 
 	return (
@@ -196,7 +236,7 @@ export function BannerSlider({
 										? articleImageUrl || slide.imageMobileFallback
 										: slide.imageMobileFallback;
 
-								if (!desktopSrc && !mobileSrc) {
+								if (!desktopSrc && !mobileSrc && !slide.videoSrc) {
 									return (
 										<div className="w-full h-full bg-linear-to-br from-[#0f1412] via-[#141a17] to-[#0f1412]" />
 									);
@@ -204,6 +244,16 @@ export function BannerSlider({
 
 								return (
 									<>
+										{slide.videoSrc && (
+											<video
+												src={slide.videoSrc}
+												autoPlay
+												muted
+												loop
+												playsInline
+												className="w-full h-full object-cover"
+											/>
+										)}
 										{desktopSrc && (
 											<img
 												src={desktopSrc}
@@ -258,27 +308,31 @@ export function BannerSlider({
 
 						<div
 							className={`absolute inset-0 ${
-								slide.type === "cta"
+								slide.type === "cta" && slide.videoSrc
 									? isMobile
-										? "bg-linear-to-t from-black via-black/60 to-transparent"
-										: "bg-linear-to-l from-black via-transparent to-transparent"
-									: slide.type === "article"
+										? "bg-linear-to-t from-black/95 via-black/80 to-transparent"
+										: "bg-linear-to-r from-black/95 via-black/70 to-transparent"
+									: slide.type === "cta"
 										? isMobile
-											? isDark
-												? "bg-linear-to-t from-black via-black/60 to-transparent"
-												: "bg-linear-to-t from-black/80 via-black/50 to-transparent"
-											: isDark
-												? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent"
-												: "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
-										: slide.type === "event"
-											? "bg-linear-to-t from-[#050505]/10 via-transparent to-[#050505]/10"
-											: slide.heroPlayLayout
-												? "bg-linear-to-r from-transparent via-transparent to-black/40"
-												: `bg-linear-to-r ${
-														isDark
-															? "from-black via-[#0f1412]/20 to-transparent"
-															: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
-													}`
+											? "bg-linear-to-t from-black via-black/60 to-transparent"
+											: "bg-linear-to-l from-black via-transparent to-transparent"
+										: slide.type === "article"
+											? isMobile
+												? isDark
+													? "bg-linear-to-t from-black via-black/60 to-transparent"
+													: "bg-linear-to-t from-black/80 via-black/50 to-transparent"
+												: isDark
+													? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent"
+													: "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
+											: slide.type === "event"
+												? "bg-linear-to-t from-[#050505]/10 via-transparent to-[#050505]/10"
+												: slide.heroPlayLayout
+													? "bg-linear-to-r from-transparent via-transparent to-black/40"
+													: `bg-linear-to-r ${
+															isDark
+																? "from-black via-[#0f1412]/20 to-transparent"
+																: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
+														}`
 							}`}
 						/>
 
@@ -576,19 +630,40 @@ export function BannerSlider({
 						) : slide.type === "cta" ? (
 							/* CTA Type */
 							<div className="relative z-10 w-full h-full flex items-center">
-								<div className="relative z-20 w-full max-w-2xl lg:max-w-4xl px-14 md:px-8 ml-auto mr-4 md:mr-16 lg:mr-32 text-center md:text-right mt-30 md:mt-0">
+								<div
+									className={`relative z-20 mt-30 md:mt-0 ${
+										slide.videoSrc
+											? "w-full max-w-2xl lg:max-w-4xl px-14 md:px-0 mr-auto ml-4 md:ml-16 lg:ml-32 text-center md:text-left"
+											: "w-full max-w-2xl lg:max-w-4xl px-14 md:px-8 ml-auto mr-4 md:mr-16 lg:mr-32 text-center md:text-right"
+									}`}
+								>
 									{slide.ctaTitle && (
-										<h2 className="text-xl md:text-[42px] lg:text-[48px] font-black uppercase leading-tight md:leading-[1.1] mb-4 md:mb-6 text-white">
+										<h2
+											className={`${
+												slide.videoSrc
+													? "text-3xl md:text-[42px] lg:text-[56px] uppercase italic leading-tight md:leading-[1.1] mb-4 md:mb-4"
+													: "text-xl md:text-[42px] lg:text-[48px] font-black uppercase leading-tight md:leading-[1.1] mb-4 md:mb-6"
+											}`}
+										>
 											{slide.ctaTitle.split("\n").map((line, i) => (
-												<span key={i} className="block last:mb-0">
+												<span
+													key={i}
+													className={`block last:mb-0 ${
+														slide.videoSrc
+															? i === 0
+																? "font-black text-primary neon-glow-text"
+																: "font-black text-white"
+															: "font-black text-white"
+													}`}
+												>
 													{line}
 												</span>
 											))}
 										</h2>
 									)}
 									{slide.ctaSubtitle && (
-										<p className="text-sm md:text-lg font-semibold leading-relaxed mb-6 md:mb-8 max-w-lg ml-auto">
-											<span className="text-primary">{slide.ctaSubtitle}</span>
+										<p className="text-sm md:text-lg leading-relaxed mb-6 md:mb-8 max-w-lg mr-auto text-white">
+											{slide.ctaSubtitle}
 										</p>
 									)}
 									{slide.ctaCtaText && slide.ctaCtaHref && (
@@ -597,22 +672,9 @@ export function BannerSlider({
 											href={slide.ctaCtaHref}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-lg font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-primary-container to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-primary-container/40"
+											className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-base font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-primary-container to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-primary-container/40"
 										>
 											<span className="relative z-10 flex items-center gap-3">
-												<svg
-													className="w-5 h-5 md:w-6 md:h-6"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M13 10V3L4 14h7v7l9-11h-7z"
-													/>
-												</svg>
 												{slide.ctaCtaText}
 											</span>
 											<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />

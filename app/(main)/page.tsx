@@ -147,7 +147,20 @@ export default function HomePage() {
 	const bannerSlides: BannerSlide[] = useMemo(() => {
 		const slides: BannerSlide[] = [];
 
-		// Slide 1: Event Banner - Bundesliga 2026/2027
+		// Slide 1: HeroPlay Game Pass Video Banner
+		slides.push({
+			id: "hero-play-game-pass",
+			type: "cta" as const,
+			videoSrc: "/images/home/penalti-rivals.mp4",
+			ctaTitle: "OLAHBOLA\nGAME PASS",
+			ctaSubtitle:
+				"Nikmati akses tak terbatas ke lebih dari 30 game sepak bola eksklusif yang bisa Kamu mainkan kapan saja, di mana saja.",
+			ctaCtaText: "Main Sekarang",
+			ctaCtaHref: "https://heroplay.igvault.id/subscription",
+			ctaAlignment: "right",
+		});
+
+		// Slide 2: Event Banner - Bundesliga 2026/2027
 		slides.push({
 			id: "event-bundesliga",
 			type: "event" as const,
@@ -173,7 +186,7 @@ export default function HomePage() {
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
-		// Slide 2: HeroPlay Kickoff Banner
+		// Slide 3: HeroPlay Kickoff Banner
 		slides.push({
 			id: "hero-play-kickoff",
 			type: "cta" as const,
@@ -191,7 +204,7 @@ export default function HomePage() {
 			},
 		});
 
-		// Slide 3: Article banner (if available)
+		// Slide 4: Article banner (if available)
 		if (featuredArticle) {
 			slides.push({
 				id: `article-${featuredArticle.id}`,

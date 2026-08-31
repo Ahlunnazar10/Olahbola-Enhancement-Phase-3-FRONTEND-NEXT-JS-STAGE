@@ -574,6 +574,14 @@ body {
 		0 0 30px rgba(0, 194, 177, 0.4);
 }
 
+/* Neon glow for video banner title */
+.neon-glow-text {
+	text-shadow:
+		0 0 20px rgba(67, 222, 204, 0.8),
+		0 0 40px rgba(67, 222, 204, 0.5),
+		0 0 60px rgba(67, 222, 204, 0.3);
+}
+
 /* Stagger fade-up entrance for grid cards */
 @keyframes vaw-fade-up {
 	0% {
