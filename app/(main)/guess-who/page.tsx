@@ -55,7 +55,7 @@ export default function GuessWhoPage() {
 
 	const { data: config, isLoading: configLoading } = useGuessWhoConfig();
 	const startMutation = useGuessWhoStart();
-	const { data: levelProgress } = useGuessWhoLevelProgress();
+	const { data: levelProgress, isLoading: levelProgressLoading } = useGuessWhoLevelProgress();
 	const attemptCounts = useGuessWhoAttemptCounts();
 
 	const meshRef = useRef<HTMLDivElement | null>(null);
@@ -90,12 +90,12 @@ export default function GuessWhoPage() {
 	const sorted = (config?.levels ?? []).slice().sort((a, b) => a.level - b.level);
 	const completedSet = new Set(levelProgress?.completed_levels ?? []);
 	const unlockedSet = new Set(levelProgress?.unlocked_levels ?? []);
-	const highestUnlocked = levelProgress?.highest_unlocked_level ?? 1;
 	const highestCompleted = levelProgress?.highest_completed_level ?? 0;
 	const maxLevel = levelProgress?.max_level ?? 5;
 	const isAllComplete = highestCompleted >= maxLevel;
-	const isHighestUnlockedDone = completedSet.has(highestUnlocked);
-	const activeLevel = isHighestUnlockedDone ? 1 : highestUnlocked;
+	const activeLevel = sorted.find(
+		(l) => unlockedSet.has(l.level) && !completedSet.has(l.level),
+	)?.level ?? null;
 
 	const levelCards = sorted.map((level, index) => {
 		const isCompleted = completedSet.has(level.level);
@@ -189,8 +189,36 @@ export default function GuessWhoPage() {
 		clearQuestionCache();
 		// Invalidate stale session cache so "lanjutkan" won't appear for finished session
 		qc.invalidateQueries({ queryKey: ["guess-who", "session"] });
-		// Refresh level progress so completed_levels + unlocked_levels update immediately
-		qc.invalidateQueries({ queryKey: ["guess-who", "level-progress"] });
+		// Optimistic update: mark current level as completed, unlock next level
+		const currentAccessToken = useAuthStore.getState().accessToken;
+		const progressKey = ["guess-who", "level-progress", currentAccessToken] as const;
+		qc.setQueryData(
+			progressKey,
+			(prev: any) => {
+				if (!prev) return prev;
+				const currentCompleted = new Set(prev.completed_levels ?? []);
+				currentCompleted.add(level);
+				const currentUnlocked = new Set(prev.unlocked_levels ?? []);
+				const maxLevel = prev.max_level ?? 5;
+				// 基于当前完成的 level 计算下一关
+				const nextLevel = Math.min(level + 1, maxLevel);
+				if (!currentUnlocked.has(nextLevel)) {
+					currentUnlocked.add(nextLevel);
+				}
+				return {
+					...prev,
+					completed_levels: Array.from(currentCompleted),
+					unlocked_levels: Array.from(currentUnlocked),
+					highest_completed_level: Math.max(
+						prev.highest_completed_level ?? 0,
+						level,
+					),
+				};
+			},
+		);
+		// NOTE: we intentionally do NOT invalidate progressKey here.
+		// The optimistic update is already in cache; invalidating would refetch
+		// from server and overwrite it before the server has processed the finish.
 		qc.invalidateQueries({ queryKey: ["guess-who", "my-sessions"] });
 		setSession((s) =>
 			s ? { ...s, current_score: score, is_finished: true } : s,
@@ -268,7 +296,7 @@ export default function GuessWhoPage() {
 
 								{isAuthenticated && (
 									<>
-										{configLoading ? (
+										{(configLoading || levelProgressLoading) ? (
 											<div className="mt-2">
 												<h3 className="font-headline-md text-xl mb-4 uppercase tracking-wider">
 													Semua Level

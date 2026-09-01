@@ -135,7 +135,7 @@ export function VawLeaderboardPanel() {
 										}
 									>
 										<span
-											className="font-display-xl text-xl italic w-6"
+											className="text-xl md:text-5xl font-bold italic w-6"
 											style={{
 												color: isFirst ? "#00C2B1" : "#bbcac6",
 											}}
