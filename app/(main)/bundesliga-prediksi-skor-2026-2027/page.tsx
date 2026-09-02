@@ -214,6 +214,11 @@ function LoadingOverlay() {
 }
 
 // ============================================================
+// CONFIG — ubah nilai ini untuk geser matchday aktif default
+// ============================================================
+const DEFAULT_ACTIVE_MATCHDAY = 2;
+
+// ============================================================
 // MAIN PAGE
 // ============================================================
 export default function PrediksiSkorPage() {
@@ -221,7 +226,9 @@ export default function PrediksiSkorPage() {
 	const { isAuthenticated, user } = useAuthStore();
 	const isDark = theme === "dark";
 
-	const [activeMatchday, setActiveMatchday] = useState<number>(1);
+	const [activeMatchday, setActiveMatchday] = useState<number>(
+		DEFAULT_ACTIVE_MATCHDAY,
+	);
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
 	);
@@ -441,7 +448,11 @@ export default function PrediksiSkorPage() {
 							Prediksi Skor <br />
 							<span style={{ color: primary }}>Ngolah Bola 2026/2027</span>
 						</h1>
-						<EventEndedBanner isDark={isDark} variant="full" endedNotice={null} />
+						<EventEndedBanner
+							isDark={isDark}
+							variant="full"
+							endedNotice={null}
+						/>
 					</section>
 					<section>
 						<div className="text-center mb-6">
