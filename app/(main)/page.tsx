@@ -247,7 +247,7 @@ export default function HomePage() {
 		setFeaturedLoading(true);
 		try {
 			const response = await apiClient.get(
-				"/api/v1/article/musim-baru-persib-bidik-quat-trick",
+				"/api/v1/article/gaji-pemain-tertinggi-la-liga-premier-league-5-liga-top-eropa",
 			);
 			if (response.data.status === "success") {
 				setFeaturedArticle(response.data.data);
@@ -568,9 +568,9 @@ export default function HomePage() {
 												border: `1px solid ${heroPlayColors.cardBorder}`,
 												marginBottom: "10px",
 											}}
-											>
-												<div
-													className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg"
+										>
+											<div
+												className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg"
 												style={{
 													background: `linear-gradient(135deg, ${heroPlayColors.silver} 0%, #A0A0A0 100%)`,
 													color: isDark ? "#1a1a1a" : "#1a1a1a",
@@ -1067,12 +1067,17 @@ export default function HomePage() {
 				>
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
 						<div>
-							<h2 className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-								data-aos="fade-up">
+							<h2
+								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								data-aos="fade-up"
+							>
 								Fresh Off the Pitch
 							</h2>
-							<p className={`uppercase tracking-widest mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-								data-aos="fade-up" data-aos-delay="100">
+							<p
+								className={`uppercase tracking-widest mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+								data-aos="fade-up"
+								data-aos-delay="100"
+							>
 								The latest from the arena
 							</p>
 
@@ -1080,7 +1085,9 @@ export default function HomePage() {
 							<Link
 								href="/artikel"
 								className={`font-semibold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-sm mt-4 md:hidden ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-								data-aos="fade-up" data-aos-delay="200">
+								data-aos="fade-up"
+								data-aos-delay="200"
+							>
 								VIEW ALL{" "}
 								<ArrowRight
 									className={`size-5 mt-1 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
@@ -1280,8 +1287,10 @@ export default function HomePage() {
 					className={`py-16 md:py-24 px-6 md:px-16 transition-opacity duration-500 ${socmedVisible ? "opacity-100" : "opacity-0"}`}
 				>
 					<div className="max-w-480 mx-auto">
-						<h2 className={`text-3xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-							data-aos="fade-up">
+						<h2
+							className={`text-3xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+							data-aos="fade-up"
+						>
 							Yuk, Temui OlahBola di Sini!
 						</h2>
 
@@ -1311,7 +1320,7 @@ export default function HomePage() {
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di Instagram"
 									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-									>
+								>
 									<svg
 										className="size-8 md:size-14 "
 										viewBox="0 0 24 24"
@@ -1345,7 +1354,7 @@ export default function HomePage() {
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di YouTube"
 									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-									>
+								>
 									<svg
 										className="size-8 md:size-14 "
 										viewBox="0 0 24 24"
@@ -1392,13 +1401,8 @@ export default function HomePage() {
 				</section>
 
 				{/* YouTube Embed Section */}
-				<section
-				ref={youtubeRef}
-				className="py-16 md:py-24 px-6 md:px-16"
-			>
-					<div
-						className="max-w-480 mx-auto"
-						data-aos="fade-up">
+				<section ref={youtubeRef} className="py-16 md:py-24 px-6 md:px-16">
+					<div className="max-w-480 mx-auto" data-aos="fade-up">
 						{youtubeVisible && (
 							<div className="max-w-4xl mx-auto">
 								<iframe
@@ -1415,14 +1419,12 @@ export default function HomePage() {
 				</section>
 
 				{/* Interview Slider Section - Vertical Reels */}
-				<section
-				ref={interviewRef}
-				className="py-16 md:py-24 px-6 md:px-16"
-			>
+				<section ref={interviewRef} className="py-16 md:py-24 px-6 md:px-16">
 					<div className="max-w-480 mx-auto" data-aos="fade-up">
 						<div className="mb-12">
 							<h2
-								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+							>
 								Voices of the Game
 							</h2>
 							<div className="flex items-center gap-4 mt-4">
@@ -1449,42 +1451,40 @@ export default function HomePage() {
 							</div>
 						) : (
 							<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-								{interviews
-									.slice(0, interviewDisplayCount)
-									.map((interview) => (
-										<a
-											key={interview.id}
-											href={interview.post_url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="aspect-9/16 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
-										>
-											<Image
-												src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${interview.image}`}
-												alt={interview.title || "Interview thumbnail"}
-												fill
-												sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-												style={{ objectFit: "cover" }}
-												className="transition-transform duration-700 group-hover:scale-110 opacity-80"
-											/>
-											<div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
+								{interviews.slice(0, interviewDisplayCount).map((interview) => (
+									<a
+										key={interview.id}
+										href={interview.post_url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="aspect-9/16 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
+									>
+										<Image
+											src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${interview.image}`}
+											alt={interview.title || "Interview thumbnail"}
+											fill
+											sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+											style={{ objectFit: "cover" }}
+											className="transition-transform duration-700 group-hover:scale-110 opacity-80"
+										/>
+										<div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
 
-											<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-												<div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary/80 flex items-center justify-center text-on-primary shadow-xl">
-													<Play className="size-4 md:size-7" />
-												</div>
+										<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+											<div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-primary/80 flex items-center justify-center text-on-primary shadow-xl">
+												<Play className="size-4 md:size-7" />
 											</div>
+										</div>
 
-											<div className="absolute bottom-4 left-4 right-4">
-												<h4 className="font-semibold text-sm leading-tight uppercase">
-													{interview.title}
-												</h4>
-												<p className="text-xs text-primary mt-1 font-bold">
-													@OlahBola
-												</p>
-											</div>
-										</a>
-									))}
+										<div className="absolute bottom-4 left-4 right-4">
+											<h4 className="font-semibold text-sm leading-tight uppercase">
+												{interview.title}
+											</h4>
+											<p className="text-xs text-primary mt-1 font-bold">
+												@OlahBola
+											</p>
+										</div>
+									</a>
+								))}
 							</div>
 						)}
 
@@ -1686,8 +1686,10 @@ function SuperBigMatchSection({
 				}}
 			/>
 
-			<div className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto"
-			data-aos="fade-up">
+			<div
+				className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto"
+				data-aos="fade-up"
+			>
 				{/* Header */}
 				<div className="text-center mb-10">
 					<div
@@ -1695,7 +1697,7 @@ function SuperBigMatchSection({
 						style={{
 							color: isDark ? primary : "#ffffff",
 						}}
-						>
+					>
 						<span className="notranslate uppercase">Super Big Match</span>
 					</div>
 
@@ -1711,7 +1713,10 @@ function SuperBigMatchSection({
 								<span className="hidden md:inline">Persib Bandung</span>{" "}
 								<span className="inline md:hidden">Persib</span>
 							</div>
-							<p className="text-sm md:text-base" style={{ color: textSecondary }}>
+							<p
+								className="text-sm md:text-base"
+								style={{ color: textSecondary }}
+							>
 								{formatMatchDate(match.match_date, match.kickoff_time)}
 								{" | "}
 								{match.venue}, {match.city}
@@ -1781,7 +1786,7 @@ function SuperBigMatchSection({
 							className="rounded-3xl p-8 backdrop-blur-xl border transition-all duration-300"
 							style={{ background: cardBg, borderColor: cardBorder }}
 						>
-							<div className="flex items-center justify-between gap-8">
+							<div className="flex items-center justify-between gap-4">
 								{/* Home Team */}
 								<div className="flex flex-col items-center gap-3 flex-1">
 									{match.home_team.logo_url ? (
@@ -2030,7 +2035,7 @@ function SuperBigMatchSection({
 											className="text-center text-sm py-3 rounded-2xl"
 											style={{ background: `${primary}10`, color: textMuted }}
 										>
-											Segera Terbuka
+											Pertandingan Terkunci
 										</p>
 									);
 								})()}
