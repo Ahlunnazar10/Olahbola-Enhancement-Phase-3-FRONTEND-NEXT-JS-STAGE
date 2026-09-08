@@ -1682,7 +1682,7 @@ function SuperBigMatchSection({
 			<div
 				className="absolute inset-0 z-10 pointer-events-none"
 				style={{
-					background: `linear-gradient(180deg, ${isDark ? "rgba(15,20,18,0.92)" : "rgba(245,245,245,0.88)"} 0%, transparent 90%, transparent 90%, ${isDark ? "rgba(15,20,18,0.92)" : "rgba(245,245,245,0.88)"} 100%)`,
+					background: `linear-gradient(180deg, ${isDark ? "rgba(15,20,18,0.92)" : "rgba(245,245,245,0.78)"} 0%, ${isDark ? "transparent" : "rgba(245,245,245,0.45)"} 50%, ${isDark ? "transparent" : "rgba(245,245,245,0.45)"} 60%, ${isDark ? "rgba(15,20,18,0.92)" : "rgba(245,245,245,0.78)"} 100%)`,
 				}}
 			/>
 
@@ -1693,8 +1693,12 @@ function SuperBigMatchSection({
 				{/* Header */}
 				<div className="text-center mb-10">
 					<div
-						className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold mb-6 shadow-lg bg-primary/10 border border-primary/20"
+						className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold mb-6 shadow-lg border "
 						style={{
+							background: isDark
+								? "color-mix(in oklab, #43decc 10%, transparent)"
+								: `linear-gradient(135deg, ${primary} 0%, #15a896 100%)`,
+							border: isDark ? "1px solid #334A4A" : `1px solid ${primary}`,
 							color: isDark ? primary : "#ffffff",
 						}}
 					>
@@ -1702,39 +1706,35 @@ function SuperBigMatchSection({
 					</div>
 
 					{matchLoading ? (
-						<h2 className="text-3xl md:text-5xl font-black uppercase mb-3 text-white animate-pulse">
+						<h2
+							className={`text-3xl md:text-5xl font-black uppercase mb-3 animate-pulse ${isDark ? "text-white" : "text-[#0a7c6e]"}`}
+						>
 							PERSIJA VS PERSIB
 						</h2>
 					) : match ? (
 						<>
-							<div className="text-3xl md:text-5xl font-black uppercase mb-3 text-white">
+							<div
+								className={`text-3xl md:text-5xl font-black uppercase mb-3 ${isDark ? "text-white" : "text-[#0a7c6e]"}`}
+							>
 								<span className="hidden md:inline">Persija Jakarta</span>{" "}
 								<span className="inline md:hidden">Persija</span> VS{" "}
 								<span className="hidden md:inline">Persib Bandung</span>{" "}
 								<span className="inline md:hidden">Persib</span>
 							</div>
-							<p
-								className="text-sm md:text-base"
-								style={{ color: textSecondary }}
-							>
+							<p className="text-sm md:text-base">
 								{formatMatchDate(match.match_date, match.kickoff_time)}
-								{" | "}
+							</p>
+							<p className="text-sm md:text-base">
 								{match.venue}, {match.city}
 							</p>
 						</>
 					) : (
-						<h2 className="text-3xl md:text-5xl font-black uppercase mb-3 text-white">
+						<h2
+							className={`text-3xl md:text-5xl font-black uppercase mb-3 ${isDark ? "text-white" : "text-[#0a7c6e]"}`}
+						>
 							PERSIJA VS PERSIB
 						</h2>
 					)}
-
-					<p
-						className="text-xs font-semibold hidden md:block"
-						style={{ color: textMuted }}
-					>
-						*Prediksi skor tepat = 50 poin, tebak pemenang = 25 poin, salah = 0
-						poin
-					</p>
 				</div>
 
 				{/* Match Card */}
@@ -1783,8 +1783,14 @@ function SuperBigMatchSection({
 						</div>
 					) : match ? (
 						<div
-							className="rounded-3xl p-8 backdrop-blur-xl border transition-all duration-300"
-							style={{ background: cardBg, borderColor: cardBorder }}
+							className="rounded-3xl p-8 border backdrop-blur-xl transition-all duration-300"
+							style={{
+								background: isDark ? cardBg : "rgba(255, 255, 255, 0.95)",
+								borderColor: isDark ? cardBorder : `${primary}20`,
+								boxShadow: isDark
+									? "none"
+									: `0 4px 24px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)`,
+							}}
 						>
 							<div className="flex items-center justify-between gap-4">
 								{/* Home Team */}
