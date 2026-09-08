@@ -97,6 +97,17 @@ export const endpoints = {
 	teaterBolaAseanMyRank: "/api/v1/teater-bola/me/rank",
 	teaterBolaAseanMySummary: "/api/v1/teater-bola/me/summary",
 
+	// Super Big Match
+	superBigMatchTeams: "/api/v1/super-big-match/teams",
+	superBigMatchMatches: "/api/v1/super-big-match/matches",
+	superBigMatchMatchDetail: (id: string) => `/api/v1/super-big-match/matches/${id}`,
+	superBigMatchLeaderboard: "/api/v1/super-big-match/leaderboard",
+	superBigMatchPredict: "/api/v1/super-big-match/predict",
+	superBigMatchPredictions: "/api/v1/super-big-match/predictions",
+	superBigMatchMatchesWithPrediction: "/api/v1/super-big-match/matches-with-prediction",
+	superBigMatchMyRank: "/api/v1/super-big-match/me/rank",
+	superBigMatchMySummary: "/api/v1/super-big-match/me/summary",
+
 	// Quiz - Event
 	eventActive: "/api/v1/events/active",
 	eventLevels: (eventId: string) => "/api/v1/events/" + eventId,

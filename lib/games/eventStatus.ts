@@ -11,7 +11,7 @@ const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "admin.olahbola@g
  *   - Update `endedLabel` bila perlu (mis. "Season 2").
  */
 
-export type GameEventKey = "prediksiSkor" | "quiz" | "teaterBolaAsean" | "bundesliga2026" | "ngolahBola2026";
+export type GameEventKey = "prediksiSkor" | "quiz" | "teaterBolaAsean" | "bundesliga2026" | "ngolahBola2026" | "fifaAseanCup" | "superBigMatch";
 
 export interface EventEndedNotice {
 	title: string;
@@ -78,6 +78,26 @@ export const EVENT_STATUS: Record<GameEventKey, GameEventStatus> = {
 		},
 	},
 	ngolahBola2026: {
+		isEnded: false,
+		endedLabel: "Event Berakhir",
+		endedNotice: {
+			title: "",
+			message: "",
+			contactEmail: "",
+			emailSubject: "",
+		},
+	},
+	fifaAseanCup: {
+		isEnded: false,
+		endedLabel: "Event Berakhir",
+		endedNotice: {
+			title: "",
+			message: "",
+			contactEmail: "",
+			emailSubject: "",
+		},
+	},
+	superBigMatch: {
 		isEnded: false,
 		endedLabel: "Event Berakhir",
 		endedNotice: {

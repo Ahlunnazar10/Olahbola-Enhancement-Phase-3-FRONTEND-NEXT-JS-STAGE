@@ -4,15 +4,18 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import AOS from "aos";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "@/lib/api/client";
 import { useUIStore } from "@/stores/uiStore";
+import { useAuthStore } from "@/stores/authStore";
 import type { Article, Interview } from "@/types";
 import { useLeaderboard as useBLLeaderboard } from "@/hooks/queries/useBundesliga";
 import {
 	useLeaderboard as useSBMLeaderboard,
 	useMatches,
 	useSubmitPrediction,
+	useMyPredictions,
 	formatMatchDate,
 	type Match,
 } from "@/hooks/queries/useSuperBigMatch";
@@ -292,9 +295,9 @@ export default function HomePage() {
 
 	useEffect(() => {
 		AOS.init({
-			duration: 900,
-			once: false,
-			easing: "ease-out-cubic",
+			duration: 800,
+			once: true,
+			easing: "ease-out-quart",
 			offset: 80,
 		});
 		// eslint-disable-next-line react-hooks/set-state-in-effect
@@ -444,7 +447,10 @@ export default function HomePage() {
 					</div>
 
 					{/* Main Content */}
-					<div className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
+					<div
+						className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto"
+						data-aos="fade-up"
+					>
 						{/* Header */}
 						<div className="text-center mb-10">
 							{/* Badge */}
@@ -454,7 +460,6 @@ export default function HomePage() {
 									background: heroPlayColors.gradientBadge,
 									color: isDark ? "#003732" : "#ffffff",
 								}}
-								data-aos="fade-down"
 							>
 								<span className="notranslate">LIVE LEADERBOARD</span>
 							</div>
@@ -465,15 +470,12 @@ export default function HomePage() {
 								style={{
 									color: heroPlayColors.accent,
 								}}
-								data-aos="fade-up"
 							>
 								BUNDESLIGA 2026/2027
 							</h2>
 							<p
 								className="text-base md:text-lg"
 								style={{ color: heroPlayColors.textSecondary }}
-								data-aos="fade-up"
-								data-aos-delay="100"
 							>
 								Klasemen Sementara Berdasarkan Performa Prediksi Skor Bundesliga
 								Season 2026/2027
@@ -566,11 +568,9 @@ export default function HomePage() {
 												border: `1px solid ${heroPlayColors.cardBorder}`,
 												marginBottom: "10px",
 											}}
-											data-aos="fade-up"
-											data-aos-delay={100}
-										>
-											<div
-												className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg"
+											>
+												<div
+													className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg"
 												style={{
 													background: `linear-gradient(135deg, ${heroPlayColors.silver} 0%, #A0A0A0 100%)`,
 													color: isDark ? "#1a1a1a" : "#1a1a1a",
@@ -643,8 +643,6 @@ export default function HomePage() {
 												boxShadow: `0 0 40px ${heroPlayColors.gold}30`,
 												marginBottom: "20px",
 											}}
-											data-aos="zoom-in"
-											data-aos-delay={0}
 										>
 											<div
 												className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-xl"
@@ -729,8 +727,6 @@ export default function HomePage() {
 									{leaderboardRows[2] && (
 										<div
 											className="relative p-5 rounded-3xl text-center order-3 transition-all duration-300 hover:scale-[1.02]"
-											data-aos="fade-up"
-											data-aos-delay={200}
 											style={{
 												background: `linear-gradient(135deg, ${heroPlayColors.cardBg} 0%, ${heroPlayColors.bronze}15 100%)`,
 												backdropFilter: "blur(20px)",
@@ -1013,11 +1009,7 @@ export default function HomePage() {
 								)}
 
 								{/* CTA Button */}
-								<div
-									className="text-center mt-10"
-									data-aos="fade-up"
-									data-aos-delay="200"
-								>
+								<div className="text-center mt-10">
 									<Link
 										href="/games#leaderboard"
 										className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
@@ -1075,17 +1067,12 @@ export default function HomePage() {
 				>
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
 						<div>
-							<h2
-								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-								data-aos="fade-up"
-							>
+							<h2 className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								data-aos="fade-up">
 								Fresh Off the Pitch
 							</h2>
-							<p
-								className={`uppercase tracking-widest mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-								data-aos="fade-up"
-								data-aos-delay="100"
-							>
+							<p className={`uppercase tracking-widest mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+								data-aos="fade-up" data-aos-delay="100">
 								The latest from the arena
 							</p>
 
@@ -1093,9 +1080,7 @@ export default function HomePage() {
 							<Link
 								href="/artikel"
 								className={`font-semibold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-sm mt-4 md:hidden ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-								data-aos="fade-up"
-								data-aos-delay="200"
-							>
+								data-aos="fade-up" data-aos-delay="200">
 								VIEW ALL{" "}
 								<ArrowRight
 									className={`size-5 mt-1 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
@@ -1107,8 +1092,6 @@ export default function HomePage() {
 						<Link
 							href="/artikel"
 							className={`font-semibold items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-sm hidden md:flex ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-							data-aos="fade-up"
-							data-aos-delay="200"
 						>
 							VIEW ALL{" "}
 							<ArrowRight
@@ -1133,7 +1116,6 @@ export default function HomePage() {
 							<Link
 								href={`/${articles[0]?.slug}`}
 								className="md:col-span-2 md:row-span-2 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
-								data-aos="zoom-in"
 							>
 								<div className="absolute inset-0">
 									<Image
@@ -1176,8 +1158,6 @@ export default function HomePage() {
 								<Link
 									href={`/${articles[1]?.slug}`}
 									className="md:col-span-2 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
-									data-aos="fade-up"
-									data-aos-delay="100"
 								>
 									<div className="flex h-full">
 										<div className="w-1/2 p-6 flex flex-col justify-center">
@@ -1210,8 +1190,6 @@ export default function HomePage() {
 								<Link
 									href={`/${articles[2]?.slug}`}
 									className="glass-panel relative group h-60 md:h-full overflow-hidden rounded-xl cursor-pointer hover:border-primary/50 transition-all"
-									data-aos="fade-up"
-									data-aos-delay="200"
 								>
 									<div className="absolute inset-0">
 										<Image
@@ -1243,8 +1221,6 @@ export default function HomePage() {
 								<Link
 									href={`/${articles[3]?.slug}`}
 									className="glass-panel relative group  h-60 md:h-full overflow-hidden rounded-xl cursor-pointer hover:border-primary/50 transition-all"
-									data-aos="fade-up"
-									data-aos-delay="300"
 								>
 									<div className="absolute inset-0">
 										<Image
@@ -1304,10 +1280,8 @@ export default function HomePage() {
 					className={`py-16 md:py-24 px-6 md:px-16 transition-opacity duration-500 ${socmedVisible ? "opacity-100" : "opacity-0"}`}
 				>
 					<div className="max-w-480 mx-auto">
-						<h2
-							className={`text-3xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-							data-aos="fade-up"
-						>
+						<h2 className={`text-3xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+							data-aos="fade-up">
 							Yuk, Temui OlahBola di Sini!
 						</h2>
 
@@ -1320,8 +1294,6 @@ export default function HomePage() {
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di TikTok"
 									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-									data-aos="zoom-in"
-									data-aos-delay={0}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1339,9 +1311,7 @@ export default function HomePage() {
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di Instagram"
 									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-									data-aos="zoom-in"
-									data-aos-delay={100}
-								>
+									>
 									<svg
 										className="size-8 md:size-14 "
 										viewBox="0 0 24 24"
@@ -1358,8 +1328,6 @@ export default function HomePage() {
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di Facebook"
 									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-									data-aos="zoom-in"
-									data-aos-delay={200}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1377,9 +1345,7 @@ export default function HomePage() {
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di YouTube"
 									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-									data-aos="zoom-in"
-									data-aos-delay={300}
-								>
+									>
 									<svg
 										className="size-8 md:size-14 "
 										viewBox="0 0 24 24"
@@ -1395,8 +1361,6 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-									data-aos="zoom-in"
-									data-aos-delay={400}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1413,8 +1377,6 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-									data-aos="zoom-in"
-									data-aos-delay={500}
 								>
 									<svg
 										className="size-8 md:size-14 "
@@ -1430,12 +1392,13 @@ export default function HomePage() {
 				</section>
 
 				{/* YouTube Embed Section */}
-				<section ref={youtubeRef} className="py-16 md:py-24 px-6 md:px-16">
+				<section
+				ref={youtubeRef}
+				className="py-16 md:py-24 px-6 md:px-16"
+			>
 					<div
 						className="max-w-480 mx-auto"
-						data-aos="fade-up"
-						data-aos-duration="1000"
-					>
+						data-aos="fade-up">
 						{youtubeVisible && (
 							<div className="max-w-4xl mx-auto">
 								<iframe
@@ -1452,23 +1415,21 @@ export default function HomePage() {
 				</section>
 
 				{/* Interview Slider Section - Vertical Reels */}
-				<section ref={interviewRef} className="py-16 md:py-24 px-6 md:px-16">
-					<div className="max-w-480 mx-auto">
+				<section
+				ref={interviewRef}
+				className="py-16 md:py-24 px-6 md:px-16"
+			>
+					<div className="max-w-480 mx-auto" data-aos="fade-up">
 						<div className="mb-12">
 							<h2
-								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-							>
+								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
 								Voices of the Game
 							</h2>
 							<div className="flex items-center gap-4 mt-4">
 								<span
 									className={`h-px grow ${isDark ? " bg-white/10" : "bg-on-surface-variant"}`}
 								/>
-								<p
-									className="text-on-surface-variant uppercase tracking-widest text-sm"
-									data-aos="fade-up"
-									data-aos-delay="100"
-								>
+								<p className="text-on-surface-variant uppercase tracking-widest text-sm">
 									Inside the mind of the Legends
 								</p>
 								<span
@@ -1490,15 +1451,13 @@ export default function HomePage() {
 							<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
 								{interviews
 									.slice(0, interviewDisplayCount)
-									.map((interview, idx) => (
+									.map((interview) => (
 										<a
 											key={interview.id}
 											href={interview.post_url}
 											target="_blank"
 											rel="noopener noreferrer"
 											className="aspect-9/16 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
-											data-aos="fade-up"
-											data-aos-delay={idx * 100}
 										>
 											<Image
 												src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${interview.image}`}
@@ -1546,7 +1505,7 @@ export default function HomePage() {
 					ref={partnerRef}
 					className={`py-20 border-y ${isDark ? "border-white/5 bg-[#141a17]" : "border-black/10 bg-[#e8e8e8]"}`}
 				>
-					<div className="max-w-480 mx-auto px-6 md:px-16">
+					<div className="max-w-480 mx-auto px-6 md:px-16" data-aos="fade-up">
 						<div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end">
 							<p className="text-zinc-400 font-semibold text-xs uppercase tracking-[0.3em]">
 								The Brands Who Kick with Us
@@ -1600,10 +1559,14 @@ function SuperBigMatchSection({
 	isDark: boolean;
 	heroPlayColors: Record<string, string>;
 }) {
+	const router = useRouter();
+	const { isAuthenticated } = useAuthStore();
 	const { data: sbmLeaderboardData, isLoading: sbmLeaderboardLoading } =
 		useSBMLeaderboard();
 
 	const { data: matchesData, isLoading: matchesLoading } = useMatches({});
+	const { data: myPredictionsData, isLoading: myPredictionsLoading } =
+		useMyPredictions();
 
 	const submitPrediction = useSubmitPrediction();
 
@@ -1625,10 +1588,6 @@ function SuperBigMatchSection({
 	const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 	const [homeScore, setHomeScore] = useState("");
 	const [awayScore, setAwayScore] = useState("");
-	const [submittedPrediction, setSubmittedPrediction] = useState<{
-		home: number;
-		away: number;
-	} | null>(null);
 
 	type SBMEntry = {
 		rank: number;
@@ -1661,9 +1620,12 @@ function SuperBigMatchSection({
 
 	const handleSubmit = () => {
 		if (!selectedMatch || homeScore === "" || awayScore === "") return;
+		if (!isAuthenticated) {
+			router.push("/login");
+			return;
+		}
 		const home = parseInt(homeScore);
 		const away = parseInt(awayScore);
-		console.log("[handleSubmit] Submitting prediction:", { matchId: selectedMatch.id, home, away });
 		submitPrediction.mutate(
 			{
 				match_id: selectedMatch.id,
@@ -1671,9 +1633,7 @@ function SuperBigMatchSection({
 				away_score_predicted: away,
 			},
 			{
-				onSuccess: (data) => {
-					console.log("[handleSubmit] Prediction submitted successfully:", data);
-					setSubmittedPrediction({ home, away });
+				onSuccess: () => {
 					setSelectedMatch(null);
 					setHomeScore("");
 					setAwayScore("");
@@ -1689,6 +1649,16 @@ function SuperBigMatchSection({
 	const match = ((matchesData as any)?.data ?? matchesData)?.[0] ?? null;
 	const matchLoading = matchesLoading;
 	const shortTeamName = (name: string) => name.split(" ")[0];
+
+	const getUserPrediction = (matchId: string) => {
+		if (!myPredictionsData?.data) return null;
+		return myPredictionsData.data.find((p: any) => p.match_id === matchId);
+	};
+
+	const getFormattedScore = (m: Match) =>
+		m.status === "completed" && m.home_score !== null && m.away_score !== null
+			? `${m.home_score} - ${m.away_score}`
+			: null;
 
 	return (
 		<section
@@ -1716,7 +1686,8 @@ function SuperBigMatchSection({
 				}}
 			/>
 
-			<div className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
+			<div className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto"
+			data-aos="fade-up">
 				{/* Header */}
 				<div className="text-center mb-10">
 					<div
@@ -1724,8 +1695,7 @@ function SuperBigMatchSection({
 						style={{
 							color: isDark ? primary : "#ffffff",
 						}}
-						data-aos="fade-down"
-					>
+						>
 						<span className="notranslate uppercase">Super Big Match</span>
 					</div>
 
@@ -1735,31 +1705,20 @@ function SuperBigMatchSection({
 						</h2>
 					) : match ? (
 						<>
-							<div
-								className="text-3xl md:text-5xl font-black uppercase mb-3 text-white"
-								data-aos="fade-up"
-							>
+							<div className="text-3xl md:text-5xl font-black uppercase mb-3 text-white">
 								<span className="hidden md:inline">Persija Jakarta</span>{" "}
 								<span className="inline md:hidden">Persija</span> VS{" "}
 								<span className="hidden md:inline">Persib Bandung</span>{" "}
 								<span className="inline md:hidden">Persib</span>
 							</div>
-							<p
-								className="text-sm md:text-base"
-								style={{ color: textSecondary }}
-								data-aos="fade-up"
-								data-aos-delay="100"
-							>
+							<p className="text-sm md:text-base" style={{ color: textSecondary }}>
 								{formatMatchDate(match.match_date, match.kickoff_time)}
 								{" | "}
 								{match.venue}, {match.city}
 							</p>
 						</>
 					) : (
-						<h2
-							className="text-3xl md:text-5xl font-black uppercase mb-3 text-white"
-							data-aos="fade-up"
-						>
+						<h2 className="text-3xl md:text-5xl font-black uppercase mb-3 text-white">
 							PERSIJA VS PERSIB
 						</h2>
 					)}
@@ -1767,8 +1726,6 @@ function SuperBigMatchSection({
 					<p
 						className="text-xs font-semibold hidden md:block"
 						style={{ color: textMuted }}
-						data-aos="fade-up"
-						data-aos-delay="200"
 					>
 						*Prediksi skor tepat = 50 poin, tebak pemenang = 25 poin, salah = 0
 						poin
@@ -1865,16 +1822,40 @@ function SuperBigMatchSection({
 									>
 										VS
 									</span>
-									<span
-										className="text-3xl md:text-4xl font-black"
-										style={{ color: text }}
-									>
-										{match.status === "completed" && match.formatted_score
-											? match.formatted_score
-											: submittedPrediction
-												? `${submittedPrediction.home} - ${submittedPrediction.away}`
-												: "? - ?"}
-									</span>
+									{myPredictionsLoading && isAuthenticated ? (
+										<div
+											className="h-10 rounded w-20 animate-pulse"
+											style={{ background: `${primary}15` }}
+										/>
+									) : match.status === "completed" &&
+									  getFormattedScore(match) ? (
+										<div className="flex flex-col items-center gap-1">
+											<span
+												className="text-xs font-bold uppercase"
+												style={{ color: primary }}
+											>
+												Full-Time
+											</span>
+											<span
+												className="text-3xl md:text-4xl font-black"
+												style={{ color: text }}
+											>
+												{getFormattedScore(match)}
+											</span>
+										</div>
+									) : (
+										<span
+											className="text-3xl md:text-4xl font-black"
+											style={{ color: text }}
+										>
+											{(() => {
+												const pred = getUserPrediction(match.id);
+												return pred
+													? `${pred.home_score_predicted} - ${pred.away_score_predicted}`
+													: "? - ?";
+											})()}
+										</span>
+									)}
 								</div>
 
 								{/* Away Team */}
@@ -1910,45 +1891,149 @@ function SuperBigMatchSection({
 								</div>
 							</div>
 
-							{/* Action Button */}
-							<div className="mt-8">
-								{submittedPrediction ? (
-									<p
-										className="text-center text-sm py-3 rounded-2xl"
-										style={{ background: `${primary}10`, color: primary }}
-									>
-										✓ Anda telah mengirimkan prediksi:{" "}
-										{submittedPrediction.home} - {submittedPrediction.away}
-									</p>
-								) : match.is_prediction_open && !match.is_locked ? (
-									<button
-										onClick={() => handleOpenModal(match)}
-										className="w-full py-3 rounded-2xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98]"
-										style={{
-											background: primary,
-											color: isDark ? "#003732" : "#ffffff",
-											boxShadow: `0 2px 15px ${primary}40`,
-										}}
-									>
-										{match.status === "completed"
-											? "Lihat Hasil"
-											: "Prediksi Skor Sekarang"}
-									</button>
-								) : match.is_locked ? (
-									<p
-										className="text-center text-sm py-3 rounded-2xl"
-										style={{ background: `${primary}10`, color: textMuted }}
-									>
-										Prediksi Telah Ditutup
-									</p>
-								) : (
-									<p
-										className="text-center text-sm py-3 rounded-2xl"
-										style={{ background: `${primary}10`, color: textMuted }}
-									>
-										Segera Terbuka
-									</p>
-								)}
+							{/* Action Button / Result */}
+							<div className="mt-4">
+								{(() => {
+									const pred = getUserPrediction(match.id);
+
+									// Match completed - show result
+									if (
+										match.status === "completed" &&
+										getFormattedScore(match)
+									) {
+										const isExact = pred?.score_exact;
+										const isCorrect = pred?.result_correct;
+										const points = pred?.points_earned;
+
+										let resultBadge = null;
+										if (isExact) {
+											resultBadge = (
+												<span
+													className="text-xs font-bold px-2 py-1 rounded-full"
+													style={{
+														background: "rgba(34,197,94,0.2)",
+														color: "#22c55e",
+													}}
+												>
+													Prediksi Tepat!
+												</span>
+											);
+										} else if (isCorrect) {
+											resultBadge = (
+												<span
+													className="text-xs font-bold px-2 py-1 rounded-full"
+													style={{
+														background: "rgba(234,179,8,0.2)",
+														color: "#eab308",
+													}}
+												>
+													Prediksi Pemenang Benar
+												</span>
+											);
+										} else if (pred) {
+											resultBadge = (
+												<span
+													className="text-xs font-bold px-2 py-1 rounded-full"
+													style={{
+														background: "rgba(239,68,68,0.2)",
+														color: "#ef4444",
+													}}
+												>
+													Prediksi Salah
+												</span>
+											);
+										}
+
+										return (
+											<div className="flex flex-col items-center gap-2">
+												{resultBadge}
+												<p className="text-center font-semibold italic text-sm ">
+													Prediksi kamu{" "}
+													{pred
+														? `${pred.home_score_predicted} - ${pred.away_score_predicted}`
+														: "? - ?"}
+												</p>
+												<p
+													className="text-center text-xs"
+													style={{ color: textMuted }}
+												>
+													Pemenang prediksi akan diumumkan di media sosial
+													@olahbolacom
+												</p>
+											</div>
+										);
+									}
+
+									// Match in progress or scheduled
+									if (pred) {
+										const resultMap: Record<string, string> = {
+											home_win: `${match.home_team.name} menang`,
+											away_win: `${match.away_team.name} menang`,
+											draw: "seri",
+										};
+										const resultText =
+											resultMap[pred.predicted_result_label] ?? "prediksi skor";
+										return (
+											<p
+												className="text-center text-sm py-3 rounded-2xl"
+												style={{ background: `${primary}10`, color: primary }}
+											>
+												Anda memprediksikan {resultText} dengan skor{" "}
+												{pred.home_score_predicted} -{" "}
+												{pred.away_score_predicted}
+											</p>
+										);
+									}
+
+									if (match.is_prediction_open && !match.is_locked) {
+										if (!isAuthenticated) {
+											return (
+												<button
+													onClick={() => router.push("/login")}
+													className="w-full py-3 rounded-2xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98]"
+													style={{
+														background: primary,
+														color: isDark ? "#003732" : "#ffffff",
+														boxShadow: `0 2px 15px ${primary}40`,
+													}}
+												>
+													Prediksi Skor Sekarang
+												</button>
+											);
+										}
+										return (
+											<button
+												onClick={() => handleOpenModal(match)}
+												className="w-full py-3 rounded-2xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98]"
+												style={{
+													background: primary,
+													color: isDark ? "#003732" : "#ffffff",
+													boxShadow: `0 2px 15px ${primary}40`,
+												}}
+											>
+												Prediksi Skor Sekarang
+											</button>
+										);
+									}
+									if (match.is_locked) {
+										return (
+											<p
+												className="text-center text-sm py-3 rounded-2xl"
+												style={{ background: `${primary}10`, color: textMuted }}
+											>
+												Prediksi Telah Ditutup
+											</p>
+										);
+									}
+									return (
+										<p
+											className="text-center text-sm py-3 rounded-2xl"
+											style={{ background: `${primary}10`, color: textMuted }}
+										>
+											Segera Terbuka
+										</p>
+									);
+								})()}
 							</div>
 						</div>
 					) : (
@@ -1965,108 +2050,6 @@ function SuperBigMatchSection({
 						</div>
 					)}
 				</div>
-
-				{/* Leaderboard */}
-				{sbmLeaderboardLoading ? (
-					<div className="max-w-2xl mx-auto space-y-3">
-						{[1, 2, 3, 4, 5].map((i) => (
-							<div
-								key={i}
-								className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border animate-pulse"
-								style={{ background: cardBg, borderColor: cardBorder }}
-							>
-								<div className="flex items-center gap-4">
-									<div
-										className="w-10 h-10 rounded-xl"
-										style={{ background: `${primary}15` }}
-									/>
-									<div>
-										<div
-											className="h-4 rounded w-32 mb-1"
-											style={{ background: `${primary}15` }}
-										/>
-										<div
-											className="h-3 rounded w-20"
-											style={{ background: `${primary}10` }}
-										/>
-									</div>
-								</div>
-								<div
-									className="h-6 rounded w-12"
-									style={{ background: `${primary}15` }}
-								/>
-							</div>
-						))}
-					</div>
-				) : leaderboardRows.length > 0 ? (
-					<div className="max-w-2xl mx-auto">
-						<h3
-							className="text-xl font-black uppercase mb-4 text-center"
-							style={{ color: text }}
-						>
-							Klasemen Super Big Match
-						</h3>
-						<div className="space-y-3">
-							{leaderboardRows.slice(0, 10).map((player, index) => {
-								const medals = ["🥇", "🥈", "🥉"];
-								const isTop3 = index < 3;
-								return (
-									<div
-										key={player.userId}
-										className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
-										style={{
-											background: cardBg,
-											borderColor: cardBorder,
-										}}
-									>
-										<div className="flex items-center gap-4">
-											<div
-												className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0"
-												style={{
-													background: isTop3
-														? index === 0
-															? "#ffd700"
-															: index === 1
-																? "#c0c0c0"
-																: "#cd7f32"
-														: `${primary}15`,
-													color: isTop3 ? "#000" : primary,
-												}}
-											>
-												{medals[index] || player.rank}
-											</div>
-											<div className="flex-1 min-w-0">
-												<p
-													className="font-bold text-sm truncate"
-													style={{ color: text }}
-												>
-													{player.name}
-												</p>
-												<p className="text-xs" style={{ color: textMuted }}>
-													{player.score} poin
-												</p>
-											</div>
-										</div>
-										<div className="text-right shrink-0">
-											<p
-												className="text-xl font-black"
-												style={{ color: primary }}
-											>
-												{player.score}
-											</p>
-											<p
-												className="text-[10px] uppercase tracking-wider"
-												style={{ color: textMuted }}
-											>
-												poin
-											</p>
-										</div>
-									</div>
-								);
-							})}
-						</div>
-					</div>
-				) : null}
 			</div>
 
 			{/* Prediction Modal */}
