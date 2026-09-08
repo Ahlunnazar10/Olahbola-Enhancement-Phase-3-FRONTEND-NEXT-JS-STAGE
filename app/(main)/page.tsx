@@ -9,7 +9,14 @@ import { apiClient } from "@/lib/api/client";
 import { useUIStore } from "@/stores/uiStore";
 import type { Article, Interview } from "@/types";
 import { useLeaderboard as useBLLeaderboard } from "@/hooks/queries/useBundesliga";
-import { ArrowRight, Play, Circle } from "lucide-react";
+import {
+	useLeaderboard as useSBMLeaderboard,
+	useMatches,
+	useSubmitPrediction,
+	formatMatchDate,
+	type Match,
+} from "@/hooks/queries/useSuperBigMatch";
+import { ArrowRight, Play, Circle, X } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
 import { BannerSlider } from "@/components/banner-slider/BannerSlider";
 
@@ -356,6 +363,9 @@ export default function HomePage() {
 						isMobile={isMobileView}
 					/>
 				</section>
+
+				{/* ===== SUPER BIG MATCH SECTION ===== */}
+				<SuperBigMatchSection isDark={isDark} heroPlayColors={heroPlayColors} />
 
 				{/*  LIVE LEADERBOARD  */}
 				<section
@@ -1577,5 +1587,635 @@ export default function HomePage() {
 				</section>
 			</main>
 		</div>
+	);
+}
+
+// ============================================================
+// SUPER BIG MATCH SECTION
+// ============================================================
+function SuperBigMatchSection({
+	isDark,
+	heroPlayColors,
+}: {
+	isDark: boolean;
+	heroPlayColors: Record<string, string>;
+}) {
+	const { data: sbmLeaderboardData, isLoading: sbmLeaderboardLoading } =
+		useSBMLeaderboard();
+
+	const { data: matchesData, isLoading: matchesLoading } = useMatches({});
+
+	const submitPrediction = useSubmitPrediction();
+
+	const primary = heroPlayColors.accent;
+	const text = heroPlayColors.text;
+	const textSecondary = heroPlayColors.textSecondary;
+	const textMuted = heroPlayColors.textMuted;
+	const cardBg = heroPlayColors.cardBg;
+	const cardBorder = heroPlayColors.cardBorder;
+	const surface = isDark ? "#131313" : "#ffffff";
+
+	const [bgLoaded, setBgLoaded] = useState(false);
+	useEffect(() => {
+		const img = new window.Image();
+		img.src = "/images/home/super-big-match-bg.png";
+		img.onload = () => setBgLoaded(true);
+	}, []);
+
+	const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+	const [homeScore, setHomeScore] = useState("");
+	const [awayScore, setAwayScore] = useState("");
+	const [submittedPrediction, setSubmittedPrediction] = useState<{
+		home: number;
+		away: number;
+	} | null>(null);
+
+	type SBMEntry = {
+		rank: number;
+		user_id: string;
+		user_name: string;
+		profile_picture?: string | null;
+		total_points: number;
+	};
+	const leaderboardRows = useMemo(() => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const raw = (sbmLeaderboardData as any)?.data ?? sbmLeaderboardData;
+		if (!Array.isArray(raw)) return [];
+		return [...raw]
+			.sort((a: SBMEntry, b: SBMEntry) => a.rank - b.rank)
+			.slice(0, 10)
+			.map((p: SBMEntry) => ({
+				rank: p.rank,
+				userId: String(p.user_id),
+				name: p.user_name,
+				profilePicture: p.profile_picture,
+				score: p.total_points,
+			}));
+	}, [sbmLeaderboardData]);
+
+	const handleOpenModal = (match: Match) => {
+		setSelectedMatch(match);
+		setHomeScore("");
+		setAwayScore("");
+	};
+
+	const handleSubmit = () => {
+		if (!selectedMatch || homeScore === "" || awayScore === "") return;
+		const home = parseInt(homeScore);
+		const away = parseInt(awayScore);
+		console.log("[handleSubmit] Submitting prediction:", { matchId: selectedMatch.id, home, away });
+		submitPrediction.mutate(
+			{
+				match_id: selectedMatch.id,
+				home_score_predicted: home,
+				away_score_predicted: away,
+			},
+			{
+				onSuccess: (data) => {
+					console.log("[handleSubmit] Prediction submitted successfully:", data);
+					setSubmittedPrediction({ home, away });
+					setSelectedMatch(null);
+					setHomeScore("");
+					setAwayScore("");
+				},
+				onError: (error) => {
+					console.error("[handleSubmit] Prediction submission failed:", error);
+				},
+			},
+		);
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const match = ((matchesData as any)?.data ?? matchesData)?.[0] ?? null;
+	const matchLoading = matchesLoading;
+	const shortTeamName = (name: string) => name.split(" ")[0];
+
+	return (
+		<section
+			className="relative w-full overflow-hidden"
+			style={{
+				background: bgLoaded ? "transparent" : isDark ? "#0f1412" : "#f5f5f5",
+			}}
+		>
+			{/* Parallax Background Image */}
+			{bgLoaded && (
+				<div
+					className="absolute inset-0 bg-cover bg-center bg-fixed"
+					style={{
+						backgroundImage: "url(/images/home/super-big-match-bg.png)",
+						zIndex: 0,
+					}}
+				/>
+			)}
+
+			{/* Dark Gradient Overlay */}
+			<div
+				className="absolute inset-0 z-10 pointer-events-none"
+				style={{
+					background: `linear-gradient(180deg, ${isDark ? "rgba(15,20,18,0.92)" : "rgba(245,245,245,0.88)"} 0%, transparent 90%, transparent 90%, ${isDark ? "rgba(15,20,18,0.92)" : "rgba(245,245,245,0.88)"} 100%)`,
+				}}
+			/>
+
+			<div className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
+				{/* Header */}
+				<div className="text-center mb-10">
+					<div
+						className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold mb-6 shadow-lg bg-primary/10 border border-primary/20"
+						style={{
+							color: isDark ? primary : "#ffffff",
+						}}
+						data-aos="fade-down"
+					>
+						<span className="notranslate uppercase">Super Big Match</span>
+					</div>
+
+					{matchLoading ? (
+						<h2 className="text-3xl md:text-5xl font-black uppercase mb-3 text-white animate-pulse">
+							PERSIJA VS PERSIB
+						</h2>
+					) : match ? (
+						<>
+							<div
+								className="text-3xl md:text-5xl font-black uppercase mb-3 text-white"
+								data-aos="fade-up"
+							>
+								<span className="hidden md:inline">Persija Jakarta</span>{" "}
+								<span className="inline md:hidden">Persija</span> VS{" "}
+								<span className="hidden md:inline">Persib Bandung</span>{" "}
+								<span className="inline md:hidden">Persib</span>
+							</div>
+							<p
+								className="text-sm md:text-base"
+								style={{ color: textSecondary }}
+								data-aos="fade-up"
+								data-aos-delay="100"
+							>
+								{formatMatchDate(match.match_date, match.kickoff_time)}
+								{" | "}
+								{match.venue}, {match.city}
+							</p>
+						</>
+					) : (
+						<h2
+							className="text-3xl md:text-5xl font-black uppercase mb-3 text-white"
+							data-aos="fade-up"
+						>
+							PERSIJA VS PERSIB
+						</h2>
+					)}
+
+					<p
+						className="text-xs font-semibold hidden md:block"
+						style={{ color: textMuted }}
+						data-aos="fade-up"
+						data-aos-delay="200"
+					>
+						*Prediksi skor tepat = 50 poin, tebak pemenang = 25 poin, salah = 0
+						poin
+					</p>
+				</div>
+
+				{/* Match Card */}
+				<div className="max-w-2xl mx-auto mb-10">
+					{matchLoading ? (
+						<div
+							className="rounded-3xl p-8 backdrop-blur-xl border animate-pulse"
+							style={{ background: cardBg, borderColor: cardBorder }}
+						>
+							<div className="flex items-center justify-between gap-8">
+								<div className="flex flex-col items-center gap-3 flex-1">
+									<div
+										className="w-20 h-20 rounded-full"
+										style={{ background: `${primary}15` }}
+									/>
+									<div
+										className="h-4 rounded w-32"
+										style={{ background: `${primary}15` }}
+									/>
+								</div>
+								<div className="flex flex-col items-center gap-2 px-4">
+									<div
+										className="h-3 rounded w-8"
+										style={{ background: `${primary}15` }}
+									/>
+									<div
+										className="h-8 rounded w-16"
+										style={{ background: `${primary}15` }}
+									/>
+								</div>
+								<div className="flex flex-col items-center gap-3 flex-1">
+									<div
+										className="w-20 h-20 rounded-full"
+										style={{ background: `${primary}15` }}
+									/>
+									<div
+										className="h-4 rounded w-32"
+										style={{ background: `${primary}15` }}
+									/>
+								</div>
+							</div>
+							<div
+								className="mt-8 h-12 rounded-2xl"
+								style={{ background: `${primary}15` }}
+							/>
+						</div>
+					) : match ? (
+						<div
+							className="rounded-3xl p-8 backdrop-blur-xl border transition-all duration-300"
+							style={{ background: cardBg, borderColor: cardBorder }}
+						>
+							<div className="flex items-center justify-between gap-8">
+								{/* Home Team */}
+								<div className="flex flex-col items-center gap-3 flex-1">
+									{match.home_team.logo_url ? (
+										<Image
+											src={match.home_team.logo_url}
+											alt={match.home_team.name}
+											width={80}
+											height={80}
+											className="rounded-full w-20 h-20 object-contain"
+										/>
+									) : (
+										<div
+											className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center font-black text-base md:text-2xl"
+											style={{
+												background: `${primary}20`,
+												border: `2px solid ${primary}40`,
+												color: primary,
+											}}
+										>
+											{match.home_team.code ||
+												match.home_team.name.substring(0, 3).toUpperCase()}
+										</div>
+									)}
+									<div
+										className="text-lg font-bold tracking-tight text-center"
+										style={{ color: text }}
+									>
+										<span className="hidden md:inline">Persija Jakarta</span>{" "}
+										<span className="inline md:hidden">Persija</span>
+									</div>
+								</div>
+
+								{/* VS / Score */}
+								<div className="flex flex-col items-center gap-2 px-4">
+									<span
+										className="text-lg font-bold uppercase tracking-widest"
+										style={{ color: textMuted }}
+									>
+										VS
+									</span>
+									<span
+										className="text-3xl md:text-4xl font-black"
+										style={{ color: text }}
+									>
+										{match.status === "completed" && match.formatted_score
+											? match.formatted_score
+											: submittedPrediction
+												? `${submittedPrediction.home} - ${submittedPrediction.away}`
+												: "? - ?"}
+									</span>
+								</div>
+
+								{/* Away Team */}
+								<div className="flex flex-col items-center gap-3 flex-1">
+									{match.away_team.logo_url ? (
+										<Image
+											src={match.away_team.logo_url}
+											alt={match.away_team.name}
+											width={80}
+											height={80}
+											className="rounded-full w-20 h-20 object-contain"
+										/>
+									) : (
+										<div
+											className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center font-black text-base md:text-2xl"
+											style={{
+												background: `${primary}20`,
+												border: `2px solid ${primary}40`,
+												color: primary,
+											}}
+										>
+											{match.away_team.code ||
+												match.away_team.name.substring(0, 3).toUpperCase()}
+										</div>
+									)}
+									<div
+										className="text-lg font-bold tracking-tight text-center"
+										style={{ color: text }}
+									>
+										<span className="hidden md:inline">Persib Bandung</span>{" "}
+										<span className="inline md:hidden">Persib</span>
+									</div>
+								</div>
+							</div>
+
+							{/* Action Button */}
+							<div className="mt-8">
+								{submittedPrediction ? (
+									<p
+										className="text-center text-sm py-3 rounded-2xl"
+										style={{ background: `${primary}10`, color: primary }}
+									>
+										✓ Anda telah mengirimkan prediksi:{" "}
+										{submittedPrediction.home} - {submittedPrediction.away}
+									</p>
+								) : match.is_prediction_open && !match.is_locked ? (
+									<button
+										onClick={() => handleOpenModal(match)}
+										className="w-full py-3 rounded-2xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98]"
+										style={{
+											background: primary,
+											color: isDark ? "#003732" : "#ffffff",
+											boxShadow: `0 2px 15px ${primary}40`,
+										}}
+									>
+										{match.status === "completed"
+											? "Lihat Hasil"
+											: "Prediksi Skor Sekarang"}
+									</button>
+								) : match.is_locked ? (
+									<p
+										className="text-center text-sm py-3 rounded-2xl"
+										style={{ background: `${primary}10`, color: textMuted }}
+									>
+										Prediksi Telah Ditutup
+									</p>
+								) : (
+									<p
+										className="text-center text-sm py-3 rounded-2xl"
+										style={{ background: `${primary}10`, color: textMuted }}
+									>
+										Segera Terbuka
+									</p>
+								)}
+							</div>
+						</div>
+					) : (
+						<div
+							className="rounded-3xl p-8 backdrop-blur-xl border"
+							style={{ background: cardBg, borderColor: cardBorder }}
+						>
+							<p
+								className="text-center text-sm py-8"
+								style={{ color: textMuted }}
+							>
+								Tidak ada match tersedia
+							</p>
+						</div>
+					)}
+				</div>
+
+				{/* Leaderboard */}
+				{sbmLeaderboardLoading ? (
+					<div className="max-w-2xl mx-auto space-y-3">
+						{[1, 2, 3, 4, 5].map((i) => (
+							<div
+								key={i}
+								className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border animate-pulse"
+								style={{ background: cardBg, borderColor: cardBorder }}
+							>
+								<div className="flex items-center gap-4">
+									<div
+										className="w-10 h-10 rounded-xl"
+										style={{ background: `${primary}15` }}
+									/>
+									<div>
+										<div
+											className="h-4 rounded w-32 mb-1"
+											style={{ background: `${primary}15` }}
+										/>
+										<div
+											className="h-3 rounded w-20"
+											style={{ background: `${primary}10` }}
+										/>
+									</div>
+								</div>
+								<div
+									className="h-6 rounded w-12"
+									style={{ background: `${primary}15` }}
+								/>
+							</div>
+						))}
+					</div>
+				) : leaderboardRows.length > 0 ? (
+					<div className="max-w-2xl mx-auto">
+						<h3
+							className="text-xl font-black uppercase mb-4 text-center"
+							style={{ color: text }}
+						>
+							Klasemen Super Big Match
+						</h3>
+						<div className="space-y-3">
+							{leaderboardRows.slice(0, 10).map((player, index) => {
+								const medals = ["🥇", "🥈", "🥉"];
+								const isTop3 = index < 3;
+								return (
+									<div
+										key={player.userId}
+										className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
+										style={{
+											background: cardBg,
+											borderColor: cardBorder,
+										}}
+									>
+										<div className="flex items-center gap-4">
+											<div
+												className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0"
+												style={{
+													background: isTop3
+														? index === 0
+															? "#ffd700"
+															: index === 1
+																? "#c0c0c0"
+																: "#cd7f32"
+														: `${primary}15`,
+													color: isTop3 ? "#000" : primary,
+												}}
+											>
+												{medals[index] || player.rank}
+											</div>
+											<div className="flex-1 min-w-0">
+												<p
+													className="font-bold text-sm truncate"
+													style={{ color: text }}
+												>
+													{player.name}
+												</p>
+												<p className="text-xs" style={{ color: textMuted }}>
+													{player.score} poin
+												</p>
+											</div>
+										</div>
+										<div className="text-right shrink-0">
+											<p
+												className="text-xl font-black"
+												style={{ color: primary }}
+											>
+												{player.score}
+											</p>
+											<p
+												className="text-[10px] uppercase tracking-wider"
+												style={{ color: textMuted }}
+											>
+												poin
+											</p>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				) : null}
+			</div>
+
+			{/* Prediction Modal */}
+			{selectedMatch && (
+				<div
+					className="fixed inset-0 z-100 flex items-center justify-center p-4 sbm-animate-fadeIn"
+					style={{
+						background: "rgba(0,0,0,0.85)",
+						backdropFilter: "blur(8px)",
+					}}
+					onClick={() => setSelectedMatch(null)}
+				>
+					<div
+						className="w-full max-w-md p-6 rounded-3xl border relative overflow-hidden sbm-animate-scaleIn"
+						style={{
+							background: surface,
+							borderColor: `${primary}30`,
+							boxShadow: `0 0 40px ${primary}20, 0 15px 30px rgba(0,0,0,0.4)`,
+						}}
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div
+							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
+							style={{ background: `${primary}30` }}
+						/>
+
+						<button
+							onClick={() => setSelectedMatch(null)}
+							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
+							style={{ background: `${primary}10`, color: textMuted }}
+						>
+							<X className="size-4" />
+						</button>
+
+						{/* Header */}
+						<div className="text-center mb-6 relative z-10">
+							<h3 className="text-xl font-bold mb-1" style={{ color: text }}>
+								{selectedMatch.home_team.name} vs {selectedMatch.away_team.name}
+							</h3>
+							<p className="text-xs" style={{ color: textSecondary }}>
+								{formatMatchDate(
+									selectedMatch.match_date,
+									selectedMatch.kickoff_time,
+									selectedMatch.timezone,
+								)}
+							</p>
+						</div>
+
+						{/* Score Inputs */}
+						<div className="flex items-center justify-center gap-6 mb-6 relative z-10">
+							<div className="text-center">
+								<p
+									className="text-xs mb-2 truncate"
+									style={{ color: textSecondary }}
+								>
+									{selectedMatch.home_team.code ||
+										selectedMatch.home_team.name.substring(0, 3).toUpperCase()}
+								</p>
+								<input
+									type="number"
+									value={homeScore}
+									onChange={(e) => {
+										const raw = e.target.value;
+										if (raw === "") {
+											setHomeScore("");
+											return;
+										}
+										const v = parseInt(raw);
+										if (Number.isNaN(v)) return;
+										setHomeScore(Math.min(99, Math.max(0, v)).toString());
+									}}
+									className="w-16 h-14 text-center text-4xl font-black bg-transparent border-b-2 transition-all focus:scale-105"
+									style={{ borderColor: `${primary}`, color: primary }}
+									min="0"
+									max="99"
+									placeholder="0"
+								/>
+							</div>
+
+							<span
+								className="text-3xl font-black mb-4"
+								style={{ color: `${primary}` }}
+							>
+								-
+							</span>
+
+							<div className="text-center">
+								<p
+									className="text-xs mb-2 truncate"
+									style={{ color: textSecondary }}
+								>
+									{selectedMatch.away_team.code ||
+										selectedMatch.away_team.name.substring(0, 3).toUpperCase()}
+								</p>
+								<input
+									type="number"
+									value={awayScore}
+									onChange={(e) => {
+										const raw = e.target.value;
+										if (raw === "") {
+											setAwayScore("");
+											return;
+										}
+										const v = parseInt(raw);
+										if (Number.isNaN(v)) return;
+										setAwayScore(Math.min(99, Math.max(0, v)).toString());
+									}}
+									className="w-16 h-14 text-center text-4xl font-black bg-transparent border-b-2 transition-all focus:scale-105"
+									style={{ borderColor: `${primary}`, color: primary }}
+									min="0"
+									max="99"
+									placeholder="0"
+								/>
+							</div>
+						</div>
+
+						{/* Action Buttons */}
+						<div className="flex flex-col gap-2 relative z-10">
+							<button
+								onClick={handleSubmit}
+								disabled={
+									submitPrediction.isPending ||
+									homeScore === "" ||
+									awayScore === ""
+								}
+								className="w-full py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+								style={{
+									background: primary,
+									color: isDark ? "#003732" : "#ffffff",
+									boxShadow: `0 2px 15px ${primary}40`,
+									opacity: homeScore === "" || awayScore === "" ? 0.5 : 1,
+								}}
+							>
+								{submitPrediction.isPending
+									? "Menyimpan..."
+									: "Simpan Prediksi"}
+							</button>
+
+							<button
+								onClick={() => setSelectedMatch(null)}
+								className="w-full py-2 rounded-lg transition-all hover:opacity-80 text-sm"
+								style={{ color: textSecondary }}
+							>
+								Batal
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+		</section>
 	);
 }
