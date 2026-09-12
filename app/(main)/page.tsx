@@ -1958,19 +1958,81 @@ function SuperBigMatchSection({
 										return (
 											<div className="flex flex-col items-center gap-2">
 												{resultBadge}
-												<p className="text-center font-semibold italic text-sm ">
+												<p className="text-center font-semibold italic text-sm">
 													Prediksi kamu{" "}
 													{pred
 														? `${pred.home_score_predicted} - ${pred.away_score_predicted}`
 														: "? - ?"}
 												</p>
-												<p
-													className="text-center text-xs"
-													style={{ color: textMuted }}
-												>
-													Pemenang prediksi akan diumumkan di media sosial
-													@olahbolacom
-												</p>
+
+												{/* List Pemenang */}
+												<div className="w-full mt-2">
+													<p
+														className="text-center text-xs font-semibold mb-2"
+														style={{ color: textMuted }}
+													>
+														Pemenang Prediksi Skor
+													</p>
+													<div className="flex flex-col gap-2">
+														{[
+															{
+																rank: 1,
+																name: "Umay Marsyah",
+																prediction: "2-1",
+																date: "10 Sep 2026, 13:08",
+																points: 50,
+															},
+															{
+																rank: 2,
+																name: "Reza Rinjani",
+																prediction: "2-1",
+																date: "10 Sep 2026, 17:52",
+																points: 50,
+															},
+															{
+																rank: 3,
+																name: "roby rizky",
+																prediction: "2-1",
+																date: "11 Sep 2026, 17:25",
+																points: 50,
+															},
+														].map((winner) => (
+															<div
+																key={winner.rank}
+																className="flex items-center gap-3 rounded-lg border px-3 py-2"
+																style={{ borderColor: textMuted }}
+															>
+																<div
+																	className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+																	style={{
+																		backgroundColor: textMuted,
+																		color: "#fff",
+																	}}
+																>
+																	{winner.rank}
+																</div>
+																<div className="flex-1 min-w-0">
+																	<p className="text-xs font-semibold truncate">
+																		{winner.name}
+																	</p>
+																	<p
+																		className="text-[10px]"
+																		style={{ color: textMuted }}
+																	>
+																		Prediksi: {winner.prediction} ·{" "}
+																		{winner.date}
+																	</p>
+																</div>
+																<div
+																	className="text-xs font-bold shrink-0"
+																	style={{ color: textMuted }}
+																>
+																	{winner.points} pts
+																</div>
+															</div>
+														))}
+													</div>
+												</div>
 											</div>
 										);
 									}
