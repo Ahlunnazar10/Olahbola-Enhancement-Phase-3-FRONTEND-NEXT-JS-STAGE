@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { formatDate } from "@/lib/utils";
+import { formatDate, deduplicateSocialEmbeds } from "@/lib/utils";
 import { PopularArticleCardSkeleton } from "@/components/article/PopularArticleCard";
 import {
 	useArticleDetail,
@@ -13,7 +13,6 @@ import {
 import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { notFound } from "next/navigation";
-import AdSlot from "@/components/ads/AdSlot";
 import {
 	ArrowLeft,
 	Calendar,
@@ -313,20 +312,9 @@ export default function ArticleDetailPage() {
 							ref={contentRef}
 							className={`article-content p-8 md:p-10 rounded-xl shadow-2xl ${isDark ? "glass-panel" : "bg-white shadow-lg border border-gray-200"}`}
 							dangerouslySetInnerHTML={{
-								__html: articleData.content,
+								__html: deduplicateSocialEmbeds(articleData.content),
 							}}
 						/>
-
-						{/* In-Article Ad */}
-						<div className="my-10">
-							<AdSlot
-								slot="6570861900"
-								format="fluid"
-								responsive={true}
-								label="Advertisement"
-								lazyLoad={true}
-							/>
-						</div>
 
 						{/* Related Articles (Inside Main Content) */}
 						{relatedArticles.length > 0 && (
@@ -858,6 +846,14 @@ export default function ArticleDetailPage() {
 					border: none;
 					padding: 0;
 					color: ${colors.contentText};
+				}
+
+				/* Strip rich-text editor artifacts — background, font-family, font-size, text-align */
+				.article-content span {
+					background-color: transparent !important;
+					font-family: inherit !important;
+					font-size: inherit !important;
+					text-align: inherit !important;
 				}
 
 				/* Iframes / Video */
