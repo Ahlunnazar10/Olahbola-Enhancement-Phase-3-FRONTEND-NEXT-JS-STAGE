@@ -95,3 +95,49 @@ export function getProfilePictureUrl(path: string | null | undefined): string {
 	if (path.startsWith("http")) return path;
 	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${path}`;
 }
+
+// Social embeds yang perlu didedupe — class/container patterns per platform
+const SOCIAL_EMBED_SELECTORS = [
+	".social-embed.instagram-embed",
+	"blockquote.instagram-media",
+	".instagram-embed",
+	".social-embed.twitter-embed",
+	"blockquote.twitter-tweet",
+	".twitter-tweet",
+	".social-embed.facebook-embed",
+	".facebook-embed-wrapper",
+	"blockquote.fb-post",
+	".fb-post",
+	".fb-video",
+	".fb-page",
+];
+
+/**
+ * Remove duplicate social media embeds from article HTML content.
+ *
+ * Deduplication key = the first iframe src (or iframe src fallback).
+ * If two blocks share the same iframe source, only the first one is kept.
+ */
+export function deduplicateSocialEmbeds(html: string): string {
+	const parser = new DOMParser();
+	const doc = parser.parseFromString(html, "text/html");
+
+	const seenSrcs = new Set<string>();
+
+	for (const selector of SOCIAL_EMBED_SELECTORS) {
+		const blocks = doc.querySelectorAll(selector);
+		blocks.forEach((block) => {
+			const iframe = block.querySelector<HTMLIFrameElement>("iframe");
+			const src = iframe?.src ?? "";
+			const url = new URL(src, window.location.href).href;
+
+			if (seenSrcs.has(url)) {
+				block.remove();
+			} else {
+				seenSrcs.add(url);
+			}
+		});
+	}
+
+	return doc.body.innerHTML;
+}
