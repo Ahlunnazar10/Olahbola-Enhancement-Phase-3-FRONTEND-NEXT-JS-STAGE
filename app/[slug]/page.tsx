@@ -848,12 +848,13 @@ export default function ArticleDetailPage() {
 					color: ${colors.contentText};
 				}
 
-				/* Strip rich-text editor artifacts — background, font-family, font-size, text-align */
+				/* Strip rich-text editor artifacts — background, font-family, font-size, text-align, color */
 				.article-content span {
 					background-color: transparent !important;
 					font-family: inherit !important;
 					font-size: inherit !important;
 					text-align: inherit !important;
+					color: inherit !important;
 				}
 
 				/* Iframes / Video */
