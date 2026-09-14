@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { formatDate, deduplicateSocialEmbeds } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { PopularArticleCardSkeleton } from "@/components/article/PopularArticleCard";
 import {
 	useArticleDetail,
@@ -312,7 +312,7 @@ export default function ArticleDetailPage() {
 							ref={contentRef}
 							className={`article-content p-8 md:p-10 rounded-xl shadow-2xl ${isDark ? "glass-panel" : "bg-white shadow-lg border border-gray-200"}`}
 							dangerouslySetInnerHTML={{
-								__html: deduplicateSocialEmbeds(articleData.content),
+								__html: articleData.content,
 							}}
 						/>
 
