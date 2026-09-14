@@ -96,48 +96,83 @@ export function getProfilePictureUrl(path: string | null | undefined): string {
 	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${path}`;
 }
 
-// Social embeds yang perlu didedupe — class/container patterns per platform
-const SOCIAL_EMBED_SELECTORS = [
-	".social-embed.instagram-embed",
-	"blockquote.instagram-media",
-	".instagram-embed",
-	".social-embed.twitter-embed",
-	"blockquote.twitter-tweet",
-	".twitter-tweet",
-	".social-embed.facebook-embed",
-	".facebook-embed-wrapper",
-	"blockquote.fb-post",
-	".fb-post",
-	".fb-video",
-	".fb-page",
-];
+// Matches the full opening tag of a social-embed container.
+// Captures the tag name (div or blockquote) in group 1 and the full
+// opening tag string (for length calculation) in group 0.
+const OPEN_EMBED_RE =
+	/<(div|blockquote)([^>]*class="[^"]*(?:social-embed|instagram-media|instagram-embed|twitter-tweet|twitter-embed|fb-post|fb-video|fb-page|facebook-embed-wrapper)[^"]*"[^>]*)>/gi;
 
 /**
- * Remove duplicate social media embeds from article HTML content.
+ * Deduplicate social media embeds in article HTML content.
  *
- * Deduplication key = the first iframe src (or iframe src fallback).
- * If two blocks share the same iframe source, only the first one is kept.
+ * When multiple embed blocks contain an iframe with the same src,
+ * only the first occurrence is kept.  Pure-string operation — no
+ * DOMParser needed — safe to call from both server and client.
  */
 export function deduplicateSocialEmbeds(html: string): string {
-	const parser = new DOMParser();
-	const doc = parser.parseFromString(html, "text/html");
-
 	const seenSrcs = new Set<string>();
+	const allBlocks: Array<{ start: number; end: number; keep: boolean }> = [];
 
-	for (const selector of SOCIAL_EMBED_SELECTORS) {
-		const blocks = doc.querySelectorAll(selector);
-		blocks.forEach((block) => {
-			const iframe = block.querySelector<HTMLIFrameElement>("iframe");
-			const src = iframe?.src ?? "";
-			const url = new URL(src, window.location.href).href;
+	let m: RegExpExecArray | null;
+	while ((m = OPEN_EMBED_RE.exec(html)) !== null) {
+		const tagName = m[1]!.toLowerCase();
+		const tagEnd = m.index! + m[0]!.length; // position right after the opening ">"
 
-			if (seenSrcs.has(url)) {
-				block.remove();
+		// Find the matching closing tag by counting nesting depth.
+		const closeTag = `</${tagName}>`;
+		let depth = 1;
+		let searchFrom = tagEnd;
+		let closingIdx = -1;
+
+		while (depth > 0) {
+			const nextOpen = html.search(
+				new RegExp(`<${tagName}[^>]*>`, "i"),
+			);
+			const nextClose = html.indexOf(closeTag, searchFrom);
+
+			if (nextClose === -1) break;
+			if (
+				nextOpen !== -1 &&
+				nextOpen < nextClose &&
+				nextOpen >= searchFrom
+			) {
+				depth++;
+				searchFrom = nextOpen + tagName.length + 2;
 			} else {
-				seenSrcs.add(url);
+				depth--;
+				if (depth === 0) closingIdx = nextClose;
+				else searchFrom = nextClose + closeTag.length;
 			}
-		});
+		}
+
+		if (closingIdx === -1) continue;
+
+		const blockStart = m.index!;
+		const blockEnd = closingIdx + closeTag.length;
+		const blockHtml = html.slice(blockStart, blockEnd);
+
+		// Extract iframe src for dedup key.
+		const srcMatch = blockHtml.match(/src="([^"]+)"/);
+		const src = srcMatch ? srcMatch[1] : "";
+
+		if (src && seenSrcs.has(src)) {
+			// Duplicate — mark for removal.
+			allBlocks.push({ start: blockStart, end: blockEnd, keep: false });
+		} else {
+			if (src) seenSrcs.add(src);
+			allBlocks.push({ start: blockStart, end: blockEnd, keep: true });
+		}
 	}
 
-	return doc.body.innerHTML;
+	// Rebuild HTML, omitting blocks that should be removed.
+	let result = "";
+	let cursor = 0;
+	for (const block of allBlocks) {
+		result += html.slice(cursor, block.start);
+		if (block.keep) result += html.slice(block.start, block.end);
+		cursor = block.end;
+	}
+	result += html.slice(cursor);
+
+	return result;
 }
