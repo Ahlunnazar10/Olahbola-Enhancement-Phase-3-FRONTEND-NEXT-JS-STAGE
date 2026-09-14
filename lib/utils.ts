@@ -113,41 +113,49 @@ export function deduplicateSocialEmbeds(html: string): string {
 	const seenSrcs = new Set<string>();
 	const allBlocks: Array<{ start: number; end: number; keep: boolean }> = [];
 
+	// Locate every opening embed tag via global regex.
 	let m: RegExpExecArray | null;
 	while ((m = OPEN_EMBED_RE.exec(html)) !== null) {
 		const tagName = m[1]!.toLowerCase();
 		const tagEnd = m.index! + m[0]!.length; // position right after the opening ">"
 
-		// Find the matching closing tag by counting nesting depth.
-		const closeTag = `</${tagName}>`;
+		// Scan character-by-character to find the matching closing tag.
+		// This avoids regex search() which ignores the position offset.
 		let depth = 1;
-		let searchFrom = tagEnd;
+		let i = tagEnd;
 		let closingIdx = -1;
 
-		while (depth > 0) {
-			const nextOpen = html.search(
-				new RegExp(`<${tagName}[^>]*>`, "i"),
-			);
-			const nextClose = html.indexOf(closeTag, searchFrom);
-
-			if (nextClose === -1) break;
-			if (
-				nextOpen !== -1 &&
-				nextOpen < nextClose &&
-				nextOpen >= searchFrom
-			) {
-				depth++;
-				searchFrom = nextOpen + tagName.length + 2;
-			} else {
-				depth--;
-				if (depth === 0) closingIdx = nextClose;
-				else searchFrom = nextClose + closeTag.length;
+		while (i < html.length) {
+			if (html[i] !== "<") {
+				i++;
+				continue;
 			}
+
+			const rest = html.slice(i);
+			// Closing tag?
+			if (rest.startsWith(`</${tagName}>`)) {
+				depth--;
+				if (depth === 0) {
+					closingIdx = i;
+					break;
+				}
+				i += 2 + tagName.length; // skip past </tag>
+				continue;
+			}
+			// Opening tag of same type?
+			const openMatch = rest.match(new RegExp(`^<${tagName}[^>]*>`));
+			if (openMatch) {
+				depth++;
+				i += openMatch[0].length;
+				continue;
+			}
+			i++;
 		}
 
 		if (closingIdx === -1) continue;
 
 		const blockStart = m.index!;
+		const closeTag = `</${tagName}>`;
 		const blockEnd = closingIdx + closeTag.length;
 		const blockHtml = html.slice(blockStart, blockEnd);
 
@@ -156,7 +164,6 @@ export function deduplicateSocialEmbeds(html: string): string {
 		const src = srcMatch ? srcMatch[1] : "";
 
 		if (src && seenSrcs.has(src)) {
-			// Duplicate — mark for removal.
 			allBlocks.push({ start: blockStart, end: blockEnd, keep: false });
 		} else {
 			if (src) seenSrcs.add(src);
