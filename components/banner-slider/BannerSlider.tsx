@@ -443,7 +443,7 @@ export function BannerSlider({
 									{/* Event Title */}
 
 									{slide.eventTitle && (
-										<h1 className="text-2xl md:text-5xl font-extrabold italic uppercase leading-none neon-glow-text">
+										<h1 className="text-2xl md:text-5xl font-extrabold italic uppercase leading-none ">
 											{slide.eventTitle.parts.map((part, i) => (
 												<span
 													key={i}
@@ -651,7 +651,7 @@ export function BannerSlider({
 													className={`block last:mb-0 ${
 														slide.videoSrc
 															? i === 0
-																? "font-black text-primary neon-glow-text"
+																? "font-black text-primary"
 																: "font-black text-white"
 															: "font-black text-white"
 													}`}
