@@ -51,53 +51,81 @@ export default function ArticleDetailPage() {
 		// keeping only the first occurrence of each unique permalink/src
 		// ============================================================
 		const dedupeEmbeds = () => {
-			// Instagram: group by data-instgrm-permalink
-			const igBlocks = container.querySelectorAll<HTMLElement>(
-				"blockquote.instagram-media, .instagram-embed",
-			);
-			const seenIgPermalink = new Set<string>();
-			igBlocks.forEach((block) => {
-				const permalink =
-					block.dataset.instgrmPermalink ||
-					block.querySelector<HTMLAnchorElement>("a")?.href ||
-					block.querySelector<HTMLIFrameElement>("iframe")?.src ||
-					"";
-				if (permalink && seenIgPermalink.has(permalink)) {
-					block.closest(".social-embed")?.remove();
-				} else if (permalink) {
-					seenIgPermalink.add(permalink);
+			// Helper: extract unique key from an embed container.
+			// For Instagram blocks, prefer data-instgrm-permalink,
+			// then fall back to the <a> href or <iframe> src.
+			const getIgKey = (el: HTMLElement): string => {
+				const bq = el.querySelector<HTMLElement>("blockquote.instagram-media");
+				if (bq) {
+					return (
+						bq.dataset.instgrmPermalink ||
+						bq.querySelector<HTMLAnchorElement>("a")?.href ||
+						bq.querySelector<HTMLIFrameElement>("iframe")?.src ||
+						""
+					);
 				}
-			});
+				// Fallback: check the container itself
+				return (
+					el.dataset.instgrmPermalink ||
+					el.querySelector<HTMLAnchorElement>("a")?.href ||
+					el.querySelector<HTMLIFrameElement>("iframe")?.src ||
+					""
+				);
+			};
 
-			// Twitter: group by tweet ID from src
-			const twitterBlocks = container.querySelectorAll<HTMLElement>(
-				"blockquote.twitter-tweet, .twitter-tweet",
-			);
-			const seenTwitterSrc = new Set<string>();
-			twitterBlocks.forEach((block) => {
-				const src =
-					block.querySelector<HTMLIFrameElement>("iframe")?.src || "";
-				if (src && seenTwitterSrc.has(src)) {
-					block.closest(".social-embed")?.remove();
-				} else if (src) {
-					seenTwitterSrc.add(src);
-				}
-			});
+			const getSrcKey = (el: HTMLElement): string => {
+				return (
+					el.querySelector<HTMLIFrameElement>("iframe")?.src || ""
+				);
+			};
 
-			// Facebook: group by data-href or iframe src
-			const fbBlocks = container.querySelectorAll<HTMLElement>(
-				".fb-post, .fb-video, .fb-page, .facebook-embed-wrapper",
+			const getFbKey = (el: HTMLElement): string => {
+				return (
+					el.dataset.href ||
+					el.querySelector<HTMLIFrameElement>("iframe")?.src ||
+					""
+				);
+			};
+
+			// Instagram: select TOP-LEVEL wrappers only (.social-embed.instagram-embed)
+			const igWrappers = container.querySelectorAll<HTMLElement>(
+				".social-embed.instagram-embed",
 			);
-			const seenFbSrc = new Set<string>();
-			fbBlocks.forEach((block) => {
-				const href = block.dataset.href || "";
-				const src =
-					block.querySelector<HTMLIFrameElement>("iframe")?.src || "";
-				const key = href || src;
-				if (key && seenFbSrc.has(key)) {
-					block.closest(".social-embed")?.remove();
+			const seenIg = new Set<string>();
+			igWrappers.forEach((wrapper) => {
+				const key = getIgKey(wrapper);
+				if (key && seenIg.has(key)) {
+					wrapper.style.display = "none";
 				} else if (key) {
-					seenFbSrc.add(key);
+					seenIg.add(key);
+				}
+			});
+
+			// Twitter: select top-level containers
+			const twitterWrappers = container.querySelectorAll<HTMLElement>(
+				".social-embed.twitter-embed, .twitter-tweet",
+			);
+			const seenTw = new Set<string>();
+			twitterWrappers.forEach((wrapper) => {
+				const key = getSrcKey(wrapper);
+				if (key && seenTw.has(key)) {
+					wrapper.style.display = "none";
+				} else if (key) {
+					seenTw.add(key);
+				}
+			});
+
+			// Facebook: select top-level containers
+			const fbWrappers = container.querySelectorAll<HTMLElement>(
+				".social-embed.facebook-embed, .facebook-embed-wrapper, .fb-post, .fb-video, .fb-page",
+			);
+			const seenFb = new Set<string>();
+			fbWrappers.forEach((wrapper) => {
+				const key = getFbKey(wrapper);
+				if (key && seenFb.has(key)) {
+					wrapper.style.display = "none";
+				} else if (key) {
+					seenFb.add(key);
 				}
 			});
 		};
