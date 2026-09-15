@@ -46,6 +46,64 @@ export default function ArticleDetailPage() {
 
 		const container = contentRef.current;
 
+		// ============================================================
+		// DEDUPLICATE: Remove duplicate Instagram/Twitter/Facebook embeds
+		// keeping only the first occurrence of each unique permalink/src
+		// ============================================================
+		const dedupeEmbeds = () => {
+			// Instagram: group by data-instgrm-permalink
+			const igBlocks = container.querySelectorAll<HTMLElement>(
+				"blockquote.instagram-media, .instagram-embed",
+			);
+			const seenIgPermalink = new Set<string>();
+			igBlocks.forEach((block) => {
+				const permalink =
+					block.dataset.instgrmPermalink ||
+					block.querySelector<HTMLAnchorElement>("a")?.href ||
+					block.querySelector<HTMLIFrameElement>("iframe")?.src ||
+					"";
+				if (permalink && seenIgPermalink.has(permalink)) {
+					block.closest(".social-embed")?.remove();
+				} else if (permalink) {
+					seenIgPermalink.add(permalink);
+				}
+			});
+
+			// Twitter: group by tweet ID from src
+			const twitterBlocks = container.querySelectorAll<HTMLElement>(
+				"blockquote.twitter-tweet, .twitter-tweet",
+			);
+			const seenTwitterSrc = new Set<string>();
+			twitterBlocks.forEach((block) => {
+				const src =
+					block.querySelector<HTMLIFrameElement>("iframe")?.src || "";
+				if (src && seenTwitterSrc.has(src)) {
+					block.closest(".social-embed")?.remove();
+				} else if (src) {
+					seenTwitterSrc.add(src);
+				}
+			});
+
+			// Facebook: group by data-href or iframe src
+			const fbBlocks = container.querySelectorAll<HTMLElement>(
+				".fb-post, .fb-video, .fb-page, .facebook-embed-wrapper",
+			);
+			const seenFbSrc = new Set<string>();
+			fbBlocks.forEach((block) => {
+				const href = block.dataset.href || "";
+				const src =
+					block.querySelector<HTMLIFrameElement>("iframe")?.src || "";
+				const key = href || src;
+				if (key && seenFbSrc.has(key)) {
+					block.closest(".social-embed")?.remove();
+				} else if (key) {
+					seenFbSrc.add(key);
+				}
+			});
+		};
+
+		dedupeEmbeds();
+
 		// Force remove any existing Instagram script to ensure fresh load
 		const existingScripts = document.querySelectorAll(
 			'script[src*="instagram.com/embed.js"]',
