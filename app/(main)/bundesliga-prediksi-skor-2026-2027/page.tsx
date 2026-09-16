@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Lock, Check, X, Trophy, Circle } from "lucide-react";
+import { Lock, Check, X, Trophy, Circle, ChevronDown } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -216,7 +216,7 @@ function LoadingOverlay() {
 // ============================================================
 // CONFIG — ubah nilai ini untuk geser matchday aktif default
 // ============================================================
-const DEFAULT_ACTIVE_MATCHDAY = 3;
+const DEFAULT_ACTIVE_MATCHDAY = 4;
 
 // ============================================================
 // MAIN PAGE
@@ -229,6 +229,20 @@ export default function PrediksiSkorPage() {
 	const [activeMatchday, setActiveMatchday] = useState<number>(
 		DEFAULT_ACTIVE_MATCHDAY,
 	);
+	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const dropdownRef = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(e.target as Node)
+			) {
+				setDropdownOpen(false);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
 	);
@@ -573,65 +587,100 @@ export default function PrediksiSkorPage() {
 					</div>
 				</section>
 
-				{/* Matchday Tabs */}
-				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-4 md:mb-8 overflow-x-auto">
-					<div
-						className="flex gap-3 pb-4 border-b"
-						style={{ borderColor: whiteAlpha5 }}
-					>
-						{(matchdaysData ?? []).map((md: number) => {
-							const isActive = activeMatchday === md;
-							return (
-								<button
-									key={md}
-									onClick={() => setActiveMatchday(md)}
-									className="px-6 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition-all"
-									style={
-										isActive
-											? {
-													background: colors.buttonActiveBg,
-													color: colors.buttonActiveText,
-												}
-											: {
-													background: colors.badgeInactiveBg,
-													color: colors.badgeInactiveText,
-													border: `1px solid ${colors.badgeInactiveBorder}`,
-												}
-									}
+				{/* Matchday Selector + Tab Navigation */}
+				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-4 md:mb-8">
+					<div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-start">
+						{/* Matchday Dropdown */}
+						<div ref={dropdownRef} className="relative w-full sm:w-56 shrink-0">
+							<button
+								type="button"
+								onClick={() => setDropdownOpen((v) => !v)}
+								className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-full font-semibold text-sm transition-all outline-none focus:ring-2 focus:ring-primary/40"
+								style={{
+									background: colors.badgeInactiveBg,
+									color: colors.badgeInactiveText,
+									border: `1px solid ${colors.badgeInactiveBorder}`,
+								}}
+							>
+								<span>Matchday {activeMatchday}</span>
+								<ChevronDown
+									size={16}
+									className={`transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+									style={{ color: colors.primary }}
+								/>
+							</button>
+							{dropdownOpen && (
+								<div
+									className="absolute z-9999 top-full mt-2 left-0 w-full rounded-2xl overflow-hidden shadow-2xl"
+									style={{
+										background: isDark ? "#131313" : "#ffffff",
+										border: `1px solid ${colors.cardBorder}`,
+									}}
 								>
-									Matchday {md}
-								</button>
-							);
-						})}
-					</div>
-				</section>
+									{(matchdaysData ?? []).map((md: number) => {
+										const isActive = activeMatchday === md;
+										return (
+											<button
+												key={md}
+												type="button"
+												onClick={() => {
+													setActiveMatchday(md);
+													setDropdownOpen(false);
+												}}
+												className="w-full text-left px-4 py-3 font-semibold text-sm transition-all hover:font-bold"
+												style={
+													isActive
+														? {
+																background: colors.buttonActiveBg,
+																color: colors.buttonActiveText,
+															}
+														: {
+																background: "transparent",
+																color: colors.badgeInactiveText,
+															}
+												}
+											>
+												Matchday {md}
+												{isActive && (
+													<ChevronDown
+														size={14}
+														className="float-right mt-0.5"
+														style={{ color: colors.buttonActiveText }}
+													/>
+												)}
+											</button>
+										);
+									})}
+								</div>
+							)}
+						</div>
 
-				{/* Tab Navigation */}
-				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-6">
-					<div
-						className="inline-flex rounded-xl p-1"
-						style={{ background: whiteAlpha5 }}
-					>
-						{(["matches", "leaderboard"] as const).map((tab) => {
-							const isActive = activeTab === tab;
-							return (
-								<button
-									key={tab}
-									onClick={() => setActiveTab(tab)}
-									className="px-6 py-2 rounded-lg font-semibold text-sm transition-all"
-									style={
-										isActive
-											? {
-													background: colors.buttonActiveBg,
-													color: colors.buttonActiveText,
-												}
-											: { color: colors.badgeInactiveText }
-									}
-								>
-									{tab === "matches" ? "Pertandingan" : "Klasemen"}
-								</button>
-							);
-						})}
+						{/* Tab Navigation */}
+						<div
+							className="inline-flex rounded-xl p-1"
+							style={{ background: whiteAlpha5 }}
+						>
+							{(["matches", "leaderboard"] as const).map((tab) => {
+								const isActive = activeTab === tab;
+								return (
+									<button
+										key={tab}
+										onClick={() => setActiveTab(tab)}
+										className="px-6 py-2 rounded-lg font-semibold text-sm transition-all"
+										style={
+											isActive
+												? {
+														background: colors.buttonActiveBg,
+														color: colors.buttonActiveText,
+													}
+												: { color: colors.badgeInactiveText }
+										}
+									>
+										{tab === "matches" ? "Pertandingan" : "Klasemen"}
+									</button>
+								);
+							})}
+						</div>
 					</div>
 				</section>
 
