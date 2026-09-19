@@ -211,6 +211,61 @@ export const endpoints = {
 	paymentMidtransStatus: (orderId: string) =>
 		"/api/v1/payment/midtrans/status/" + orderId,
 	paymentAccessCheck: "/api/v1/payment/access/check",
+
+	// ─── Ngolah Bola Game ──────────────────────
+
+	// Profile & HUD
+	ngolahBolaProfile: "/api/v1/ngolah-bola/profile",
+	ngolahBolaFullHUD: "/api/v1/profile",
+
+	// Energy
+	ngolahBolaEnergy: "/api/v1/ngolah-bola/duel/energy",
+	ngolahBolaRefillEnergy: "/api/v1/ngolah-bola/duel/energy/refill",
+
+	// Points
+	ngolahBolaPointsBalance: "/api/v1/ngolah-bola/points/balance",
+	ngolahBolaExchangePoints: "/api/v1/ngolah-bola/points/exchange",
+
+	// Pack Catalog (publik)
+	ngolahBolaPackCatalog: "/api/v1/ngolah-bola/pack/catalog",
+	ngolahBolaOpenPack: (packId: string) =>
+		"/api/v1/ngolah-bola/pack/open/" + packId,
+
+	// Inventory
+	ngolahBolaInventory: "/api/v1/ngolah-bola/inventory",
+
+	// Reference Data (publik)
+	ngolahBolaReferencePlayers: "/api/v1/ngolah-bola/reference/players",
+	ngolahBolaReferenceLeagues: "/api/v1/ngolah-bola/reference/leagues",
+	ngolahBolaReferenceClubs: "/api/v1/ngolah-bola/reference/clubs",
+	ngolahBolaReferenceFormations: "/api/v1/ngolah-bola/reference/formations",
+
+	// Squads
+	ngolahBolaSquads: "/api/v1/ngolah-bola/squads",
+	ngolahBolaSquadDetail: (id: string) =>
+		"/api/v1/ngolah-bola/squads/" + id,
+	ngolahBolaAddPlayerToSquad: (id: string) =>
+		"/api/v1/ngolah-bola/squads/" + id + "/players",
+	ngolahBolaRemovePlayerFromSquad: (squadId: string, slot: string) =>
+		"/api/v1/ngolah-bola/squads/" + squadId + "/players/" + slot,
+	ngolahBolaSquadChemistry: (id: string) =>
+		"/api/v1/ngolah-bola/squads/" + id + "/chemistry",
+	ngolahBolaValidateSquad: (id: string) =>
+		"/api/v1/ngolah-bola/squads/" + id + "/validate-duel",
+
+	// Duel
+	ngolahBolaDuelChallenge: "/api/v1/ngolah-bola/duel/challenge",
+	ngolahBolaDuelHistory: "/api/v1/ngolah-bola/duel/history",
+
+	// Daily Reward
+	ngolahBolaDailyRewardStatus: "/api/v1/ngolah-bola/daily-reward/status",
+	ngolahBolaDailyRewardClaim: "/api/v1/ngolah-bola/daily-reward/claim",
+
+	// Share
+	ngolahBolaShareData: (id: string) =>
+		"/api/v1/ngolah-bola/squads/" + id + "/share-data",
+	ngolahBolaShareLog: (id: string) =>
+		"/api/v1/ngolah-bola/squads/" + id + "/share-log",
 };
 
 export type Endpoint = typeof endpoints;

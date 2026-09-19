@@ -342,7 +342,7 @@ export function BannerSlider({
 							<>
 								{isDark ? (
 									<>
-										<div className="absolute inset-0 bg-linear-to-r from-[#050505] via-[#050505]/60 to-[#050505] pointer-events-none" />
+										<div className="absolute inset-0 bg-linear-to-r from-[#050505] via-[#050505]/40 to-[#050505] pointer-events-none" />
 
 										<div className="absolute inset-0 bg-[#050505]/40 pointer-events-none" />
 									</>
@@ -465,7 +465,7 @@ export function BannerSlider({
 
 									{slide.eventDescription && (
 										<p
-											className={`text-sm md:text-lg font-medium max-w-xl text-center md:text-left ${isDark ? "text-on-surface-variant" : "text-[#3a3a3a]"}`}
+											className={`text-sm md:text-lg font-medium max-w-xl text-center md:text-left px-3 ${isDark ? "text-on-surface-variant" : "text-[#3a3a3a]"}`}
 										>
 											{slide.eventDescription}
 										</p>
@@ -496,60 +496,56 @@ export function BannerSlider({
 
 								{/* Right Content: Reward Showcase */}
 
-								<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-0 pb-12 lg:py-20 -mt-27.5 lg:mt-0">
-									{/* Ambient glow */}
+								{slide.eventRewardImage && (
+									<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-0 pb-12 lg:py-20 -mt-27.5 lg:mt-0">
+										{/* Ambient glow */}
 
-									<div className="absolute inset-0 bg-primary/5 rounded-full blur-[120px] opacity-40" />
+										<div className="absolute inset-0 bg-primary/5 rounded-full blur-[120px] opacity-40" />
 
-									{/* Background shapes to highlight the prize image */}
+										{/* Background shapes to highlight the prize image */}
 
-									<div
-										aria-hidden
-										className="absolute z-0 w-72 h-72 sm:w-96 sm:h-96 rounded-full pointer-events-none"
-										style={{
-											background:
-												"radial-gradient(circle, rgba(0, 194, 177, 0.35) 0%, rgba(0, 194, 177, 0.12) 45%, transparent 70%)",
+										<div
+											aria-hidden
+											className="absolute z-0 w-72 h-72 sm:w-96 sm:h-96 rounded-full pointer-events-none"
+											style={{
+												background:
+													"radial-gradient(circle, rgba(0, 194, 177, 0.35) 0%, rgba(0, 194, 177, 0.12) 45%, transparent 70%)",
+												filter: "blur(40px)",
+											}}
+										/>
 
-											filter: "blur(40px)",
-										}}
-									/>
+										<div
+											aria-hidden
+											className="absolute z-0 -bottom-6 -right-6 w-56 h-56 rounded-full pointer-events-none"
+											style={{
+												background:
+													"radial-gradient(circle, rgba(67, 222, 204, 0.25) 0%, transparent 65%)",
+												filter: "blur(30px)",
+											}}
+										/>
 
-									<div
-										aria-hidden
-										className="absolute z-0 -bottom-6 -right-6 w-56 h-56 rounded-full pointer-events-none"
-										style={{
-											background:
-												"radial-gradient(circle, rgba(67, 222, 204, 0.25) 0%, transparent 65%)",
+										<div
+											aria-hidden
+											className="absolute z-0 -top-6 -left-6 w-44 h-44 rounded-full pointer-events-none"
+											style={{
+												background:
+													"radial-gradient(circle, rgba(0, 194, 177, 0.22) 0%, transparent 65%)",
+												filter: "blur(30px)",
+											}}
+										/>
 
-											filter: "blur(30px)",
-										}}
-									/>
+										<div
+											aria-hidden
+											className="absolute z-0 inset-0 m-auto w-64 h-64 sm:w-80 sm:h-80 rounded-full border-2 border-primary/20 pointer-events-none"
+										/>
 
-									<div
-										aria-hidden
-										className="absolute z-0 -top-6 -left-6 w-44 h-44 rounded-full pointer-events-none"
-										style={{
-											background:
-												"radial-gradient(circle, rgba(0, 194, 177, 0.22) 0%, transparent 65%)",
+										<div
+											aria-hidden
+											className="absolute z-0 inset-0 m-auto w-44 h-44 sm:w-56 sm:h-56 rounded-full border border-primary/30 pointer-events-none"
+										/>
 
-											filter: "blur(30px)",
-										}}
-									/>
-
-									<div
-										aria-hidden
-										className="absolute z-0 inset-0 m-auto w-64 h-64 sm:w-80 sm:h-80 rounded-full border-2 border-primary/20 pointer-events-none"
-									/>
-
-									<div
-										aria-hidden
-										className="absolute z-0 inset-0 m-auto w-44 h-44 sm:w-56 sm:h-56 rounded-full border border-primary/30 pointer-events-none"
-									/>
-
-									{/* Reward Image */}
-
-									{slide.eventRewardImage && (
-										<div className="relative z-20 ">
+										{/* Reward Image */}
+										<div className="relative z-20">
 											<img
 												alt={slide.eventRewardImageAlt || "Prize"}
 												src={slide.eventRewardImage}
@@ -560,8 +556,8 @@ export function BannerSlider({
 												decoding="async"
 											/>
 										</div>
-									)}
-								</div>
+									</div>
+								)}
 							</div>
 						) : slide.heroPlayLayout ? (
 							/* HeroPlay Right-Aligned Layout */
