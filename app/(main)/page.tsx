@@ -162,20 +162,38 @@ export default function HomePage() {
 	const bannerSlides: BannerSlide[] = useMemo(() => {
 		const slides: BannerSlide[] = [];
 
-		// // Slide 1: HeroPlay Game Pass Video Banner
-		// slides.push({
-		// 	id: "hero-play-game-pass",
-		// 	type: "cta" as const,
-		// 	videoSrc: "/images/home/penalti-rivals.mp4",
-		// 	ctaTitle: "OLAHBOLA\nGAME PASS",
-		// 	ctaSubtitle:
-		// 		"Nikmati akses tak terbatas ke lebih dari 30 game sepak bola eksklusif yang bisa Kamu mainkan kapan saja, di mana saja.",
-		// 	ctaCtaText: "Main Sekarang",
-		// 	ctaCtaHref: "https://heroplay.igvault.id/subscription",
-		// 	ctaAlignment: "right",
-		// });
+		// Slide 1: HeroPlay Game Pass Video Banner
+		slides.push({
+			id: "hero-play-game-pass",
+			type: "cta" as const,
+			videoSrc: "/images/home/penalti-rivals.mp4",
+			ctaTitle: "OLAHBOLA\nGAME PASS",
+			ctaSubtitle:
+				"Nikmati akses tak terbatas ke lebih dari 30 game sepak bola eksklusif yang bisa Kamu mainkan kapan saja, di mana saja.",
+			ctaCtaText: "Main Sekarang",
+			ctaCtaHref: "https://heroplay.igvault.id/subscription",
+			ctaAlignment: "right",
+		});
 
-		// Slide 2: Event Banner - Bundesliga 2026/2027
+		// Slide 2: Event Banner - FIFA ASEAN CUP 2026
+		slides.push({
+			id: "event-fifa-asean-cup",
+			type: "event" as const,
+			imageFallback: "/images/home/timnas-bg.webp",
+			imageMobileFallback: "/images/home/timnas-bg.webp",
+			eventBadge: "Prediksi Skor",
+			eventTitle: {
+				parts: [{ text: "FIFA ASEAN CUP 2026", color: "white" as const }],
+			},
+			eventDescription:
+				"Kawal Timnas Indonesia merajai kompetisi! Tebak skor setiap laga dan buktiin kamu supporter terbaik.",
+			eventPrimaryCta: {
+				text: "Prediksi Sekarang!",
+				href: "/fifa-asean-cup-prediksi-skor",
+			},
+		});
+
+		// Slide 3: Event Banner - Bundesliga 2026/2027
 		slides.push({
 			id: "event-bundesliga",
 			type: "event" as const,
@@ -197,67 +215,49 @@ export default function HomePage() {
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
-		// Slide 3: Event Banner - FIFA ASEAN CUP 2026
+		// Slide 4: HeroPlay Kickoff Banner
 		slides.push({
-			id: "event-fifa-asean-cup",
-			type: "event" as const,
-			imageFallback: "/images/home/timnas-bg.webp",
-			imageMobileFallback: "/images/home/timnas-bg.webp",
-			eventBadge: "Prediksi Skor",
-			eventTitle: {
-				parts: [{ text: "FIFA ASEAN CUP 2026", color: "white" as const }],
-			},
-			eventDescription:
-				"Kawal Timnas Indonesia merajai kompetisi! Tebak skor setiap laga dan buktiin kamu supporter terbaik.",
-			eventPrimaryCta: {
-				text: "Prediksi Sekarang!",
-				href: "/fifa-asean-cup-prediksi-skor",
+			id: "hero-play-kickoff",
+			type: "cta" as const,
+			imageFallback: "/images/heroplay-banner/banner-1.webp",
+			imageMobileFallback: "/images/heroplay-banner/banner-1-mobile.webp",
+			heroPlayLayout: {
+				highlightedWord: "Kota Mana",
+				titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
+				highlightedLineIndex: 0,
+				description: "Menangkan hadiah menarik dan buat\nkotamu bangga!",
+				descriptionMobile:
+					"Ikuti Fruit Ninja City Battle terbaru dan bawa kota kamu menuju puncak",
+				buttonText: "Main Sekarang",
+				buttonHref: "https://www.mainhero.id",
 			},
 		});
 
-		// // Slide 4: HeroPlay Kickoff Banner
-		// slides.push({
-		// 	id: "hero-play-kickoff",
-		// 	type: "cta" as const,
-		// 	imageFallback: "/images/heroplay-banner/banner-1.webp",
-		// 	imageMobileFallback: "/images/heroplay-banner/banner-1-mobile.webp",
-		// 	heroPlayLayout: {
-		// 		highlightedWord: "Kota Mana",
-		// 		titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
-		// 		highlightedLineIndex: 0,
-		// 		description: "Menangkan hadiah menarik dan buat\nkotamu bangga!",
-		// 		descriptionMobile:
-		// 			"Ikuti Fruit Ninja City Battle terbaru dan bawa kota kamu menuju puncak",
-		// 		buttonText: "Main Sekarang",
-		// 		buttonHref: "https://www.mainhero.id",
-		// 	},
-		// });
-
-		// // Slide 4: Article banner (if available)
-		// if (featuredArticle) {
-		// 	slides.push({
-		// 		id: `article-${featuredArticle.id}`,
-		// 		type: "article" as const,
-		// 		label: "Breaking",
-		// 		labelColor: "breaking" as const,
-		// 		title: {
-		// 			parts: [
-		// 				featuredArticle.title.split(" ").slice(0, 2).join(" "),
-		// 				featuredArticle.title.split(" ").slice(2).join(" "),
-		// 			],
-		// 			colors: ["primary", "white"] as ("primary" | "white" | "accent")[],
-		// 		},
-		// 		excerpt: featuredArticle.excerpt,
-		// 		image: featuredArticle.image,
-		// 		ctaButtons: {
-		// 			primary: {
-		// 				text: "Baca Sekarang",
-		// 				href: `/${featuredArticle.slug}`,
-		// 				icon: "arrow_forward",
-		// 			},
-		// 		},
-		// 	});
-		// }
+		// Slide 4: Article banner (if available)
+		if (featuredArticle) {
+			slides.push({
+				id: `article-${featuredArticle.id}`,
+				type: "article" as const,
+				label: "Breaking",
+				labelColor: "breaking" as const,
+				title: {
+					parts: [
+						featuredArticle.title.split(" ").slice(0, 2).join(" "),
+						featuredArticle.title.split(" ").slice(2).join(" "),
+					],
+					colors: ["primary", "white"] as ("primary" | "white" | "accent")[],
+				},
+				excerpt: featuredArticle.excerpt,
+				image: featuredArticle.image,
+				ctaButtons: {
+					primary: {
+						text: "Baca Sekarang",
+						href: `/${featuredArticle.slug}`,
+						icon: "arrow_forward",
+					},
+				},
+			});
+		}
 
 		return slides;
 	}, [featuredArticle]);
