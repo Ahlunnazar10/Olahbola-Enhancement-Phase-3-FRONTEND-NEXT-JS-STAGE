@@ -78,7 +78,7 @@ function TeamFlag({
 		);
 	}
 	return (
-		<div className="w-14 h-14 rounded-full bg-[rgba(67,222,204,0.15)] border border-[rgba(67,222,204,0.3)] flex items-center justify-center font-black text-sm text-[#43decc] shrink-0">
+		<div className="w-14 h-14 rounded-full bg-[rgba(67,222,204,0.15)] border border-[rgba(67,222,204,0.3)] flex items-center justify-center font-black text-sm text-primary shrink-0">
 			{getCountryInitials(team.name)}
 		</div>
 	);

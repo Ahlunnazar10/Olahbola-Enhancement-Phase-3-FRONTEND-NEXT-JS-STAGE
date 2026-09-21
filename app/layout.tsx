@@ -199,6 +199,23 @@ export default function RootLayout({
 
 				<Providers>{children}</Providers>
 
+				{/* Google Ads conversion tracking tag */}
+				<Script
+					src="https://www.googletagmanager.com/gtag/js?id=AW-18465421117"
+					strategy="afterInteractive"
+				/>
+				<Script
+					id="google-aw-gtag-config"
+					strategy="afterInteractive"
+					dangerouslySetInnerHTML={{
+						__html: `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'AW-18465421117');
+`,
+					}}
+				/>
 				{/* AdSense SDK — global script for auto ads.
 				    Loaded beforeInteractive so it ships in server HTML
 				    and is available by the time any client-side AdSlot mounts.
