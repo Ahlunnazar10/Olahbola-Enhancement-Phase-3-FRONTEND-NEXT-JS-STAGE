@@ -193,7 +193,26 @@ export default function HomePage() {
 			},
 		});
 
-		// Slide 3: Event Banner - Bundesliga 2026/2027
+		// Slide 3: HeroPlay Kickoff Banner
+		slides.push({
+			id: "hero-play-kickoff",
+			type: "cta" as const,
+			imageFallback: "/images/heroplay-banner/banner-2.webp",
+			imageMobileFallback: "/images/heroplay-banner/banner-2-mobile.webp",
+			heroPlayLayout: {
+				highlightedWord: "Kota Mana",
+				titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
+				highlightedLineIndex: 0,
+				description:
+					"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak!",
+				descriptionMobile:
+					"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak",
+				buttonText: "Main Sekarang",
+				buttonHref: "https://www.mainhero.id",
+			},
+		});
+
+		// Slide 4: Event Banner - Bundesliga 2026/2027
 		slides.push({
 			id: "event-bundesliga",
 			type: "event" as const,
@@ -215,25 +234,7 @@ export default function HomePage() {
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
-		// Slide 4: HeroPlay Kickoff Banner
-		slides.push({
-			id: "hero-play-kickoff",
-			type: "cta" as const,
-			imageFallback: "/images/heroplay-banner/banner-1.webp",
-			imageMobileFallback: "/images/heroplay-banner/banner-1-mobile.webp",
-			heroPlayLayout: {
-				highlightedWord: "Kota Mana",
-				titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
-				highlightedLineIndex: 0,
-				description: "Menangkan hadiah menarik dan buat\nkotamu bangga!",
-				descriptionMobile:
-					"Ikuti Fruit Ninja City Battle terbaru dan bawa kota kamu menuju puncak",
-				buttonText: "Main Sekarang",
-				buttonHref: "https://www.mainhero.id",
-			},
-		});
-
-		// Slide 4: Article banner (if available)
+		// Slide 5: Article banner (if available)
 		if (featuredArticle) {
 			slides.push({
 				id: `article-${featuredArticle.id}`,
@@ -266,7 +267,7 @@ export default function HomePage() {
 		setFeaturedLoading(true);
 		try {
 			const response = await apiClient.get(
-				"/api/v1/article/gaji-pemain-tertinggi-la-liga-premier-league-5-liga-top-eropa",
+				"/api/v1/article/siapakah-elversberg-bundesliga-kini-di-atas-bayern-munchen",
 			);
 			if (response.data.status === "success") {
 				setFeaturedArticle(response.data.data);

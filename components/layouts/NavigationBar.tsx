@@ -195,9 +195,9 @@ export function NavigationBar() {
 								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
 							</Link>
 
-							{/* Bundesliga Prediction! Button */}
+							{/* Prediction Button */}
 							<Link
-								href="/teater-bola-asean-2026"
+								href="/games"
 								rel="noopener noreferrer"
 								className={cn(
 									"group relative overflow-hidden px-4 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-300",
@@ -210,7 +210,7 @@ export function NavigationBar() {
 								)}
 							>
 								<span className="relative z-10 flex items-center gap-2">
-									Bundesliga Prediction
+									Prediksi Skor
 								</span>
 								{/* Shine effect */}
 								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
@@ -292,12 +292,12 @@ export function NavigationBar() {
 							Main City Battle
 						</Link>
 
-						{/* Bundesliga Prediction Button */}
+						{/* Prediction Button */}
 						<Link
-							href="/teater-bola-asean-2026"
+							href="/games"
 							className="flex items-center justify-center gap-1.5 px-3 py-2 bg-[#1FE6DA] text-black font-bold rounded-lg text-xs hover:bg-[#1AC9BF] transition-colors"
 						>
-							Bundesliga Prediction
+							Prediksi Skor
 						</Link>
 					</div>
 

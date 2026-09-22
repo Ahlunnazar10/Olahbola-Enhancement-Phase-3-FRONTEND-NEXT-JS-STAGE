@@ -203,7 +203,7 @@ export function BannerSlider({
 		fadeEffect: { crossFade: true },
 		navigation: showControls,
 		className: "banner-slider w-full! h-full!",
-		speed: 800,
+		speed: 1000,
 		loop: showControls,
 		watchOverflow: true,
 		onSlideChange: () => {
