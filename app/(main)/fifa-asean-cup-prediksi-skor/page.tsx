@@ -573,6 +573,83 @@ export default function FifaAseanCupPage() {
 					</div>
 				</section>
 
+				{/* Prize Showcase */}
+				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-12">
+					<div
+						className="relative rounded-3xl border overflow-hidden"
+						style={{
+							background: colors.surfaceContainer,
+							borderColor: colors.primary30,
+						}}
+					>
+						{/* Ambient glow */}
+						<div
+							className="absolute top-0 right-0 w-80 h-80 rounded-full blur-[100px] pointer-events-none opacity-40"
+							style={{ background: colors.primary }}
+						/>
+						<div
+							aria-hidden
+							className="absolute bottom-0 left-0 w-60 h-60 rounded-full pointer-events-none"
+							style={{
+								background:
+									"radial-gradient(circle, rgba(67, 222, 204, 0.2) 0%, transparent 70%)",
+								filter: "blur(40px)",
+							}}
+						/>
+
+						<div className="relative z-10 flex flex-col md:flex-row items-center md:gap-12 px-5 md:px-12 py-4 md:py-0">
+							{/* Left: Text */}
+							<div className="flex-1 text-center md:text-left">
+								<div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-full mb-3">
+									<span className="relative flex h-2 w-2">
+										<span className="absolute inline-flex h-full w-full rounded-full bg-primary animate-ping opacity-75" />
+										<span
+											className={`relative inline-flex rounded-full h-2 w-2 ${isDark ? "bg-primary" : "bg-[#0a7c6e]"}`}
+										/>
+									</span>
+									<span
+										className="text-[9px] font-bold uppercase tracking-widest"
+										style={{ color: colors.primary }}
+									>
+										Hadiah Esklusif
+									</span>
+								</div>
+								<h2
+									className="text-lg md:text-3xl font-black italic uppercase leading-tight mb-1"
+									style={{ color: colors.text }}
+								>
+									Third Jersey
+									<span style={{ color: colors.primary }}>
+										{" "}
+										Timnas Indonesia{" "}
+									</span>
+								</h2>
+								<p
+									className="text-xs md:text-sm max-w-xl"
+									style={{ color: colors.textSecondary }}
+								>
+									Cukup ikut prediksi skor di setiap laga FIFA ASEAN CUP 2026
+									dan bawa pulang jersey Timnas Indonesia edisi terbatas!
+								</p>
+							</div>
+
+							{/* Right: Prize Image */}
+							<div className="shrink-0 relative">
+								<div className="relative w-56 h-56">
+									<Image
+										src="/images/home/timnas-prize.png"
+										alt="Jersey Timnas Indonesia - Hadiah FIFA ASEAN CUP 2026"
+										width={288}
+										height={288}
+										className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(67,222,204,0.4)]"
+										loading="lazy"
+									/>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
 				{/* Phase Tabs */}
 				<section className="max-w-7xl mx-auto px-4 md:px-8 mb-4 md:mb-8 overflow-x-auto">
 					<div
