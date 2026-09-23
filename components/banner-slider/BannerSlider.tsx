@@ -549,7 +549,7 @@ export function BannerSlider({
 											<img
 												alt={slide.eventRewardImageAlt || "Prize"}
 												src={slide.eventRewardImage}
-												className="h-100 md:h-135 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
+												className="h-100 md:h-155 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
 												loading="lazy"
 												width={540}
 												height={540}

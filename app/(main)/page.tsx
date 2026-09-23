@@ -179,8 +179,8 @@ export default function HomePage() {
 		slides.push({
 			id: "event-fifa-asean-cup",
 			type: "event" as const,
-			imageFallback: "/images/home/timnas-bg.webp",
-			imageMobileFallback: "/images/home/timnas-bg.webp",
+			imageFallback: "/images/home/timnas-bg-1.webp",
+			imageMobileFallback: "/images/home/timnas-bg-1.webp",
 			eventBadge: "Prediksi Skor",
 			eventTitle: {
 				parts: [{ text: "FIFA ASEAN CUP 2026", color: "white" as const }],
@@ -191,26 +191,28 @@ export default function HomePage() {
 				text: "Prediksi Sekarang!",
 				href: "/fifa-asean-cup-prediksi-skor",
 			},
+			eventRewardImage: "/images/home/timnas-prize.png",
+			eventRewardImageAlt: "Jersey Timnas Indonesia",
 		});
 
-		// Slide 3: HeroPlay Kickoff Banner
-		slides.push({
-			id: "hero-play-kickoff",
-			type: "cta" as const,
-			imageFallback: "/images/heroplay-banner/banner-2.webp",
-			imageMobileFallback: "/images/heroplay-banner/banner-2-mobile.webp",
-			heroPlayLayout: {
-				highlightedWord: "Kota Mana",
-				titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
-				highlightedLineIndex: 0,
-				description:
-					"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak!",
-				descriptionMobile:
-					"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak",
-				buttonText: "Main Sekarang",
-				buttonHref: "https://www.mainhero.id",
-			},
-		});
+		// // Slide 3: HeroPlay Kickoff Banner
+		// slides.push({
+		// 	id: "hero-play-kickoff",
+		// 	type: "cta" as const,
+		// 	imageFallback: "/images/heroplay-banner/banner-2.webp",
+		// 	imageMobileFallback: "/images/heroplay-banner/banner-2-mobile.webp",
+		// 	heroPlayLayout: {
+		// 		highlightedWord: "Kota Mana",
+		// 		titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
+		// 		highlightedLineIndex: 0,
+		// 		description:
+		// 			"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak!",
+		// 		descriptionMobile:
+		// 			"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak",
+		// 		buttonText: "Main Sekarang",
+		// 		buttonHref: "https://www.mainhero.id",
+		// 	},
+		// });
 
 		// Slide 4: Event Banner - Bundesliga 2026/2027
 		slides.push({
