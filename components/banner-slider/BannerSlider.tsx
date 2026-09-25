@@ -534,16 +534,6 @@ export function BannerSlider({
 											}}
 										/>
 
-										<div
-											aria-hidden
-											className="absolute z-0 inset-0 m-auto w-64 h-64 sm:w-80 sm:h-80 rounded-full border-2 border-primary/20 pointer-events-none"
-										/>
-
-										<div
-											aria-hidden
-											className="absolute z-0 inset-0 m-auto w-44 h-44 sm:w-56 sm:h-56 rounded-full border border-primary/30 pointer-events-none"
-										/>
-
 										{/* Reward Image */}
 										<div className="relative z-20">
 											<img

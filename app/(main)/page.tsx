@@ -191,7 +191,7 @@ export default function HomePage() {
 				text: "Prediksi Sekarang!",
 				href: "/fifa-asean-cup-prediksi-skor",
 			},
-			eventRewardImage: "/images/home/timnas-prize.png",
+			eventRewardImage: "/images/home/timnas-prize-1.png",
 			eventRewardImageAlt: "Jersey Timnas Indonesia",
 		});
 
@@ -382,7 +382,7 @@ export default function HomePage() {
 					<BannerSlider
 						slides={bannerSlides}
 						autoPlay={true}
-						autoPlayInterval={1200}
+						autoPlayInterval={3000}
 						showNavigation={bannerSlides.length > 1}
 						isDark={isDark}
 						isMobile={isMobileView}

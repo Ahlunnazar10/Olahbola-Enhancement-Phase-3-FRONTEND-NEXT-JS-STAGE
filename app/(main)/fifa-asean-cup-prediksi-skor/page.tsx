@@ -629,7 +629,8 @@ export default function FifaAseanCupPage() {
 									style={{ color: colors.textSecondary }}
 								>
 									Cukup ikut prediksi skor di setiap laga FIFA ASEAN CUP 2026
-									dan bawa pulang jersey Timnas Indonesia edisi terbatas!
+									dan bawa pulang olahbola merchandise atau jersey Timnas
+									Indonesia edisi terbatas!
 								</p>
 							</div>
 
@@ -637,7 +638,7 @@ export default function FifaAseanCupPage() {
 							<div className="shrink-0 relative">
 								<div className="relative w-56 h-56">
 									<Image
-										src="/images/home/timnas-prize.png"
+										src="/images/home/timnas-prize-1.png"
 										alt="Jersey Timnas Indonesia - Hadiah FIFA ASEAN CUP 2026"
 										width={288}
 										height={288}
