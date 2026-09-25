@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Home, Footprints } from "lucide-react";
+import { Home } from "lucide-react";
 
 export default function NotFound() {
 	const [isDark, setIsDark] = useState(true);
@@ -144,16 +144,6 @@ export default function NotFound() {
 			>
 				{/* Animated Background Elements */}
 				<div className="absolute inset-0 overflow-hidden pointer-events-none">
-					{/* Floating Orbs */}
-					<div
-						className="absolute w-96 h-96 rounded-full animate-float"
-						style={{
-							background: `radial-gradient(circle, ${colors.accentGlow} 0%, transparent 70%)`,
-							filter: "blur(80px)",
-							top: "10%",
-							left: "10%",
-						}}
-					/>
 					<div
 						className="absolute w-80 h-80 rounded-full"
 						style={{
@@ -173,35 +163,6 @@ export default function NotFound() {
 							backgroundSize: "60px 60px",
 						}}
 					/>
-
-					{/* Floating Football Icons */}
-					<div
-						className="absolute top-20 left-[15%] animate-bounce-subtle"
-						style={{ animationDelay: "0s" }}
-					>
-						<Footprints
-							className="size-10 opacity-20"
-							style={{ color: colors.accent }}
-						/>
-					</div>
-					<div
-						className="absolute top-40 right-[20%] animate-bounce-subtle"
-						style={{ animationDelay: "0.5s" }}
-					>
-						<Footprints
-							className="size-8 opacity-15"
-							style={{ color: colors.accent }}
-						/>
-					</div>
-					<div
-						className="absolute bottom-32 left-[25%] animate-bounce-subtle"
-						style={{ animationDelay: "1s" }}
-					>
-						<Footprints
-							className="size-12 opacity-10"
-							style={{ color: colors.accent }}
-						/>
-					</div>
 				</div>
 
 				{/* Main Content */}
