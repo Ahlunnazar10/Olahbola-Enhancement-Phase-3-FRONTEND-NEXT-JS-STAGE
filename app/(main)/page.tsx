@@ -69,7 +69,7 @@ export default function HomePage() {
 	const [activeBannerIndex, setActiveBannerIndex] = useState(0);
 	const [activeLeague, setActiveLeague] = useState<
 		"bundesliga" | "fifa-asean-cup"
-	>("bundesliga");
+	>("fifa-asean-cup");
 	const heroSectionRef = useRef<HTMLElement>(null);
 
 	const { ref: articleRef, inView: articleVisible } = useSectionInView(0.1);
