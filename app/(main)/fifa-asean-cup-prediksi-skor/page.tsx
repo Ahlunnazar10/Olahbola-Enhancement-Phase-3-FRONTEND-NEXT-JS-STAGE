@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Trophy, Lock, Check, X, Info } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -284,6 +285,7 @@ const LIGHT_COLORS = {
 export default function FifaAseanCupPage() {
 	const { theme } = useUIStore();
 	const { isAuthenticated, user } = useAuthStore();
+	const router = useRouter();
 	const isDark = theme === "dark";
 
 	const [activePhase, setActivePhase] = useState("group_stage");
@@ -321,6 +323,26 @@ export default function FifaAseanCupPage() {
 	const { data: myRankData, isLoading: myRankLoading } = useMyRank();
 	const { data: mySummaryData, isLoading: mySummaryLoading } = useMySummary();
 	const submitPrediction = useSubmitPrediction();
+
+	// Restore draft prediction after login redirect back to this page
+	useEffect(() => {
+		if (!isAuthenticated || !matchesData?.data) return;
+		if (typeof window === "undefined") return;
+		const raw = sessionStorage.getItem("fifa-asean-cup:draft");
+		if (!raw) return;
+		sessionStorage.removeItem("fifa-asean-cup:draft");
+		try {
+			const { match_id, home_score, away_score } = JSON.parse(raw);
+			const match = matchesData.data.find((m: Match) => m.id === match_id);
+			if (match) {
+				setHomeScore(home_score);
+				setAwayScore(away_score);
+				setSelectedMatch(match);
+			}
+		} catch {
+			// invalid draft — ignore
+		}
+	}, [isAuthenticated, matchesData]);
 
 	const [initialLoadDone, setInitialLoadDone] = useState(false);
 	const isAnyLoading =
@@ -378,7 +400,19 @@ export default function FifaAseanCupPage() {
 	};
 
 	const handleSubmit = async () => {
-		if (!selectedMatch || !isAuthenticated) return;
+		if (!selectedMatch) return;
+		if (!isAuthenticated) {
+			sessionStorage.setItem(
+				"fifa-asean-cup:draft",
+				JSON.stringify({
+					match_id: selectedMatch.id,
+					home_score: homeScore,
+					away_score: awayScore,
+				}),
+			);
+			router.push("/login");
+			return;
+		}
 		try {
 			await submitPrediction.mutateAsync({
 				match_id: selectedMatch.id,
@@ -750,7 +784,7 @@ export default function FifaAseanCupPage() {
 							matchesData?.data?.map((match: Match) => {
 								const userPred = getUserPrediction(match.id);
 								const hasPrediction = !!userPred;
-								const isEditable = match.is_prediction_open && isAuthenticated;
+								const isEditable = match.is_prediction_open;
 								const isCompleted = match.status === "completed";
 
 								return (

@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Lock, Check, X, Trophy, Circle, ChevronDown } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -224,6 +225,7 @@ const DEFAULT_ACTIVE_MATCHDAY = 4;
 export default function PrediksiSkorPage() {
 	const { theme } = useUIStore();
 	const { isAuthenticated, user } = useAuthStore();
+	const router = useRouter();
 	const isDark = theme === "dark";
 
 	const [activeMatchday, setActiveMatchday] = useState<number>(
@@ -291,6 +293,26 @@ export default function PrediksiSkorPage() {
 	const { data: myRankData, isLoading: myRankLoading } = useMyRank();
 	const { data: mySummaryData, isLoading: mySummaryLoading } = useMySummary();
 	const submitPrediction = useSubmitPrediction();
+
+	// Restore draft prediction after login redirect back to this page
+	useEffect(() => {
+		if (!isAuthenticated || !matchesData?.data) return;
+		if (typeof window === "undefined") return;
+		const raw = sessionStorage.getItem("bundesliga:draft");
+		if (!raw) return;
+		sessionStorage.removeItem("bundesliga:draft");
+		try {
+			const { match_id, home_score, away_score } = JSON.parse(raw);
+			const match = matchesData.data.find((m: Match) => m.id === match_id);
+			if (match) {
+				setHomeScore(home_score);
+				setAwayScore(away_score);
+				setSelectedMatch(match);
+			}
+		} catch {
+			// invalid draft — ignore
+		}
+	}, [isAuthenticated, matchesData]);
 
 	const [initialLoadDone, setInitialLoadDone] = useState(false);
 	const isAnyLoading =
@@ -409,7 +431,19 @@ export default function PrediksiSkorPage() {
 	};
 
 	const handleSubmit = async () => {
-		if (!selectedMatch || !isAuthenticated) return;
+		if (!selectedMatch) return;
+		if (!isAuthenticated) {
+			sessionStorage.setItem(
+				"bundesliga:draft",
+				JSON.stringify({
+					match_id: selectedMatch.id,
+					home_score: homeScore,
+					away_score: awayScore,
+				}),
+			);
+			router.push("/login");
+			return;
+		}
 		try {
 			await submitPrediction.mutateAsync({
 				match_id: selectedMatch.id,
@@ -712,8 +746,7 @@ export default function PrediksiSkorPage() {
 							(matchesData ?? []).map((match: Match) => {
 								const userPred = getUserPrediction(match.id);
 								const hasPrediction = !!userPred;
-								const isEditable =
-									match.is_prediction_open && isAuthReady && isAuthenticated;
+								const isEditable = match.is_prediction_open && isAuthReady;
 								const isCompleted = match.status === "completed";
 								const homeTeam = getTeamInfo(match.home_team.code);
 								const awayTeam = getTeamInfo(match.away_team.code);
