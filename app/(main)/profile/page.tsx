@@ -16,6 +16,7 @@ import {
 	useUpdatePassword,
 } from "@/hooks/queries/useProfile";
 import { useLogout } from "@/hooks/queries/useAuth";
+import { useRouter } from "next/navigation";
 import { getProfilePictureUrl } from "@/lib/utils";
 import toast from "react-hot-toast";
 import {
@@ -74,6 +75,7 @@ export default function ProfilePage() {
 	const { data: quizSummary, isLoading: quizLoading } = useQuizSummary();
 	const [activeTab, setActiveTab] = useState<TabType>("overview");
 	const logoutMutation = useLogout();
+	const router = useRouter();
 
 	const displayUser = profile || user;
 
@@ -116,7 +118,7 @@ export default function ProfilePage() {
 		try {
 			await logoutMutation.mutateAsync();
 			toast.success("Logout berhasil!");
-			window.location.href = "/";
+			router.push("/profile");
 		} catch {
 			toast.error("Logout gagal");
 		}

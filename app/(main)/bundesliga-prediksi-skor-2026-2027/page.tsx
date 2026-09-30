@@ -206,7 +206,7 @@ function LoadingOverlay() {
 						Tunggu bentar ya!
 					</p>
 					<p className="text-sm" style={{ color: "#bbcac6" }}>
-						Memuat Data Pertandingan...
+						Memuat Data Pertandingan Bundesliga 2026/2027...
 					</p>
 				</div>
 			</div>
@@ -217,7 +217,7 @@ function LoadingOverlay() {
 // ============================================================
 // CONFIG — ubah nilai ini untuk geser matchday aktif default
 // ============================================================
-const DEFAULT_ACTIVE_MATCHDAY = 4;
+const DEFAULT_ACTIVE_MATCHDAY = 5;
 
 // ============================================================
 // MAIN PAGE
@@ -295,24 +295,38 @@ export default function PrediksiSkorPage() {
 	const submitPrediction = useSubmitPrediction();
 
 	// Restore draft prediction after login redirect back to this page
+	const matchesDataRef = useRef(matchesData);
+	matchesDataRef.current = matchesData;
 	useEffect(() => {
-		if (!isAuthenticated || !matchesData?.data) return;
+		if (!isAuthenticated) return;
 		if (typeof window === "undefined") return;
 		const raw = sessionStorage.getItem("bundesliga:draft");
 		if (!raw) return;
-		sessionStorage.removeItem("bundesliga:draft");
+		let draft: {
+			match_id: string;
+			home_score: string;
+			away_score: string;
+			active_matchday?: number;
+		};
 		try {
-			const { match_id, home_score, away_score } = JSON.parse(raw);
-			const match = matchesData.data.find((m: Match) => m.id === match_id);
-			if (match) {
-				setHomeScore(home_score);
-				setAwayScore(away_score);
-				setSelectedMatch(match);
-			}
+			draft = JSON.parse(raw);
 		} catch {
-			// invalid draft — ignore
+			sessionStorage.removeItem("bundesliga:draft");
+			return;
 		}
-	}, [isAuthenticated, matchesData]);
+		// Restore active matchday first so matchesData refetches the right one
+		if (draft.active_matchday) setActiveMatchday(draft.active_matchday);
+		// Keep draft until the match is actually found — data may still be
+		// loading or fetching the restored matchday, and this effect re-runs then
+		const data = matchesDataRef.current?.data;
+		if (!data) return;
+		const match = data.find((m: Match) => m.id === draft.match_id);
+		if (!match) return;
+		sessionStorage.removeItem("bundesliga:draft");
+		setHomeScore(draft.home_score);
+		setAwayScore(draft.away_score);
+		setSelectedMatch(match);
+	}, [isAuthenticated, matchesDataRef.current]);
 
 	const [initialLoadDone, setInitialLoadDone] = useState(false);
 	const isAnyLoading =
@@ -439,6 +453,7 @@ export default function PrediksiSkorPage() {
 					match_id: selectedMatch.id,
 					home_score: homeScore,
 					away_score: awayScore,
+					active_matchday: activeMatchday,
 				}),
 			);
 			router.push("/login");

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, LogOut, CircleUserRound } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { useLogout } from "@/hooks/queries/useAuth";
@@ -23,6 +23,7 @@ const navLinks = [
 
 export function NavigationBar() {
 	const pathname = usePathname();
+	const router = useRouter();
 	const { user, isAuthenticated } = useAuthStore();
 	const logoutMutation = useLogout();
 	const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu, theme } =
@@ -48,7 +49,7 @@ export function NavigationBar() {
 		try {
 			await logoutMutation.mutateAsync();
 		} finally {
-			window.location.href = "/";
+			router.push(pathname);
 		}
 	};
 

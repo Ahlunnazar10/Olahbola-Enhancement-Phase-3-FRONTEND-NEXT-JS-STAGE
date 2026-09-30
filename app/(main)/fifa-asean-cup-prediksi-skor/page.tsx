@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -325,24 +325,40 @@ export default function FifaAseanCupPage() {
 	const submitPrediction = useSubmitPrediction();
 
 	// Restore draft prediction after login redirect back to this page
+	const matchesDataRef = useRef(matchesData);
+	matchesDataRef.current = matchesData;
 	useEffect(() => {
-		if (!isAuthenticated || !matchesData?.data) return;
+		if (!isAuthenticated) return;
 		if (typeof window === "undefined") return;
 		const raw = sessionStorage.getItem("fifa-asean-cup:draft");
 		if (!raw) return;
-		sessionStorage.removeItem("fifa-asean-cup:draft");
+		let draft: {
+			match_id: string;
+			home_score: string;
+			away_score: string;
+			active_phase?: Phase;
+			active_group?: string;
+		};
 		try {
-			const { match_id, home_score, away_score } = JSON.parse(raw);
-			const match = matchesData.data.find((m: Match) => m.id === match_id);
-			if (match) {
-				setHomeScore(home_score);
-				setAwayScore(away_score);
-				setSelectedMatch(match);
-			}
+			draft = JSON.parse(raw);
 		} catch {
-			// invalid draft — ignore
+			sessionStorage.removeItem("fifa-asean-cup:draft");
+			return;
 		}
-	}, [isAuthenticated, matchesData]);
+		// Restore active phase/group first so matchesData refetches the right group
+		if (draft.active_phase) setActivePhase(draft.active_phase);
+		if (draft.active_group) setActiveGroup(draft.active_group);
+		// Keep draft until the match is actually found — data may still be
+		// loading or fetching the restored group, and this effect re-runs then
+		const data = matchesDataRef.current?.data;
+		if (!data) return;
+		const match = data.find((m: Match) => m.id === draft.match_id);
+		if (!match) return;
+		sessionStorage.removeItem("fifa-asean-cup:draft");
+		setHomeScore(draft.home_score);
+		setAwayScore(draft.away_score);
+		setSelectedMatch(match);
+	}, [isAuthenticated, matchesDataRef.current]);
 
 	const [initialLoadDone, setInitialLoadDone] = useState(false);
 	const isAnyLoading =
@@ -408,6 +424,8 @@ export default function FifaAseanCupPage() {
 					match_id: selectedMatch.id,
 					home_score: homeScore,
 					away_score: awayScore,
+					active_phase: activePhase,
+					active_group: activeGroup,
 				}),
 			);
 			router.push("/login");
