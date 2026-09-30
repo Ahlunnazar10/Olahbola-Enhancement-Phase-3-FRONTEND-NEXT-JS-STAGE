@@ -304,8 +304,8 @@ export default function PrediksiSkorPage() {
 		if (!raw) return;
 		let draft: {
 			match_id: string;
-			home_score: string;
-			away_score: string;
+			home_score: number | "";
+			away_score: number | "";
 			active_matchday?: number;
 		};
 		try {

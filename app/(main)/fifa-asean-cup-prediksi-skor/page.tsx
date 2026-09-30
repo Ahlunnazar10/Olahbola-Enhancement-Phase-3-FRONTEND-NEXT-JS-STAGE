@@ -334,9 +334,9 @@ export default function FifaAseanCupPage() {
 		if (!raw) return;
 		let draft: {
 			match_id: string;
-			home_score: string;
-			away_score: string;
-			active_phase?: Phase;
+			home_score: number | "";
+			away_score: number | "";
+			active_phase?: string;
 			active_group?: string;
 		};
 		try {
