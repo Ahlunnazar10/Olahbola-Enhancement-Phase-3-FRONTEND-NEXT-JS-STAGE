@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Trophy, Lock, Check, X, Info } from "lucide-react";
@@ -297,25 +296,18 @@ export default function FifaAseanCupPage() {
 	const [homeScore, setHomeScore] = useState<number | "">(0);
 	const [awayScore, setAwayScore] = useState<number | "">(0);
 	const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
-	const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-
-	useEffect(() => {
-		if (isAuthenticated) {
-			setShowLoginPrompt(false);
-			return;
-		}
-		if (typeof window === "undefined") return;
-		const seen = sessionStorage.getItem("fifa-asean-cup:loginPromptSeen");
-		if (seen) return;
-		setShowLoginPrompt(true);
-		sessionStorage.setItem("fifa-asean-cup:loginPromptSeen", "1");
-	}, [isAuthenticated]);
 
 	const { data: phasesData, isLoading: phasesLoading } = usePhases();
 	const { data: matchesData, isLoading: matchesLoading } = useMatches({
 		phase: activePhase,
 		...(activePhase === "group_stage" && { group: activeGroup }),
 	});
+	// For guest users, hide completed matches; show only upcoming
+	const visibleMatches = useMemo(() => {
+		const all = matchesData?.data ?? [];
+		if (isAuthenticated) return all;
+		return all.filter((m: Match) => m.status !== "completed");
+	}, [matchesData, isAuthenticated]);
 	const { data: leaderboardData, isLoading: leaderboardLoading } =
 		useLeaderboard();
 	const { data: myPredictionsData, isLoading: myPredictionsLoading } =
@@ -783,7 +775,7 @@ export default function FifaAseanCupPage() {
 									<MatchCardSkeleton key={i} />
 								))}
 							</>
-						) : matchesData?.data?.length === 0 ? (
+						) : visibleMatches.length === 0 ? (
 							<div
 								className="col-span-2 text-center py-16 rounded-3xl"
 								style={{
@@ -795,11 +787,13 @@ export default function FifaAseanCupPage() {
 									Tidak ada pertandingan
 								</p>
 								<p className="text-sm" style={{ color: textSecondary }}>
-									Belum ada pertandingan untuk fase ini.
+									{isAuthenticated
+										? "Belum ada pertandingan untuk fase ini."
+										: "Semua pertandingan fase ini sudah selesai. Login untuk melihat hasil."}
 								</p>
 							</div>
 						) : (
-							matchesData?.data?.map((match: Match) => {
+							visibleMatches.map((match: Match) => {
 								const userPred = getUserPrediction(match.id);
 								const hasPrediction = !!userPred;
 								const isEditable = match.is_prediction_open;
@@ -1136,73 +1130,6 @@ export default function FifaAseanCupPage() {
 							>
 								Batal
 							</button>
-						</div>
-					</div>
-				</div>
-			)}
-
-			{/* Login Prompt Modal */}
-			{showLoginPrompt && (
-				<div
-					className="fixed inset-0 z-200 flex items-center justify-center p-4 animate-fadeIn"
-					style={{
-						background: "rgba(0,0,0,0.85)",
-						backdropFilter: "blur(8px)",
-					}}
-					onClick={() => setShowLoginPrompt(false)}
-				>
-					<div
-						className="w-full max-w-sm p-6 rounded-3xl border relative overflow-hidden animate-scaleIn text-center"
-						style={{
-							background: surface,
-							borderColor: colors.primary30,
-							boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)`,
-						}}
-						onClick={(e) => e.stopPropagation()}
-					>
-						<div
-							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
-							style={{ background: primaryAlpha }}
-						/>
-						<button
-							onClick={() => setShowLoginPrompt(false)}
-							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
-							style={{ background: whiteAlpha5, color: textSecondary }}
-						>
-							<X className="size-4" />
-						</button>
-						<div className="relative z-10">
-							<div
-								className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-								style={{
-									background: colors.primary15,
-									border: `2px solid ${colors.primary30}`,
-								}}
-							>
-								<Lock className="size-7" style={{ color: primary }} />
-							</div>
-							<h3 className="text-xl font-black mb-2" style={{ color: text }}>
-								<span style={{ color: primary }}>Login Dulu Ya!</span>
-							</h3>
-							<p
-								className="text-sm mb-6 leading-relaxed"
-								style={{ color: textSecondary }}
-							>
-								Kamu belum login sob. Login dulu biar bisa ikut main prediksi
-								skor FIFA Asean Cup 2026!
-							</p>
-							<Link href="/login">
-								<div
-									className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
-									style={{
-										background: primary,
-										color: "#003732",
-										boxShadow: `0 2px 15px ${primaryAlpha}`,
-									}}
-								>
-									Login Sekarang
-								</div>
-							</Link>
 						</div>
 					</div>
 				</div>
