@@ -287,7 +287,7 @@ export default function FifaAseanCupPage() {
 	const router = useRouter();
 	const isDark = theme === "dark";
 
-	const [activePhase, setActivePhase] = useState("group_stage");
+	const [activePhase, setActivePhase] = useState("grand_final");
 	// Grand Final tab: merges third_place + final phases (same day, different times)
 	const isGrandFinal = activePhase === "grand_final";
 	const [activeGroup, setActiveGroup] = useState("A");
