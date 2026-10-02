@@ -144,11 +144,14 @@ export function useTeams(grouped: boolean = true) {
 }
 
 // Get matches with optional filters
-export function useMatches(filters: {
-	phase?: string;
-	group?: string;
-	matchday?: number;
-}) {
+export function useMatches(
+	filters: {
+		phase?: string;
+		group?: string;
+		matchday?: number;
+	} | undefined,
+	enabled = true,
+) {
 	return useQuery({
 		queryKey: ["fifa-asean-cup", "matches", filters],
 		queryFn: async () => {
@@ -157,6 +160,7 @@ export function useMatches(filters: {
 			});
 			return response.data;
 		},
+		enabled,
 		staleTime: 30 * 1000, // 30 seconds for upcoming matches
 	});
 }

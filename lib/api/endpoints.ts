@@ -256,6 +256,7 @@ export const endpoints = {
 	// Duel
 	ngolahBolaDuelChallenge: "/api/v1/ngolah-bola/duel/challenge",
 	ngolahBolaDuelHistory: "/api/v1/ngolah-bola/duel/history",
+	ngolahBolaDuelPlaySubmit: "/api/v1/ngolah-bola/duel/play/submit",
 
 	// Daily Reward
 	ngolahBolaDailyRewardStatus: "/api/v1/ngolah-bola/daily-reward/status",
