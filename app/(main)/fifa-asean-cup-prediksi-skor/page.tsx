@@ -288,6 +288,8 @@ export default function FifaAseanCupPage() {
 	const isDark = theme === "dark";
 
 	const [activePhase, setActivePhase] = useState("group_stage");
+	// Grand Final tab: merges third_place + final phases (same day, different times)
+	const isGrandFinal = activePhase === "grand_final";
 	const [activeGroup, setActiveGroup] = useState("A");
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
@@ -298,16 +300,48 @@ export default function FifaAseanCupPage() {
 	const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
 
 	const { data: phasesData, isLoading: phasesLoading } = usePhases();
-	const { data: matchesData, isLoading: matchesLoading } = useMatches({
-		phase: activePhase,
-		...(activePhase === "group_stage" && { group: activeGroup }),
-	});
-	// For guest users, hide completed matches; show only upcoming
+	const { data: tpMatches, isLoading: tpLoading } = useMatches(
+		{ phase: "third_place" },
+		isGrandFinal,
+	);
+	const { data: fnMatches, isLoading: fnLoading } = useMatches(
+		{ phase: "final" },
+		isGrandFinal,
+	);
+	const { data: regularMatchesData, isLoading: regularMatchesLoading } =
+		useMatches(
+			isGrandFinal
+				? undefined
+				: {
+						phase: activePhase,
+						...(activePhase === "group_stage" && { group: activeGroup }),
+					},
+			!isGrandFinal,
+		);
+	const matchesData = isGrandFinal
+		? {
+				data: [...(tpMatches?.data ?? []), ...(fnMatches?.data ?? [])],
+			}
+		: regularMatchesData;
+	const matchesLoading = isGrandFinal
+		? tpLoading || fnLoading
+		: regularMatchesLoading;
+	// For guest users, hide completed matches; show only upcoming.
+	// Grand Final tab: sort third-place match before final (by kickoff time).
 	const visibleMatches = useMemo(() => {
-		const all = matchesData?.data ?? [];
-		if (isAuthenticated) return all;
-		return all.filter((m: Match) => m.status !== "completed");
-	}, [matchesData, isAuthenticated]);
+		const all = (matchesData?.data ?? []) as Match[];
+		const filtered = isAuthenticated
+			? all
+			: all.filter((m: Match) => m.status !== "completed");
+		if (isGrandFinal) {
+			return [...filtered].sort((a, b) =>
+				`${a.match_date} ${a.kickoff_time}`.localeCompare(
+					`${b.match_date} ${b.kickoff_time}`,
+				),
+			);
+		}
+		return filtered;
+	}, [matchesData, isAuthenticated, isGrandFinal]);
 	const { data: leaderboardData, isLoading: leaderboardLoading } =
 		useLeaderboard();
 	const { data: myPredictionsData, isLoading: myPredictionsLoading } =
@@ -338,7 +372,14 @@ export default function FifaAseanCupPage() {
 			return;
 		}
 		// Restore active phase/group first so matchesData refetches the right group
-		if (draft.active_phase) setActivePhase(draft.active_phase);
+		if (draft.active_phase) {
+			// Legacy drafts may carry third_place/final slugs — map to grand_final
+			const slug =
+				draft.active_phase === "third_place" || draft.active_phase === "final"
+					? "grand_final"
+					: draft.active_phase;
+			setActivePhase(slug);
+		}
 		if (draft.active_group) setActiveGroup(draft.active_group);
 		// Keep draft until the match is actually found — data may still be
 		// loading or fetching the restored group, and this effect re-runs then
@@ -370,9 +411,11 @@ export default function FifaAseanCupPage() {
 			case "group_stage":
 				return "*Tebak akurat dapat 30 poin, tebak pemenang dapat 15 poin, jika salah dapat 0 poin";
 			case "third_place":
-				return "*Tebak akurat dapat 50 poin, tebak pemenang dapat 25 poin, jika salah dapat 0 poin";
+				return "*Perebutan Tempat Ketiga: tebak akurat 50 poin, tebak pemenang 25 poin";
 			case "final":
-				return "*Tebak akurat dapat 80 poin, tebak pemenang dapat 40 poin, jika salah dapat 0 poin";
+				return "*Final: tebak akurat 80 poin, tebak pemenang 40 poin";
+			case "grand_final":
+				return "*Perebutan Tempat Ketiga: tebak akurat 50 poin, tebak pemenang 25 poin | Final: tebak akurat 80 poin, tebak pemenang 40 poin (salah = 0 poin)";
 			default:
 				return "*Tebak akurat dapat 10 poin, tebak pemenang dapat 5 poin, jika salah dapat 0 poin";
 		}
@@ -397,9 +440,9 @@ export default function FifaAseanCupPage() {
 	const bg = colors.bg;
 	const surfaceContainer = colors.surfaceContainer;
 
-	const handlePhaseClick = (phase: Phase) => {
-		if (!phase.is_active) return;
-		setActivePhase(phase.slug);
+	const handlePhaseClick = (slug: string, isActive: boolean) => {
+		if (!isActive) return;
+		setActivePhase(slug);
 	};
 
 	const getUserPrediction = (matchId: string) => {
@@ -701,39 +744,66 @@ export default function FifaAseanCupPage() {
 						className="flex gap-2 md:gap-4 pb-4 border-b"
 						style={{ borderColor: whiteAlpha5 }}
 					>
-						{(phasesData?.data as Phase[] | undefined)?.map((phase: Phase) => {
-							const isActive = activePhase === phase.slug;
-							const isLocked = !phase.is_active;
-							return (
-								<button
-									key={phase.id}
-									onClick={() => handlePhaseClick(phase)}
-									className="relative px-6 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition-all flex items-center gap-2"
-									style={
-										isActive
-											? {
-													background: colors.buttonActiveBg,
-													color: colors.buttonActiveText,
-												}
-											: isLocked
-												? {
-														background: colors.badgeInactiveBg,
-														color: colors.lockText,
-														border: `1px solid ${colors.lockBorder}`,
-														cursor: "not-allowed",
-													}
-												: {
-														background: colors.badgeInactiveBg,
-														color: colors.badgeInactiveText,
-														border: `1px solid ${colors.badgeInactiveBorder}`,
-													}
-									}
-								>
-									{isLocked && <Lock className="size-3.5" />}
-									{phase.name}
-								</button>
+						{(() => {
+							const phases = (phasesData?.data as Phase[] | undefined) ?? [];
+							const grandFinalPhase: Phase = {
+								id: "grand_final",
+								name: "Grand Final",
+								slug: "grand_final",
+								order: Math.max(0, ...phases.map((p) => p.order)) + 1,
+								is_active:
+									phases.find((p) => p.slug === "third_place")?.is_active ??
+									phases.find((p) => p.slug === "final")?.is_active ??
+									false,
+							};
+							const shownPhases = phases.filter(
+								(p) => p.slug !== "third_place" && p.slug !== "final",
 							);
-						})}
+							// Place Grand Final after group stage / knockout phases
+							const groupIdx = shownPhases.findIndex(
+								(p) => p.slug === "group_stage",
+							);
+							const allPhases = [
+								...shownPhases.slice(0, groupIdx + 1),
+								grandFinalPhase,
+								...shownPhases.slice(groupIdx + 1),
+							];
+							return allPhases.map((phase: Phase) => {
+								const isActive = activePhase === phase.slug;
+								const isLocked = !phase.is_active;
+								return (
+									<button
+										key={phase.id}
+										onClick={() =>
+											handlePhaseClick(phase.slug, phase.is_active)
+										}
+										className="relative px-6 py-2 rounded-full font-semibold text-sm whitespace-nowrap transition-all flex items-center gap-2"
+										style={
+											isActive
+												? {
+														background: colors.buttonActiveBg,
+														color: colors.buttonActiveText,
+													}
+												: isLocked
+													? {
+															background: colors.badgeInactiveBg,
+															color: colors.lockText,
+															border: `1px solid ${colors.lockBorder}`,
+															cursor: "not-allowed",
+														}
+													: {
+															background: colors.badgeInactiveBg,
+															color: colors.badgeInactiveText,
+															border: `1px solid ${colors.badgeInactiveBorder}`,
+														}
+										}
+									>
+										{isLocked && <Lock className="size-3.5" />}
+										{phase.name}
+									</button>
+								);
+							});
+						})()}
 					</div>
 				</section>
 
@@ -808,17 +878,30 @@ export default function FifaAseanCupPage() {
 											borderColor: whiteAlpha10,
 										}}
 									>
-										<div className="flex justify-between items-center mb-8 relative z-10">
-											<span
-												className="text-[10px] md:text-xs font-semibold uppercase tracking-widest"
-												style={{ color: outline }}
-											>
-												{formatMatchDate(
-													match.match_date,
-													match.kickoff_time,
-													"WIB",
+										<div className="flex justify-between items-center mb-4 relative z-10">
+											<div className="flex flex-col items-start gap-1.5">
+												{isGrandFinal && match.phase?.name && (
+													<span
+														className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full"
+														style={{
+															background: colors.primary15,
+															color: primary,
+														}}
+													>
+														{match.phase.name}
+													</span>
 												)}
-											</span>
+												<span
+													className="text-[10px] md:text-xs font-semibold uppercase tracking-widest"
+													style={{ color: outline }}
+												>
+													{formatMatchDate(
+														match.match_date,
+														match.kickoff_time,
+														"WIB",
+													)}
+												</span>
+											</div>
 											{isCompleted && userPred && (
 												<div
 													className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
@@ -1023,6 +1106,17 @@ export default function FifaAseanCupPage() {
 							<X className="size-4" />
 						</button>
 						<div className="text-center mb-6 relative z-10">
+							{selectedMatch.phase?.name && (
+								<span
+									className="inline-block text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full mb-2"
+									style={{
+										background: colors.primary15,
+										color: primary,
+									}}
+								>
+									{selectedMatch.phase.name}
+								</span>
+							)}
 							<h3 className="text-xl font-bold mb-1" style={{ color: text }}>
 								{selectedMatch.home_team.name} vs {selectedMatch.away_team.name}
 							</h3>
