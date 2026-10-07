@@ -20,6 +20,7 @@ import {
 	type LeaderboardEntry,
 } from "@/hooks/queries/useFifaAseanCup";
 import { EventEndedBanner } from "@/components/games/EventEndedBanner";
+import { FifaAseanCupLeaderboard } from "@/components/games/FifaAseanCupLeaderboard";
 import { EVENT_STATUS } from "@/lib/games/eventStatus";
 import { getImageUrl } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -523,6 +524,7 @@ export default function FifaAseanCupPage() {
 							Prediksi Skor <br />
 							<span style={{ color: primary }}>FIFA Asean Cup 2026</span>
 						</h1>
+
 						<EventEndedBanner
 							isDark={isDark}
 							variant="full"
@@ -545,6 +547,7 @@ export default function FifaAseanCupPage() {
 								Olahbola FIFA Asean Cup 2026 Ended
 							</p>
 						</div>
+						<FifaAseanCupLeaderboard isDark={isDark} />
 					</section>
 
 					<style jsx global>{`

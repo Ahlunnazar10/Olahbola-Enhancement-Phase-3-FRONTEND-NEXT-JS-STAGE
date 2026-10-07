@@ -16,10 +16,7 @@ export function GamesPageContent() {
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
 
-	const accent = "#00C2B1";
-	const accentSoft = isDark
-		? "rgba(0, 194, 177, 0.5)"
-		: "rgba(10, 124, 110, 0.4)";
+	const accent = "#1FE6DA";
 
 	const meshRef = useRef<HTMLDivElement | null>(null);
 
@@ -187,7 +184,7 @@ export function GamesPageContent() {
 				</section>
 
 				{/* Active Game Cards Grid - diagonal: 1 active + 2 ended */}
-				<section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 md:mb-8">
+				<section className="grid grid-cols-1  gap-4 mb-6 md:mb-8">
 					{/* Prediksi Skor - Bundesliga 2026/2027 (ACTIVE) */}
 					<GameCard
 						title="Bundesliga 2026/2027"
@@ -199,7 +196,25 @@ export function GamesPageContent() {
 						accentColor={accent}
 						isDark={isDark}
 					/>
+				</section>
 
+				<div className="flex flex-col items-center text-center pt-10 mb-6 md:mb-12">
+					<h2
+						className={`text-xl md:text-4xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+					>
+						Full-time Events
+					</h2>
+					<p
+						className={`text-sm  tracking-widest mt-2 w-fit md:w-150 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+					>
+						Our most recent matches have ended, but the excitement continues!
+						Check out the results and see who came out on top in our thrilling
+						games.
+					</p>
+				</div>
+
+				{/* Inactive Game Cards Grid - 1 kolom */}
+				<section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 md:mb-18">
 					{/* Prediksi Skor - FIFA Asean Cup 2026 */}
 					<GameCard
 						title="FIFA Asean Cup 2026 "
@@ -213,10 +228,7 @@ export function GamesPageContent() {
 						isDark={isDark}
 						endedNotice={EVENT_STATUS.fifaAseanCup.endedNotice}
 					/>
-				</section>
 
-				{/* Inactive Game Cards Grid - 1 kolom */}
-				<section className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-18">
 					{/* Prediksi Skor - Teater Bola Asean 2026 (ENDED) */}
 					<GameCard
 						title="Prediksi Skor"

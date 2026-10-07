@@ -115,18 +115,7 @@ export function GameCard({
 						</span>
 					</>
 				) : isEnded ? (
-					<span
-						className="text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full"
-						style={{
-							border: `1px solid ${isDark ? "rgba(255, 215, 0, 0.4)" : "rgba(180, 83, 9, 0.3)"}`,
-							color: isDark ? "#FFD700" : "#B45309",
-							background: isDark
-								? "rgba(255, 215, 0, 0.06)"
-								: "rgba(180, 83, 9, 0.05)",
-						}}
-					>
-						Event Berakhir
-					</span>
+					<span></span>
 				) : (
 					<span
 						className="text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full"
@@ -152,7 +141,7 @@ export function GameCard({
 			</h3>
 
 			<h2
-				className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase mb-3 relative z-10"
+				className={`${isEnded ? "text-2xl md:text-3xl" : "text-3xl md:text-4xl"} font-black italic tracking-tighter uppercase mb-3 relative z-10`}
 				style={{
 					color: clickable
 						? "#ffffff"

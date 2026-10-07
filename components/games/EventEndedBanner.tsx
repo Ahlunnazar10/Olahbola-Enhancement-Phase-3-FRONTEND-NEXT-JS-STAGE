@@ -59,7 +59,7 @@ export function EventEndedBanner({
 				{notice.title}
 			</h3>
 			<p
-				className="text-sm max-w-md leading-relaxed"
+				className="text-sm max-w-2xl leading-relaxed"
 				style={{
 					color: isDark ? "rgba(255,255,255,0.55)" : "rgba(26,26,26,0.55)",
 				}}

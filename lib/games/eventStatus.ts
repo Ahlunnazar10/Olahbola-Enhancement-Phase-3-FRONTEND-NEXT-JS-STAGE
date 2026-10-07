@@ -1,4 +1,5 @@
-const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "admin.olahbola@gmail.com";
+const CONTACT_EMAIL =
+	process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "admin.olahbola@gmail.com";
 
 /**
  * Status event Olahbola Teater Bola Dunia Season 1.
@@ -11,7 +12,14 @@ const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "admin.olahbola@g
  *   - Update `endedLabel` bila perlu (mis. "Season 2").
  */
 
-export type GameEventKey = "prediksiSkor" | "quiz" | "teaterBolaAsean" | "bundesliga2026" | "ngolahBola2026" | "fifaAseanCup" | "superBigMatch";
+export type GameEventKey =
+	| "prediksiSkor"
+	| "quiz"
+	| "teaterBolaAsean"
+	| "bundesliga2026"
+	| "ngolahBola2026"
+	| "fifaAseanCup"
+	| "superBigMatch";
 
 export interface EventEndedNotice {
 	title: string;
@@ -40,8 +48,7 @@ export const EVENT_STATUS: Record<GameEventKey, GameEventStatus> = {
 		endedLabel: "Event Berakhir",
 		endedNotice: {
 			title: "Event Telah Berakhir",
-			message:
-				`Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi ${CONTACT_EMAIL} untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.`,
+			message: `Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi ${CONTACT_EMAIL} untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.`,
 			contactEmail: CONTACT_EMAIL,
 			emailSubject: "Klaim Hadiah — Teater Bola Dunia",
 		},
@@ -51,8 +58,7 @@ export const EVENT_STATUS: Record<GameEventKey, GameEventStatus> = {
 		endedLabel: "Event Berakhir",
 		endedNotice: {
 			title: "Event Telah Berakhir",
-			message:
-				`Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi ${CONTACT_EMAIL} untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.`,
+			message: `Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi ${CONTACT_EMAIL} untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Agustus 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.`,
 			contactEmail: CONTACT_EMAIL,
 			emailSubject: "Klaim Hadiah — Quiz Teater Bola Dunia",
 		},
@@ -88,13 +94,13 @@ export const EVENT_STATUS: Record<GameEventKey, GameEventStatus> = {
 		},
 	},
 	fifaAseanCup: {
-		isEnded: false,
+		isEnded: true,
 		endedLabel: "Event Berakhir",
 		endedNotice: {
-			title: "",
-			message: "",
-			contactEmail: "",
-			emailSubject: "",
+			title: "Event Telah Berakhir",
+			message: `Terima kasih sudah ikut serta! Semua pemenang wajib menghubungi ${CONTACT_EMAIL} untuk mengkonfirmasi klaim hadiah. Kami tunggu konfirmasi Anda paling lambat hari Jumat, 14 Oktober 2026 pukul 23:59 WIB. Setelah itu, hadiah Anda dianggap hangus.`,
+			contactEmail: CONTACT_EMAIL,
+			emailSubject: "Klaim Hadiah — FIFA Asean Cup 2026",
 		},
 	},
 	superBigMatch: {
@@ -122,6 +128,7 @@ export function getEventEndedStatus(key: GameEventKey): boolean {
 }
 
 /** @deprecated — gunakan `getEventEndedStatus(key)` atau `EVENT_STATUS[key].endedNotice` */
-export const EVENT_ENDED_NOTICE: EventEndedNotice = EVENT_STATUS.prediksiSkor.endedNotice;
+export const EVENT_ENDED_NOTICE: EventEndedNotice =
+	EVENT_STATUS.prediksiSkor.endedNotice;
 /** @deprecated — gunakan `mailto:${EVENT_STATUS[key].endedNotice.contactEmail}?subject=...` */
 export const mailtoClaim = `mailto:${EVENT_ENDED_NOTICE.contactEmail}?subject=${encodeURIComponent(EVENT_ENDED_NOTICE.emailSubject)}`;
