@@ -11,7 +11,6 @@ import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
 import type { Article, Interview } from "@/types";
 import { useLeaderboard as useBLLeaderboard } from "@/hooks/queries/useBundesliga";
-import { useLeaderboard as useFACLeaderboard } from "@/hooks/queries/useFifaAseanCup";
 import { ArrowRight, Play, Circle, X } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
 import { BannerSlider } from "@/components/banner-slider/BannerSlider";
@@ -67,9 +66,6 @@ export default function HomePage() {
 
 	const [heroPlayBgLoaded, setHeroPlayBgLoaded] = useState(false);
 	const [activeBannerIndex, setActiveBannerIndex] = useState(0);
-	const [activeLeague, setActiveLeague] = useState<
-		"bundesliga" | "fifa-asean-cup"
-	>("fifa-asean-cup");
 	const heroSectionRef = useRef<HTMLElement>(null);
 
 	const { ref: articleRef, inView: articleVisible } = useSectionInView(0.1);
@@ -82,15 +78,7 @@ export default function HomePage() {
 		useSectionInView(0.1);
 
 	// Bundesliga Live Leaderboard
-	const blLeaderboardData = useBLLeaderboard();
-	const facLeaderboardData = useFACLeaderboard();
-
-	const leaderboardData =
-		activeLeague === "bundesliga" ? blLeaderboardData : facLeaderboardData;
-	const normalizeSource =
-		activeLeague === "bundesliga"
-			? (raw: any) => raw
-			: (raw: any) => (raw as any)?.data ?? raw;
+	const leaderboardData = useBLLeaderboard();
 
 	useEffect(() => {
 		const img = new window.Image();
@@ -129,10 +117,11 @@ export default function HomePage() {
 	};
 
 	const leaderboardRows: LeaderboardRow[] = useMemo(() => {
-		const normalized = normalizeSource(leaderboardData.data);
-		const raw: any = Array.isArray(normalized) ? normalized : [];
+		const raw: any = Array.isArray(leaderboardData.data)
+			? leaderboardData.data
+			: [];
 		return normalizeRows(raw);
-	}, [leaderboardData.data, activeLeague]);
+	}, [leaderboardData.data]);
 
 	// HeroPlay colors - matching site theme
 	const heroPlayColors = {
@@ -175,46 +164,7 @@ export default function HomePage() {
 			ctaAlignment: "right",
 		});
 
-		// Slide 2: Event Banner - FIFA ASEAN CUP 2026
-		slides.push({
-			id: "event-fifa-asean-cup",
-			type: "event" as const,
-			imageFallback: "/images/home/timnas-bg-1.webp",
-			imageMobileFallback: "/images/home/timnas-bg-1.webp",
-			eventBadge: "Prediksi Skor",
-			eventTitle: {
-				parts: [{ text: "FIFA ASEAN CUP 2026", color: "white" as const }],
-			},
-			eventDescription:
-				"Kawal Timnas Indonesia merajai kompetisi! Tebak skor setiap laga dan buktiin kamu supporter terbaik.",
-			eventPrimaryCta: {
-				text: "Prediksi Sekarang!",
-				href: "/fifa-asean-cup-prediksi-skor",
-			},
-			eventRewardImage: "/images/home/timnas-prize-1.png",
-			eventRewardImageAlt: "Jersey Timnas Indonesia",
-		});
-
-		// // Slide 3: HeroPlay Kickoff Banner
-		slides.push({
-			id: "hero-play-kickoff",
-			type: "cta" as const,
-			imageFallback: "/images/heroplay-banner/banner-2.webp",
-			imageMobileFallback: "/images/heroplay-banner/banner-2-mobile.webp",
-			heroPlayLayout: {
-				highlightedWord: "Kota Mana",
-				titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
-				highlightedLineIndex: 0,
-				description:
-					"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak!",
-				descriptionMobile:
-					"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak",
-				buttonText: "Main Sekarang",
-				buttonHref: "https://www.mainhero.id",
-			},
-		});
-
-		// Slide 4: Event Banner - Bundesliga 2026/2027
+		// Slide 2: Event Banner - Bundesliga 2026/2027
 		slides.push({
 			id: "event-bundesliga",
 			type: "event" as const,
@@ -236,7 +186,26 @@ export default function HomePage() {
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
-		// Slide 5: Article banner (if available)
+		// Slide 3: HeroPlay Kickoff Banner
+		slides.push({
+			id: "hero-play-kickoff",
+			type: "cta" as const,
+			imageFallback: "/images/heroplay-banner/banner-2.webp",
+			imageMobileFallback: "/images/heroplay-banner/banner-2-mobile.webp",
+			heroPlayLayout: {
+				highlightedWord: "Kota Mana",
+				titleLines: ["Kota Mana yang", "Akan Jadi Juara?"],
+				highlightedLineIndex: 0,
+				description:
+					"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak!",
+				descriptionMobile:
+					"Ikuti HeroPlay City Battle terbaru dan bawa kota kamu menuju puncak",
+				buttonText: "Main Sekarang",
+				buttonHref: "https://www.mainhero.id",
+			},
+		});
+
+		// Slide 4: Article banner (if available)
 		if (featuredArticle) {
 			slides.push({
 				id: `article-${featuredArticle.id}`,
@@ -269,7 +238,7 @@ export default function HomePage() {
 		setFeaturedLoading(true);
 		try {
 			const response = await apiClient.get(
-				"/api/v1/article/siapakah-elversberg-bundesliga-kini-di-atas-bayern-munchen",
+				"/api/v1/article/siapa-rui-pinto-rahasia-man-city",
 			);
 			if (response.data.status === "success") {
 				setFeaturedArticle(response.data.data);
@@ -472,52 +441,6 @@ export default function HomePage() {
 					>
 						{/* Header */}
 						<div className="text-center mb-10">
-							{/* League Switcher */}
-							<div
-								className="inline-flex gap-2 mb-6 p-1 rounded-full"
-								style={{
-									background: heroPlayColors.cardBg,
-									border: `1px solid ${heroPlayColors.cardBorder}`,
-								}}
-							>
-								<button
-									onClick={() => setActiveLeague("bundesliga")}
-									className="px-5 py-2 rounded-full text-sm font-bold transition-all duration-300"
-									style={{
-										background:
-											activeLeague === "bundesliga"
-												? heroPlayColors.gradientBadge
-												: "transparent",
-										color:
-											activeLeague === "bundesliga"
-												? isDark
-													? "#003732"
-													: "#ffffff"
-												: heroPlayColors.textMuted,
-									}}
-								>
-									BUNDESLIGA
-								</button>
-								<button
-									onClick={() => setActiveLeague("fifa-asean-cup")}
-									className="px-5 py-2 rounded-full text-sm font-bold transition-all duration-300"
-									style={{
-										background:
-											activeLeague === "fifa-asean-cup"
-												? heroPlayColors.gradientBadge
-												: "transparent",
-										color:
-											activeLeague === "fifa-asean-cup"
-												? isDark
-													? "#003732"
-													: "#ffffff"
-												: heroPlayColors.textMuted,
-									}}
-								>
-									FIFA ASEAN CUP
-								</button>
-							</div>
-
 							{/* Title */}
 							<h2
 								className="text-3xl md:text-5xl font-black uppercase mb-3"
@@ -525,17 +448,14 @@ export default function HomePage() {
 									color: heroPlayColors.accent,
 								}}
 							>
-								{activeLeague === "bundesliga"
-									? "BUNDESLIGA 2026/2027"
-									: "FIFA ASEAN CUP 2026"}
+								BUNDESLIGA 2026/2027
 							</h2>
 							<p
 								className="text-base md:text-lg"
 								style={{ color: heroPlayColors.textSecondary }}
 							>
-								{activeLeague === "bundesliga"
-									? "Klasemen Sementara Berdasarkan Performa Prediksi Skor Bundesliga Season 2026/2027"
-									: "Klasemen Sementara Berdasarkan Performa Prediksi Skor FIFA Asean Cup 2026"}
+								Klasemen Sementara Berdasarkan Performa Prediksi Skor Bundesliga
+								Season 2026/2027
 							</p>
 						</div>
 
@@ -595,11 +515,7 @@ export default function HomePage() {
 									className="text-lg mb-4"
 									style={{ color: heroPlayColors.text }}
 								>
-									Gagal memuat klasemen{" "}
-									{activeLeague === "bundesliga"
-										? "Bundesliga"
-										: "FIFA ASEAN CUP"}
-									.
+									Gagal memuat klasemen Bundesliga.
 								</p>
 								<button
 									onClick={() => leaderboardData.refetch()}
