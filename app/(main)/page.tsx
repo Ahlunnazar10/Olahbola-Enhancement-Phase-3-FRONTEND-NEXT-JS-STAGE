@@ -151,18 +151,18 @@ export default function HomePage() {
 	const bannerSlides: BannerSlide[] = useMemo(() => {
 		const slides: BannerSlide[] = [];
 
-		// // Slide 1: HeroPlay Game Pass Video Banner
-		// slides.push({
-		// 	id: "hero-play-game-pass",
-		// 	type: "cta" as const,
-		// 	videoSrc: "/images/home/penalti-rivals.mp4",
-		// 	ctaTitle: "OLAHBOLA\nGAME PASS",
-		// 	ctaSubtitle:
-		// 		"Nikmati akses tak terbatas ke lebih dari 30 game sepak bola eksklusif yang bisa Kamu mainkan kapan saja, di mana saja.",
-		// 	ctaCtaText: "Main Sekarang",
-		// 	ctaCtaHref: "https://heroplay.igvault.id/subscription",
-		// 	ctaAlignment: "right",
-		// });
+		// Slide 1: HeroPlay Game Pass Video Banner
+		slides.push({
+			id: "hero-play-game-pass",
+			type: "cta" as const,
+			videoSrc: "/images/home/penalti-rivals.mp4",
+			ctaTitle: "OLAHBOLA\nGAME PASS",
+			ctaSubtitle:
+				"Nikmati akses tak terbatas ke lebih dari 30 game sepak bola eksklusif yang bisa Kamu mainkan kapan saja, di mana saja.",
+			ctaCtaText: "Main Sekarang",
+			ctaCtaHref: "https://heroplay.igvault.id/subscription",
+			ctaAlignment: "right",
+		});
 
 		// Slide 2: Event Banner - Bundesliga 2026/2027
 		slides.push({
@@ -186,49 +186,49 @@ export default function HomePage() {
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
-		// // Slide 3: HeroPlay Kickoff Banner
-		// slides.push({
-		// 	id: "hero-play-kickoff",
-		// 	type: "cta" as const,
-		// 	imageFallback: "/images/heroplay-banner/banner-tetris.webp",
-		// 	imageMobileFallback: "/images/heroplay-banner/banner-tetris-mobile.webp",
-		// 	heroPlayLayout: {
-		// 		highlightedWord: "Pertarungan",
-		// 		titleLines: ["Pertarungan", "Belum Selesai!"],
-		// 		highlightedLineIndex: 0,
-		// 		description: "Terus bermain, karena setiap skor menentukan kemenangan!",
-		// 		descriptionMobile:
-		// 			"Terus bermain, karena setiap skor menentukan kemenangan",
-		// 		buttonText: "Main Sekarang",
-		// 		buttonHref: "https://www.mainhero.id",
-		// 	},
-		// });
+		// Slide 3: HeroPlay Kickoff Banner
+		slides.push({
+			id: "hero-play-kickoff",
+			type: "cta" as const,
+			imageFallback: "/images/heroplay-banner/banner-tetris.webp",
+			imageMobileFallback: "/images/heroplay-banner/banner-tetris-mobile.webp",
+			heroPlayLayout: {
+				highlightedWord: "Pertarungan",
+				titleLines: ["Pertarungan", "Belum Selesai!"],
+				highlightedLineIndex: 0,
+				description: "Terus bermain, karena setiap skor menentukan kemenangan!",
+				descriptionMobile:
+					"Terus bermain, karena setiap skor menentukan kemenangan",
+				buttonText: "Main Sekarang",
+				buttonHref: "https://www.mainhero.id",
+			},
+		});
 
-		// // Slide 4: Article banner (if available)
-		// if (featuredArticle) {
-		// 	slides.push({
-		// 		id: `article-${featuredArticle.id}`,
-		// 		type: "article" as const,
-		// 		label: "Breaking",
-		// 		labelColor: "breaking" as const,
-		// 		title: {
-		// 			parts: [
-		// 				featuredArticle.title.split(" ").slice(0, 2).join(" "),
-		// 				featuredArticle.title.split(" ").slice(2).join(" "),
-		// 			],
-		// 			colors: ["primary", "white"] as ("primary" | "white" | "accent")[],
-		// 		},
-		// 		excerpt: featuredArticle.excerpt,
-		// 		image: featuredArticle.image,
-		// 		ctaButtons: {
-		// 			primary: {
-		// 				text: "Baca Sekarang",
-		// 				href: `/${featuredArticle.slug}`,
-		// 				icon: "arrow_forward",
-		// 			},
-		// 		},
-		// 	});
-		// }
+		// Slide 4: Article banner (if available)
+		if (featuredArticle) {
+			slides.push({
+				id: `article-${featuredArticle.id}`,
+				type: "article" as const,
+				label: "Breaking",
+				labelColor: "breaking" as const,
+				title: {
+					parts: [
+						featuredArticle.title.split(" ").slice(0, 2).join(" "),
+						featuredArticle.title.split(" ").slice(2).join(" "),
+					],
+					colors: ["primary", "white"] as ("primary" | "white" | "accent")[],
+				},
+				excerpt: featuredArticle.excerpt,
+				image: featuredArticle.image,
+				ctaButtons: {
+					primary: {
+						text: "Baca Sekarang",
+						href: `/${featuredArticle.slug}`,
+						icon: "arrow_forward",
+					},
+				},
+			});
+		}
 
 		return slides;
 	}, [featuredArticle]);
