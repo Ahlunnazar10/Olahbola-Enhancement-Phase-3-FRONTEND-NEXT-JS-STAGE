@@ -315,7 +315,7 @@ export function BannerSlider({
 									: slide.type === "cta"
 										? isMobile
 											? "bg-linear-to-t from-black via-black/60 to-transparent"
-											: "bg-linear-to-l from-black via-transparent to-transparent"
+											: "bg-linear-to-l from-black via-black/30 to-transparent"
 										: slide.type === "article"
 											? isMobile
 												? isDark
@@ -420,26 +420,6 @@ export function BannerSlider({
 								{/* Left Content: Typography & CTA */}
 
 								<div className="lg:col-span-6 flex flex-col items-center md:items-start gap-3 md:gap-6">
-									{/* Live Badge */}
-
-									{slide.eventBadge && (
-										<div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full mb-2">
-											<span className="relative flex h-3 w-3">
-												<span className="absolute inline-flex h-full w-full rounded-full bg-primary animate-ping opacity-75" />
-
-												<span
-													className={`relative inline-flex rounded-full h-3 w-3 ${isDark ? "bg-primary" : "bg-green-800"}`}
-												/>
-											</span>
-
-											<span
-												className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-											>
-												{slide.eventBadge}
-											</span>
-										</div>
-									)}
-
 									{/* Event Title */}
 
 									{slide.eventTitle && (
