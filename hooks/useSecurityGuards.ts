@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
-import { shouldBlockDevTools } from "@/lib/security";
+import { usePathname } from "next/navigation";
+import { shouldBlockDevTools, isOnGameRoute } from "@/lib/security";
 
 /**
  * Single entry point that activates the client-side security guards
  * (right-click, keyboard shortcuts, console overrides) only when the
- * central config says we should — production by default, dev/local off.
+ * central config says we should — production by default, dev/local off —
+ * AND the current page is a game route.
  *
  * Mount this once near the root of the app (e.g. inside Providers).
  */
 export function useSecurityGuards() {
-	const enabled = shouldBlockDevTools();
+	const pathname = usePathname();
+	const enabled = shouldBlockDevTools() && isOnGameRoute(pathname);
 
 	useEffect(() => {
 		if (!enabled) return;
@@ -146,5 +149,5 @@ export function useSecurityGuards() {
 				}
 			}
 		};
-	}, [enabled]);
+	}, [enabled, pathname]);
 }

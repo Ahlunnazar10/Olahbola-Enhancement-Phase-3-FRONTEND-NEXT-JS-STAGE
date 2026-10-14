@@ -59,3 +59,31 @@ export function shouldBlockDevTools(): boolean {
 
 	return true;
 }
+
+/**
+ * Game route prefixes. Devtools blocking is scoped to these pages only.
+ * Add new game routes here; everything else stays unrestricted.
+ */
+const GAME_ROUTE_PREFIXES = [
+	"/games",
+	"/quiz",
+	"/guess-who",
+	"/prediksi-skor",
+	"/teater-bola-asean-2026",
+	"/bundesliga-prediksi-skor-2026-2027",
+	"/fifa-asean-cup-prediksi-skor",
+	"/ngolah-bola",
+];
+
+/**
+ * Returns true if the given pathname is inside a game route.
+ * Matching is exact-segment based (no substring false-positives), so
+ * `/games-foo` will NOT match the `/games` prefix.
+ */
+export function isOnGameRoute(pathname: string): boolean {
+	if (!pathname) return false;
+	return GAME_ROUTE_PREFIXES.some(
+		(prefix) =>
+			pathname === prefix || pathname.startsWith(prefix + "/"),
+	);
+}
