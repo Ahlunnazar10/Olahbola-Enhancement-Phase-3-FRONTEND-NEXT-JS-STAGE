@@ -74,9 +74,7 @@ export default function ArticleDetailPage() {
 			};
 
 			const getSrcKey = (el: HTMLElement): string => {
-				return (
-					el.querySelector<HTMLIFrameElement>("iframe")?.src || ""
-				);
+				return el.querySelector<HTMLIFrameElement>("iframe")?.src || "";
 			};
 
 			const getFbKey = (el: HTMLElement): string => {
@@ -612,38 +610,58 @@ export default function ArticleDetailPage() {
 					text-transform: uppercase;
 					letter-spacing: -0.01em;
 				}
-				.article-content h2 {
-					font-size: 1.6rem;
+				.article-content h1,
+				.article-content h2,
+				.article-content h3,
+				.article-content h4,
+				.article-content h5,
+				.article-content h6 {
 					padding-bottom: 0.75em;
-					border-bottom: 2px solid
-						${isDark ? "rgba(0, 194, 177, 0.2)" : "rgba(10, 124, 110, 0.2)"};
+					border-bottom: 2px solid rgba(0, 194, 177, 0.2);
 					position: relative;
 				}
-				.article-content h2::before {
+				.article-content h1::before,
+				.article-content h2::before,
+				.article-content h3::before,
+				.article-content h4::before,
+				.article-content h5::before,
+				.article-content h6::before {
 					content: "";
 					position: absolute;
 					bottom: -2px;
 					left: 0;
 					width: 60px;
 					height: 2px;
-					background: ${colors.primary};
-					box-shadow: 0 0 10px
-						${isDark ? "rgba(0, 194, 177, 0.5)" : "rgba(10, 124, 110, 0.3)"};
+					background: #00c2b1;
+					box-shadow: 0 0 10px rgba(0, 194, 177, 0.5);
+				}
+				.article-content h2 {
+					font-size: 1.6rem;
 				}
 				.article-content h3 {
 					font-size: 1.25rem;
-					padding-left: 1rem;
-					border-left: 3px solid ${colors.primary};
 				}
 				.article-content h4 {
 					font-size: 1.1rem;
-					color: ${colors.primaryLight};
+				}
+				.article-content h5 {
+					font-size: 1rem;
+				}
+				.article-content h6 {
+					font-size: 0.95rem;
 				}
 				.article-content h1 {
 					font-size: 2rem;
-					color: ${isDark ? "#fff" : "#1a1a1a"};
-					text-shadow: 0 0 30px
-						${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.2)"};
+				}
+				.article-content h1::before {
+					content: "";
+					position: absolute;
+					bottom: -2px;
+					left: 0;
+					width: 60px;
+					height: 2px;
+					background: #00c2b1;
+					box-shadow: 0 0 10px rgba(0, 194, 177, 0.5);
 				}
 
 				/* Links */
@@ -1165,6 +1183,51 @@ export default function ArticleDetailPage() {
 					min-width: 300px;
 				}
 
+				/* Read-also / "Baca juga" callout */
+				.article-content .read-also,
+				.article-content [data-read-also] {
+					border-left: 0;
+					border-top: 1px solid rgba(0, 194, 177, 0.3);
+					border-bottom: 1px solid rgba(0, 194, 177, 0.3);
+					background: linear-gradient(
+						135deg,
+						rgba(0, 194, 177, 0.05) 0%,
+						rgba(67, 222, 204, 0.02) 100%
+					);
+					color: #fff;
+					text-align: center;
+					border-radius: 0;
+					margin: 2.5em 0;
+					padding: 2em 2.5em;
+					font-style: italic;
+					position: relative;
+					text-transform: uppercase;
+				}
+				.article-content .read-also a,
+				.article-content [data-read-also] a {
+					display: inline-flex;
+					align-items: center;
+					gap: 0.35em;
+					color: ${colors.linkColor} !important;
+					font-weight: 700;
+					text-transform: capitalize;
+					text-decoration: underline;
+					letter-spacing: 0.04em;
+					font-size: 1.1rem;
+					padding: 0.15em 0.35em;
+					border-bottom: none;
+					transition: all 0.3s ease;
+					position: relative;
+				}
+
+				.article-content .read-also a:hover,
+				.article-content [data-read-also] a:hover {
+					color: ${colors.primary} !important;
+					text-shadow: 0 0 12px
+						${isDark ? "rgba(0, 194, 177, 0.6)" : "rgba(10, 124, 110, 0.4)"};
+					transform: translateX(2px);
+				}
+
 				/* Horizontal Rule */
 				.article-content hr {
 					border: none;
@@ -1191,6 +1254,15 @@ export default function ArticleDetailPage() {
 					}
 					.article-content h3 {
 						font-size: 1.15rem;
+					}
+					.article-content h4 {
+						font-size: 1rem;
+					}
+					.article-content h5 {
+						font-size: 0.95rem;
+					}
+					.article-content h6 {
+						font-size: 0.9rem;
 					}
 					.article-content p:first-of-type:not(li > p)::first-letter {
 						font-size: 3em;
