@@ -16,7 +16,7 @@ import {
 } from "@/hooks/queries/useArticles";
 import { useUIStore } from "@/stores/uiStore";
 
-const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_PAGE = 8;
 
 function ArtikelContent() {
 	const router = useRouter();
@@ -205,16 +205,19 @@ function ArtikelContent() {
 		}
 	}, [categorySlug, page, categoryAllArticles, isInitialized]);
 
-	// Sync hasMore
-	useEffect(() => {
-		setHasMore(page < totalPages);
-	}, [page, totalPages]);
-
 	const handleNextPage = () => {
 		if (!hasMore || isLoadingMore) return;
 		setIsLoadingMore(true);
 		setPage((p) => p + 1);
 	};
+
+	// Reset hasMore saat "Lebih Banyak" selesai memuat
+	useEffect(() => {
+		if (!isFetching && isLoadingMore) {
+			setIsLoadingMore(false);
+			setHasMore(page < totalPages);
+		}
+	}, [isFetching, isLoadingMore, page, totalPages]);
 
 	// Reset loading state
 	useEffect(() => {
@@ -467,6 +470,11 @@ function ArtikelContent() {
 												>
 													{article.title}
 												</h3>
+												<p
+													className={`line-clamp-2 text-sm mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+												>
+													{article.excerpt}
+												</p>
 												{/* Author Info */}
 												{article.author && (
 													<div className="flex items-center gap-2 mt-3">
@@ -541,13 +549,16 @@ function ArtikelContent() {
 					)}
 
 					{/* End of content */}
-					{!hasMore && displayedArticles.length > 0 && (
-						<div
-							className={`col-span-full text-center py-8 ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
-						>
-							<p>Anda telah melihat semua artikel</p>
-						</div>
-					)}
+					{!hasMore &&
+						!isLoading &&
+						!isLoadingMore &&
+						displayedArticles.length > 0 && (
+							<div
+								className={`col-span-full text-center py-8 ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
+							>
+								<p>Anda telah melihat semua artikel</p>
+							</div>
+						)}
 
 					{/* Games Unit Ad — Article Feed Footer */}
 					{/* <div className="md:col-span-2 my-6">
@@ -588,9 +599,10 @@ function ArtikelContent() {
 									popularData?.data
 										?.slice(0, 4)
 										.map((article: any, index: number) => (
-											<div
+											<Link
 												key={article.id}
-												className="flex gap-6 group cursor-pointer"
+												href={`/${article.slug}`}
+												className="flex gap-6 group"
 											>
 												<span
 													className={`text-5xl font-display-xl transition-colors leading-none italic ${isDark ? "text-white/10 group-hover:text-primary/40" : "text-gray-300 group-hover:text-[#0a7c6e]/40"}`}
@@ -598,11 +610,6 @@ function ArtikelContent() {
 													{String(index + 1).padStart(2, "0")}
 												</span>
 												<div>
-													<span
-														className={`text-xs font-black uppercase tracking-[0.3em] ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-													>
-														VIRAL
-													</span>
 													<h4
 														className={`font-bold text-md uppercase tracking-tight leading-tight mt-1 group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 													>
@@ -617,7 +624,7 @@ function ArtikelContent() {
 														</span>
 													</div>
 												</div>
-											</div>
+											</Link>
 										))
 								)}
 							</div>
