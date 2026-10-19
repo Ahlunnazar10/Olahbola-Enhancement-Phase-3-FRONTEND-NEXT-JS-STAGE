@@ -1267,21 +1267,21 @@ export default function HomePage() {
 							className={`text-3xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 							data-aos="fade-up"
 						>
-							Yuk, Temui OlahBola di Sini!
+							Temui OlahBola di Sini!
 						</h2>
 
 						{socmedVisible && (
-							<div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-6 max-w-4xl mx-auto">
+							<div className="flex flex-wrap justify-center gap-3 md:gap-6 mx-auto">
 								{/* TikTok */}
 								<a
 									href="https://www.tiktok.com/@olahbolacom"
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di TikTok"
-									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									className="bg-surface-container  py-6 px-14 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
 								>
 									<svg
-										className="size-8 md:size-14 "
+										className="size-8 md:size-14"
 										viewBox="0 0 24 24"
 										fill="currentColor"
 									>
@@ -1295,10 +1295,10 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di Instagram"
-									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									className="bg-surface-container py-6 px-14 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
 								>
 									<svg
-										className="size-8 md:size-14 "
+										className="size-8 md:size-14"
 										viewBox="0 0 24 24"
 										fill="currentColor"
 									>
@@ -1312,10 +1312,10 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di Facebook"
-									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									className="bg-surface-container py-6 px-14 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
 								>
 									<svg
-										className="size-8 md:size-14 "
+										className="size-8 md:size-14"
 										viewBox="0 0 24 24"
 										fill="currentColor"
 									>
@@ -1329,10 +1329,10 @@ export default function HomePage() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Kunjungi OlahBola di YouTube"
-									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
+									className="bg-surface-container py-6 px-14 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
 								>
 									<svg
-										className="size-8 md:size-14 "
+										className="size-8 md:size-14"
 										viewBox="0 0 24 24"
 										fill="currentColor"
 									>
