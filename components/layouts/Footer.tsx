@@ -40,11 +40,6 @@ const footerLinks = {
 			icon: "instagram",
 		},
 		{
-			href: "https://x.com/Olahbolacom?t=aGIIQAZ_m84I2lUCDKuT7A&s=09",
-			label: "Olahbolacom",
-			icon: "twitter",
-		},
-		{
 			href: "https://www.youtube.com/@olahbolacom",
 			label: "@olahbolacom",
 			icon: "youtube",
@@ -53,11 +48,6 @@ const footerLinks = {
 			href: "https://www.facebook.com/olahbolacom",
 			label: "OlahBola",
 			icon: "facebook",
-		},
-		{
-			href: "https://sck.io/u/@olahbola.com/dsnKtxg6",
-			label: "OlahBola",
-			icon: "snackvideo",
 		},
 	],
 	contact: [

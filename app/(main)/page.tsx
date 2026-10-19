@@ -1339,38 +1339,6 @@ export default function HomePage() {
 										<path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
 									</svg>
 								</a>
-
-								{/* SnackVideo */}
-								<a
-									href="https://sck.io/u/@olahbola.com/dsnKtxg6"
-									target="_blank"
-									rel="noopener noreferrer"
-									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-								>
-									<svg
-										className="size-8 md:size-14 "
-										viewBox="0 0 24 24"
-										fill="currentColor"
-									>
-										<path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" />
-									</svg>
-								</a>
-
-								{/* X/Twitter */}
-								<a
-									href="https://x.com/Olahbolacom"
-									target="_blank"
-									rel="noopener noreferrer"
-									className="bg-surface-container p-4 md:p-6 rounded-xl flex items-center justify-center text-white transition-colors hover:bg-primary hover:text-on-primary border border-white/10"
-								>
-									<svg
-										className="size-8 md:size-14 "
-										viewBox="0 0 24 24"
-										fill="currentColor"
-									>
-										<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-									</svg>
-								</a>
 							</div>
 						)}
 					</div>
