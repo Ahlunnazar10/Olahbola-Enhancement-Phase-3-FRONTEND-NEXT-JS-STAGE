@@ -16,7 +16,7 @@ import {
 } from "@/hooks/queries/useArticles";
 import { useUIStore } from "@/stores/uiStore";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 9;
 
 function ArtikelContent() {
 	const router = useRouter();
@@ -84,8 +84,12 @@ function ArtikelContent() {
 	);
 
 	const apiTotalPages = articlesData?.metadata?.total_pages || 1;
+	const searchTotalPages = Math.max(
+		1,
+		Math.ceil(searchArticles.length / ITEMS_PER_PAGE),
+	);
 	const totalPages = searchQuery
-		? 1 // Search results don't paginate
+		? searchTotalPages
 		: categorySlug
 			? categoryTotalPages
 			: apiTotalPages;
@@ -127,8 +131,8 @@ function ArtikelContent() {
 							.includes(searchQueryActive.toLowerCase()),
 				);
 				if (isResultForCurrentSearch || searchArticles.length > 0) {
-					setDisplayedArticles(searchArticles);
-					setHasMore(false);
+					setDisplayedArticles(searchArticles.slice(0, ITEMS_PER_PAGE));
+					setHasMore(searchArticles.length > ITEMS_PER_PAGE);
 					setIsInitialized(true);
 				}
 			} else if (!isSearchLoading) {
@@ -205,6 +209,28 @@ function ArtikelContent() {
 		}
 	}, [categorySlug, page, categoryAllArticles, isInitialized]);
 
+	// Handle search pagination (page > 1) - client side
+	useEffect(() => {
+		if (!searchQueryActive) return;
+		if (!isInitialized) return;
+		if (page === 1) return;
+
+		const start = (page - 1) * ITEMS_PER_PAGE;
+		const end = start + ITEMS_PER_PAGE;
+		const newPageArticles = searchArticles.slice(start, end);
+
+		if (newPageArticles.length > 0) {
+			setDisplayedArticles((prev) => {
+				const existingIds = new Set(prev.map((a: any) => a.id));
+				const uniqueNew = newPageArticles.filter(
+					(a: any) => !existingIds.has(a.id),
+				);
+				if (uniqueNew.length === 0) return prev;
+				return [...prev, ...uniqueNew];
+			});
+		}
+	}, [searchQueryActive, page, searchArticles, isInitialized]);
+
 	const handleNextPage = () => {
 		if (!hasMore || isLoadingMore) return;
 		setIsLoadingMore(true);
@@ -225,6 +251,17 @@ function ArtikelContent() {
 			setIsLoadingMore(false);
 		}
 	}, [isFetching, isLoadingMore]);
+
+	// Reset isLoadingMore untuk pagination client-side (kategori & search)
+	useEffect(() => {
+		if (isLoadingMore) {
+			const done = categorySlug ? !isCategoryLoading : !isSearchLoading;
+			if (done) {
+				setIsLoadingMore(false);
+				setHasMore(page < totalPages);
+			}
+		}
+	}, [isLoadingMore, isCategoryLoading, isSearchLoading, page, totalPages, categorySlug]);
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -248,6 +285,7 @@ function ArtikelContent() {
 	// Get featured article (first one)
 	const featuredArticle = displayedArticles[0];
 	const remainingArticles = displayedArticles.slice(1);
+	const largeCardArticle = searchQuery || categorySlug ? featuredArticle : remainingArticles[0];
 
 	return (
 		<main
@@ -398,43 +436,38 @@ function ArtikelContent() {
 					) : (
 						<>
 							{/* Large Card - First article if no hero */}
-							{(!featuredArticle || searchQuery || categorySlug) &&
-								remainingArticles[0] && (
+							{(!featuredArticle || categorySlug || searchQuery) &&
+								largeCardArticle && (
 									<div
 										className={`md:col-span-2 rounded-2xl overflow-hidden group min-h-125 transition-all duration-300 ${isDark ? "glass-card hover:shadow-[0_0_30px_rgba(67,222,204,0.15)] hover:border-primary/30" : "bg-white shadow-lg border border-gray-200 hover:shadow-xl hover:border-[#0a7c6e]/30"}`}
 									>
 										<Link
-											href={`/${remainingArticles[0].slug}`}
+											href={`/${largeCardArticle.slug}`}
 											className="block"
 										>
 											<div className="relative h-87.5 overflow-hidden">
 												<img
 													className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
 													src={
-														remainingArticles[0].image
-															? `${process.env.NEXT_PUBLIC_API_URL}/storage/${remainingArticles[0].image}`
-															: remainingArticles[0].featured_image
-																? `${process.env.NEXT_PUBLIC_API_URL}/storage/${remainingArticles[0].featured_image}`
+														largeCardArticle.image
+															? `${process.env.NEXT_PUBLIC_API_URL}/storage/${largeCardArticle.image}`
+															: largeCardArticle.featured_image
+																? `${process.env.NEXT_PUBLIC_API_URL}/storage/${largeCardArticle.featured_image}`
 																: "/placeholder.png"
 													}
-													alt={remainingArticles[0].title}
+													alt={largeCardArticle.title}
 												/>
 											</div>
 											<div className="p-8">
-												<span
-													className={`font-bold text-xs uppercase tracking-[0.2em] mb-3 block ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-												>
-													Article
-												</span>
 												<h3
 													className={`text-3xl uppercase leading-tight mb-4 group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 												>
-													{remainingArticles[0].title}
+													{largeCardArticle.title}
 												</h3>
 												<p
 													className={`line-clamp-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 												>
-													{remainingArticles[0].excerpt}
+													{largeCardArticle.excerpt}
 												</p>
 											</div>
 										</Link>
@@ -443,7 +476,7 @@ function ArtikelContent() {
 
 							{/* Medium Cards - Remaining articles */}
 							{remainingArticles
-								.slice(featuredArticle || searchQuery || categorySlug ? 0 : 1)
+								.slice(featuredArticle || categorySlug ? 0 : 1)
 								.map((article: any) => (
 									<Link
 										key={article.id}
@@ -550,6 +583,7 @@ function ArtikelContent() {
 
 					{/* End of content */}
 					{!hasMore &&
+						!searchQuery &&
 						!isLoading &&
 						!isLoadingMore &&
 						displayedArticles.length > 0 && (
