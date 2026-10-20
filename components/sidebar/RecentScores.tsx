@@ -428,7 +428,7 @@ export function RecentScoresSidebar() {
 			</div>
 
 			{/* CTA */}
-			<Link
+			{/* <Link
 				href="/klasemen"
 				className={cn(
 					"flex items-center justify-between w-full px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors",
@@ -439,7 +439,7 @@ export function RecentScoresSidebar() {
 			>
 				Lihat Semua Klasemen &amp; Jadwal
 				<ChevronRight className="w-4 h-4" />
-			</Link>
+			</Link> */}
 		</div>
 	);
 }
