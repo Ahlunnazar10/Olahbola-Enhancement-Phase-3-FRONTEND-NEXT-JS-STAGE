@@ -17,6 +17,7 @@ import type { RelatedArticleItem } from "@/hooks/queries/useArticles";
 import { getRelatedArticles, extractEntities } from "@/lib/related";
 import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
+import { trackArticleView } from "@/lib/analytics";
 import { notFound } from "next/navigation";
 import {
 	ArrowLeft,
@@ -38,6 +39,12 @@ export default function ArticleDetailPage() {
 	const { data: article, isLoading, error } = useArticleDetail(slug);
 	const { data: popularData, isLoading: popularLoading } = usePopularArticles();
 	const contentRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!article?.data) return;
+		const d = article.data;
+		trackArticleView(d.id?.toString() || slug, d.title || "", d.category_name || "");
+	}, [article?.data, slug]);
 
 	// Get related articles based on same category
 	const categorySlug = article?.data?.category_slug;
@@ -466,53 +473,6 @@ export default function ArticleDetailPage() {
 							}}
 						/>
 
-						{/* Related Articles (Inside Main Content) */}
-						{relatedArticles.length > 0 && (
-							<div className="mt-12">
-								<h2
-									className={`text-2xl md:text-3xl font-black italic uppercase mb-8 tracking-tighter flex items-center gap-3 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
-								>
-									Artikel
-									<span className={isDark ? "text-primary" : "text-[#0a7c6e]"}>
-										Terkait
-									</span>
-								</h2>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-									{relatedArticles.slice(0, 4).map((item: any) => (
-										<Link
-											key={item.id}
-											href={`/${item.slug}`}
-											className={`rounded-xl overflow-hidden group transition-all ${isDark ? "glass-panel hover:neon-border-glow" : "bg-white shadow-lg border border-gray-200 hover:shadow-xl hover:border-[#0a7c6e]/30"}`}
-										>
-											<div className="relative h-55 overflow-hidden">
-												<img
-													src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}`}
-													alt={item.title}
-													className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-												/>
-												<div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
-											</div>
-											<div className="p-5">
-												<h4
-													className={`text-base font-bold group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors leading-snug line-clamp-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
-												>
-													{item.title}
-												</h4>
-												<div
-													className={`flex items-center gap-3 text-xs font-bold uppercase tracking-widest mt-3 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}
-												>
-													<span className="flex items-center gap-1">
-														<Clock className="size-3" />
-														{item.created_diff}
-													</span>
-												</div>
-											</div>
-										</Link>
-									))}
-								</div>
-							</div>
-						)}
-
 						{/* Other Categories */}
 						{(otherCatsLoading ||
 							otherCatGroups.some((g) => g.articles.length > 0)) && (
@@ -664,109 +624,59 @@ export default function ArticleDetailPage() {
 					{/* Sidebar - Sticky/Float */}
 					<aside className="lg:col-span-4 sticky top-5 self-start h-fit">
 						<div className="space-y-4">
-							{/* Popular Articles */}
-							<div
-								className={`p-6 rounded-xl transition-all duration-300 ${isDark ? "glass-panel border border-white/5" : "bg-white shadow-lg border border-gray-200"}`}
-							>
-								<h3
-									className={`text-lg font-black italic uppercase mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+							{/* Related Articles (Inside Main Content) */}
+							{relatedArticles.length > 0 && (
+								<div
+									className={`p-6 rounded-xl transition-all duration-300 ${isDark ? "glass-panel border border-white/5" : "bg-white shadow-lg border border-gray-200"}`}
 								>
-									<TrendingUp
-										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-									/>
-									Artikel Populer
-								</h3>
-								{popularLoading ? (
-									<div className="space-y-4">
-										{[...Array(4)].map((_, i) => (
-											<PopularArticleCardSkeleton key={i} />
-										))}
-									</div>
-								) : (
-									<div className="space-y-3">
-										{popularData?.data
-											?.slice(0, 5)
-											.map((item: any, index: number) => (
-												<Link
-													key={item.id}
-													href={`/${item.slug}`}
-													className="group block"
-												>
-													<div className="flex gap-4">
-														<span
-															className={`text-3xl font-black min-w-12 italic opacity-40 group-hover:opacity-100 transition-opacity leading-none mt-1 shrink-0 ${isDark ? "bg-clip-text bg-linear-to-b from-primary to-transparent text-transparent" : "bg-clip-text bg-linear-to-b from-[#0a7c6e] to-transparent text-transparent"}`}
-														>
-															{String(index + 1).padStart(2, "0")}
-														</span>
-														<div className="min-w-0">
-															<h4
-																className={`font-bold text-sm group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors line-clamp-2 leading-snug ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
-															>
-																{item.title}
-															</h4>
-															<p
-																className={`text-[10px] mt-1.5 uppercase tracking-widest font-bold flex items-center gap-1 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}
-															>
-																<Eye
-																	className={`size-4 ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}
-																/>
-																{item.views} Dibaca
-															</p>
-														</div>
-													</div>
-												</Link>
+									<h3
+										className={`text-lg font-black italic uppercase mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+									>
+										Artikel Terkait
+									</h3>
+									{popularLoading ? (
+										<div className="space-y-4">
+											{[...Array(4)].map((_, i) => (
+												<PopularArticleCardSkeleton key={i} />
 											))}
-									</div>
-								)}
-							</div>
+										</div>
+									) : (
+										<div className="space-y-3">
+											{relatedArticles
+												?.slice(0, 5)
+												.map((item: any, index: number) => (
+													<Link
+														key={item.id}
+														href={`/${item.slug}`}
+														className="group block"
+													>
+														<div className="flex gap-3 items-center">
+															<img
+																src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${item.image}`}
+																alt={item.title}
+																className="w-20 h-20 rounded-lg object-cover shrink-0"
+															/>
+															<div className="min-w-0">
+																<h4
+																	className={`font-bold text-sm group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors line-clamp-2 leading-snug ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+																>
+																	{item.title}
+																</h4>
+																<p
+																	className={`text-xs mt-1 uppercase tracking-widest font-bold ${isDark ? "text-white/40" : "text-[#5a5a5a]"}`}
+																>
+																	{item.created_diff}
+																</p>
+															</div>
+														</div>
+													</Link>
+												))}
+										</div>
+									)}
+								</div>
+							)}
 
 							<RecentScoresSidebar />
-
-							{/* Newsletter / CTA Card */}
-							{/* <div
-								className={`rounded-xl overflow-hidden transition-all ${isDark ? "glass-panel border border-primary/20" : "bg-white shadow-lg border border-[#0a7c6e]/20"}`}
-							>
-								<div className="relative aspect-4/3 overflow-hidden">
-									<div
-										className={`absolute inset-0 ${isDark ? "bg-linear-to-br from-primary/30 to-[#E63946]/20" : "bg-linear-to-br from-[#0a7c6e]/20 to-[#d32f3e]/10"}`}
-									/>
-									<div
-										className={`absolute inset-0 flex flex-col justify-center items-center text-center p-6 ${isDark ? "" : "bg-linear-to-br from-white to-gray-50"}`}
-									>
-										<Zap
-											className={`size-12 mb-4 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-										/>
-										<h3
-											className={`text-xl font-black italic uppercase mb-2 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
-										>
-											Stay Updated
-										</h3>
-										<p
-											className={`text-xs mb-4 leading-relaxed ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
-										>
-											Dapatkan artikel terbaru langsung ke inbox kamu.
-										</p>
-										<button
-											className={`w-full py-3 font-black uppercase tracking-widest text-xs rounded-lg transition-colors ${isDark ? "bg-primary text-on-primary hover:bg-primary/80" : "bg-[#0a7c6e] text-white hover:bg-[#095a50]"}`}
-										>
-											Subscribe For Free
-										</button>
-									</div>
-								</div>
-							</div> */}
-
-							{/* Promo Section */}
-							{/* <div
-								className={`h-fit rounded-2xl overflow-hidden group shadow-2xl ${isDark ? "" : "shadow-lg"}`}
-							>
-								<a href="https://www.igvault.id/home">
-									<img
-										className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]"
-										src="/images/article/ads-sidebar.webp"
-										alt="Promo"
-									/>
-								</a>
-							</div> */}
 						</div>
 					</aside>
 				</div>
