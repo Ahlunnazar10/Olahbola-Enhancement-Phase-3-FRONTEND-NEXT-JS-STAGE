@@ -4,7 +4,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useState, type ReactNode } from 'react';
 import { useSecurityGuards } from '@/hooks/useSecurityGuards';
+import { usePageTracking } from '@/lib/seo';
 import CookieBanner from '@/components/cookie-banner/CookieBanner';
+
+function PageTracking() {
+  usePageTracking();
+  return null;
+}
 
 interface ProvidersProps {
   children: ReactNode;
@@ -36,6 +42,7 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <SecurityGuard />
+      <PageTracking />
       {children}
       <Toaster
         position="top-right"

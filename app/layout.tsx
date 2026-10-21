@@ -14,6 +14,8 @@ import { LazyScripts } from "@/components/LazyScripts";
 
 const GTM_ID = "GTM-FC96C4T4";
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-VYYGQQ544P";
+
 // ------------------------------------------------------------------
 // AdSense publisher ID (used for the global adsbygoogle SDK)
 // Env var is preferred; fall back to the production ID so the
@@ -213,6 +215,7 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'AW-18465421117');
+gtag('config', '${GA_ID}', { send_page_view: false });
 `,
 					}}
 				/>
