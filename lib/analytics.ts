@@ -60,6 +60,92 @@ export function trackEvent(
 }
 
 /**
+ * Map a URL path to a human-readable page name.
+ * Used as the `page_name` parameter in the `page_visit` event.
+ */
+const PAGE_NAME_MAP: Record<string, string> = {
+	"/": "Home",
+	"/games": "Games",
+	"/quiz": "Quiz",
+	"/quiz/[session]/play": "Quiz Play",
+	"/interview": "Interview",
+	"/interview/[slug]": "Interview Detail",
+	"/kolaborasi": "Kolaborasi",
+	"/kolaborasi/[slug]": "Kolaborasi Detail",
+	"/artikel": "Artikel",
+	"/artikel/kategori/[slug]": "Artikel Kategori",
+	"/artikel/[slug]": "Artikel Detail",
+	"/media-spotlight": "Media Spotlight",
+	"/prediksi-skor": "Prediksi Skor",
+	"/guess-who": "Guess Who",
+	"/guess-who/play/[sessionId]": "Guess Who Play",
+	"/guess-who/play/[sessionId]/result": "Guess Who Result",
+	"/klasemen": "Klasemen",
+	"/ngolah-bola": "Ngolah Bola",
+	"/ngolah-bola/duel": "Ngolah Bola Duel",
+	"/ngolah-bola/duel/play": "Ngolah Bola Duel Play",
+	"/ngolah-bola/inventory": "Ngolah Bola Inventory",
+	"/ngolah-bola/packs": "Ngolah Bola Packs",
+	"/ngolah-bola/rewards": "Ngolah Bola Rewards",
+	"/ngolah-bola/squad": "Ngolah Bola Squad",
+	"/ngolah-bola/squad/[id]": "Ngolah Bola Squad Detail",
+	"/profile": "Profile",
+	"/sapa": "Sapa",
+	"/journey": "Journey",
+	"/kontak": "Kontak",
+	"/tentang-kami": "Tentang Kami",
+	"/login": "Login",
+	"/register": "Register",
+	"/kebijakan-hak-cipta": "Kebijakan Hak Cipta",
+	"/kebijakan-privasi": "Kebijakan Privasi",
+	"/syarat-dan-ketentuan-football-city-battle": "Syarat FCB",
+	"/syarat-dan-ketentuan-penggunaan": "Syarat Penggunaan",
+	"/syarat-dan-ketentuan-periklanan-partnership": "Syarat Partnership",
+	"/syarat-ketentuan-olahbola-games": "Syarat Olahbola Games",
+	"/bundesliga-prediksi-skor-2026-2027": "Bundesliga Prediksi",
+	"/fifa-asean-cup-prediksi-skor": "FIFA ASEAN Cup Prediksi",
+	"/teater-bola-asean-2026": "Teater Bola ASEAN",
+	"/payment": "Payment",
+	"/payment/finish": "Payment Finish",
+	"/payment/status/[orderId]": "Payment Status",
+};
+
+function getPageName(pathname: string): string {
+	if (PAGE_NAME_MAP[pathname]) return PAGE_NAME_MAP[pathname];
+	// Dynamic routes: match /artikel/{slug}, /interview/{slug}, /kolaborasi/{slug}, /ngolah-bola/squad/{id}
+	const dynamicPatterns = [
+		{ pattern: /^\/artikel\/[^/]+$/, name: "Artikel Detail" },
+		{ pattern: /^\/interview\/[^/]+$/, name: "Interview Detail" },
+		{ pattern: /^\/kolaborasi\/[^/]+$/, name: "Kolaborasi Detail" },
+		{ pattern: /^\/ngolah-bola\/squad\/[^/]+$/, name: "Ngolah Bola Squad Detail" },
+		{ pattern: /^\/guess-who\/play\/[^/]+$/, name: "Guess Who Play" },
+		{ pattern: /^\/guess-who\/play\/[^/]+\/result$/, name: "Guess Who Result" },
+		{ pattern: /^\/artikel\/kategori\/[^/]+$/, name: "Artikel Kategori" },
+		{ pattern: /^\/payment\/status\/[^/]+$/, name: "Payment Status" },
+	];
+	const match = dynamicPatterns.find((p) => p.pattern.test(pathname));
+	return match ? match.name : pathname;
+}
+
+/**
+ * Track a page visit with a human-readable page name.
+ * Call this in each page's useEffect to fire a `page_visit` event
+ * that can be used in GA4 Exploration reports to list ALL pages.
+ */
+export function trackPageVisit(pageName?: string): void {
+	if (!isGA4Available()) return;
+
+	const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+	const name = pageName || getPageName(pathname);
+
+	window.gtag("event", "page_visit", {
+		page_name: name,
+		page_path: pathname,
+		page_title: document.title || name,
+	});
+}
+
+/**
  * Track an article view
  * @param articleId - The article ID
  * @param articleTitle - The article title
@@ -83,6 +169,14 @@ export function trackArticleView(
 				item_list_name: "article_list",
 			},
 		],
+	});
+
+	// Also fire a flat event for easier GA4 reporting
+	// (view_item items array is hard to query in standard reports)
+	window.gtag("event", "article_view", {
+		article_id: articleId,
+		article_title: articleTitle,
+		article_category: articleCategory || "article",
 	});
 
 	console.log(`[GA4] Article view tracked: ${articleTitle}`);

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useState, type ReactNode } from 'react';
 import { useSecurityGuards } from '@/hooks/useSecurityGuards';
+import { usePageVisit } from '@/hooks/usePageVisit';
 import CookieBanner from '@/components/cookie-banner/CookieBanner';
 
 interface ProvidersProps {
@@ -16,6 +17,7 @@ function SecurityGuard() {
 }
 
 export function Providers({ children }: ProvidersProps) {
+  usePageVisit();
   const [queryClient] = useState(
     () =>
       new QueryClient({
