@@ -1,23 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
 
 /**
  * SEO Utility Functions
  * Helps with page tracking, structured data, and SEO optimizations
  */
-
-// Track page view in GA4
-export function trackPageView(pagePath: string, pageTitle?: string) {
-	if (typeof window !== "undefined" && (window as any).gtag) {
-		(window as any).gtag("event", "page_view", {
-			page_path: pagePath,
-			page_title: pageTitle || document.title,
-			page_location: window.location.href,
-		});
-	}
-}
 
 // Track custom events
 export function trackEvent(
@@ -65,48 +53,6 @@ export function trackGameInteraction(
 	});
 }
 
-/**
- * Page View Tracker Hook
- * Automatically tracks page views on route changes
- */
-export function usePageTracking() {
-	const pathname = usePathname();
-
-	useEffect(() => {
-		// Track page view on route change
-		trackPageView(pathname);
-
-		// Scroll depth tracking
-		let maxScroll = 0;
-		const handleScroll = () => {
-			const scrollPercent = Math.round(
-				(window.scrollY / (document.body.scrollHeight - window.innerHeight)) *
-					100,
-			);
-			if (scrollPercent > maxScroll) {
-				maxScroll = scrollPercent;
-
-				// Report at milestones
-				if (maxScroll >= 25 && maxScroll < 50) {
-					trackEvent("scroll_depth", { depth: "25%", page: pathname });
-				} else if (maxScroll >= 50 && maxScroll < 75) {
-					trackEvent("scroll_depth", { depth: "50%", page: pathname });
-				} else if (maxScroll >= 75 && maxScroll < 100) {
-					trackEvent("scroll_depth", { depth: "75%", page: pathname });
-				} else if (maxScroll === 100) {
-					trackEvent("scroll_depth", { depth: "100%", page: pathname });
-				}
-			}
-		};
-
-		window.addEventListener("scroll", handleScroll, { passive: true });
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, [pathname]);
-}
-
-/**
- * Time on Page Tracker
- */
 export function useTimeOnPage(onLeave?: (timeSpent: number) => void) {
 	useEffect(() => {
 		const startTime = Date.now();

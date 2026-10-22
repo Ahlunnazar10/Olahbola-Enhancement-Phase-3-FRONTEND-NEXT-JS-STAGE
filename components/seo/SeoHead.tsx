@@ -168,18 +168,6 @@ export function YandexVerification() {
 }
 
 /**
- * Track page view for Google Analytics
- * Call this on route changes
- */
-export function trackPageViewGA(pagePath: string) {
-	if (typeof window !== "undefined" && (window as any).gtag) {
-		(window as any).gtag("config", process.env.NEXT_PUBLIC_GA_ID, {
-			page_path: pagePath,
-		});
-	}
-}
-
-/**
  * SEO Performance Monitor
  * Helps track Core Web Vitals
  */

@@ -2,13 +2,12 @@
  * Google Analytics 4 (GA4) Event Tracking Utility
  *
  * Usage:
- * import { trackEvent, trackPageView } from '@/lib/analytics';
+ * import { trackEvent, trackArticleView } from '@/lib/analytics';
  *
  * // Track a custom event
  * trackEvent('click', 'button_click', { button_name: 'cta_button' });
  *
- * // Track page view
- * trackPageView('/artikel/new-article');
+ * Page views are auto-tracked by GA4 (send_page_view: true in layout.tsx).
  */
 
 declare global {
@@ -58,26 +57,6 @@ export function trackEvent(
 	window.gtag("event", action, eventData);
 
 	console.log(`[GA4] Event tracked: ${action}`, { category, params });
-}
-
-/**
- * Track a page view
- * @param url - The page URL path (e.g., '/artikel/my-article')
- * @param title - The page title (optional)
- */
-export function trackPageView(
-	url: string,
-	title?: string,
-): void {
-	if (!isGA4Available()) return;
-
-	window.gtag("event", "page_view", {
-		page_path: url,
-		page_title: title || document.title,
-		page_location: window.location.href,
-	});
-
-	console.log(`[GA4] Page view tracked: ${url}`);
 }
 
 /**
