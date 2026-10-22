@@ -6,6 +6,7 @@ import { Loader2, ArrowRight, Search, Eye, Zap } from "lucide-react";
 import Link from "next/link";
 import { ArticleCardSkeleton } from "@/components/article/ArticleCard";
 import { PopularArticleCardSkeleton } from "@/components/article/PopularArticleCard";
+import { MatchScheduleTicker } from "@/components/MatchScheduleTicker";
 import AdSlot from "@/components/ads/AdSlot";
 import {
 	useArticles,
@@ -261,7 +262,14 @@ function ArtikelContent() {
 				setHasMore(page < totalPages);
 			}
 		}
-	}, [isLoadingMore, isCategoryLoading, isSearchLoading, page, totalPages, categorySlug]);
+	}, [
+		isLoadingMore,
+		isCategoryLoading,
+		isSearchLoading,
+		page,
+		totalPages,
+		categorySlug,
+	]);
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -285,11 +293,12 @@ function ArtikelContent() {
 	// Get featured article (first one)
 	const featuredArticle = displayedArticles[0];
 	const remainingArticles = displayedArticles.slice(1);
-	const largeCardArticle = searchQuery || categorySlug ? featuredArticle : remainingArticles[0];
+	const largeCardArticle =
+		searchQuery || categorySlug ? featuredArticle : remainingArticles[0];
 
 	return (
 		<main
-			className={`pt-6 pb-20 px-4 md:px-16 max-w-screen-2xl mx-auto custom-scrollbar transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
+			className={`pb-20 px-4 md:px-16 max-w-screen-2xl mx-auto custom-scrollbar transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
 		>
 			{/* Hero Article - Featured */}
 			{!searchQuery && !categorySlug && featuredArticle && (
@@ -441,10 +450,7 @@ function ArtikelContent() {
 									<div
 										className={`md:col-span-2 rounded-2xl overflow-hidden group min-h-125 transition-all duration-300 ${isDark ? "glass-card hover:shadow-[0_0_30px_rgba(67,222,204,0.15)] hover:border-primary/30" : "bg-white shadow-lg border border-gray-200 hover:shadow-xl hover:border-[#0a7c6e]/30"}`}
 									>
-										<Link
-											href={`/${largeCardArticle.slug}`}
-											className="block"
-										>
+										<Link href={`/${largeCardArticle.slug}`} className="block">
 											<div className="relative h-87.5 overflow-hidden">
 												<img
 													className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -595,13 +601,13 @@ function ArtikelContent() {
 						)}
 
 					{/* Games Unit Ad — Article Feed Footer */}
-					{/* <div className="md:col-span-2 my-6">
+					<div className="md:col-span-2 my-6">
 						<AdSlot
 							client="ca-pub-8005120082355722"
 							slot="5316243141"
 							format="auto"
 						/>
-					</div> */}
+					</div>
 				</div>
 
 				{/* Trending Sidebar with Enhanced Glassmorphism */}

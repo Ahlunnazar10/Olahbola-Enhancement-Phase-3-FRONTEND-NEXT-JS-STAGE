@@ -11,6 +11,7 @@ import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
 import type { Article, Interview } from "@/types";
 import { useLeaderboard as useBLLeaderboard } from "@/hooks/queries/useBundesliga";
+import AdSlot from "@/components/ads/AdSlot";
 import { ArrowRight, Play, Circle, X } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
 import { BannerSlider } from "@/components/banner-slider/BannerSlider";
@@ -1020,7 +1021,7 @@ export default function HomePage() {
 				</section>
 
 				{/* ===== GOOGLE ADS SECTION ===== */}
-				{/* <section className="py-6 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
+				<section className="py-6 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
 					<div className="max-w-4xl mx-auto">
 						<div className="text-center">
 							<AdSlot
@@ -1034,7 +1035,7 @@ export default function HomePage() {
 							/>
 						</div>
 					</div>
-				</section> */}
+				</section>
 
 				{/* Article Section - Bento Grid */}
 				<section

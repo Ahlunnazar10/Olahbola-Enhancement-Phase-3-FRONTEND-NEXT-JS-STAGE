@@ -222,15 +222,15 @@ gtag('config', '${GA_ID}', {
 `,
 					}}
 				/>
-				{/* AdSense SDK — global script for auto ads.
-				    Loaded beforeInteractive so it ships in server HTML
-				    and is available by the time any client-side AdSlot mounts.
-				    The `id` matches the one checked in lib/ads/adsense.ts
-				    so loadAdsense() knows the script is already present. */}
+				{/* AdSense SDK — loaded on idle, not beforeInteractive.
+				    AdSlot calls loadAdsense(client) on mount, which injects
+				    the SDK if not already present. This strategy avoids
+				    blocking initial render and matches Google's guidance
+				    for performance-sensitive sites. */}
 				<Script
 					id="adsbygoogle-script"
 					src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-					strategy="beforeInteractive"
+					strategy="lazyOnload"
 					crossOrigin="anonymous"
 				/>
 				<Toaster
