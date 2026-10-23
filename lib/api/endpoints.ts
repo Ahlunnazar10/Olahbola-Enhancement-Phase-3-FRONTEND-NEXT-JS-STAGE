@@ -267,6 +267,10 @@ export const endpoints = {
 		"/api/v1/ngolah-bola/squads/" + id + "/share-data",
 	ngolahBolaShareLog: (id: string) =>
 		"/api/v1/ngolah-bola/squads/" + id + "/share-log",
+
+	// Push
+	pushSubscribe: "/api/push/subscribe",
+	pushUnsubscribe: "/api/push/unsubscribe",
 };
 
 export type Endpoint = typeof endpoints;

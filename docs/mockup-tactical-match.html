@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olahbola — Tactical Match Sim (Mockup)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Bebas+Neue&display=swap');
+  :root {
+    --teal:#43decc;--teal-dark:#0a7c6e;--bg:#0f1412;--bg-card:rgba(255,255,255,0.05);
+    --text:#fff;--text-muted:rgba(255,255,255,0.5);--rose:#f43f5e;--amber:#f59e0b;
+    --green:#22c55e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+
+  .swatches{display:flex;gap:12px;padding:20px;flex-wrap:wrap;justify-content:center}
+  .swatch-btn{padding:10px 20px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-card);color:var(--text);font-weight:700;font-size:13px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .2s}
+  .swatch-btn.active{border-color:var(--teal);background:rgba(67,222,204,0.15);color:var(--teal)}
+
+  .screen{display:none;padding:0 16px 40px;max-width:430px;margin:0 auto}
+  .screen.active{display:block}
+
+  /* ── SCREEN 1: PRE-MATCH ── */
+  .hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+  .hdr-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px}
+  .hdr-energy{display:flex;align-items:center;gap:5px;background:var(--bg-card);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;color:var(--amber)}
+  .step-label{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .step-label span{width:18px;height:18px;border-radius:50%;background:var(--teal);color:#000;font-size:9px;display:flex;align-items:center;justify-content:center}
+
+  .squad-card{background:var(--bg-card);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .squad-ava{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--rose),#f97316);display:flex;align-items:center;justify-content:center;font-size:22px}
+  .squad-name{font-weight:900;font-size:15px;text-transform:uppercase}
+  .squad-meta{font-size:10px;color:var(--text-muted);margin-top:2px}
+  .squad-stats{display:flex;gap:10px;margin-top:6px}
+  .s-stat{text-align:center}
+  .s-stat-v{font-weight:900;font-size:13px;color:var(--teal)}
+  .s-stat-l{font-size:8px;color:var(--text-muted);text-transform:uppercase}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+  .form-card{background:var(--bg-card);border:2px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+  .form-card.sel{border-color:var(--teal);background:rgba(67,222,204,0.08)}
+  .form-pitch{width:100%;aspect-ratio:3/4;background:linear-gradient(180deg,#1a5c32,#0d3a1e);border-radius:6px;position:relative;margin-bottom:8px;border:1px solid rgba(255,255,255,0.1)}
+  .fm-dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--teal);border:1.5px solid #fff;transform:translate(-50%,-50%)}
+  .fm-dot.gk{background:var(--amber)}
+  .fm-badge{position:absolute;top:4px;right:4px;font-size:8px;font-weight:700;padding:1px 5px;border-radius:4px}
+  .fm-badge.pos{background:rgba(34,197,94,0.2);color:var(--green)}
+  .fm-badge.neg{background:rgba(244,63,94,0.2);color:var(--rose)}
+  .form-name{font-weight:900;font-size:12px;text-transform:uppercase}
+  .form-desc{font-size:9px;color:var(--text-muted)}
+
+  .tactic-grid{display:flex;gap:8px;margin-bottom:20px}
+  .tactic-card{flex:1;background:var(--bg-card);border:2px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 8px;cursor:pointer;transition:all .2s;text-align:center}
+  .tactic-card.sel{border-color:var(--teal);background:rgba(67,222,204,0.08)}
+  .tactic-icon{font-size:24px;margin-bottom:6px}
+  .tactic-name{font-weight:900;font-size:12px;text-transform:uppercase}
+  .tactic-desc{font-size:9px;color:var(--text-muted);margin-top:3px}
+
+  .start-btn{width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--teal),#10b981);color:#000;font-weight:900;font-size:15px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .start-btn:disabled{opacity:0.3;cursor:not-allowed}
+
+  /* ── SCREEN 2: MATCH LIVE ── */
+  .sb{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+  .sb-team{text-align:center;flex:1}
+  .sb-tname{font-weight:900;font-size:13px;text-transform:uppercase}
+  .sb-tsub{font-size:9px;color:var(--text-muted)}
+  .sb-score{display:flex;flex-direction:column;align-items:center}
+  .sb-num{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;color:var(--teal)}
+  .sb-min{font-size:10px;font-weight:700;color:var(--amber);background:rgba(245,158,11,0.15);padding:2px 8px;border-radius:8px;margin-top:2px}
+
+  .pitch-wrap{padding:10px 0;display:flex;justify-content:center}
+  .pitch{width:100%;aspect-ratio:3/4;max-height:380px;background:linear-gradient(180deg,#1a5c32,#0d3a1e);border-radius:10px;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,0.12);box-shadow:inset 0 0 40px rgba(0,0,0,0.3)}
+  .pitch-line-mid{position:absolute;top:48%;left:5%;right:5%;height:1px;background:rgba(255,255,255,0.2)}
+  .pitch-circle{position:absolute;top:50%;left:50%;width:16%;height:16%;border:1px solid rgba(255,255,255,0.18);border-radius:50%;transform:translate(-50%,-50%)}
+  .pitch-box-t{position:absolute;top:0;left:18%;right:18%;height:13%;border:1px solid rgba(255,255,255,0.12);border-top:none}
+  .pitch-box-b{position:absolute;bottom:0;left:18%;right:18%;height:13%;border:1px solid rgba(255,255,255,0.12);border-bottom:none}
+  .pitch-goal-t{position:absolute;top:0;left:36%;right:36%;height:4%;border:1px solid rgba(255,255,255,0.15);border-top:none;background:rgba(255,255,255,0.02)}
+  .pitch-goal-b{position:absolute;bottom:0;left:36%;right:36%;height:4%;border:1px solid rgba(255,255,255,0.15);border-bottom:none;background:rgba(255,255,255,0.02)}
+
+  .p-dot{position:absolute;width:24px;height:24px;border-radius:50%;transform:translate(-50%,-50%);transition:all .5s ease-out;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;border:2px solid rgba(255,255,255,0.5);z-index:2}
+  .p-a{background:rgba(67,222,204,0.85);color:#000}
+  .p-b{background:rgba(244,63,94,0.85);color:#fff}
+  .p-gk-a{background:rgba(245,158,11,0.9)}
+  .p-gk-b{background:rgba(59,130,246,0.9)}
+  .p-active{box-shadow:0 0 0 4px rgba(67,222,204,0.4),0 0 10px rgba(67,222,204,0.5)}
+  .ball-dot{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#ccc);transform:translate(-50%,-50%);transition:all .3s ease-out;box-shadow:0 0 8px rgba(255,255,255,0.5);z-index:3}
+
+  .comm{padding:8px 0;text-align:center;font-size:11px;font-weight:700;color:var(--teal);min-height:32px;display:flex;align-items:center;justify-content:center}
+
+  /* Decision Panel */
+  .dec-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:flex-end;z-index:100;backdrop-filter:blur(4px)}
+  .dec-overlay.show{display:flex}
+  .dec-panel{width:100%;max-width:430px;margin:0 auto;background:linear-gradient(180deg,#1a2a24,#0f1412);border-radius:20px 20px 0 0;padding:20px 16px 32px;border-top:2px solid var(--teal);animation:sUp .3s ease-out}
+  @keyframes sUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .dec-timer-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px}
+  .dec-bar{width:50px;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);overflow:hidden}
+  .dec-fill{height:100%;border-radius:2px;background:var(--teal);transition:width .1s linear}
+  .dec-fill.warn{background:var(--amber)}
+  .dec-fill.danger{background:var(--rose)}
+  .dec-txt{font-size:12px;font-weight:900;color:var(--text-muted)}
+  .dec-prompt{text-align:center;margin-bottom:16px}
+  .dec-prompt-icon{font-size:28px;margin-bottom:6px}
+  .dec-prompt-text{font-size:13px;font-weight:700;background:rgba(255,255,255,0.05);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.07)}
+  .dec-btns{display:flex;flex-direction:column;gap:8px}
+  .dec-btn{padding:14px;border-radius:12px;border:2px solid rgba(255,255,255,0.08);background:var(--bg-card);color:var(--text);font-weight:900;font-size:13px;text-transform:uppercase;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+  .dec-btn:hover{border-color:var(--teal);background:rgba(67,222,204,0.06)}
+  .dec-btn:active{transform:scale(0.97)}
+  .dec-btn-ico{font-size:18px}
+  .dec-btn-lbl{flex:1;text-align:left;line-height:1.3}
+  .dec-btn-hint{font-size:9px;color:var(--text-muted);font-weight:400;text-transform:none}
+
+  /* Power bar variant */
+  .power-row{text-align:center}
+  .power-inst{font-size:11px;color:var(--text-muted);margin-bottom:10px}
+  .power-track{width:100%;height:36px;background:rgba(255,255,255,0.05);border-radius:10px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,0.08)}
+  .power-fill{height:100%;width:0%;border-radius:10px;background:linear-gradient(90deg,var(--green),var(--amber),var(--rose));transition:width .05s}
+  .power-zone{position:absolute;top:0;height:100%;width:18%;background:rgba(67,222,204,0.25);border-left:2px solid var(--teal);border-right:2px solid var(--teal)}
+  .power-go{margin-top:12px;padding:14px 36px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--teal),#10b981);color:#000;font-weight:900;font-size:15px;text-transform:uppercase;cursor:pointer}
+
+  /* Goal overlay */
+  .goal-ov{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px)}
+  .goal-ov.show{display:flex}
+  .goal-txt{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:6px;text-shadow:0 0 40px currentColor;animation:goalP .5s ease-out}
+  .goal-plyr{font-size:18px;font-weight:900;margin-top:10px;text-transform:uppercase}
+  .goal-sc{font-family:'Bebas Neue',sans-serif;font-size:44px;margin-top:6px}
+  @keyframes goalP{0%{transform:scale(0.2);opacity:0}50%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+
+  /* ── SCREEN 3: RESULT ── */
+  .res-banner{border-radius:18px;padding:28px;text-align:center;margin-bottom:16px}
+  .res-banner.win{background:linear-gradient(135deg,rgba(67,222,204,0.2),rgba(16,185,129,0.08));border:1px solid rgba(67,222,204,0.3)}
+  .res-banner.lose{background:linear-gradient(135deg,rgba(244,63,94,0.2),rgba(220,38,70,0.08));border:1px solid rgba(244,63,94,0.3)}
+  .res-banner.draw{background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(217,119,6,0.08));border:1px solid rgba(245,158,11,0.3)}
+  .res-ico{font-size:52px;margin-bottom:10px}
+  .res-title{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:3px}
+  .res-title.win{color:var(--teal)}
+  .res-title.lose{color:var(--rose)}
+  .res-title.draw{color:var(--amber)}
+  .res-score{font-size:16px;color:var(--text-muted);margin-top:6px;font-weight:700}
+  .res-sec{background:var(--bg-card);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px;margin-bottom:10px}
+  .res-sec-title{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px}
+  .res-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+  .res-row:last-child{border:none}
+  .res-lbl{font-size:11px;color:var(--text-muted)}
+  .res-val{font-weight:900;font-size:13px}
+  .res-val.t{color:var(--teal)}
+  .res-val.a{color:var(--amber)}
+  .res-val.r{color:var(--rose)}
+  .res-rewards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .rw-box{background:rgba(255,255,255,0.03);border-radius:10px;padding:12px 6px;text-align:center}
+  .rw-ico{font-size:22px;margin-bottom:4px}
+  .rw-val{font-weight:900;font-size:16px}
+  .rw-lbl{font-size:8px;color:var(--text-muted);text-transform:uppercase;margin-top:3px}
+  .goal-list{display:flex;flex-direction:column;gap:6px}
+  .goal-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px}
+  .goal-row.min{font-size:10px;color:var(--amber);font-weight:700;width:28px}
+  .goal-row.scr{font-size:12px;font-weight:700}
+  .goal-row.tp{font-size:9px;color:var(--text-muted);margin-left:auto}
+  .res-btns{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+  .res-btn{padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--teal),#10b981);color:#000;font-weight:900;font-size:15px;text-transform:uppercase;cursor:pointer;letter-spacing:1px}
+  .res-btn.sec{background:var(--bg-card);color:var(--text);border:1px solid rgba(255,255,255,0.1)}
+
+  /* Section labels on mockup page */
+  .screen-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:var(--teal);margin:24px 0 12px;padding:8px 12px;background:rgba(67,222,204,0.08);border-radius:8px;border-left:3px solid var(--teal)}
+</style>
+</head>
+<body>
+
+<div class="swatches">
+  <button class="swatch-btn active" onclick="showScreen('s1',this)">1. Pre-Match</button>
+  <button class="swatch-btn" onclick="showScreen('s2',this)">2. Live Match</button>
+  <button class="swatch-btn" onclick="showScreen('s3',this)">3. Decision Panel</button>
+  <button class="swatch-btn" onclick="showScreen('s4',this)">4. Goal Celebrate</button>
+  <button class="swatch-btn" onclick="showScreen('s5',this)">5. Result</button>
+</div>
+
+<!-- ═══ SCREEN 1: PRE-MATCH ═══ -->
+<div id="s1" class="screen active">
+  <div class="screen-label">Step 1 — Pre-Match Setup</div>
+  <div class="hdr">
+    <span class="hdr-title">⚽ Tactical Match</span>
+    <div class="hdr-energy">⚡ 87/100</div>
+  </div>
+
+  <div class="step-label"><span>1</span> Squad Terpilih</div>
+  <div class="squad-card">
+    <div class="squad-ava">⚽</div>
+    <div>
+      <div class="squad-name">Garuda United</div>
+      <div class="squad-meta">Formasi 4-3-3 • Level 12</div>
+      <div class="squad-stats">
+        <div class="s-stat"><div class="s-stat-v">78</div><div class="s-stat-l">ATK</div></div>
+        <div class="s-stat"><div class="s-stat-v">74</div><div class="s-stat-l">MID</div></div>
+        <div class="s-stat"><div class="s-stat-v">71</div><div class="s-stat-l">DEF</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-label"><span>2</span> Pilih Formasi</div>
+  <div class="form-grid">
+    <div class="form-card" onclick="this.classList.toggle('sel')">
+      <div class="form-pitch">
+        <div class="fm-dot gk" style="left:50%;top:4%"></div>
+        <div class="fm-dot" style="left:14%;top:20%"></div><div class="fm-dot" style="left:37%;top:18%"></div><div class="fm-dot" style="left:63%;top:18%"></div><div class="fm-dot" style="left:86%;top:20%"></div>
+        <div class="fm-dot" style="left:10%;top:46%"></div><div class="fm-dot" style="left:35%;top:48%"></div><div class="fm-dot" style="left:65%;top:48%"></div><div class="fm-dot" style="left:90%;top:46%"></div>
+        <div class="fm-dot" style="left:30%;top:78%"></div><div class="fm-dot" style="left:70%;top:78%"></div>
+      </div>
+      <div class="form-name">4-4-2</div><div class="form-desc">Seimbang</div>
+      <div class="fm-badge pos">Balanced</div>
+    </div>
+    <div class="form-card sel" onclick="this.classList.toggle('sel')">
+      <div class="form-pitch">
+        <div class="fm-dot gk" style="left:50%;top:4%"></div>
+        <div class="fm-dot" style="left:12%;top:20%"></div><div class="fm-dot" style="left:36%;top:18%"></div><div class="fm-dot" style="left:64%;top:18%"></div><div class="fm-dot" style="left:88%;top:20%"></div>
+        <div class="fm-dot" style="left:20%;top:45%"></div><div class="fm-dot" style="left:50%;top:42%"></div><div class="fm-dot" style="left:80%;top:45%"></div>
+        <div class="fm-dot" style="left:15%;top:78%"></div><div class="fm-dot" style="left:50%;top:82%"></div><div class="fm-dot" style="left:85%;top:78%"></div>
+      </div>
+      <div class="form-name">4-3-3</div><div class="form-desc">Serang Tuntas</div>
+      <div class="fm-badge pos">+5% ATK</div><div class="fm-badge neg" style="top:auto;bottom:4px">-3% DEF</div>
+    </div>
+    <div class="form-card" onclick="this.classList.toggle('sel')">
+      <div class="form-pitch">
+        <div class="fm-dot gk" style="left:50%;top:4%"></div>
+        <div class="fm-dot" style="left:22%;top:18%"></div><div class="fm-dot" style="left:50%;top:16%"></div><div class="fm-dot" style="left:78%;top:18%"></div>
+        <div class="fm-dot" style="left:5%;top:45%"></div><div class="fm-dot" style="left:28%;top:48%"></div><div class="fm-dot" style="left:50%;top:42%"></div><div class="fm-dot" style="left:72%;top:48%"></div><div class="fm-dot" style="left:95%;top:45%"></div>
+        <div class="fm-dot" style="left:35%;top:78%"></div><div class="fm-dot" style="left:65%;top:78%"></div>
+      </div>
+      <div class="form-name">3-5-2</div><div class="form-desc">Counter Attack</div>
+      <div class="fm-badge pos">+8% Counter</div>
+    </div>
+    <div class="form-card" onclick="this.classList.toggle('sel')">
+      <div class="form-pitch">
+        <div class="fm-dot gk" style="left:50%;top:4%"></div>
+        <div class="fm-dot" style="left:14%;top:20%"></div><div class="fm-dot" style="left:37%;top:18%"></div><div class="fm-dot" style="left:63%;top:18%"></div><div class="fm-dot" style="left:86%;top:20%"></div>
+        <div class="fm-dot" style="left:30%;top:37%"></div><div class="fm-dot" style="left:70%;top:37%"></div>
+        <div class="fm-dot" style="left:15%;top:58%"></div><div class="fm-dot" style="left:50%;top:55%"></div><div class="fm-dot" style="left:85%;top:58%"></div>
+        <div class="fm-dot" style="left:50%;top:82%"></div>
+      </div>
+      <div class="form-name">4-2-3-1</div><div class="form-desc">Creative Flow</div>
+      <div class="fm-badge pos">+4% Creativity</div>
+    </div>
+  </div>
+
+  <div class="step-label"><span>3</span> Pilih Taktik</div>
+  <div class="tactic-grid">
+    <div class="tactic-card sel" onclick="this.classList.toggle('sel')">
+      <div class="tactic-icon">🛡️</div>
+      <div class="tactic-name">Attack</div>
+      <div class="tactic-desc">Fokus menyerang</div>
+    </div>
+    <div class="tactic-card" onclick="this.classList.toggle('sel')">
+      <div class="tactic-icon">⚔️</div>
+      <div class="tactic-name">Defend</div>
+      <div class="tactic-desc">Pertahanan kokoh</div>
+    </div>
+    <div class="tactic-card" onclick="this.classList.toggle('sel')">
+      <div class="tactic-icon">💨</div>
+      <div class="tactic-name">Counter</div>
+      <div class="tactic-desc">Balas cepat</div>
+    </div>
+  </div>
+
+  <button class="start-btn" onclick="showScreen('s2',document.querySelectorAll('.swatch-btn')[1])">
+    ⚽ MAIN SEKARANG! <span style="opacity:0.7;font-size:12px">(-10 Energi)</span>
+  </button>
+</div>
+
+<!-- ═══ SCREEN 2: LIVE MATCH ═══ -->
+<div id="s2" class="screen">
+  <div class="screen-label">Step 2 — Live Match View</div>
+  <div class="sb">
+    <div class="sb-team">
+      <div class="sb-tname">Garuda Utd</div>
+      <div class="sb-tsub">4-3-3</div>
+    </div>
+    <div class="sb-score">
+      <div class="sb-num">1 - 1</div>
+      <div class="sb-min">54'</div>
+    </div>
+    <div class="sb-team">
+      <div class="sb-tname">Bharata FC</div>
+      <div class="sb-tsub">4-4-2</div>
+    </div>
+  </div>
+
+  <div class="pitch-wrap">
+    <div class="pitch" id="pitchView">
+      <div class="pitch-line-mid"></div>
+      <div class="pitch-circle"></div>
+      <div class="pitch-box-t"></div>
+      <div class="pitch-box-b"></div>
+      <div class="pitch-goal-t"></div>
+      <div class="pitch-goal-b"></div>
+      <!-- Team A (teal) -- bottom, attacking UP -->
+      <div class="p-dot p-a" style="left:50%;top:90%">1</div>
+      <div class="p-dot p-a" style="left:14%;top:74%"></div>
+      <div class="p-dot p-a" style="left:37%;top:72%"></div>
+      <div class="p-dot p-a" style="left:63%;top:72%"></div>
+      <div class="p-dot p-a" style="left:86%;top:74%"></div>
+      <div class="p-dot p-a" style="left:20%;top:52%"></div>
+      <div class="p-dot p-a p-active" style="left:50%;top:48%"></div>
+      <div class="p-dot p-a" style="left:80%;top:52%"></div>
+      <div class="p-dot p-a" style="left:15%;top:22%"></div>
+      <div class="p-dot p-a" style="left:50%;top:16%"></div>
+      <div class="p-dot p-a" style="left:85%;top:22%"></div>
+      <!-- Team B (rose) -- top, attacking DOWN -->
+      <div class="p-dot p-b" style="left:50%;top:8%"></div>
+      <div class="p-dot p-b" style="left:15%;top:24%"></div>
+      <div class="p-dot p-b" style="left:38%;top:26%"></div>
+      <div class="p-dot p-b" style="left:62%;top:26%"></div>
+      <div class="p-dot p-b" style="left:85%;top:24%"></div>
+      <div class="p-dot p-b" style="left:10%;top:48%"></div>
+      <div class="p-dot p-b" style="left:35%;top:50%"></div>
+      <div class="p-dot p-b" style="left:65%;top:50%"></div>
+      <div class="p-dot p-b" style="left:90%;top:48%"></div>
+      <div class="p-dot p-b" style="left:30%;top:76%"></div>
+      <div class="p-dot p-b" style="left:70%;top:76%"></div>
+      <!-- GK -->
+      <div class="p-dot p-gk-a" style="left:50%;top:95%"></div>
+      <div class="p-dot p-gk-b" style="left:50%;top:4%"></div>
+      <!-- Ball -->
+      <div class="ball-dot" style="left:48%;top:44%"></div>
+    </div>
+  </div>
+
+  <div class="comm">⚽ Bola berpindah ke sayap kanan Garuda United...</div>
+</div>
+
+<!-- ═══ SCREEN 3: DECISION PANEL ═══ -->
+<div id="s3" class="screen">
+  <div class="screen-label">Step 3 — Interactive Decision (Attack Moment)</div>
+  <div class="sb">
+    <div class="sb-team"><div class="sb-tname">Garuda Utd</div><div class="sb-tsub">4-3-3</div></div>
+    <div class="sb-score"><div class="sb-num">1 - 1</div><div class="sb-min">54'</div></div>
+    <div class="sb-team"><div class="sb-tname">Bharata FC</div><div class="sb-tsub">4-4-2</div></div>
+  </div>
+
+  <div class="pitch-wrap" style="opacity:0.4;pointer-events:none">
+    <div class="pitch">
+      <div class="pitch-line-mid"></div><div class="pitch-circle"></div>
+      <div class="pitch-box-t"></div><div class="pitch-box-b"></div>
+      <div class="ball-dot" style="left:50%;top:15%"></div>
+    </div>
+  </div>
+
+  <div class="comm" style="color:var(--amber)">⚡ KEPUTUSAN DIBUTUHKAN!</div>
+
+  <!-- Decision panel overlay -->
+  <div class="dec-overlay show">
+    <div class="dec-panel">
+      <div class="dec-timer-row">
+        <div class="dec-bar"><div class="dec-fill" style="width:65%"></div></div>
+        <span class="dec-txt">6s</span>
+      </div>
+      <div class="dec-prompt">
+        <div class="dec-prompt-icon">⚔️</div>
+        <div class="dec-prompt-text">Peluang besar! Bola di kotak penalti lawan — bagaimana?</div>
+      </div>
+      <div class="dec-btns">
+        <div class="dec-btn" style="border-color:rgba(244,63,94,0.3)">
+          <span class="dec-btn-ico">🔥</span>
+          <span class="dec-btn-lbl">Tembak!<br><span class="dec-btn-hint">Kecepatan > akurasi</span></span>
+        </div>
+        <div class="dec-btn">
+          <span class="dec-btn-ico">📐</span>
+          <span class="dec-btn-lbl">Umpan Sayap<br><span class="dec-btn-hint">+akurasi, -kekuatan</span></span>
+        </div>
+        <div class="dec-btn">
+          <span class="dec-btn-ico">🏃</span>
+          <span class="dec-btn-lbl">Dribble<br><span class="dec-btn-hint">Risiko tinggi, reward tinggi</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 4: GOAL CELEBRATION ═══ -->
+<div id="s4" class="screen">
+  <div class="screen-label">Step 4 — Goal Celebration</div>
+  <div class="sb">
+    <div class="sb-team"><div class="sb-tname">Garuda Utd</div><div class="sb-tsub">4-3-3</div></div>
+    <div class="sb-score"><div class="sb-num" style="color:var(--amber)">2 - 1</div><div class="sb-min">67'</div></div>
+    <div class="sb-team"><div class="sb-tname">Bharata FC</div><div class="sb-tsub">4-4-2</div></div>
+  </div>
+
+  <div class="pitch-wrap">
+    <div class="pitch" style="opacity:0.3">
+      <div class="pitch-line-mid"></div><div class="pitch-circle"></div>
+      <div class="pitch-box-t"></div><div class="pitch-box-b"></div>
+    </div>
+  </div>
+
+  <div class="comm" style="color:var(--amber);font-size:13px">⚽ GOOOOOL!!! Ahmad Rizky! Tendangan cantik ke pojok atas!</div>
+
+  <!-- Goal celebration overlay -->
+  <div class="goal-ov show">
+    <div class="goal-txt" style="color:var(--teal)">GOOOL!</div>
+    <div class="goal-plyr">⚽ Ahmad Rizky</div>
+    <div class="goal-sc" style="color:var(--amber)">2 - 1</div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 5: RESULT ═══ -->
+<div id="s5" class="screen">
+  <div class="screen-label">Step 5 — Match Result</div>
+  <div class="hdr">
+    <span class="hdr-title">Hasil Match</span>
+    <div class="hdr-energy">⚡ 77/100</div>
+  </div>
+
+  <div class="res-banner win">
+    <div class="res-ico">🏆</div>
+    <div class="res-title win">MENANG!</div>
+    <div class="res-score">2 - 1</div>
+  </div>
+
+  <div class="res-sec">
+    <div class="res-sec-title">Breakdown Skor</div>
+    <div class="res-row"><span class="res-lbl">⚔️ Serang</span><span class="res-val t">87.3</span></div>
+    <div class="res-row"><span class="res-lbl">🎯 Tengah Lapangan</span><span class="res-val t">72.1</span></div>
+    <div class="res-row"><span class="res-lbl">🛡️ Pertahanan</span><span class="res-val a">65.8</span></div>
+    <div class="res-row" style="border-top:1px solid rgba(255,255,255,0.1);margin-top:4px;padding-top:10px">
+      <span class="res-lbl" style="font-weight:900;color:var(--text)">Total Skor</span><span class="res-val t" style="font-size:18px">225.2</span>
+    </div>
+  </div>
+
+  <div class="res-sec">
+    <div class="res-sec-title">Gol</div>
+    <div class="goal-list">
+      <div class="goal-row"><span class="goal-row.min">23'</span><span class="goal-row.scr">⚽ Ahmad Rizky</span><span class="goal-row.tp">Tembakan</span></div>
+      <div class="goal-row"><span class="goal-row.min">67'</span><span class="goal-row.scr">⚽ Budi Santoso</span><span class="goal-row.tp">Umpan</span></div>
+    </div>
+  </div>
+
+  <div class="res-sec">
+    <div class="res-sec-title">Reward</div>
+    <div class="res-rewards">
+      <div class="rw-box"><div class="rw-ico">⚡</div><div class="rw-val" style="color:var(--teal)">77</div><div class="rw-lbl">Energi</div></div>
+      <div class="rw-box"><div class="rw-ico">💎</div><div class="rw-val" style="color:var(--teal)">+5</div><div class="rw-lbl">Gems</div></div>
+      <div class="rw-box"><div class="rw-ico">🪙</div><div class="rw-val" style="color:var(--amber)">+120</div><div class="rw-lbl">Points</div></div>
+    </div>
+  </div>
+
+  <div class="res-sec">
+    <div class="res-sec-title">Rekor</div>
+    <div class="res-row"><span class="res-lbl">Menang / Seri / Kalah</span><span class="res-val t">12W / 3D / 5L</span></div>
+  </div>
+
+  <div class="res-btns">
+    <button class="res-btn" onclick="showScreen('s1',document.querySelectorAll('.swatch-btn')[0])">⚽ Main Lagi</button>
+    <button class="res-btn sec" onclick="showScreen('s1',document.querySelectorAll('.swatch-btn')[0])">Kembali ke Menu</button>
+  </div>
+</div>
+
+<script>
+function showScreen(id, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) {
+    document.querySelectorAll('.swatch-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+</script>
+</body>
+</html>
