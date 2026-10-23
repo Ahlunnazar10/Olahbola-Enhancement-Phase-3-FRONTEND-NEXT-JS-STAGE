@@ -10,6 +10,10 @@
 !.yarn/releases
 !.yarn/versions
 
+# Playwright
+/playwright
+.playwright-mcp
+
 # testing
 /coverage
 

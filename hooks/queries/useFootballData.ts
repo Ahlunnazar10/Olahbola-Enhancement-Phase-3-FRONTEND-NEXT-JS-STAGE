@@ -76,15 +76,25 @@ export interface FdMatchesResponse {
 }
 
 export const FD_COMPETITIONS = [
-	{ code: "PL", label: "Premier League" },
-	{ code: "PD", label: "La Liga" },
-	{ code: "BL1", label: "Bundesliga" },
-	{ code: "SA", label: "Serie A" },
-	{ code: "FL1", label: "Ligue 1" },
-	{ code: "CL", label: "UEFA Champions League" },
+	{ code: "PL", label: "Premier League", slug: "primer-league" },
+	{ code: "PD", label: "La Liga", slug: "la-liga" },
+	{ code: "BL1", label: "Bundesliga", slug: "bundesliga" },
+	{ code: "SA", label: "Serie A", slug: "serie-a" },
+	{ code: "FL1", label: "Ligue 1", slug: "ligue-1" },
+	{ code: "CL", label: "UEFA Champions League", slug: "uefa-champions-league" },
 ] as const;
 
 export type FdCompetitionCode = (typeof FD_COMPETITIONS)[number]["code"];
+export type FdCompetitionSlug = (typeof FD_COMPETITIONS)[number]["slug"];
+
+/** Ambil competition code dari URL slug; null jika tidak dikenal. */
+export function fdCodeFromSlug(slug: string): FdCompetitionCode | null {
+	const found = FD_COMPETITIONS.find((c) => c.slug === slug);
+	return found ? found.code : null;
+}
+
+/** Slug pertama (default) untuk redirect. */
+export const FD_DEFAULT_SLUG: FdCompetitionSlug = FD_COMPETITIONS[0].slug;
 
 // ---------------------------------------------------------------
 // Fetch helper — lewat proxy Next.js (baseURL relatif), tidak pakai apiClient

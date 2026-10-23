@@ -68,7 +68,8 @@ export function NavigationBar() {
 			{/* Navbar */}
 			<div
 				className={cn(
-					"fixed top-0 inset-x-0 shadow-sm transition-all duration-300 z-50",
+					"fixed inset-x-0 shadow-sm transition-all duration-300 z-50",
+					pathname === "/artikel" ? "top-12" : "top-0",
 					isScrolled
 						? isDark
 							? "backdrop-blur-sm bg-black/40"
@@ -232,7 +233,8 @@ export function NavigationBar() {
 			{/* Mobile Sidebar */}
 			<div
 				className={cn(
-					"fixed top-0 left-0 w-64 md:w-80 h-full bg-[#0D645F] text-white p-4 transform z-9999 transition-transform duration-300 lg:hidden overflow-y-auto",
+					"fixed left-0 w-64 md:w-80 h-full bg-[#0D645F] text-white p-4 transform z-9999 transition-transform duration-300 lg:hidden overflow-y-auto",
+			pathname === "/artikel" ? "top-12" : "top-0",
 					isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
 				)}
 			>

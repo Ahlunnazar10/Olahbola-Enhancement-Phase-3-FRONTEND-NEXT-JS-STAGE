@@ -11,7 +11,7 @@ export default function MainLayout({
   return (
     <>
       <NavigationBar />
-      <main className="pt-[84px] relative">
+      <main className="pt-21 relative">
         {children}
         <ThemeToggle />
         <LastPathTracker />
