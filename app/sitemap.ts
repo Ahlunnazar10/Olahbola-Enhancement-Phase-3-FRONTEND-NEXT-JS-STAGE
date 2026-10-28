@@ -87,18 +87,15 @@ async function fetchAllPages(
 // Fetch data from Laravel API (server-side, no auth needed for public content)
 async function fetchSitemapData(): Promise<{
   articles: Array<{ slug: string; updated_at: string }>;
-  interviews: Array<{ id: string; updated_at: string }>;
   kolaborasis: Array<{ slug: string; updated_at: string }>;
 }> {
-  const [articles, interviews, kolaborasis] = await Promise.all([
+  const [articles, kolaborasis] = await Promise.all([
     fetchAllPages("api/v1/article"),
-    fetchAllPages("api/v1/interview"),
     fetchAllPages("api/v1/kolaborasi"),
   ]);
 
   return {
     articles: articles.filter((a) => a.slug) as Array<{ slug: string; updated_at: string }>,
-    interviews: interviews as Array<{ id: string; updated_at: string }>,
     kolaborasis: kolaborasis.filter((k) => k.slug) as Array<{ slug: string; updated_at: string }>,
   };
 }
@@ -108,7 +105,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   // Fetch dynamic data from API
-  const { articles, interviews, kolaborasis } = await fetchSitemapData();
+  const { articles, kolaborasis } = await fetchSitemapData();
 
   // Static routes
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -143,13 +140,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/kolaborasi`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/interview`,
+      url: `${baseUrl}/olahflix`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
@@ -298,25 +289,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
 
-  // Interview detail routes (API tidak punya slug, URL detail menggunakan id)
-  const interviewRoutes: MetadataRoute.Sitemap = interviews
-    .filter((i) => i.id)
-    .map((interview) => ({
-      url: `${baseUrl}/interview/${interview.id}`,
-      lastModified: new Date(interview.updated_at),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }));
-
   // Kolaborasi detail routes
   const kolaborasiRoutes: MetadataRoute.Sitemap = kolaborasis
     .filter((k) => k.slug)
     .map((kolaborasi) => ({
-      url: `${baseUrl}/kolaborasi/${kolaborasi.slug}`,
+      url: `${baseUrl}/media-spotlight/kolaborasi/${kolaborasi.slug}`,
       lastModified: new Date(kolaborasi.updated_at),
       changeFrequency: "monthly" as const,
       priority: 0.7,
     }));
 
-  return [...staticRoutes, ...articleRoutes, ...interviewRoutes, ...kolaborasiRoutes];
+  return [...staticRoutes, ...articleRoutes, ...kolaborasiRoutes];
 }
