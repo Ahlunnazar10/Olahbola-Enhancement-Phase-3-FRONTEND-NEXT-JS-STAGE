@@ -18,6 +18,7 @@ import { useUIStore } from "@/stores/uiStore";
 import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { notFound } from "next/navigation";
 import SeoHead from "@/components/seo/SeoHead";
+import { trackArticleView } from "@/lib/analytics";
 
 export default function ArticleDetailPage() {
 	const params = useParams();
@@ -26,6 +27,16 @@ export default function ArticleDetailPage() {
 	const isDark = theme === "dark";
 	const { data: article, isLoading, error } = useArticleDetail(slug);
 	const { data: popularData, isLoading: popularLoading } = usePopularArticles();
+
+	useEffect(() => {
+		if (article?.data) {
+			trackArticleView(
+				article.data.id?.toString() || slug,
+				article.data.title || "",
+				article.data.category_name || "",
+			);
+		}
+	}, [article?.data, slug]);
 
 	const [showShareMenu, setShowShareMenu] = useState(false);
 

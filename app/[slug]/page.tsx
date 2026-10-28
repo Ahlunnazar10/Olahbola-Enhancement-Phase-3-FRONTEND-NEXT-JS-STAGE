@@ -43,7 +43,20 @@ export default function ArticleDetailPage() {
 	useEffect(() => {
 		if (!article?.data) return;
 		const d = article.data;
+
+		// Set document.title so GA4 auto page_view picks up the correct page_title
+		if (typeof document !== "undefined") {
+			document.title = d.title
+				? `${d.title} | Olahbola`
+				: "Artikel | Olahbola";
+		}
+
 		trackArticleView(d.id?.toString() || slug, d.title || "", d.category_name || "");
+		// Mark session as engaged so GA4 counts all article readers,
+		// not just those who scroll to 90%
+		if (typeof window !== "undefined" && window.gtag) {
+			window.gtag("event", "user_engagement");
+		}
 	}, [article?.data, slug]);
 
 	// Get related articles based on same category
