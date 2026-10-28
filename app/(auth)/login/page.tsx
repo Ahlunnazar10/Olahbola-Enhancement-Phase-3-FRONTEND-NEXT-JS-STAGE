@@ -192,17 +192,16 @@ export default function LoginPage() {
 				{/* Login Container */}
 				<div className="w-full max-w-6xl grid md:grid-cols-2 items-center gap-16 p-4 mb-10">
 					{/* Left Side: Visual Narrative */}
-					<div className="hidden md:flex flex-col gap-8">
+					<div className="hidden md:flex flex-col gap-4">
 						<div className="space-y-2">
 							<h1
 								className={`font-display-xl text-display-xl leading-none italic uppercase ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 							>
-								STAY
-								<br />
+								RULE{" "}
 								<span
 									className={`${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
 								>
-									UNSTOPPABLE
+									THE GAME
 								</span>
 							</h1>
 						</div>

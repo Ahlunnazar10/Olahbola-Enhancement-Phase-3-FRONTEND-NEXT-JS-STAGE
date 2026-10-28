@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Lock, Check, X, Trophy, Circle, ChevronDown } from "lucide-react";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -217,7 +218,7 @@ function LoadingOverlay() {
 // ============================================================
 // CONFIG — ubah nilai ini untuk geser matchday aktif default
 // ============================================================
-const DEFAULT_ACTIVE_MATCHDAY = 7;
+const DEFAULT_ACTIVE_MATCHDAY = 8;
 
 // ============================================================
 // MAIN PAGE
@@ -248,6 +249,7 @@ export default function PrediksiSkorPage() {
 	const [activeTab, setActiveTab] = useState<"matches" | "leaderboard">(
 		"matches",
 	);
+	const queryClient = useQueryClient();
 	const [isAuthReady, setIsAuthReady] = useState(false);
 	useEffect(() => {
 		setIsAuthReady(true);
@@ -256,6 +258,9 @@ export default function PrediksiSkorPage() {
 	const [homeScore, setHomeScore] = useState<number | "">(0);
 	const [awayScore, setAwayScore] = useState<number | "">(0);
 	const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
+	const [showPointsHistoryModal, setShowPointsHistoryModal] = useState(false);
+	const [showPredictionsHistoryModal, setShowPredictionsHistoryModal] =
+		useState(false);
 	const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
 	useEffect(() => {
@@ -493,6 +498,98 @@ export default function PrediksiSkorPage() {
 	const getTeamInfo = (code: string) =>
 		teamsMap[code] ?? { name: code, code, logo_url: null };
 
+	// Cari match di cache React Query — cocokkan dari query current
+	// matchday dulu (matchesData sudah ada), kalau belum ketemu lagi
+	// fallback ke semua query yang terdaftar ber-prefix
+	// ["bundesliga", "matches"]
+	const getMatchForHistory = useMemo(
+		() =>
+			(matchId: string): Match | undefined => {
+				const current = (matchesData as Match[] | undefined)?.find(
+					(m) => m.id === matchId,
+				);
+				if (current) return current;
+				const allQueries = queryClient.getQueriesData<Match[]>({
+					queryKey: ["bundesliga", "matches"],
+				});
+				for (const [, data] of allQueries) {
+					const found = (data as Match[] | undefined)?.find(
+						(m) => m.id === matchId,
+					);
+					if (found) return found;
+				}
+				return undefined;
+			},
+		[queryClient, matchesData, myPredictionsData],
+	);
+
+	// ============================================================
+	// HISTORY DATA — grouped per matchday
+	// matchIdsByMatchday digabungkan dari semua matchday yang sudah difetch
+	// (matches query per matchday; React Query cache-nya dipakai kembali
+	//  karena staleTime 30s, jadi semua matchday yang pernah dibuka
+	//  ikut terambil saat modal dibuka)
+	// ============================================================
+	const matchIdsByMatchday = useMemo(() => {
+		const map: Record<number, string[]> = {};
+		((matchdaysData as number[] | undefined) ?? []).forEach((md) => {
+			const data =
+				(queryClient.getQueryData([
+					"bundesliga",
+					"matches",
+					{ matchday: md },
+				]) as Match[] | undefined) ?? [];
+			map[md] = data.map((m) => m.id);
+		});
+		return map;
+	}, [matchdaysData, queryClient, activeMatchday]);
+
+	const predictionsHistoryByMatchday = useMemo(() => {
+		const map: Record<number, { matchIds: string[]; count: number }> = {};
+		((myPredictionsData?.data as any[]) ?? []).forEach((p: any) => {
+			const md = p.match?.matchday ?? p.matchday;
+			if (!Number.isInteger(md)) return;
+			if (!map[md]) map[md] = { matchIds: [], count: 0 };
+			map[md].matchIds.push(p.match_id);
+			map[md].count += 1;
+		});
+		return map;
+	}, [myPredictionsData]);
+
+	const pointsHistoryByMatchday = useMemo(() => {
+		const map: Record<number, { points: number; count: number }> = {};
+		((myPredictionsData?.data as any[]) ?? []).forEach((p: any) => {
+			const md = p.match?.matchday ?? p.matchday;
+			if (!Number.isInteger(md)) return;
+			if (!map[md]) map[md] = { points: 0, count: 0 };
+			map[md].points += Number(p.points_earned) || 0;
+			map[md].count += 1;
+		});
+		const days: number[] = [
+			...new Set([...Object.keys(map), ...Object.keys(matchIdsByMatchday)]),
+		]
+			.map((d) => Number(d))
+			.filter((d) => Number.isFinite(d))
+			.sort((a, b) => a - b);
+		const totalPoints = mySummaryData?.total_points ?? 0;
+		const runningTotal = new Map<number, number>();
+		let cum = 0;
+		for (const md of days) {
+			cum = Math.min(cum + (map[md]?.points ?? 0), totalPoints || 0);
+			runningTotal.set(md, cum);
+		}
+		return days.map((md) => ({
+			matchday: md,
+			earned: map[md]?.points ?? 0,
+			count: map[md]?.count ?? 0,
+			runningTotal: runningTotal.get(md) ?? 0,
+			isPartial:
+				(matchIdsByMatchday[md]?.length ?? 0) > 0 &&
+				totalPoints > 0 &&
+				cum < totalPoints,
+		}));
+	}, [myPredictionsData, matchIdsByMatchday, mySummaryData]);
+
 	// ============================================================
 	// ENDED STATE VIEW
 	// ============================================================
@@ -582,11 +679,12 @@ export default function PrediksiSkorPage() {
 					{/* Stats Bento Grid */}
 					<div className="flex flex-row gap-4 max-w-4xl mx-auto overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
 						<div
-							className="min-w-35 flex-1 p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1"
+							className="min-w-35 flex-1 p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
 							style={{
 								background: colors.primary05,
 								borderColor: colors.primary30,
 							}}
+							onClick={() => setShowPredictionsHistoryModal(true)}
 						>
 							<div className="text-3xl font-bold mb-1" style={{ color: text }}>
 								{mySummaryData?.total_predictions ?? 0}
@@ -599,11 +697,12 @@ export default function PrediksiSkorPage() {
 							</div>
 						</div>
 						<div
-							className="p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1"
+							className="p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
 							style={{
 								background: colors.primary05,
 								borderColor: colors.primary30,
 							}}
+							onClick={() => setShowPointsHistoryModal(true)}
 						>
 							<div className="text-3xl font-bold mb-1" style={{ color: text }}>
 								{mySummaryData?.total_points?.toLocaleString() ?? 0}
@@ -1091,7 +1190,7 @@ export default function PrediksiSkorPage() {
 														) : (
 															<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
 																<Image
-																	src="/icons/football-player.png"
+																	src="/icons/football-player-new.svg"
 																	alt="Player Icon"
 																	fill
 																	sizes="64px"
@@ -1183,7 +1282,7 @@ export default function PrediksiSkorPage() {
 														) : (
 															<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
 																<Image
-																	src="/icons/football-player.png"
+																	src="/icons/football-player-new.svg"
 																	alt="Player Icon"
 																	fill
 																	sizes="80px"
@@ -1268,7 +1367,7 @@ export default function PrediksiSkorPage() {
 														) : (
 															<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
 																<Image
-																	src="/icons/football-player.png"
+																	src="/icons/football-player-new.svg"
 																	alt="Player Icon"
 																	fill
 																	sizes="64px"
@@ -1357,7 +1456,7 @@ export default function PrediksiSkorPage() {
 													) : (
 														<div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0">
 															<Image
-																src="/icons/football-player.png"
+																src="/icons/football-player-new.svg"
 																alt="Player Icon"
 																fill
 																sizes="48px"
@@ -1464,7 +1563,7 @@ export default function PrediksiSkorPage() {
 																) : (
 																	<div className="relative w-10 h-10 rounded-xl overflow-hidden">
 																		<Image
-																			src="/icons/football-player.png"
+																			src="/icons/football-player-new.svg"
 																			alt="Player Icon"
 																			fill
 																			sizes="40px"
@@ -1928,6 +2027,335 @@ export default function PrediksiSkorPage() {
 									</div>
 								</div>
 							)}
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Points History Modal */}
+			{showPointsHistoryModal && (
+				<div
+					className="fixed inset-0 z-100 flex items-center justify-center p-4 animate-fadeIn"
+					style={{
+						background: "rgba(0,0,0,0.85)",
+						backdropFilter: "blur(8px)",
+					}}
+					onClick={() => setShowPointsHistoryModal(false)}
+				>
+					<div
+						className="w-full max-w-md max-h-[85vh] flex flex-col p-6 rounded-3xl border relative overflow-hidden animate-scaleIn"
+						style={{
+							background: colors.surface,
+							borderColor: colors.primary30,
+							boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)`,
+						}}
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div
+							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
+							style={{ background: primaryAlpha }}
+						/>
+						<button
+							onClick={() => setShowPointsHistoryModal(false)}
+							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
+							style={{ background: whiteAlpha5, color: textSecondary }}
+						>
+							<X className="size-4" />
+						</button>
+						<div className="text-center mb-5 relative z-10">
+							<h3 className="text-xl font-bold mb-1" style={{ color: text }}>
+								Perkembangan Poin Kamu!
+							</h3>
+							<p className="text-xs" style={{ color: textSecondary }}>
+								Seberapa banyak poin yang kamu kumpulkan tiap matchday.
+							</p>
+						</div>
+						<div className="flex-1 overflow-y-auto space-y-2 pr-1 relative z-10">
+							{(() => {
+								const items = pointsHistoryByMatchday;
+								if (!items.length) {
+									return (
+										<div
+											className="text-center py-8"
+											style={{ color: textSecondary }}
+										>
+											<p className="text-sm">Belum ada riwayat poin</p>
+										</div>
+									);
+								}
+								const maxEarned = Math.max(...items.map((i) => i.earned), 1);
+								return items.map((item) => {
+									const widthPct = Math.round((item.earned / maxEarned) * 100);
+									const isCompleted =
+										!item.isPartial && (item.earned > 0 || item.count > 0);
+									return (
+										<div
+											key={item.matchday}
+											className="p-3 rounded-xl transition-all"
+											style={{
+												background: isCompleted
+													? colors.primary05
+													: whiteAlpha5,
+												border: isCompleted
+													? `1px solid ${primary}40`
+													: `1px solid ${whiteAlpha10}`,
+											}}
+										>
+											<div className="flex items-center justify-between mb-2">
+												<div className="flex items-center gap-2">
+													<div>
+														<p
+															className="text-sm font-bold"
+															style={{ color: text }}
+														>
+															Matchday {item.matchday}
+														</p>
+														<p
+															className="text-xs"
+															style={{ color: textSecondary }}
+														>
+															{item.count} prediksi
+															{!isCompleted ? " · masih berlangsung" : ""}
+														</p>
+													</div>
+												</div>
+												<div className="text-right">
+													<p
+														className="text-lg font-black"
+														style={{ color: primary }}
+													>
+														+{item.earned} <span className="text-xs">Pts</span>
+													</p>
+												</div>
+											</div>
+											<div
+												className="h-1.5 rounded-full overflow-hidden"
+												style={{ background: whiteAlpha5 }}
+											>
+												<div
+													className="h-full rounded-full transition-all"
+													style={{
+														width: `${widthPct}%`,
+														background: `linear-gradient(90deg, ${primary}, ${primary}80)`,
+													}}
+												/>
+											</div>
+										</div>
+									);
+								});
+							})()}
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Predictions History Modal */}
+			{showPredictionsHistoryModal && (
+				<div
+					className="fixed inset-0 z-100 flex items-center justify-center p-4 animate-fadeIn"
+					style={{
+						background: "rgba(0,0,0,0.85)",
+						backdropFilter: "blur(8px)",
+					}}
+					onClick={() => setShowPredictionsHistoryModal(false)}
+				>
+					<div
+						className="w-full max-w-md max-h-[85vh] flex flex-col p-6 rounded-3xl border relative overflow-hidden animate-scaleIn"
+						style={{
+							background: colors.surface,
+							borderColor: colors.primary30,
+							boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)`,
+						}}
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div
+							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
+							style={{ background: primaryAlpha }}
+						/>
+						<button
+							onClick={() => setShowPredictionsHistoryModal(false)}
+							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
+							style={{ background: whiteAlpha5, color: textSecondary }}
+						>
+							<X className="size-4" />
+						</button>
+						<div className="text-center mb-5 relative z-10">
+							<h3 className="text-xl font-bold mb-1" style={{ color: text }}>
+								Riwayat Prediksi Kamu!
+							</h3>
+							<p className="text-xs" style={{ color: textSecondary }}>
+								Perkiraan skor tiap matchday yang sudah kamu kirim.
+							</p>
+						</div>
+						<div className="flex-1 overflow-y-auto space-y-2 pr-1 relative z-10">
+							{(() => {
+								const items = predictionsHistoryByMatchday;
+								const days = Object.keys(items)
+									.map(Number)
+									.sort((a, b) => a - b);
+								if (days.length === 0) {
+									return (
+										<div
+											className="text-center py-8"
+											style={{ color: textSecondary }}
+										>
+											<p className="text-sm">Belum ada riwayat prediksi</p>
+										</div>
+									);
+								}
+								return days.map((md) => {
+									const group = items[md];
+									return (
+										<div
+											key={md}
+											className="p-3 rounded-xl transition-all"
+											style={{
+												background: whiteAlpha5,
+												border: `1px solid ${whiteAlpha10}`,
+											}}
+										>
+											<div className="flex items-center justify-between mb-2">
+												<div className="flex items-center gap-2">
+													<div
+														className="w-8 h-8 rounded-full flex items-center justify-center font-black text-[10px] shrink-0 "
+														style={{
+															background: colors.primary15,
+															color: primary,
+														}}
+													>
+														MD{md}
+													</div>
+													<div>
+														<p
+															className="text-sm font-bold"
+															style={{ color: text }}
+														>
+															Matchday {md}
+														</p>
+														<p
+															className="text-xs"
+															style={{ color: textSecondary }}
+														>
+															{group.count} prediksi dikirim
+														</p>
+													</div>
+												</div>
+												<div className="text-right">
+													<p
+														className="text-lg font-black"
+														style={{ color: primary }}
+													>
+														{group.count}
+													</p>
+													<p
+														className="text-[10px] uppercase tracking-wider"
+														style={{ color: textSecondary }}
+													>
+														prediksi
+													</p>
+												</div>
+											</div>
+											{group.matchIds.map((matchId) => {
+												const pred = myPredictionsData?.data?.find(
+													(p: any) => p.match_id === matchId,
+												);
+												const match = getMatchForHistory(matchId);
+												if (!pred) return null;
+												const matchday =
+													pred.match?.matchday ?? pred.matchday ?? -1;
+												const home = (
+													pred.match?.home_team?.name ??
+													match?.home_team.name ??
+													"HOME"
+												).toUpperCase();
+												const away = (
+													pred.match?.away_team?.name ??
+													match?.away_team.name ??
+													"AWAY"
+												).toUpperCase();
+												const points = pred.points_earned ?? 0;
+												const predicted = `${pred.home_score_predicted}-${pred.away_score_predicted}`;
+												const actual =
+													pred.home_score_actual != null
+														? `${pred.home_score_actual}-${pred.away_score_actual}`
+														: match?.home_score != null
+															? `${match.home_score}-${match.away_score}`
+															: null;
+												const resultColor = pred.score_exact
+													? "#22c55e"
+													: pred.result_correct
+														? "#eab308"
+														: pred.status === "calculated"
+															? "#ef4444"
+															: null;
+												return (
+													<div
+														key={matchId}
+														className="flex items-center gap-3 p-2 rounded-lg mt-1"
+														style={{ background: whiteAlpha5 }}
+													>
+														<div className="flex-1 min-w-0">
+															<p
+																className="text-xs font-bold truncate"
+																style={{ color: text }}
+															>
+																{home} vs {away}
+															</p>
+															<p
+																className="text-[10px] uppercase tracking-wider"
+																style={{ color: textSecondary }}
+															>
+																{matchday > 0 ? `MD ${matchday}` : ""}
+															</p>
+														</div>
+														<div className="text-right shrink-0">
+															<p
+																className="text-sm font-black"
+																style={{ color: primary }}
+															>
+																{predicted}
+															</p>
+															{actual != null && (
+																<p
+																	className="text-xs font-bold"
+																	style={{
+																		color: resultColor ?? textSecondary,
+																	}}
+																>
+																	Final {actual}
+																</p>
+															)}
+														</div>
+														<div className="shrink-0">
+															{resultColor ? (
+																<div
+																	className="text-[10px] font-black px-1.5 py-0.5 rounded-md"
+																	style={{
+																		color: resultColor,
+																		background: `${resultColor}1f`,
+																	}}
+																>
+																	+{points} pts
+																</div>
+															) : (
+																<div
+																	className="text-[10px] font-black px-1.5 py-0.5 rounded-md"
+																	style={{
+																		color: textSecondary,
+																		background: whiteAlpha5,
+																	}}
+																>
+																	⏳
+																</div>
+															)}
+														</div>
+													</div>
+												);
+											})}
+										</div>
+									);
+								});
+							})()}
 						</div>
 					</div>
 				</div>

@@ -44,6 +44,7 @@ export interface Prediction {
 		home_team: { name: string; code: string; logo_url?: string | null };
 		away_team: { name: string; code: string; logo_url?: string | null };
 		match_date: string;
+		matchday?: number;
 	};
 	home_score_predicted: number;
 	away_score_predicted: number;
@@ -56,6 +57,9 @@ export interface Prediction {
 	is_editable: boolean;
 	home_score_actual?: number;
 	away_score_actual?: number;
+	// matchday dipasang oleh client (dilihat dari cache matches)
+	// karena API belum mengembalikan field ini
+	matchday?: number;
 }
 
 export interface UserSummary {
@@ -122,7 +126,9 @@ export function useMatches(matchday: number) {
 			const raw = Array.isArray(response.data)
 				? response.data
 				: response.data?.data ?? [];
-			return raw;
+			// Pasang matchday di tiap match supaya riwayat prediksi bisa
+			// dikelompokkan per matchday tanpa lookup tambahan
+			return raw.map((m: Match) => ({ ...m, matchday: m.matchday ?? matchday }));
 		},
 		enabled: matchday > 0,
 		staleTime: 30 * 1000,
@@ -159,6 +165,7 @@ export function useLeaderboard() {
 
 export function useMyPredictions() {
 	const { accessToken } = useAuthStore();
+	const queryClient = useQueryClient();
 
 	return useQuery({
 		queryKey: ["bundesliga", "my-predictions"],
@@ -169,7 +176,25 @@ export function useMyPredictions() {
 			const raw = Array.isArray(response.data)
 				? response.data
 				: response.data?.data ?? [];
-			return { data: raw };
+			// Pasang matchday di tiap prediksi: cari dari cache matches
+			// yang sudah difetch (per matchday) supaya riwayat
+			// per matchday bisa dibuat tanpa tambahan field dari API
+			const matchesCache = queryClient.getQueriesData<Match[]>({
+				queryKey: ["bundesliga", "matches"],
+			});
+			const allMatches: Match[] = [];
+			for (const [, data] of matchesCache) {
+				allMatches.push(...(data as Match[] | undefined ?? []));
+			}
+			const matchById = new Map(allMatches.map((m) => [m.id, m]));
+			const data = (raw as Prediction[]).map((p) => {
+				const m = matchById.get(p.match_id);
+				const matchday =
+					(p as unknown as { matchday?: number }).matchday ??
+					m?.matchday;
+				return matchday !== undefined ? { ...p, matchday } : p;
+			});
+			return { data };
 		},
 		enabled: !!accessToken,
 		staleTime: 0,
