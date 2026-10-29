@@ -317,6 +317,7 @@ export function trackVideoPlay(
 	videoId: string,
 	videoTitle: string,
 	currentTime: number = 0,
+	duration?: number,
 ): void {
 	if (!isGA4Available()) return;
 
@@ -324,7 +325,124 @@ export function trackVideoPlay(
 		video_id: videoId,
 		video_title: videoTitle,
 		video_current_time: currentTime,
+		...(duration !== undefined && { video_duration: duration }),
 	});
 
 	console.log(`[GA4] Video play tracked: ${videoTitle}`);
+}
+/**
+ * Track video pause
+ */
+export function trackVideoPause(
+	videoId: string,
+	videoTitle: string,
+	currentTime: number,
+	duration?: number,
+): void {
+	if (!isGA4Available()) return;
+	window.gtag("event", "video_pause", {
+		video_id: videoId,
+		video_title: videoTitle,
+		video_current_time: currentTime,
+		...(duration !== undefined && { video_duration: duration }),
+	});
+}
+
+/**
+ * Track video progress (periodic, ~every 30s)
+ */
+export function trackVideoProgress(
+	videoId: string,
+	videoTitle: string,
+	currentTime: number,
+	duration: number,
+): void {
+	if (!isGA4Available()) return;
+	window.gtag("event", "video_progress", {
+		video_id: videoId,
+		video_title: videoTitle,
+		video_current_time: currentTime,
+		video_duration: duration,
+	});
+}
+
+/**
+ * Track video mute toggle
+ */
+export function trackVideoMute(
+	videoId: string,
+	videoTitle: string,
+	isMuted: boolean,
+): void {
+	if (!isGA4Available()) return;
+	window.gtag("event", "video_mute", {
+		video_id: videoId,
+		video_title: videoTitle,
+		muted: isMuted,
+	});
+}
+
+/**
+ * Track video seek
+ */
+export function trackVideoSeek(
+	videoId: string,
+	videoTitle: string,
+	seekTime: number,
+	duration: number,
+): void {
+	if (!isGA4Available()) return;
+	window.gtag("event", "video_seek", {
+		video_id: videoId,
+		video_title: videoTitle,
+		seek_time: seekTime,
+		video_duration: duration,
+	});
+}
+
+/**
+ * Track video complete
+ */
+export function trackVideoComplete(
+	videoId: string,
+	videoTitle: string,
+	duration: number,
+): void {
+	if (!isGA4Available()) return;
+	window.gtag("event", "video_complete", {
+		video_id: videoId,
+		video_title: videoTitle,
+		video_duration: duration,
+	});
+}
+
+/**
+ * Track video close (modal closed while playing)
+ */
+export function trackVideoClose(
+	videoId: string,
+	videoTitle: string,
+	watchedTime: number,
+	duration: number,
+): void {
+	if (!isGA4Available()) return;
+	const percentage = duration > 0 ? Math.round((watchedTime / duration) * 100) : 0;
+	window.gtag("event", "video_close", {
+		video_id: videoId,
+		video_title: videoTitle,
+		watched_time: watchedTime,
+		video_duration: duration,
+		percentage_watched: percentage,
+	});
+}
+
+/**
+ * Track video preview play (card hover preview)
+ */
+export function trackVideoPreviewPlay(videoId: string, videoTitle: string): void {
+	if (!isGA4Available()) return;
+	window.gtag("event", "video_preview_play", {
+		video_id: videoId,
+		video_title: videoTitle,
+	});
 }
