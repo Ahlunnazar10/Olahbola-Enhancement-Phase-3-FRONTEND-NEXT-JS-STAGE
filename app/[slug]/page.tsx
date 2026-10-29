@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { formatDate } from "@/lib/utils";
@@ -31,6 +31,137 @@ import {
 	Zap,
 } from "lucide-react";
 
+// Extract tweet IDs from content HTML and return a clean version without
+// the blockquote (to prevent dangerouslySetInnerHTML from re-rendering them)
+function extractTweetIds(html: string): {
+	cleanHtml: string;
+	tweetIds: string[];
+} {
+	const tweetIds: string[] = [];
+	const cleanHtml = html.replace(
+		/<div class="social-embed twitter-embed single-embed"[^>]*>([\s\S]*?)<\/div>/g,
+		(_, inner) => {
+			// Try data-tweet-id attribute
+			const dataIdMatch = inner.match(/data-tweet-id="(\d+)"/);
+			if (dataIdMatch) {
+				tweetIds.push(dataIdMatch[1]);
+				return "";
+			}
+			// Try status link inside blockquote
+			const statusMatch = inner.match(/\/status\/(\d+)/);
+			if (statusMatch) {
+				tweetIds.push(statusMatch[1]);
+				return "";
+			}
+			// No valid tweet ID found — keep the original div
+			return `<div class="social-embed twitter-embed single-embed">${inner}</div>`;
+		},
+	);
+	return { cleanHtml, tweetIds };
+}
+
+// Render a single tweet widget via widgets.js — immune to React re-render wipes
+function TweetWidget({ tweetId }: { tweetId: string }) {
+	const ref = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!ref.current) return;
+		let cancelled = false;
+
+		// Load widgets.js if not already present
+		const loadWidgets = (): Promise<any> => {
+			if ((window as any).twttr?.widgets)
+				return Promise.resolve((window as any).twttr);
+
+			const existing = document.getElementById("twitter-wjs");
+			if (existing) {
+				return new Promise((resolve, reject) => {
+					let attempts = 0;
+					const poll = () => {
+						if (cancelled) return;
+						if ((window as any).twttr?.widgets)
+							return resolve((window as any).twttr);
+						if (++attempts > 100) return reject(new Error("timeout"));
+						setTimeout(poll, 100);
+					};
+					poll();
+				});
+			}
+
+			return new Promise((resolve, reject) => {
+				const s = document.createElement("script");
+				s.id = "twitter-wjs";
+				s.src = "https://platform.x.com/widgets.js";
+				s.async = true;
+				s.charset = "utf-8";
+				s.onload = () => {
+					setTimeout(
+						() =>
+							(window as any).twttr?.widgets
+								? resolve((window as any).twttr)
+								: reject(new Error("twttr unavailable")),
+						50,
+					);
+				};
+				s.onerror = () => reject(new Error("widgets.js load failed"));
+				document.head.appendChild(s);
+			});
+		};
+
+		const render = async () => {
+			if (cancelled) return;
+			const el = ref.current;
+			if (!el) return;
+
+			// Guard: skip if already rendered
+			if (el.dataset.twRendered === "true") return;
+
+			try {
+				const twttr = await loadWidgets();
+				if (cancelled) return;
+
+				el.dataset.twRendered = "true";
+				await twttr.widgets.createTweet(tweetId, el, {
+					theme: "light",
+					dnt: true,
+					lang: "en",
+				});
+			} catch {
+				if (!cancelled) {
+					// Show fallback link if widget failed to render
+					el.innerHTML = "";
+					el.dataset.twRendered = "true";
+					const a = document.createElement("a");
+					a.href = `https://x.com/chesscom/status/${tweetId}`;
+					a.target = "_blank";
+					a.rel = "noopener noreferrer";
+					a.className = "twitter-fallback-link";
+					a.style.cssText =
+						"max-width:550px;margin:1em auto;display:flex;gap:12px;padding:16px 18px;border-radius:14px;text-decoration:none;";
+					a.innerHTML = `
+						<span class="twitter-fallback-icon" style="flex:0 0 auto;width:36px;height:36px;border-radius:9999px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;">𝕏</span>
+						<div class="twitter-fallback-body">
+							<span class="twitter-fallback-text">View this post on X</span>
+							<span class="twitter-fallback-author">x.com</span>
+						</div>`;
+					el.appendChild(a);
+				}
+			}
+		};
+
+		render();
+		const t = setTimeout(render, 1000);
+		const t2 = setTimeout(render, 3000);
+		return () => {
+			cancelled = true;
+			clearTimeout(t);
+			clearTimeout(t2);
+		};
+	}, [tweetId]);
+
+	return <div ref={ref} className="max-w-137.5 mx-auto my-4" />;
+}
+
 export default function ArticleDetailPage() {
 	const params = useParams();
 	const slug = params.slug as string;
@@ -40,39 +171,41 @@ export default function ArticleDetailPage() {
 	const { data: popularData, isLoading: popularLoading } = usePopularArticles();
 	const contentRef = useRef<HTMLDivElement>(null);
 
+	// Extract tweets from content HTML so they can be rendered outside
+	// dangerouslySetInnerHTML (prevents React re-render from wiping the widget)
+	const { cleanContentHtml, tweetIds } = useMemo(() => {
+		const raw = article?.data?.content || "";
+		const result = extractTweetIds(raw);
+		return { cleanContentHtml: result.cleanHtml, tweetIds: result.tweetIds };
+	}, [article?.data?.content]);
+
 	useEffect(() => {
 		if (!article?.data) return;
 		const d = article.data;
 
-		// Set document.title so GA4 auto page_view picks up the correct page_title
 		if (typeof document !== "undefined") {
-			document.title = d.title
-				? `${d.title} | Olahbola`
-				: "Artikel | Olahbola";
+			document.title = d.title ? `${d.title} | Olahbola` : "Artikel | Olahbola";
 		}
 
-		trackArticleView(d.id?.toString() || slug, d.title || "", d.category_name || "");
-		// Mark session as engaged so GA4 counts all article readers,
-		// not just those who scroll to 90%
+		trackArticleView(
+			d.id?.toString() || slug,
+			d.title || "",
+			d.category_name || "",
+		);
 		if (typeof window !== "undefined" && window.gtag) {
 			window.gtag("event", "user_engagement");
 		}
 	}, [article?.data, slug]);
 
-	// Get related articles based on same category
 	const categorySlug = article?.data?.category_slug;
 	const { data: relatedData } = useRelatedArticles(categorySlug || "", slug, 4);
 
-	// Entity-based search: extract top entity terms from the current article
-	// title + content, then search API for articles matching those entities
-	// to build a broader relevance pool beyond the same-category fallback.
 	const entityProfile = useMemo(() => {
 		if (!article?.data?.title) return null;
 		const plainContent = (article.data.content || "").replace(/<[^>]*>/g, " ");
 		return extractEntities(article.data.title, plainContent);
 	}, [article?.data?.title, article?.data?.content]);
 
-	// Pick the top 4 highest-weight terms for parallel search
 	const entityTerms = useMemo(() => {
 		if (!entityProfile) return [];
 		return Array.from(entityProfile.terms.entries())
@@ -83,12 +216,9 @@ export default function ArticleDetailPage() {
 
 	const { articles: entityArticles } = useEntitySearch(entityTerms);
 
-	// Other categories (excluding current)
 	const { groups: otherCatGroups, isLoading: otherCatsLoading } =
 		useOtherCategories(categorySlug || "");
 
-	// Build combined pool: same-category articles + entity-search articles.
-	// MUST be called before any early return (Rules of Hooks).
 	const combinedPool: RelatedArticleItem[] = useMemo(() => {
 		const catArticles: RelatedArticleItem[] = (relatedData?.data || []).map(
 			(a: any) => ({
@@ -127,21 +257,14 @@ export default function ArticleDetailPage() {
 	);
 
 	// ============================================================
-	// ULTIMATE FIX: Social Media Embeds – 100% works on reload
+	// Instagram / Facebook embeds + dedupe
 	// ============================================================
 	useEffect(() => {
 		if (!article?.data?.content || !contentRef.current) return;
 
 		const container = contentRef.current;
 
-		// ============================================================
-		// DEDUPLICATE: Remove duplicate Instagram/Twitter/Facebook embeds
-		// keeping only the first occurrence of each unique permalink/src
-		// ============================================================
 		const dedupeEmbeds = () => {
-			// Helper: extract unique key from an embed container.
-			// For Instagram blocks, prefer data-instgrm-permalink,
-			// then fall back to the <a> href or <iframe> src.
 			const getIgKey = (el: HTMLElement): string => {
 				const bq = el.querySelector<HTMLElement>("blockquote.instagram-media");
 				if (bq) {
@@ -152,17 +275,12 @@ export default function ArticleDetailPage() {
 						""
 					);
 				}
-				// Fallback: check the container itself
 				return (
 					el.dataset.instgrmPermalink ||
 					el.querySelector<HTMLAnchorElement>("a")?.href ||
 					el.querySelector<HTMLIFrameElement>("iframe")?.src ||
 					""
 				);
-			};
-
-			const getSrcKey = (el: HTMLElement): string => {
-				return el.querySelector<HTMLIFrameElement>("iframe")?.src || "";
 			};
 
 			const getFbKey = (el: HTMLElement): string => {
@@ -173,7 +291,6 @@ export default function ArticleDetailPage() {
 				);
 			};
 
-			// Instagram: select TOP-LEVEL wrappers only (.social-embed.instagram-embed)
 			const igWrappers = container.querySelectorAll<HTMLElement>(
 				".social-embed.instagram-embed",
 			);
@@ -187,21 +304,6 @@ export default function ArticleDetailPage() {
 				}
 			});
 
-			// Twitter: select top-level containers
-			const twitterWrappers = container.querySelectorAll<HTMLElement>(
-				".social-embed.twitter-embed, .twitter-tweet",
-			);
-			const seenTw = new Set<string>();
-			twitterWrappers.forEach((wrapper) => {
-				const key = getSrcKey(wrapper);
-				if (key && seenTw.has(key)) {
-					wrapper.style.display = "none";
-				} else if (key) {
-					seenTw.add(key);
-				}
-			});
-
-			// Facebook: select top-level containers
 			const fbWrappers = container.querySelectorAll<HTMLElement>(
 				".social-embed.facebook-embed, .facebook-embed-wrapper, .fb-post, .fb-video, .fb-page",
 			);
@@ -218,31 +320,26 @@ export default function ArticleDetailPage() {
 
 		dedupeEmbeds();
 
-		// Force remove any existing Instagram script to ensure fresh load
 		const existingScripts = document.querySelectorAll(
 			'script[src*="instagram.com/embed.js"]',
 		);
 		existingScripts.forEach((script) => script.remove());
 
-		// Function to process Instagram embeds
 		const processInstagram = () => {
 			const blocks = container.querySelectorAll(
 				"blockquote.instagram-media, .instagram-embed",
 			);
 			if (blocks.length === 0) return;
 
-			// If instgrm is available, process directly
 			if (window.instgrm && window.instgrm.Embeds) {
 				window.instgrm.Embeds.process();
 				return;
 			}
 
-			// If not available, load script and process
 			const script = document.createElement("script");
 			script.src = "https://www.instagram.com/embed.js";
 			script.async = true;
 			script.onload = () => {
-				// ✅ FIX: tambahkan optional chaining dan pengecekan
 				if (window.instgrm?.Embeds) {
 					window.instgrm.Embeds.process();
 				}
@@ -252,15 +349,11 @@ export default function ArticleDetailPage() {
 			document.head.appendChild(script);
 		};
 
-		// Process Instagram immediately
 		processInstagram();
-
-		// Also process after a short delay to catch any late rendering
 		const timeout1 = setTimeout(processInstagram, 500);
 		const timeout2 = setTimeout(processInstagram, 1500);
 		const timeout3 = setTimeout(processInstagram, 3000);
 
-		// Use MutationObserver to catch any new embed elements added later
 		const observer = new MutationObserver(() => {
 			processInstagram();
 		});
@@ -315,7 +408,6 @@ export default function ArticleDetailPage() {
 		? `${process.env.NEXT_PUBLIC_API_URL}/storage/${articleData.image}`
 		: "/placeholder.png";
 
-	// Define color variables based on theme
 	const colors = isDark
 		? {
 				contentBg: "#1c211e",
@@ -366,17 +458,14 @@ export default function ArticleDetailPage() {
 		<div
 			className={`min-h-screen relative transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
 		>
-			{/* Theme Toggle */}
 			<ThemeToggle />
 
-			{/* Hero Banner - Image Only */}
 			<section className={`relative w-full h-[55vh] overflow-hidden`}>
 				<div
 					className={`absolute inset-0 bg-cover bg-top ${isDark ? "grayscale-[0.2] brightness-75" : "grayscale-[0.1] brightness-90"}`}
 					style={{ backgroundImage: `url(${fullImageUrl})` }}
 				/>
 
-				{/* Back Button */}
 				<div className="absolute top-24 left-4 md:left-8 z-30">
 					<Link
 						href="/artikel"
@@ -387,24 +476,19 @@ export default function ArticleDetailPage() {
 					</Link>
 				</div>
 
-				{/* Decorative gradient overlay at bottom */}
 				<div
 					className={`absolute bottom-0 left-0 right-0 h-32 z-10 bg-linear-to-t ${colors.overlay}`}
 				/>
 			</section>
 
-			{/* Content Layer */}
 			<section
 				className={`relative z-30 -mt-1 px-3 md:px-12 pb-24 max-w-screen-2xl mx-auto`}
 			>
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-					{/* Main Article Body */}
 					<article className="lg:col-span-8">
-						{/* Glass Article Header */}
 						<div
 							className={`p-8 md:p-10 rounded-xl mb-8 transition-all duration-300 ${isDark ? "glass-panel shadow-2xl" : "bg-white shadow-lg border border-gray-200"}`}
 						>
-							{/* Category Badge */}
 							{articleData.category_name && (
 								<Link
 									href={`/artikel?kategori=${articleData.category_slug}`}
@@ -417,14 +501,12 @@ export default function ArticleDetailPage() {
 								</Link>
 							)}
 
-							{/* Title */}
 							<h1
 								className={`text-2xl md:text-5xl font-black italic uppercase mb-6 leading-tight tracking-tight ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 							>
 								{articleData.title}
 							</h1>
 
-							{/* Meta Info */}
 							<div
 								className={`flex flex-wrap items-center gap-6 font-bold text-sm uppercase tracking-widest pb-6 border-b ${isDark ? "text-white/50 border-white/10" : "text-[#5a5a5a] border-gray-200"}`}
 							>
@@ -450,7 +532,6 @@ export default function ArticleDetailPage() {
 								</span>
 							</div>
 
-							{/* Share buttons inline with meta */}
 							<div className="flex items-center gap-3 mt-4">
 								<span
 									className={`font-bold text-xs uppercase tracking-widest mr-2 ${isDark ? "text-white/30" : "text-gray-400"}`}
@@ -477,16 +558,26 @@ export default function ArticleDetailPage() {
 							</div>
 						</div>
 
-						{/* Article Content */}
 						<div
 							ref={contentRef}
 							className={`article-content p-8 md:p-10 rounded-xl shadow-2xl ${isDark ? "glass-panel" : "bg-white shadow-lg border border-gray-200"}`}
 							dangerouslySetInnerHTML={{
-								__html: articleData.content,
+								__html: cleanContentHtml,
 							}}
 						/>
 
-						{/* Other Categories */}
+						{/* Twitter widgets — rendered outside dangerouslySetInnerHTML
+							so React re-renders don't wipe the iframe */}
+						{tweetIds.length > 0 && (
+							<div
+								className={`-mt-4 p-8 md:p-10 pt-0 rounded-t-none rounded-xl shadow-2xl border-t-0  ${isDark ? "glass-panel" : "bg-white shadow-lg"}`}
+							>
+								{tweetIds.map((id) => (
+									<TweetWidget key={id} tweetId={id} />
+								))}
+							</div>
+						)}
+
 						{(otherCatsLoading ||
 							otherCatGroups.some((g) => g.articles.length > 0)) && (
 							<div className="mt-12">
@@ -552,7 +643,6 @@ export default function ArticleDetailPage() {
 							</div>
 						)}
 
-						{/* Follow Olahbola */}
 						<div className="mt-12">
 							<div
 								className={`p-8 rounded-xl ${isDark ? "glass-panel" : "bg-white shadow-lg border border-gray-200"}`}
@@ -634,10 +724,8 @@ export default function ArticleDetailPage() {
 						</div>
 					</article>
 
-					{/* Sidebar - Sticky/Float */}
 					<aside className="lg:col-span-4 sticky top-5 self-start h-fit">
 						<div className="space-y-4">
-							{/* Related Articles (Inside Main Content) */}
 							{relatedArticles.length > 0 && (
 								<div
 									className={`p-6 rounded-xl transition-all duration-300 ${isDark ? "glass-panel border border-white/5" : "bg-white shadow-lg border border-gray-200"}`}
@@ -911,7 +999,7 @@ export default function ArticleDetailPage() {
 						${isDark ? "rgba(0, 194, 177, 0.3)" : "rgba(10, 124, 110, 0.3)"};
 				}
 
-				/* Blockquote — exclude social media embeds (Instagram, Twitter, Facebook) */
+				/* Blockquote — exclude social media embeds */
 				.article-content
 					blockquote:not(.instagram-media):not(.twitter-tweet):not(
 						.fb-post
@@ -979,7 +1067,7 @@ export default function ArticleDetailPage() {
 					text-transform: uppercase;
 				}
 
-				/* Instagram Embed — fully reset all inherited blockquote styles so the embed renders correctly */
+				/* Instagram Embed */
 				.article-content blockquote.instagram-media,
 				.article-content blockquote.instagram-embed {
 					all: unset !important;
@@ -1090,7 +1178,7 @@ export default function ArticleDetailPage() {
 					color: ${colors.contentText};
 				}
 
-				/* Strip rich-text editor artifacts — background, font-family, font-size, text-align, color */
+				/* Strip rich-text editor artifacts */
 				.article-content span {
 					background-color: transparent !important;
 					font-family: inherit !important;
@@ -1114,10 +1202,10 @@ export default function ArticleDetailPage() {
 					aspect-ratio: 16 / 9;
 					width: 100% !important;
 				}
-				/* Exclude social embed iframes from global iframe decoration styles */
 				.article-content iframe[src*="instagram.com"],
 				.article-content iframe[src*="facebook.com"],
-				.article-content iframe[src*="twitter.com"] {
+				.article-content iframe[src*="twitter.com"],
+				.article-content iframe[src*="platform.x.com"] {
 					border-radius: 0 !important;
 					box-shadow: none !important;
 					border: none !important;
@@ -1127,18 +1215,16 @@ export default function ArticleDetailPage() {
 				/* Instagram Embed */
 				.article-content .instagram-media,
 				.article-content .instagram-embed {
-					min-height: 320px !important; /* ← perbesar tinggi minimal */
-					min-width: 250px !important; /* ← perbesar lebar minimal */
+					min-height: 320px !important;
+					min-width: 250px !important;
 					max-height: none !important;
 					overflow: visible !important;
-					height: auto !important; /* biarkan fleksibel */
+					height: auto !important;
 				}
-
-				/* Tambahan untuk memastikan jikarame di dalamnya juga tidak terpotong */
 				.article-content .instagram-media iframe,
 				.article-content .instagram-embed iframe {
 					height: auto !important;
-					min-height: 550px !important; /* sesuaikan */
+					min-height: 550px !important;
 					max-height: none !important;
 				}
 
@@ -1165,20 +1251,94 @@ export default function ArticleDetailPage() {
 					box-shadow: 0 8px 32px ${colors.shadowColor};
 				}
 
-				/* Twitter Embed */
-				.article-content .twitter-tweet {
-					margin: 2em auto !important;
-					border-radius: 16px;
-					overflow: hidden;
-					box-shadow: 0 8px 32px ${colors.shadowColor};
-				}
-				.article-content .twitter-tweet iframe {
-					margin: 0 !important;
-					box-shadow: none !important;
-					width: 100% !important;
+				/* ============================================================
+				   ✅ TWITTER / X EMBED — ANTI-FLICKER
+				   ============================================================ */
+
+				/* Raw blockquote — hidden only when widget is ready (data-tw-rendered set by JS) */
+				.article-content
+					.social-embed.twitter-embed[data-tw-rendered]
+					> blockquote.twitter-tweet {
+					display: none !important;
 				}
 
-				/* Social Media Embeds */
+				/* Rendered tweet widget (createTweet output: div.twitter-tweet > iframe) */
+				.article-content .social-embed.twitter-embed div.twitter-tweet,
+				.article-content
+					.social-embed.twitter-embed
+					div.twitter-tweet-rendered {
+					margin: 1em auto !important;
+					max-width: 550px !important;
+					width: 100% !important;
+					display: block !important;
+					background: transparent !important;
+					text-align: left !important;
+					overflow: visible !important;
+				}
+
+				.article-content .social-embed.twitter-embed iframe {
+					display: block !important;
+					max-width: 100% !important;
+					margin: 0 auto !important;
+					border: none !important;
+					border-radius: 12px !important;
+				}
+
+				/* Fallback link (only injected if widgets.js fails) */
+				.article-content .social-embed.twitter-embed .twitter-fallback-link {
+					display: flex !important;
+					align-items: flex-start;
+					gap: 12px;
+					padding: 16px 18px;
+					margin: 1.5em 0;
+					max-width: 550px;
+					border-radius: 14px;
+					background: ${isDark ? "rgba(255,255,255,0.04)" : "#ffffff"};
+					border: 1px solid ${isDark ? "rgba(255,255,255,0.12)" : "#e5e7eb"};
+					box-shadow: 0 4px 24px ${colors.shadowColor};
+					color: ${colors.contentText} !important;
+					text-decoration: none !important;
+					border-bottom: none !important;
+					transition:
+						transform 0.2s ease,
+						box-shadow 0.2s ease;
+				}
+				.article-content
+					.social-embed.twitter-embed
+					.twitter-fallback-link:hover {
+					transform: translateY(-2px);
+					box-shadow: 0 8px 32px ${colors.shadowColor};
+				}
+				.article-content .social-embed.twitter-embed .twitter-fallback-icon {
+					flex: 0 0 auto;
+					width: 36px;
+					height: 36px;
+					border-radius: 9999px;
+					background: #000;
+					color: #fff;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+				.article-content .social-embed.twitter-embed .twitter-fallback-body {
+					display: flex;
+					flex-direction: column;
+					gap: 4px;
+					min-width: 0;
+				}
+				.article-content .social-embed.twitter-embed .twitter-fallback-text {
+					font-size: 0.95em;
+					line-height: 1.45;
+					color: ${colors.contentText};
+					font-weight: 500;
+				}
+				.article-content .social-embed.twitter-embed .twitter-fallback-author {
+					font-size: 0.8em;
+					color: ${colors.contentTextSecondary};
+					font-weight: 600;
+				}
+
+				/* Social Media Embeds — general */
 				.article-content .social-embed {
 					position: relative;
 					z-index: 10;
@@ -1189,8 +1349,6 @@ export default function ArticleDetailPage() {
 				}
 				.article-content .social-embed * {
 					pointer-events: auto !important;
-					z-index: 20 !important;
-					position: relative !important;
 				}
 				.article-content .instagram-embed {
 					display: block;
@@ -1209,28 +1367,6 @@ export default function ArticleDetailPage() {
 				}
 				.article-content iframe[src*="instagram.com"] {
 					overflow: visible !important;
-				}
-				.article-content .twitter-embed {
-					display: block !important;
-					min-height: 300px;
-					background: transparent !important;
-					text-align: left;
-				}
-				.article-content .twitter-tweet {
-					display: inline-block !important;
-					background: transparent !important;
-					pointer-events: auto !important;
-					z-index: 30 !important;
-					position: relative !important;
-					margin-left: 0 !important;
-					margin-right: auto !important;
-					text-align: left !important;
-					max-width: 100% !important;
-				}
-				.article-content iframe[src*="platform.twitter.com"] {
-					display: block !important;
-					max-width: 100% !important;
-					border: none !important;
 				}
 				.article-content .facebook-embed-wrapper {
 					max-width: 100% !important;
@@ -1321,7 +1457,7 @@ export default function ArticleDetailPage() {
 					min-width: 300px;
 				}
 
-				/* Read-also / "Baca juga" callout */
+				/* Read-also */
 				.article-content .read-also,
 				.article-content [data-read-also] {
 					border-left: 0;
@@ -1357,7 +1493,6 @@ export default function ArticleDetailPage() {
 					transition: all 0.3s ease;
 					position: relative;
 				}
-
 				.article-content .read-also a:hover,
 				.article-content [data-read-also] a:hover {
 					color: ${colors.primary} !important;
