@@ -346,10 +346,11 @@ export function trackVideoPause(
 		video_current_time: currentTime,
 		...(duration !== undefined && { video_duration: duration }),
 	});
+	console.log(`[GA4] Video pause tracked: ${videoTitle} @ ${currentTime}s`);
 }
 
 /**
- * Track video progress (periodic, ~every 30s)
+ * Track video progress (periodic, every 5s while playing)
  */
 export function trackVideoProgress(
 	videoId: string,
@@ -358,12 +359,18 @@ export function trackVideoProgress(
 	duration: number,
 ): void {
 	if (!isGA4Available()) return;
+	const percent =
+		duration > 0 ? Math.min(100, Math.round((currentTime / duration) * 100)) : 0;
 	window.gtag("event", "video_progress", {
 		video_id: videoId,
 		video_title: videoTitle,
 		video_current_time: currentTime,
 		video_duration: duration,
+		video_percent: percent,
 	});
+	console.log(
+		`[GA4] Video progress tracked: ${videoTitle} @ ${currentTime}s (${percent}%)`,
+	);
 }
 
 /**
@@ -380,6 +387,7 @@ export function trackVideoMute(
 		video_title: videoTitle,
 		muted: isMuted,
 	});
+	console.log(`[GA4] Video mute tracked: ${videoTitle} muted=${isMuted}`);
 }
 
 /**
@@ -392,12 +400,16 @@ export function trackVideoSeek(
 	duration: number,
 ): void {
 	if (!isGA4Available()) return;
+	const percent =
+		duration > 0 ? Math.min(100, Math.round((seekTime / duration) * 100)) : 0;
 	window.gtag("event", "video_seek", {
 		video_id: videoId,
 		video_title: videoTitle,
 		seek_time: seekTime,
 		video_duration: duration,
+		video_percent: percent,
 	});
+	console.log(`[GA4] Video seek tracked: ${videoTitle} -> ${seekTime}s`);
 }
 
 /**
@@ -413,7 +425,9 @@ export function trackVideoComplete(
 		video_id: videoId,
 		video_title: videoTitle,
 		video_duration: duration,
+		video_percent: 100,
 	});
+	console.log(`[GA4] Video complete tracked: ${videoTitle}`);
 }
 
 /**
@@ -426,14 +440,16 @@ export function trackVideoClose(
 	duration: number,
 ): void {
 	if (!isGA4Available()) return;
-	const percentage = duration > 0 ? Math.round((watchedTime / duration) * 100) : 0;
+	const percent =
+		duration > 0 ? Math.min(100, Math.round((watchedTime / duration) * 100)) : 0;
 	window.gtag("event", "video_close", {
 		video_id: videoId,
 		video_title: videoTitle,
-		watched_time: watchedTime,
+		video_current_time: watchedTime,
 		video_duration: duration,
-		percentage_watched: percentage,
+		video_percent: percent,
 	});
+	console.log(`[GA4] Video close tracked: ${videoTitle} @ ${watchedTime}s (${percent}%)`);
 }
 
 /**
@@ -441,8 +457,9 @@ export function trackVideoClose(
  */
 export function trackVideoPreviewPlay(videoId: string, videoTitle: string): void {
 	if (!isGA4Available()) return;
-	window.gtag("event", "video_preview_play", {
+	window.gtag("event", "video_preview", {
 		video_id: videoId,
 		video_title: videoTitle,
 	});
+	console.log(`[GA4] Video preview tracked: ${videoTitle}`);
 }
