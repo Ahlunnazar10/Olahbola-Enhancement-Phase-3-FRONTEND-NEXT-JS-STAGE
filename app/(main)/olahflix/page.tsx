@@ -5,7 +5,11 @@ import { useOlahflixVideos, type Video } from "@/hooks/queries/useOlahflix";
 import { OlahflixModal } from "@/components/olahflix/OlahflixModal";
 import { useUIStore } from "@/stores/uiStore";
 import { formatRelativeTime, formatClock } from "@/lib/utils";
-import { trackPageVisit, trackVideoPreviewPlay, trackEvent } from "@/lib/analytics";
+import {
+	trackPageVisit,
+	trackVideoPreviewPlay,
+	trackEvent,
+} from "@/lib/analytics";
 import { PlayIcon } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com";
@@ -265,12 +269,6 @@ function OlahflixContent() {
 							<span className="font-label-bold text-primary">
 								{totalVideos} Shorts
 							</span>
-						</span>
-						<span
-							className="hidden lg:inline-block px-2.5 py-0.5 rounded-full
-							bg-surface-container-high text-outline text-[11px] font-label-bold"
-						>
-							Autoplay: AKTIF
 						</span>
 					</div>
 
