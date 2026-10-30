@@ -142,16 +142,25 @@ export function NavigationBar() {
 							))}
 
 							{/* User Icon - Desktop */}
-							<Link
-								href={isAuthenticated ? "/profile" : "/login"}
-								className={cn(
-									"transition-colors rounded-full",
-									isDark ? "text-green" : "text-[#0a7c6e]",
-									isDark ? "hover:text-[#1bc7bb]" : "hover:text-[#095a50]",
-								)}
+							{isAuthenticated && (
+								<Link
+									href="/profile"
+									className={cn(
+										"transition-transform rounded-full overflow-hidden ring-2",
+										isDark
+											? "ring-green/40 hover:ring-green/70"
+											: "ring-[#0a7c6e]/40 hover:ring-[#0a7c6e]/70",
+									)}
 							>
-								<CircleUserRound className="size-8" />
-							</Link>
+									<img
+										src={getProfilePicture()}
+										alt="User profile"
+										width={32}
+										height={32}
+										className="w-8 h-8 object-cover rounded-full"
+									/>
+								</Link>
+							)}
 
 							{/* Logout Button - Only show when authenticated */}
 							{isAuthenticated && (
