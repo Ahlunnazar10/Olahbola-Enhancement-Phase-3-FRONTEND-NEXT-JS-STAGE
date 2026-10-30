@@ -9,12 +9,323 @@ import { useInView } from "react-intersection-observer";
 import { apiClient } from "@/lib/api/client";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
-import type { Article, Interview } from "@/types";
+import type { Article } from "@/types";
+import type { Video } from "@/hooks/queries/useOlahflix";
 import { useLeaderboard as useBLLeaderboard } from "@/hooks/queries/useBundesliga";
+import { useUserStats } from "@/hooks/queries/useUserStats";
+import { FD_COMPETITIONS } from "@/hooks/queries/useFootballData";
 import AdSlot from "@/components/ads/AdSlot";
-import { ArrowRight, Play, Circle, X } from "lucide-react";
+import { ArrowRight, Play, Circle, ChevronRight } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
 import { BannerSlider } from "@/components/banner-slider/BannerSlider";
+import type { UserStats } from "@/hooks/queries/useUserStats";
+import {
+	UserStatModals,
+	type UserStatModalKey,
+} from "@/components/games/UserStatModals";
+import type { EventStats } from "@/hooks/queries/useUserStats";
+
+// User Stat Card Component
+interface UserStatCardProps {
+	user: {
+		name?: string;
+		email?: string | null;
+		profilePicture?: string | null;
+	} | null;
+	stats: {
+		data?: {
+			totalPoints: number;
+			totalPredictions: number;
+			totalParticipation: number;
+			results: unknown[];
+		} | null;
+		bundesligaRank?: { rank: number } | null;
+		isLoading: boolean;
+	};
+	onRowClick?: (
+		key: "rank" | "points" | "predictions" | "participation",
+	) => void;
+}
+
+function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
+	const { theme } = useUIStore();
+	const isDark = theme === "dark";
+
+	if (!user) return null;
+
+	const rank = stats.bundesligaRank?.rank;
+
+	const glassPillBg = isDark
+		? "linear-gradient(90deg, rgba(19,122,110,0.4) 0%, rgba(20,73,67,0.4) 100%)"
+		: "linear-gradient(90deg, rgba(255,255,255,0.75) 0%, rgba(232,232,232,0.6) 100%)";
+	const glassPillBorder = isDark ? "#43decc" : "rgba(10,124,110,0.35)";
+	const glassPillShadow = isDark
+		? "10px 22px 20px rgba(0,0,0,0.4)"
+		: "0 4px 16px rgba(0,0,0,0.08)";
+	const textColor = isDark ? "text-white" : "text-[#1a1a1a]";
+	const textSubColor = isDark ? "text-white/60" : "text-[#5a5a5a]";
+	const labelSubColor = isDark ? "text-white/80" : "text-[#4a4a4a]";
+	const skeletonBg = isDark
+		? "bg-white/10 border border-primary/40"
+		: "bg-black/5 border border-black/10";
+	const cardBg = isDark ? "bg-primary/20" : "bg-white/60";
+	const cardShadow = isDark ? "shadow-lg" : "shadow-md";
+	const profileBorder = isDark ? "border-primary" : "border-[#0a7c6e]/40";
+	const dividerBg = isDark ? "bg-primary/50" : "bg-[#0a7c6e]/30";
+
+	const rows = [
+		{
+			key: "rank",
+			label: "Leaderboard",
+			value: rank ? `#${rank}` : "-",
+			icon: "/icons/trophy.svg",
+			accent: true,
+		},
+		{
+			key: "points",
+			label: "Total Skor",
+			value: `${stats.data?.totalPoints?.toLocaleString("id-ID") || "0"} PTS`,
+			icon: "/icons/point.svg",
+			accent: false,
+		},
+		{
+			key: "predictions",
+			label: "Total Prediksi",
+			value: String(stats.data?.totalPredictions || 0),
+			icon: "/icons/pred.svg",
+			accent: false,
+		},
+		{
+			key: "participation",
+			label: "Partisipasi Game",
+			value: String(stats.data?.totalParticipation || 0),
+			icon: "/icons/ball-new.svg",
+			accent: false,
+		},
+	];
+
+	return (
+		<div
+			className={`relative w-full overflow-hidden shadow-lg h-full ${cardBg} ${cardShadow}`}
+		>
+			{isDark && (
+				<Image
+					src="/images/home/stats-bg.png"
+					alt=""
+					fill
+					style={{ objectFit: "cover" }}
+					priority
+				/>
+			)}
+
+			<div className="relative flex flex-col px-1 md:px-16 py-4 md:py-6 h-auto md:h-full">
+				<div className="flex flex-row md:flex-col gap-3 justify-between mb-2">
+					{/* ── Profile header ── */}
+					<div className="flex items-center gap-3">
+						<div
+							className={`relative w-10 h-10 md:w-15.5 md:h-15.5 shrink-0 rounded-full overflow-hidden border-2 bg-white ${profileBorder}`}
+						>
+							{user.profilePicture ? (
+								<Image
+									src={user.profilePicture}
+									alt={user.name || "User"}
+									fill
+									sizes="64px"
+									style={{ objectFit: "cover" }}
+								/>
+							) : (
+								<Image
+									src="/icons/football-player-new.svg"
+									alt="User"
+									fill
+									sizes="64px"
+									style={{ objectFit: "cover" }}
+								/>
+							)}
+						</div>
+						<div className="min-w-0">
+							<h3
+								className={`font-bold text-lg leading-tight truncate ${textColor}`}
+							>
+								{user.name || "Pemain"}
+							</h3>
+							{user.email && (
+								<p className={`${textSubColor} text-xs truncate`}>
+									{user.email}
+								</p>
+							)}
+						</div>
+					</div>
+
+					{/* ── STATISTIK section ── */}
+					<div className="mt-4 flex items-center gap-3">
+						<span
+							className={`text-sm md:text-base font-bold tracking-wide uppercase ${textColor}`}
+						>
+							Statistik Kamu
+						</span>
+						<span className={`h-[1.6px] flex-1 ${dividerBg}`} />
+					</div>
+				</div>
+
+				{/* Mobile compact stat strip */}
+				<div className="md:hidden mt-3 flex flex-row gap-2 overflow-x-auto scrollbar-none">
+					{rows.map((r) => (
+						<button
+							key={`m-${r.key}`}
+							className="relative shrink-0 rounded-full border px-3 py-1.5 flex items-center gap-2 cursor-pointer"
+							style={{
+								background: glassPillBg,
+								borderColor: glassPillBorder,
+								backdropFilter: "blur(10px)",
+							}}
+							onClick={() =>
+								onRowClick?.(
+									r.key as "rank" | "points" | "predictions" | "participation",
+								)
+							}
+						>
+							<div>
+								<p
+									className={`text-[10px] font-medium ${r.accent ? "text-[#ffb600]" : labelSubColor}`}
+								>
+									{r.label}
+								</p>
+								<p
+									className={`text-sm font-black ${r.accent ? "text-[#ffb600]" : textColor}`}
+								>
+									{stats.isLoading ? "…" : r.value}
+								</p>
+							</div>
+						</button>
+					))}
+				</div>
+
+				{/* ── Stat rows (desktop only) ── */}
+				{stats.isLoading ? (
+					<div className="hidden md:block mt-3 space-y-3">
+						{rows.map((r) => (
+							<div
+								key={r.key}
+								className={`h-14 rounded-full animate-pulse ${skeletonBg}`}
+							/>
+						))}
+					</div>
+				) : (
+					<div className="hidden md:block mt-3 space-y-3">
+						{rows.map((r) => (
+							<button
+								key={r.key}
+								className="relative overflow-hidden rounded-full border px-4 py-2 flex items-center justify-between cursor-pointer w-full text-left"
+								style={{
+									background: r.accent
+										? isDark
+											? "linear-gradient(0deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.2) 100%)"
+											: "linear-gradient(0deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.6) 100%)"
+										: glassPillBg,
+									borderColor: r.accent
+										? isDark
+											? "#43decc"
+											: "rgba(255,182,0,0.5)"
+										: glassPillBorder,
+									backdropFilter: "blur(10px)",
+									boxShadow: r.accent
+										? isDark
+											? "0px 0px 20px 2px #43decc"
+											: "0px 0px 20px 2px rgba(255,182,0,0.4)"
+										: glassPillShadow,
+								}}
+								onClick={() =>
+									onRowClick?.(
+										r.key as
+											| "rank"
+											| "points"
+											| "predictions"
+											| "participation",
+									)
+								}
+							>
+								<div className="w-full flex flex-row items-center justify-between py-0.2">
+									<Image
+										src={r.icon}
+										alt={r.label}
+										width={30}
+										height={30}
+										className="shrink-0"
+									/>
+									<div className="flex flex-col justify-start gap-1">
+										<p
+											className={`text-xs font-medium ${
+												r.accent
+													? isDark
+														? "text-[#ffb600]"
+														: "text-[#b8860b]"
+													: labelSubColor
+											}`}
+										>
+											{r.label}
+										</p>
+										<p
+											className={`text-xl font-black leading-none ${
+												r.accent
+													? isDark
+														? "text-[#ffb600]"
+														: "text-[#b8860b]"
+													: textColor
+											}`}
+										>
+											{r.value}
+										</p>
+									</div>
+									<ChevronRight
+										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+									/>
+								</div>
+							</button>
+						))}
+					</div>
+				)}
+			</div>
+		</div>
+	);
+}
+
+// League Card List Component
+function LeagueCardList() {
+	const { theme } = useUIStore();
+	const isDark = theme === "dark";
+
+	return (
+		<section className="py-5 md:py-8 px-3 md:px-8 lg:px-16">
+			<div className="max-w-7xl mx-auto">
+				<div className="flex items-center justify-center gap-1 md:gap-4 overflow-x-auto scrollbar-none md:overflow-x-visible">
+					{FD_COMPETITIONS.map((comp) => (
+						<Link
+							key={comp.slug}
+							href={`/football/${comp.slug}`}
+							className={`glass-card w-[16%] md:w-full h-10 md:h-20 px-0 md:px-6 py-0 md:py-3 flex flex-col items-center justify-center p-4 hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-xl group relative overflow-hidden ${
+								isDark
+									? ""
+									: "bg-white/70! shadow-[0_4px_20px_rgba(0,0,0,0.08)]! border-[#0a7c6e]/25!"
+							}`}
+						>
+							<span
+								className={`absolute inset-0 ${isDark ? "bg-primary/20 opacity-0 group-hover:opacity-100" : "bg-black/50 opacity-80 group-hover:opacity-100"} transition-opacity duration-300 pointer-events-none`}
+							/>
+							<img
+								src={comp.emblem}
+								alt={comp.label}
+								width={130}
+								height={130}
+								className="w-12 h-12 md:w-50 md:h-50 relative z-10 object-contain"
+							/>
+						</Link>
+					))}
+				</div>
+			</div>
+		</section>
+	);
+}
 
 interface LeaderboardRow {
 	rank: number;
@@ -60,18 +371,19 @@ export default function HomePage() {
 	const [articles, setArticles] = useState<Article[]>([]);
 	const [articlesLoading, setArticlesLoading] = useState(true);
 
-	const [interviews, setInterviews] = useState<Interview[]>([]);
-	const [interviewsLoading, setInterviewsLoading] = useState(true);
-	const [interviewDisplayCount, setInterviewDisplayCount] = useState(5);
+	const [videos, setVideos] = useState<Video[]>([]);
+	const [videosLoading, setVideosLoading] = useState(true);
+	const [videoDisplayCount, setVideoDisplayCount] = useState(5);
 	const [isMobileView, setIsMobileView] = useState(false);
 
 	const [heroPlayBgLoaded, setHeroPlayBgLoaded] = useState(false);
+	const [showFullLeaderboard, setShowFullLeaderboard] = useState(false);
 	const [activeBannerIndex, setActiveBannerIndex] = useState(0);
 	const heroSectionRef = useRef<HTMLElement>(null);
 
 	const { ref: articleRef, inView: articleVisible } = useSectionInView(0.1);
 	const { ref: socmedRef, inView: socmedVisible } = useSectionInView(0.1);
-	const { ref: interviewRef, inView: interviewVisible } = useSectionInView(0.1);
+	const { ref: videoRef, inView: videoVisible } = useSectionInView(0.1);
 	const { ref: partnerRef, inView: partnerVisible } = useSectionInView(0.1);
 	const { ref: youtubeRef, inView: youtubeVisible } = useSectionInView(0.1);
 	const heroPlayRef = useRef<HTMLElement>(null);
@@ -80,6 +392,26 @@ export default function HomePage() {
 
 	// Bundesliga Live Leaderboard
 	const leaderboardData = useBLLeaderboard();
+
+	// Auth & User Stats
+	const { user, isAuthenticated } = useAuthStore();
+	const userStats = useUserStats();
+
+	// Stat modal state (triggered by UserStatCard row clicks)
+	const [activeStatModal, setActiveStatModal] =
+		useState<UserStatModalKey>(null);
+	const handleRowClick = (
+		key: "rank" | "points" | "predictions" | "participation",
+	) => {
+		setActiveStatModal(
+			{
+				rank: "leaderboard",
+				points: "points",
+				predictions: "predictions",
+				participation: "participation",
+			}[key] as UserStatModalKey,
+		);
+	};
 
 	useEffect(() => {
 		const img = new window.Image();
@@ -152,7 +484,7 @@ export default function HomePage() {
 	const bannerSlides: BannerSlide[] = useMemo(() => {
 		const slides: BannerSlide[] = [];
 
-		// Slide 1: HeroPlay Game Pass Video Banner
+		// // Slide 1: HeroPlay Game Pass Video Banner
 		slides.push({
 			id: "hero-play-game-pass",
 			type: "cta" as const,
@@ -165,7 +497,7 @@ export default function HomePage() {
 			ctaAlignment: "right",
 		});
 
-		// Slide 2: Event Banner - Bundesliga 2026/2027
+		// // Slide 2: Event Banner - Bundesliga 2026/2027
 		slides.push({
 			id: "event-bundesliga",
 			type: "event" as const,
@@ -187,7 +519,7 @@ export default function HomePage() {
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
-		// Slide 3: HeroPlay Kickoff Banner
+		// // Slide 3: HeroPlay Kickoff Banner
 		slides.push({
 			id: "hero-play-kickoff",
 			type: "cta" as const,
@@ -205,7 +537,7 @@ export default function HomePage() {
 			},
 		});
 
-		// Slide 4: Article banner (if available)
+		// // Slide 4: Article banner (if available)
 		if (featuredArticle) {
 			slides.push({
 				id: `article-${featuredArticle.id}`,
@@ -238,7 +570,7 @@ export default function HomePage() {
 		setFeaturedLoading(true);
 		try {
 			const response = await apiClient.get(
-				"/api/v1/article/siapa-rui-pinto-rahasia-man-city",
+				"/api/v1/article/como-milik-orang-indonesia-lampaui-manchester-united",
 			);
 			if (response.data.status === "success") {
 				setFeaturedArticle(response.data.data);
@@ -267,20 +599,20 @@ export default function HomePage() {
 		}
 	};
 
-	const fetchInterviews = async () => {
-		if (!interviewVisible) return;
-		setInterviewsLoading(true);
+	const fetchVideos = async () => {
+		if (!videoVisible) return;
+		setVideosLoading(true);
 		try {
-			const response = await apiClient.get("/api/v1/interview", {
+			const response = await apiClient.get("/api/v1/video", {
 				params: { per_page: 6 },
 			});
 			if (response.data.status === "success") {
-				setInterviews(response.data.data);
+				setVideos(response.data.data);
 			}
 		} catch (error) {
-			console.error("Error fetching interviews:", error);
+			console.error("Error fetching videos:", error);
 		} finally {
-			setInterviewsLoading(false);
+			setVideosLoading(false);
 		}
 	};
 
@@ -303,19 +635,19 @@ export default function HomePage() {
 	}, [articleVisible]);
 
 	useEffect(() => {
-		if (interviewVisible) {
-			fetchInterviews();
+		if (videoVisible) {
+			fetchVideos();
 		}
-	}, [interviewVisible]);
+	}, [videoVisible]);
 
 	useEffect(() => {
 		const updateDisplayCount = () => {
 			const width = window.innerWidth;
 			if (width < 768) {
-				setInterviewDisplayCount(6);
+				setVideoDisplayCount(6);
 				setIsMobileView(true);
 			} else {
-				setInterviewDisplayCount(5);
+				setVideoDisplayCount(5);
 				setIsMobileView(false);
 			}
 		};
@@ -344,19 +676,54 @@ export default function HomePage() {
 					zIndex: 0,
 				}}
 			/>
-
 			<main className="relative z-10">
 				{/* Hero Section with Banner Slider */}
-				<section className="relative h-screen flex items-center overflow-hidden">
-					<BannerSlider
-						slides={bannerSlides}
-						autoPlay={true}
-						autoPlayInterval={3000}
-						showNavigation={bannerSlides.length > 1}
-						isDark={isDark}
-						isMobile={isMobileView}
-					/>
+				<section className="relative h-[78vh] md:h-[70vh] flex items-center overflow-hidden">
+					{isAuthenticated ? (
+						// Login state: Banner 70% + User Stat Card 30%
+						<div className="flex flex-col w-full h-full md:flex-row gap-0 md:gap-2">
+							<div className={`w-full md:w-[72%] h-[60vh] md:h-full`}>
+								<BannerSlider
+									slides={bannerSlides}
+									autoPlay={true}
+									autoPlayInterval={3000}
+									showNavigation={bannerSlides.length > 1}
+									isDark={isDark}
+									isMobile={isMobileView}
+								/>
+							</div>
+							<div className="md:hidden w-full">
+								<UserStatCard
+									user={user}
+									stats={userStats}
+									onRowClick={handleRowClick}
+								/>
+							</div>
+							<div className="hidden md:block w-full h-full  items-center justify-center">
+								<UserStatCard
+									user={user}
+									stats={userStats}
+									onRowClick={handleRowClick}
+								/>
+							</div>
+						</div>
+					) : (
+						// Loginless: Banner full width
+						<div className="w-full h-full">
+							<BannerSlider
+								slides={bannerSlides}
+								autoPlay={true}
+								autoPlayInterval={3000}
+								showNavigation={bannerSlides.length > 1}
+								isDark={isDark}
+								isMobile={isMobileView}
+							/>
+						</div>
+					)}
 				</section>
+
+				{/* League Cards Section */}
+				<LeagueCardList />
 
 				{/*  LIVE LEADERBOARD  */}
 				<section
@@ -436,14 +803,14 @@ export default function HomePage() {
 
 					{/* Main Content */}
 					<div
-						className="relative z-30 py-14 md:py-20 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto"
+						className="relative z-30 py-14 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto"
 						data-aos="fade-up"
 					>
 						{/* Header */}
 						<div className="text-center mb-10">
 							{/* Title */}
 							<h2
-								className="text-3xl md:text-5xl font-black uppercase mb-3"
+								className="text-3xl md:text-4xl font-black uppercase mb-2"
 								style={{
 									color: heroPlayColors.accent,
 								}}
@@ -451,7 +818,7 @@ export default function HomePage() {
 								BUNDESLIGA 2026/2027
 							</h2>
 							<p
-								className="text-base md:text-lg"
+								className="text-base "
 								style={{ color: heroPlayColors.textSecondary }}
 							>
 								Klasemen Sementara Berdasarkan Performa Prediksi Skor Bundesliga
@@ -532,7 +899,7 @@ export default function HomePage() {
 							<div className="max-w-5xl mx-auto">
 								{/* Top 3 Podium Cards - Desktop - Gen-Z Style */}
 								<div
-									className="hidden md:grid gap-4 mb-8 items-end"
+									className="hidden md:grid gap-14 mb-8 items-end"
 									style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
 								>
 									{/* Rank 2 */}
@@ -558,7 +925,7 @@ export default function HomePage() {
 											</div>
 											<div className="pt-5">
 												{leaderboardRows[1].profilePicture ? (
-													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+													<div className="relative w-16 h-16 mx-auto rounded-full border-2 border-white overflow-hidden mb-3">
 														<Image
 															src={leaderboardRows[1].profilePicture}
 															alt={leaderboardRows[1].name}
@@ -571,9 +938,9 @@ export default function HomePage() {
 														/>
 													</div>
 												) : (
-													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+													<div className="relative w-16 h-16 mx-auto rounded-full overflow-hidden mb-3 border border-amber-400">
 														<Image
-															src="/icons/football-player.png"
+															src="/icons/football-player-new.svg"
 															alt="Player Icon"
 															fill
 															sizes="64px"
@@ -646,7 +1013,7 @@ export default function HomePage() {
 											</div>
 											<div className="pt-5">
 												{leaderboardRows[0].profilePicture ? (
-													<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
+													<div className="relative w-20 h-20 mx-auto rounded-full border-2 border-white overflow-hidden mb-4">
 														<Image
 															src={leaderboardRows[0].profilePicture}
 															alt={leaderboardRows[0].name}
@@ -659,9 +1026,9 @@ export default function HomePage() {
 														/>
 													</div>
 												) : (
-													<div className="relative w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4">
+													<div className="relative w-20 h-20 mx-auto rounded-full border border-amber-400 overflow-hidden mb-4">
 														<Image
-															src="/icons/football-player.png"
+															src="/icons/football-player-new.svg"
 															alt="Player Icon"
 															fill
 															sizes="80px"
@@ -727,7 +1094,7 @@ export default function HomePage() {
 											</div>
 											<div className="pt-5">
 												{leaderboardRows[2].profilePicture ? (
-													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+													<div className="relative w-16 h-16 mx-auto rounded-full border-2 border-white overflow-hidden mb-3">
 														<Image
 															src={leaderboardRows[2].profilePicture}
 															alt={leaderboardRows[2].name}
@@ -740,9 +1107,9 @@ export default function HomePage() {
 														/>
 													</div>
 												) : (
-													<div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3">
+													<div className="relative w-16 h-16 mx-auto rounded-full border border-amber-400 overflow-hidden mb-3">
 														<Image
-															src="/icons/football-player.png"
+															src="/icons/football-player-new.svg"
 															alt="Player Icon"
 															fill
 															sizes="64px"
@@ -833,9 +1200,9 @@ export default function HomePage() {
 													/>
 												</div>
 											) : (
-												<div className="relative w-12 h-12 rounded-xl overflow-hidden">
+												<div className="relative w-12 h-12 rounded-full border border-amber-400 overflow-hidden">
 													<Image
-														src="/icons/football-player.png"
+														src="/icons/football-player-new.svg"
 														alt="Player Icon"
 														fill
 														sizes="48px"
@@ -876,128 +1243,122 @@ export default function HomePage() {
 									))}
 								</div>
 
-								{/* Rest of Leaderboard (Rank 4+) - Gen-Z Style */}
+								{/* Extended Leaderboard (Rank 4-10) */}
 								{leaderboardRows.length > 3 && (
-									<div className="space-y-3">
-										{/* Section Header */}
-										<div className=" items-center gap-3 mb-4 hidden md:flex">
-											<div
-												className="h-px flex-1"
-												style={{ background: heroPlayColors.cardBorder }}
-											/>
-											<span
-												className="text-xs font-bold uppercase tracking-widest"
-												style={{ color: heroPlayColors.textMuted }}
-											>
-												Peringkat Berikutnya
-											</span>
-											<div
-												className="h-px flex-1"
-												style={{ background: heroPlayColors.cardBorder }}
-											/>
-										</div>
-										{leaderboardRows.slice(3, 10).map((player, index) => (
-											<div
-												key={player.userId}
-												className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
-												style={{
-													background: heroPlayColors.cardBg,
-													borderColor: heroPlayColors.cardBorder,
-												}}
-												onMouseEnter={(e) => {
-													(
-														e.currentTarget as HTMLDivElement
-													).style.borderColor = `${heroPlayColors.accent}50`;
-													(e.currentTarget as HTMLDivElement).style.transform =
-														"translateX(4px)";
-												}}
-												onMouseLeave={(e) => {
-													(
-														e.currentTarget as HTMLDivElement
-													).style.borderColor = heroPlayColors.cardBorder;
-													(e.currentTarget as HTMLDivElement).style.transform =
-														"translateX(0)";
-												}}
-											>
-												<div className="flex items-center gap-4">
+									<div>
+										{showFullLeaderboard && (
+											<div className="space-y-3 mb-6">
+												{leaderboardRows.slice(3, 10).map((player, index) => (
 													<div
-														className="w-10 h-10 rounded-xl flex items-center justify-center font-bold"
+														key={player.userId}
+														className="flex items-center gap-4 p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
 														style={{
-															background: `${heroPlayColors.accent}15`,
-															color: heroPlayColors.accent,
+															background: heroPlayColors.cardBg,
+															borderColor: heroPlayColors.cardBorder,
 														}}
 													>
-														{index + 4}
-													</div>
-													{player.profilePicture ? (
-														<div className="relative w-10 h-10 rounded-xl overflow-hidden">
-															<Image
-																src={player.profilePicture}
-																alt={player.name}
-																fill
-																sizes="40px"
-																style={{ objectFit: "cover" }}
-															/>
-														</div>
-													) : (
-														<div className="relative w-10 h-10 rounded-xl overflow-hidden">
-															<Image
-																src="/icons/football-player.png"
-																alt="Player Icon"
-																fill
-																sizes="40px"
-																style={{ objectFit: "cover" }}
-															/>
-														</div>
-													)}
-													<div>
-														<h4
-															className="font-semibold"
-															style={{ color: heroPlayColors.text }}
+														<div
+															className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"
+															style={{
+																background: `${heroPlayColors.accent}15`,
+																color: heroPlayColors.text,
+															}}
 														>
-															{player.name}
-														</h4>
-														<p
-															className="text-sm"
-															style={{ color: heroPlayColors.textMuted }}
+															{index + 4}
+														</div>
+														{player.profilePicture ? (
+															<div
+																className="relative w-10 h-10 rounded-xl overflow-hidden border"
+																style={{
+																	borderColor: heroPlayColors.cardBorder,
+																}}
+															>
+																<Image
+																	src={player.profilePicture}
+																	alt={player.name}
+																	fill
+																	sizes="40px"
+																	style={{ objectFit: "cover" }}
+																/>
+															</div>
+														) : (
+															<div className="relative w-10 h-10 rounded-full border border-amber-400 overflow-hidden">
+																<Image
+																	src="/icons/football-player-new.svg"
+																	alt="Player Icon"
+																	fill
+																	sizes="40px"
+																	style={{ objectFit: "cover" }}
+																/>
+															</div>
+														)}
+														<div className="flex-1 min-w-0">
+															<h3
+																className="font-bold truncate"
+																style={{ color: heroPlayColors.text }}
+															>
+																{player.name}
+															</h3>
+															<p
+																className="text-sm"
+																style={{ color: heroPlayColors.textMuted }}
+															>
+																{player.subtitle || "-"}
+															</p>
+														</div>
+														<div
+															className="flex items-center gap-2 px-3 py-2 rounded-full"
+															style={{
+																background: `${heroPlayColors.accent}10`,
+																border: `1px solid ${heroPlayColors.accent}30`,
+															}}
 														>
-															{player.subtitle || "-"}
-														</p>
+															<Circle
+																className="size-3.5"
+																fill="currentColor"
+															/>
+															<span
+																className="font-bold"
+																style={{ color: heroPlayColors.text }}
+															>
+																{formatScore(player.score)}
+															</span>
+														</div>
 													</div>
-												</div>
-												<div
-													className="flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
-													style={{
-														background: `${heroPlayColors.accent}10`,
-														border: `1px solid ${heroPlayColors.accent}30`,
-													}}
-												>
-													<Circle className="size-3.5" fill="currentColor" />
-													<span
-														className="font-bold"
-														style={{ color: heroPlayColors.text }}
-													>
-														{formatScore(player.score)}
-													</span>
-												</div>
+												))}
 											</div>
-										))}
+										)}
+
+										<button
+											onClick={() => setShowFullLeaderboard((v) => !v)}
+											className="mx-auto flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105"
+											style={{
+												background: `${heroPlayColors.accent}15`,
+												border: `1px solid ${heroPlayColors.accent}30`,
+												color: heroPlayColors.text,
+											}}
+										>
+											{showFullLeaderboard
+												? "Tutup Daftar"
+												: "Lihat Lebih Banyak"}
+											<ChevronRight
+												className={`size-4 transition-transform duration-300 ${showFullLeaderboard ? "rotate-90" : "rotate-0"}`}
+											/>
+										</button>
 									</div>
 								)}
-
 								{/* CTA Button */}
 								<div className="text-center mt-10">
 									<Link
 										href="/games"
-										className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
+										className="inline-flex items-center gap-2 px-10 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
 										style={{
 											background: heroPlayColors.gradientCTA,
 											color: isDark ? "#003732" : "#ffffff",
 											boxShadow: `0 0 30px ${heroPlayColors.accentGlow}`,
 										}}
 									>
-										Prediksi Skor Sekarang
-										<ArrowRight className="size-5" />
+										Prediksi Skor Sekarang!
 									</Link>
 								</div>
 							</div>
@@ -1021,7 +1382,7 @@ export default function HomePage() {
 				</section>
 
 				{/* ===== GOOGLE ADS SECTION ===== */}
-				<section className="py-6 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
+				{/* <section className="py-6 px-4 md:px-8 lg:px-16 max-w-screen-2xl mx-auto">
 					<div className="max-w-4xl mx-auto">
 						<div className="text-center">
 							<AdSlot
@@ -1035,23 +1396,23 @@ export default function HomePage() {
 							/>
 						</div>
 					</div>
-				</section>
+				</section> */}
 
 				{/* Article Section - Bento Grid */}
 				<section
 					ref={articleRef}
-					className="py-16 md:py-24 px-6 md:px-16 max-w-480 mx-auto"
+					className="py-16 md:py-18 px-6 md:px-16 max-w-480 mx-auto"
 				>
-					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8">
 						<div>
 							<h2
-								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								className={`text-3xl md:text-4xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 								data-aos="fade-up"
 							>
 								Fresh Off the Pitch
 							</h2>
 							<p
-								className={`uppercase tracking-widest mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+								className={`uppercase mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 								data-aos="fade-up"
 								data-aos-delay="100"
 							>
@@ -1363,21 +1724,21 @@ export default function HomePage() {
 					</div>
 				</section>
 
-				{/* Interview Slider Section - Vertical Reels */}
-				<section ref={interviewRef} className="py-16 md:py-24 px-6 md:px-16">
+				{/* OlahFlix Section - Vertical Reels */}
+				<section ref={videoRef} className="py-16 md:py-24 px-6 md:px-16">
 					<div className="max-w-480 mx-auto" data-aos="fade-up">
 						<div className="mb-12">
 							<h2
 								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 							>
-								Voices of the Game
+								OlahFlix
 							</h2>
 							<div className="flex items-center gap-4 mt-4">
 								<span
 									className={`h-px grow ${isDark ? " bg-white/10" : "bg-on-surface-variant"}`}
 								/>
 								<p className="text-on-surface-variant uppercase tracking-widest text-sm">
-									Inside the mind of the Legends
+									Video center sepak bola
 								</p>
 								<span
 									className={`h-px grow ${isDark ? "bg-white/10" : "bg-on-surface-variant"}`}
@@ -1385,7 +1746,7 @@ export default function HomePage() {
 							</div>
 						</div>
 
-						{interviewsLoading ? (
+						{videosLoading ? (
 							<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
 								{[1, 2, 3, 4, 5].map((i) => (
 									<div
@@ -1396,17 +1757,15 @@ export default function HomePage() {
 							</div>
 						) : (
 							<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-								{interviews.slice(0, interviewDisplayCount).map((interview) => (
-									<a
-										key={interview.id}
-										href={interview.post_url}
-										target="_blank"
-										rel="noopener noreferrer"
+								{videos.slice(0, videoDisplayCount).map((video) => (
+									<Link
+										key={video.id}
+										href="/olahflix"
 										className="aspect-9/16 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
 									>
 										<Image
-											src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${interview.image}`}
-											alt={interview.title || "Interview thumbnail"}
+											src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${video.image}`}
+											alt={video.title || "Video thumbnail"}
 											fill
 											sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
 											style={{ objectFit: "cover" }}
@@ -1422,23 +1781,23 @@ export default function HomePage() {
 
 										<div className="absolute bottom-4 left-4 right-4">
 											<h4 className="font-semibold text-sm leading-tight uppercase">
-												{interview.title}
+												{video.title}
 											</h4>
 											<p className="text-xs text-primary mt-1 font-bold">
 												@OlahBola
 											</p>
 										</div>
-									</a>
+									</Link>
 								))}
 							</div>
 						)}
 
 						<div className="mt-10 flex justify-center">
 							<Link
-								href="/interview"
+								href="/olahflix"
 								className={`inline-flex items-center gap-3 px-8 py-4 glass-panel ${isDark ? "text-primary" : "text-[#0a7c6e]"}  font-bold uppercase tracking-widest text-sm rounded-full hover:bg-primary/10 transition-all group`}
 							>
-								VIEW ALL{" "}
+								KE OLAHFLIX{" "}
 								<ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
 							</Link>
 						</div>
@@ -1456,7 +1815,7 @@ export default function HomePage() {
 								The Brands Who Kick with Us
 							</p>
 							<Link
-								href="/kolaborasi"
+								href="/media-spotlight?tab=kolaborasi"
 								className={`${isDark ? "text-primary" : "text-[#0a7c6e]"} font-semibold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-xs mt-3 md:mt-0`}
 							>
 								VIEW ALL{" "}
@@ -1490,6 +1849,15 @@ export default function HomePage() {
 					</div>
 				</section>
 			</main>
+
+			{/* User Stat Modals — rendered outside <main> to escape its z-10 stacking context */}
+			{isAuthenticated && (
+				<UserStatModals
+					activeModal={activeStatModal}
+					onClose={() => setActiveStatModal(null)}
+					participationResults={(userStats.data?.results as EventStats[]) ?? []}
+				/>
+			)}
 		</div>
 	);
 }
