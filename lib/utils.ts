@@ -87,7 +87,13 @@ export function getImageUrl(path: string | null | undefined): string {
 	if (path.startsWith("http")) return path;
 	// /images/ is served by Next.js public folder, not Laravel
 	if (path.startsWith("/images/")) return path;
-	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${path}`;
+	// Laravel storage paths: prepend /storage if missing
+	const normalized = path.startsWith("/storage")
+		? path
+		: path.startsWith("/")
+		? path
+		: `/storage/${path}`;
+	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${normalized}`;
 }
 
 export function getProfilePictureUrl(path: string | null | undefined): string {
@@ -96,3 +102,17 @@ export function getProfilePictureUrl(path: string | null | undefined): string {
 	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${path}`;
 }
 
+
+/**
+ * Format seconds to MM:SS or H:MM:SS
+ */
+export function formatClock(seconds: number): string {
+  if (seconds < 0 || isNaN(seconds)) return "0:00";
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
