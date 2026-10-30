@@ -3,21 +3,20 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, LogOut, CircleUserRound } from "lucide-react";
+import { Menu, X, LogOut, CircleUserRound, Search } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { useLogout } from "@/hooks/queries/useAuth";
 import { useUIStore } from "@/stores/uiStore";
-import { GoogleTranslate } from "@/components/GoogleTranslate/GoogleTranslate";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { LogoutOverlay } from "@/components/layouts/LogoutOverlay";
+import { SearchPanel } from "@/components/search/SearchPanel";
 
 const navLinks = [
 	{ href: "/", label: "Kickoff" },
 	{ href: "/artikel", label: "Artikel" },
 	{ href: "/games", label: "Games" },
-	{ href: "/interview", label: "Interview" },
-	{ href: "/kolaborasi", label: "Kolaborasi" },
+	{ href: "/olahflix", label: "OlahFlix" },
 	{ href: "/media-spotlight", label: "Media Spotlight" },
 ];
 
@@ -30,6 +29,7 @@ export function NavigationBar() {
 		useUIStore();
 	const isDark = theme === "dark";
 	const [isScrolled, setIsScrolled] = useState(false);
+	const [isSearchOpen, setIsSearchOpen] = useState(false);
 
 	const handleScroll = useCallback(() => {
 		setIsScrolled(window.scrollY > 0);
@@ -79,7 +79,7 @@ export function NavigationBar() {
 							: "bg-white/90 backdrop-blur-xs shadow-sm",
 				)}
 			>
-				<div className="w-full flex items-center justify-between h-21 px-4 md:px-6 lg:px-14">
+				<div className="w-full flex items-center justify-between h-18.75 px-4 md:px-6 lg:px-14">
 					{/* Logo - Left */}
 					<Link href="/">
 						<Image
@@ -172,54 +172,96 @@ export function NavigationBar() {
 					</nav>
 
 					{/* Right Section - User + CTA Buttons */}
-					<div className="hidden lg:flex items-center">
-						{/* CTA Buttons - Desktop */}
-						<div className="flex items-center gap-2">
-							{/* Main City Battle! Button */}
-							<Link
-								href="http://mainhero.id"
-								rel="noopener noreferrer"
-								target="_blank"
-								className={cn(
-									"group relative overflow-hidden px-4 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-300",
-									"bg-linear-to-r from-[#ffaa00] to-[#ff9500] text-black",
-									"shadow-[0_0_20px_rgba(255,170,0,0.4)] hover:shadow-[0_0_35px_rgba(255,170,0,0.7)]",
-									"hover:scale-105 active:scale-95",
-									isDark
-										? "border border-[#ffaa00]/30"
-										: "border border-[#e69500]/30",
-								)}
-							>
-								<span className="relative z-10 flex items-center gap-2">
-									Main City Battle
-								</span>
-								{/* Shine effect */}
-								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
-							</Link>
+					<div className="hidden lg:flex ">
+						<div className="flex flex-row gap-8 items-center">
+							<button
+							onClick={() => setIsSearchOpen((v) => !v)}
+							className={cn(
+								"p-1 rounded-lg transition-colors cursor-pointer",
+								isSearchOpen
+									? "bg-primary/15"
+									: isDark
+									? "hover:bg-white/10"
+									: "hover:bg-black/5"
+							)}
+							aria-label="Cari"
+						>
+							{isSearchOpen ? (
+								<X className="size-6 text-primary" />
+							) : (
+								<Search className="size-6 text-primary" />
+							)}
+						</button>
 
-							{/* Prediction Button */}
-							<Link
-								href="/games"
-								rel="noopener noreferrer"
-								className={cn(
-									"group relative overflow-hidden px-4 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-300",
-									"bg-linear-to-r from-primary to-[#9FE8E2] text-black",
-									"shadow-[0_0_20px_rgba(159,232,226,0.4)] hover:shadow-[0_0_35px_rgba(159,232,226,0.7)]",
-									"hover:scale-105 active:scale-95",
-									isDark
-										? "border border-primary/30"
-										: "border border-[#e69500]/30",
-								)}
-							>
-								<span className="relative z-10 flex items-center gap-2">
-									Prediksi Skor
-								</span>
-								{/* Shine effect */}
-								<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
-							</Link>
+							{/* CTA Buttons - Desktop */}
+							<div className="flex items-center gap-2">
+								{/* Main City Battle! Button */}
+								<Link
+									href="http://mainhero.id"
+									rel="noopener noreferrer"
+									target="_blank"
+									className={cn(
+										"group relative overflow-hidden px-4 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all duration-300",
+										"bg-linear-to-r from-[#ffaa00] to-[#ff9500] text-black",
+										"shadow-[0_0_20px_rgba(255,170,0,0.4)] hover:shadow-[0_0_35px_rgba(255,170,0,0.7)]",
+										"hover:scale-105 active:scale-95",
+										isDark
+											? "border border-[#ffaa00]/30"
+											: "border border-[#e69500]/30",
+									)}
+								>
+									<span className="relative z-10 flex items-center gap-2">
+										Main City Battle
+									</span>
+									{/* Shine effect */}
+									<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
+								</Link>
+
+								{/* Prediction Button */}
+								<Link
+									href="/games"
+									rel="noopener noreferrer"
+									className={cn(
+										"group relative overflow-hidden px-4 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all duration-300",
+										"bg-linear-to-r from-primary to-[#9FE8E2] text-black",
+										"shadow-[0_0_20px_rgba(159,232,226,0.4)] hover:shadow-[0_0_35px_rgba(159,232,226,0.7)]",
+										"hover:scale-105 active:scale-95",
+										isDark
+											? "border border-primary/30"
+											: "border border-[#e69500]/30",
+									)}
+								>
+									<span className="relative z-10 flex items-center gap-2">
+										Prediksi Skor
+									</span>
+									{/* Shine effect */}
+									<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
+								</Link>
+
+								{/* Prediction Button */}
+								<Link
+									href="/login"
+									rel="noopener noreferrer"
+									className={cn(
+										"group relative overflow-hidden px-4 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all duration-300",
+										"bg-transparent text-primary border-2 border-primary",
+										"shadow-[0_0_20px_rgba(159,232,226,0.4)] hover:shadow-[0_0_35px_rgba(159,232,226,0.7)]",
+										"hover:scale-105 active:scale-95",
+									)}
+								>
+									<span className="relative z-10 flex items-center gap-2">
+										Masuk
+									</span>
+									{/* Shine effect */}
+									<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
+								</Link>
+							</div>
 						</div>
 					</div>
 				</div>
+				{isSearchOpen && (
+					<SearchPanel onClose={() => setIsSearchOpen(false)} />
+				)}
 			</div>
 
 			{/* Mobile Sidebar Overlay */}
@@ -234,7 +276,7 @@ export function NavigationBar() {
 			<div
 				className={cn(
 					"fixed left-0 w-64 md:w-80 h-full bg-[#0D645F] text-white p-4 transform z-9999 transition-transform duration-300 lg:hidden overflow-y-auto",
-			pathname === "/artikel" ? "top-12" : "top-0",
+					pathname === "/artikel" ? "top-12" : "top-0",
 					isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
 				)}
 			>
