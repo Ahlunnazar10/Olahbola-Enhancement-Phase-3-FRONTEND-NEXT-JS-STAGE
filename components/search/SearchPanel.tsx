@@ -2,11 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, Newspaper, Loader2 } from "lucide-react";
+import { Search, X, Calendar, Eye, ArrowRight, Loader2 } from "lucide-react";
 import { useArticleSearch } from "@/hooks/queries/useArticles";
 import { getImageUrl, formatRelativeTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { useUIStore } from "@/stores/uiStore";
 
 interface SearchPanelProps {
@@ -19,6 +18,8 @@ interface SearchArticleItem {
   slug: string;
   excerpt?: string;
   image?: string;
+  author_name?: string;
+  views?: number;
   created_diff?: string;
   category_name?: string;
   published_at?: string;
@@ -66,10 +67,10 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
     <div className="absolute top-full left-0 right-0 z-50">
       <div
         className={cn(
-          "glass-card rounded-b-xl border border-t-0 p-3 md:p-4",
+          "rounded-b-xl border border-t-0 p-3 md:p-4 shadow-xl",
           isDark
-            ? "bg-[#0f1412]/95 border-primary/20"
-            : "bg-white/95 border-primary/20"
+            ? "bg-[#0f1412] border-primary/30 shadow-black/50"
+            : "bg-white border-primary/30 shadow-black/10"
         )}
       >
         {/* Input form */}
@@ -135,82 +136,142 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
               <>
                 <p
                   className={cn(
-                    "text-[11px] uppercase tracking-widest px-3 pb-2 font-bold",
+                    "text-[11px] uppercase tracking-widest px-1 pb-3 font-bold",
                     isDark ? "text-white/30" : "text-[#1a1a1a]/30"
                   )}
                 >
                   {articles.length} hasil ditemukan
                 </p>
-                <ul
-                  className="flex flex-col max-h-[50vh] overflow-y-auto"
-                  role="listbox"
-                >
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-h-[60vh] overflow-y-auto">
                   {articles.map((article) => (
-                    <li key={article.id}>
-                      <button
-                        onClick={() => handleSelect(article.slug)}
-                        className={cn(
-                          "w-full flex items-start gap-3 p-2.5 rounded-lg text-left cursor-pointer transition-colors group",
-                          isDark
-                            ? "hover:bg-primary/10"
-                            : "hover:bg-primary/10"
-                        )}
-                      >
-                        {/* Thumbnail */}
-                        {article.image && (
-                          <div className="w-16 h-12 rounded-md overflow-hidden shrink-0 bg-primary/5">
-                            <Image
-                              src={getImageUrl(article.image)}
-                              alt=""
-                              width={64}
-                              height={48}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                            />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className={cn(
-                              "font-semibold text-[13px] md:text-[14px] leading-snug line-clamp-2",
-                              isDark
-                                ? "text-white group-hover:text-primary"
-                                : "text-[#1a1a1a] group-hover:text-primary"
-                            )}
-                          >
-                            {article.title}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            {article.category_name && (
-                              <span className="text-[11px] font-bold text-primary uppercase tracking-wider">
-                                {article.category_name}
-                              </span>
-                            )}
-                            {(article.created_diff ||
-                              article.published_at) && (
-                              <span
+                    <button
+                      key={article.id}
+                      onClick={() => handleSelect(article.slug)}
+                      className={cn(
+                        "rounded-2xl overflow-hidden flex flex-col text-left cursor-pointer transition-all duration-300 group border",
+                        isDark
+                          ? "glass-card hover:shadow-[0_0_20px_rgba(67,222,204,0.15)] hover:border-primary/30"
+                          : "bg-white shadow-md border-gray-200 hover:shadow-lg hover:border-[#0a7c6e]/30"
+                      )}
+                    >
+                      {/* Cover image */}
+                      {article.image ? (
+                        <div className="h-32 overflow-hidden relative">
+                          <img
+                            src={getImageUrl(article.image)}
+                            alt={article.title}
+                            width={256}
+                            height={128}
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                      ) : (
+                        <div className={cn("h-32", isDark ? "bg-primary/10" : "bg-gray-100")} />
+                      )}
+
+                      {/* Content */}
+                      <div className="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                          {/* Meta */}
+                          <div className="flex flex-row gap-3 mb-2">
+                            <div className="flex flex-row items-center gap-1">
+                              <Calendar
                                 className={cn(
-                                  "text-[11px]",
+                                  "size-3",
+                                  isDark ? "text-primary" : "text-[#0a7c6e]"
+                                )}
+                              />
+                              <p
+                                className={cn(
+                                  "text-[10px] uppercase tracking-widest",
                                   isDark
-                                    ? "text-white/40"
-                                    : "text-[#1a1a1a]/40"
+                                    ? "text-on-surface-variant"
+                                    : "text-[#5a5a5a]"
                                 )}
                               >
                                 {article.created_diff ||
-                                  formatRelativeTime(article.published_at!)}
-                              </span>
+                                  (article.published_at
+                                    ? formatRelativeTime(article.published_at)
+                                    : "")}
+                              </p>
+                            </div>
+                            {typeof article.views === "number" && (
+                              <div className="flex flex-row items-center gap-1">
+                                <Eye
+                                  className={cn(
+                                    "size-3",
+                                    isDark ? "text-primary" : "text-[#0a7c6e]"
+                                  )}
+                                />
+                                <p
+                                  className={cn(
+                                    "text-[10px] tracking-widest",
+                                    isDark
+                                      ? "text-on-surface-variant"
+                                      : "text-[#5a5a5a]"
+                                  )}
+                                >
+                                  {article.views}
+                                </p>
+                              </div>
                             )}
                           </div>
-                        </div>
-                        <Newspaper
-                          className={cn(
-                            "size-4 shrink-0 mt-0.5 opacity-30 group-hover:opacity-70 transition-opacity",
-                            isDark ? "text-white" : "text-[#1a1a1a]"
+
+                          {/* Title */}
+                          <h3
+                            className={cn(
+                              "font-bold text-sm uppercase tracking-tighter leading-tight line-clamp-2 transition-colors",
+                              isDark
+                                ? "text-white group-hover:text-primary"
+                                : "text-[#1a1a1a] group-hover:text-[#0a7c6e]"
+                            )}
+                          >
+                            {article.title}
+                          </h3>
+
+                          {/* Excerpt */}
+                          {article.excerpt && (
+                            <p
+                              className={cn(
+                                "text-[12px] mt-2 line-clamp-2 leading-relaxed",
+                                isDark
+                                  ? "text-white/60"
+                                  : "text-[#5a5a5a]"
+                              )}
+                            >
+                              {article.excerpt}
+                            </p>
                           )}
-                        />
-                      </button>
-                    </li>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex justify-between items-center mt-3">
+                          {article.author_name ? (
+                            <span
+                              className={cn(
+                                "text-xs font-bold",
+                                isDark
+                                  ? "text-on-surface-variant"
+                                  : "text-[#5a5a5a]"
+                              )}
+                            >
+                              {article.author_name?.split(" ")[0]}
+                            </span>
+                          ) : (
+                            <span />
+                          )}
+                          <ArrowRight
+                            className={cn(
+                              "size-4",
+                              isDark ? "text-primary" : "text-[#0a7c6e]"
+                            )}
+                          />
+                        </div>
+                      </div>
+                    </button>
                   ))}
-                </ul>
+                </div>
               </>
             ) : (
               <div
