@@ -151,7 +151,7 @@ export function NavigationBar() {
 											? "ring-green/40 hover:ring-green/70"
 											: "ring-[#0a7c6e]/40 hover:ring-[#0a7c6e]/70",
 									)}
-							>
+								>
 									<img
 										src={getProfilePicture()}
 										alt="User profile"
@@ -184,23 +184,23 @@ export function NavigationBar() {
 					<div className="hidden lg:flex ">
 						<div className="flex flex-row gap-8 items-center">
 							<button
-							onClick={() => setIsSearchOpen((v) => !v)}
-							className={cn(
-								"p-1 rounded-lg transition-colors cursor-pointer",
-								isSearchOpen
-									? "bg-primary/15"
-									: isDark
-									? "hover:bg-white/10"
-									: "hover:bg-black/5"
-							)}
-							aria-label="Cari"
-						>
-							{isSearchOpen ? (
-								<X className="size-6 text-primary" />
-							) : (
-								<Search className="size-6 text-primary" />
-							)}
-						</button>
+								onClick={() => setIsSearchOpen((v) => !v)}
+								className={cn(
+									"p-1 rounded-lg transition-colors cursor-pointer",
+									isSearchOpen
+										? "bg-primary/15"
+										: isDark
+											? "hover:bg-white/10"
+											: "hover:bg-black/5",
+								)}
+								aria-label="Cari"
+							>
+								{isSearchOpen ? (
+									<X className="size-6 text-primary" />
+								) : (
+									<Search className="size-6 text-primary" />
+								)}
+							</button>
 
 							{/* CTA Buttons - Desktop */}
 							<div className="flex items-center gap-2">
@@ -247,30 +247,29 @@ export function NavigationBar() {
 									<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
 								</Link>
 
-								{/* Prediction Button */}
-								<Link
-									href="/login"
-									rel="noopener noreferrer"
-									className={cn(
-										"group relative overflow-hidden px-4 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all duration-300",
-										"bg-transparent text-primary border-2 border-primary",
-										"shadow-[0_0_20px_rgba(159,232,226,0.4)] hover:shadow-[0_0_35px_rgba(159,232,226,0.7)]",
-										"hover:scale-105 active:scale-95",
-									)}
-								>
-									<span className="relative z-10 flex items-center gap-2">
-										Masuk
-									</span>
-									{/* Shine effect */}
-									<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
-								</Link>
+								{!isAuthenticated && (
+									<Link
+										href="/login"
+										rel="noopener noreferrer"
+										className={cn(
+											"group relative overflow-hidden px-4 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all duration-300",
+											"bg-transparent text-primary border-2 border-primary",
+											"shadow-[0_0_20px_rgba(159,232,226,0.4)] hover:shadow-[0_0_35px_rgba(159,232,226,0.7)]",
+											"hover:scale-105 active:scale-95",
+										)}
+									>
+										<span className="relative z-10 flex items-center gap-2">
+											Masuk
+										</span>
+										{/* Shine effect */}
+										<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
+									</Link>
+								)}
 							</div>
 						</div>
 					</div>
 				</div>
-				{isSearchOpen && (
-					<SearchPanel onClose={() => setIsSearchOpen(false)} />
-				)}
+				{isSearchOpen && <SearchPanel onClose={() => setIsSearchOpen(false)} />}
 			</div>
 
 			{/* Mobile Sidebar Overlay */}
