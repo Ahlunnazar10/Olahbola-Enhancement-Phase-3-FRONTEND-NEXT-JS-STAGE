@@ -173,6 +173,12 @@ export const endpoints = {
 		"/api/v1/quiz/world-cup/sessions/" + sessionId + "/leaderboard/" + eventSlug,
 	quizWorldCupMySessionRank: (sessionId: string, eventSlug: string) =>
 		"/api/v1/quiz/world-cup/sessions/" + sessionId + "/my-rank/" + eventSlug,
+
+	// Payment
+	paymentMidtransConfig: "/api/v1/payment/midtrans/config",
+	paymentMidtransSnapToken: "/api/v1/payment/midtrans/snap-token",
+	paymentMidtransStatus: (orderId: string) => "/api/v1/payment/midtrans/status/" + orderId,
+	paymentAccessCheck: "/api/v1/payment/access-check",
 };
 
 export type Endpoint = typeof endpoints;
