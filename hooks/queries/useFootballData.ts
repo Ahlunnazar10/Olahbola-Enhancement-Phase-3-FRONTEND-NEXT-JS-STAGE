@@ -76,12 +76,12 @@ export interface FdMatchesResponse {
 }
 
 export const FD_COMPETITIONS = [
-	{ code: "PL", label: "Premier League", slug: "primer-league" },
-	{ code: "PD", label: "La Liga", slug: "la-liga" },
-	{ code: "BL1", label: "Bundesliga", slug: "bundesliga" },
-	{ code: "SA", label: "Serie A", slug: "serie-a" },
-	{ code: "FL1", label: "Ligue 1", slug: "ligue-1" },
-	{ code: "CL", label: "UEFA Champions League", slug: "uefa-champions-league" },
+	{ code: "PL", label: "Premier League", slug: "primer-league", emblem: "/icons/competitions/epl.svg" },
+	{ code: "PD", label: "La Liga", slug: "la-liga", emblem: "/icons/competitions/laliga.svg" },
+	{ code: "BL1", label: "Bundesliga", slug: "bundesliga", emblem: "/icons/competitions/bundesliga.svg" },
+	{ code: "SA", label: "Serie A", slug: "serie-a", emblem: "/icons/competitions/seriea.svg" },
+	{ code: "FL1", label: "Ligue 1", slug: "ligue-1", emblem: "/icons/competitions/ligue1.svg" },
+	{ code: "CL", label: "UEFA Champions League", slug: "uefa-champions-league", emblem: "/icons/competitions/ucl.svg" },
 ] as const;
 
 export type FdCompetitionCode = (typeof FD_COMPETITIONS)[number]["code"];
