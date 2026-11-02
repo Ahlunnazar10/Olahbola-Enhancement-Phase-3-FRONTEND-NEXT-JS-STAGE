@@ -146,6 +146,21 @@ export const endpoints = {
 	// Sapa
 	sapa: "/api/v1/sapa",
 	sapaCreate: "/api/v1/sapa",
+
+	// Guess Who
+	guessWhoConfig: "/api/guess-who/config",
+	guessWhoDemo: "/api/guess-who/demo",
+	guessWhoLeaderboard: "/api/guess-who/leaderboard",
+	guessWhoStart: (level: number) => "/api/guess-who/start/" + level,
+	guessWhoAnswer: (sessionId: string) => "/api/guess-who/" + sessionId + "/answer",
+	guessWhoClue: (sessionId: string, questionId: string) =>
+		"/api/guess-who/" + sessionId + "/clue/" + questionId,
+	guessWhoRematch: (level: number) => "/api/guess-who/rematch/" + level,
+	guessWhoStatus: (sessionId: string) => "/api/guess-who/" + sessionId + "/status",
+	guessWhoMyRank: "/api/guess-who/my-rank",
+	guessWhoLevelProgress: "/api/guess-who/level-progress",
+	guessWhoMySessions: "/api/guess-who/my-sessions",
+	guessWhoResume: (sessionId: string) => "/api/guess-who/" + sessionId + "/resume",
 };
 
 export type Endpoint = typeof endpoints;
