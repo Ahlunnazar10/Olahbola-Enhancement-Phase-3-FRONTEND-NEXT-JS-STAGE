@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/authStore";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import {
 	useProfile,
 	useQuizSummary,
@@ -20,7 +19,8 @@ import { useRouter } from "next/navigation";
 import { getProfilePictureUrl } from "@/lib/utils";
 import toast from "react-hot-toast";
 import {
-	Badge, BadgeCheck,
+	Badge,
+	BadgeCheck,
 	XCircle,
 	Edit2,
 	Loader2,
@@ -126,9 +126,6 @@ export default function ProfilePage() {
 
 	return (
 		<div className={`min-h-screen ${isDark ? "bg-[#0f1412]" : "bg-[#f5f5f5]"}`}>
-			{/* Theme Toggle */}
-			<ThemeToggle />
-
 			<div className="relative h-100 w-full overflow-hidden">
 				<div
 					className={`absolute inset-0 ${isDark ? "bg-linear-to-t from-[#0f1412] via-[#0f1412]/40 to-transparent" : "bg-linear-to-t from-[#f5f5f5] via-[#f5f5f5]/40 to-transparent"} z-10`}
@@ -739,7 +736,9 @@ function ChangePasswordTab({ isDark }: { isDark: boolean }) {
 	};
 
 	return (
-		<div className={`rounded-4xl p-8 ${isDark ? "bg-[#1c211e]/80 backdrop-blur-md shadow-2xl border border-white/10" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}>
+		<div
+			className={`rounded-4xl p-8 ${isDark ? "bg-[#1c211e]/80 backdrop-blur-md shadow-2xl border border-white/10" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}
+		>
 			<h2
 				className={`font-headline-md uppercase italic neon-glow-text mb-8 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 			>
@@ -747,7 +746,9 @@ function ChangePasswordTab({ isDark }: { isDark: boolean }) {
 			</h2>
 			<form onSubmit={handleSubmit} className="max-w-lg space-y-6">
 				<div className="space-y-2">
-					<label className={`text-label-bold uppercase ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+					<label
+						className={`text-label-bold uppercase ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
+					>
 						Password Saat Ini
 					</label>
 					<div className="relative">
@@ -773,7 +774,9 @@ function ChangePasswordTab({ isDark }: { isDark: boolean }) {
 				</div>
 
 				<div className="space-y-2">
-					<label className={`text-label-bold uppercase ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+					<label
+						className={`text-label-bold uppercase ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
+					>
 						Password Baru
 					</label>
 					<div className="relative">
@@ -807,7 +810,9 @@ function ChangePasswordTab({ isDark }: { isDark: boolean }) {
 				</div>
 
 				<div className="space-y-2">
-					<label className={`text-label-bold uppercase ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}>
+					<label
+						className={`text-label-bold uppercase ${isDark ? "text-white/60" : "text-[#5a5a5a]"}`}
+					>
 						Konfirmasi Password
 					</label>
 					<div className="relative">

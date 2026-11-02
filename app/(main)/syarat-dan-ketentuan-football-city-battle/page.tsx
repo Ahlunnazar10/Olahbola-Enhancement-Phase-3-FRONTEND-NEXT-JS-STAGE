@@ -1,10 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { useState } from "react";
-import { Shield, Gift, Calendar, Trophy, Star } from "lucide-react";
 
 export default function SyaratDanKetentuanFCBPage() {
 	const { theme } = useUIStore();
@@ -105,9 +102,6 @@ export default function SyaratDanKetentuanFCBPage() {
 						: "rgba(10, 124, 110, 0.05)",
 				}}
 			/>
-
-			{/* Theme Toggle */}
-			<ThemeToggle />
 
 			<main>
 				{/* Hero Section */}

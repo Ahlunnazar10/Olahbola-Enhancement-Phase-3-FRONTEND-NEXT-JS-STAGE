@@ -7,8 +7,6 @@ import {
 	Eye,
 	EyeOff,
 	Loader2,
-	Rocket,
-	Settings,
 	User,
 	Mail,
 	Phone,
@@ -22,7 +20,6 @@ import { useRegister } from "@/hooks/queries/useAuth";
 import { cn } from "@/lib/utils";
 import { indonesianCities } from "@/data/indonesianCities";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 
 export default function RegisterPage() {
 	const router = useRouter();
@@ -169,8 +166,6 @@ export default function RegisterPage() {
 
 			{/* Main Content */}
 			<main className="min-h-screen flex items-center justify-center px-4 md:px-0 relative z-10">
-				{/* Theme Toggle */}
-				<ThemeToggle />
 				<div className="w-full max-w-6xl grid md:grid-cols-2 items-center gap-16 p-4 mb-10">
 					{/* Left Side: Visual Narrative */}
 					<div className="hidden md:flex flex-col gap-8">

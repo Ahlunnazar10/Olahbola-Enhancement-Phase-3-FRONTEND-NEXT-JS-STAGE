@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { useState } from "react";
 import { Target, Users, Award, Globe } from "lucide-react";
 
@@ -106,9 +105,6 @@ export default function TentangKamiPage() {
 						: "rgba(10, 124, 110, 0.05)",
 				}}
 			/>
-
-			{/* Theme Toggle */}
-			<ThemeToggle />
 
 			<main>
 				{/* Hero Section */}
@@ -214,7 +210,10 @@ export default function TentangKamiPage() {
 									}}
 								>
 									<div className="flex items-center gap-4 mb-6">
-										<Globe className="w-8 h-8 shrink-0" style={{ color: colors.primary }} />
+										<Globe
+											className="w-8 h-8 shrink-0"
+											style={{ color: colors.primary }}
+										/>
 										<h2
 											className="font-bold italic leading-10 text-3xl md:text-4xl"
 											style={{
@@ -233,24 +232,23 @@ export default function TentangKamiPage() {
 										<p>
 											Olahbola adalah portal media &amp; komunitas sepak bola
 											Indonesia yang didirikan pada tahun 2024. Kami hadir untuk
-											menyajikan informasi seputar dunia sepak bola nasional
-											dan internasional dengan gaya yang informatif, menarik,
-											dan mudah dipahami oleh seluruh kalangan penggemar bola.
+											menyajikan informasi seputar dunia sepak bola nasional dan
+											internasional dengan gaya yang informatif, menarik, dan
+											mudah dipahami oleh seluruh kalangan penggemar bola.
 										</p>
 										<p>
 											Dengan pendekatan berbasis data dan jurnalistik yang
 											akurat, Olahbola menyediakan berita terkini, analisis
-											taktikal mendalam, wawancara eksklusif dengan para
-										aktor sepak bola, serta konten hiburan interaktif seperti
-											quiz dan prediksi skor pertandingan.
+											taktikal mendalam, wawancara eksklusif dengan para aktor
+											sepak bola, serta konten hiburan interaktif seperti quiz
+											dan prediksi skor pertandingan.
 										</p>
 										<p>
-											Kami percaya bahwa sepak bola bukan hanya tentang
-											hasil akhir di papan skor — tetapi juga tentang cerita,
-											strategi, emosi, dan kebersamaan yang menyatukan
-											jutaan fans dari Sabang sampai Merauke. Melalui
-											Olahbola, kami ingin menjadi jembatan bagi semua
-											fans tersebut.
+											Kami percaya bahwa sepak bola bukan hanya tentang hasil
+											akhir di papan skor — tetapi juga tentang cerita,
+											strategi, emosi, dan kebersamaan yang menyatukan jutaan
+											fans dari Sabang sampai Merauke. Melalui Olahbola, kami
+											ingin menjadi jembatan bagi semua fans tersebut.
 										</p>
 									</div>
 								</div>
@@ -270,7 +268,10 @@ export default function TentangKamiPage() {
 									}}
 								>
 									<div className="flex items-center gap-4 mb-6">
-										<Target className="w-8 h-8 shrink-0" style={{ color: colors.primary }} />
+										<Target
+											className="w-8 h-8 shrink-0"
+											style={{ color: colors.primary }}
+										/>
 										<h2
 											className="font-bold italic leading-10 text-3xl md:text-4xl"
 											style={{
@@ -290,29 +291,34 @@ export default function TentangKamiPage() {
 											<strong style={{ color: colors.text }}>Visi Kami</strong>
 										</p>
 										<p>
-											Menjadikan Olahbola sebagai platform sepak bola
-											terdepan di Indonesia — sumber informasi terpercaya,
-											ruang diskusi yang inklusif, dan jembatan antara
-											penggemar bola di seluruh Nusantara serta dunia.
+											Menjadikan Olahbola sebagai platform sepak bola terdepan
+											di Indonesia — sumber informasi terpercaya, ruang diskusi
+											yang inklusif, dan jembatan antara penggemar bola di
+											seluruh Nusantara serta dunia.
 										</p>
 										<p>
 											<strong style={{ color: colors.text }}>Misi Kami</strong>
 										</p>
 										<ul className="list-disc pl-6 space-y-2">
 											<li>
-												Menghasilkan konten berkualitas tinggi berbasis data dan analisis mendalam.
+												Menghasilkan konten berkualitas tinggi berbasis data dan
+												analisis mendalam.
 											</li>
 											<li>
-												Membangun komunitas yang sehat, edukatif, dan saling menghargai antarpenggemar bola.
+												Membangun komunitas yang sehat, edukatif, dan saling
+												menghargai antarpenggemar bola.
 											</li>
 											<li>
-												Memberikan akses informasi sepak bola yang akurat dan tepat waktu bagi seluruh masyarakat Indonesia.
+												Memberikan akses informasi sepak bola yang akurat dan
+												tepat waktu bagi seluruh masyarakat Indonesia.
 											</li>
 											<li>
-												Menjadi mitra strategis bagi brand dan partner yang ingin menjangkau audiens pecinta sepak bola.
+												Menjadi mitra strategis bagi brand dan partner yang
+												ingin menjangkau audiens pecinta sepak bola.
 											</li>
 											<li>
-												Mendorong inovasi melalui fitur interaktif seperti quiz, prediksi skor, dan media multimedia.
+												Mendorong inovasi melalui fitur interaktif seperti quiz,
+												prediksi skor, dan media multimedia.
 											</li>
 										</ul>
 									</div>
@@ -333,7 +339,10 @@ export default function TentangKamiPage() {
 									}}
 								>
 									<div className="flex items-center gap-4 mb-6">
-										<Award className="w-8 h-8 shrink-0" style={{ color: colors.primary }} />
+										<Award
+											className="w-8 h-8 shrink-0"
+											style={{ color: colors.primary }}
+										/>
 										<h2
 											className="font-bold italic leading-10 text-3xl md:text-4xl"
 											style={{
@@ -349,7 +358,10 @@ export default function TentangKamiPage() {
 										className="space-y-4 leading-relaxed"
 										style={{ color: colors.textSecondary }}
 									>
-										<p>Di balik setiap konten yang kami publikasikan, ada nilai-nilai inti yang menjadi fondasi kerja tim Olahbola:</p>
+										<p>
+											Di balik setiap konten yang kami publikasikan, ada
+											nilai-nilai inti yang menjadi fondasi kerja tim Olahbola:
+										</p>
 										<ul className="space-y-4">
 											{[
 												{
@@ -405,7 +417,10 @@ export default function TentangKamiPage() {
 									}}
 								>
 									<div className="flex items-center gap-4 mb-6">
-										<Users className="w-8 h-8 shrink-0" style={{ color: colors.primary }} />
+										<Users
+											className="w-8 h-8 shrink-0"
+											style={{ color: colors.primary }}
+										/>
 										<h2
 											className="font-bold italic leading-10 text-3xl md:text-4xl"
 											style={{
@@ -424,30 +439,43 @@ export default function TentangKamiPage() {
 										<p>Konten dan fitur yang tersedia di Olahbola meliputi:</p>
 										<ul className="list-disc pl-6 space-y-3">
 											<li>
-												<strong style={{ color: colors.text }}>Berita & Artikel</strong> —
-												Liputan harian seputar Liga Indonesia, UEFA Champions League,
-												Premier League, La Liga, Serie A, Bundesliga, dan kompetisi sepak
-												bola lainnya di seluruh dunia.
+												<strong style={{ color: colors.text }}>
+													Berita & Artikel
+												</strong>{" "}
+												— Liputan harian seputar Liga Indonesia, UEFA Champions
+												League, Premier League, La Liga, Serie A, Bundesliga,
+												dan kompetisi sepak bola lainnya di seluruh dunia.
 											</li>
 											<li>
-												<strong style={{ color: colors.text }}>Analisis Taktikal</strong> —
-												Deep dive strategis mengenai pola permainan, perubahan formasi,
-												dan evaluasi performa pemain dan tim.
+												<strong style={{ color: colors.text }}>
+													Analisis Taktikal
+												</strong>{" "}
+												— Deep dive strategis mengenai pola permainan, perubahan
+												formasi, dan evaluasi performa pemain dan tim.
 											</li>
 											<li>
-												<strong style={{ color: colors.text }}>Interview Eksklusif</strong> —
-												Wawancara dengan pemain, pelatih, analis, dan figur penting
-												dalam dunia sepak bola Indonesia dan mancanegara.
+												<strong style={{ color: colors.text }}>
+													Interview Eksklusif
+												</strong>{" "}
+												— Wawancara dengan pemain, pelatih, analis, dan figur
+												penting dalam dunia sepak bola Indonesia dan
+												mancanegara.
 											</li>
 											<li>
-												<strong style={{ color: colors.text }}>Quiz & Interaktif</strong> —
-												Fitur kuis pengetahuan sepak bola, prediksi skor, dan Football
-												City Battle yang menguji pemahaman taktikal Anda.
+												<strong style={{ color: colors.text }}>
+													Quiz & Interaktif
+												</strong>{" "}
+												— Fitur kuis pengetahuan sepak bola, prediksi skor, dan
+												Football City Battle yang menguji pemahaman taktikal
+												Anda.
 											</li>
 											<li>
-												<strong style={{ color: colors.text }}>Kolaborasi Brand</strong> —
-												Konten bersponsor dan partnership iklan dari brand-brand
-												yang relevan dengan ekosistem sepak bola dan lifestyle.
+												<strong style={{ color: colors.text }}>
+													Kolaborasi Brand
+												</strong>{" "}
+												— Konten bersponsor dan partnership iklan dari
+												brand-brand yang relevan dengan ekosistem sepak bola dan
+												lifestyle.
 											</li>
 										</ul>
 									</div>
@@ -468,7 +496,10 @@ export default function TentangKamiPage() {
 									}}
 								>
 									<div className="flex items-center gap-4 mb-6">
-										<Users className="w-8 h-8 shrink-0" style={{ color: colors.primary }} />
+										<Users
+											className="w-8 h-8 shrink-0"
+											style={{ color: colors.primary }}
+										/>
 										<h2
 											className="font-bold italic leading-10 text-3xl md:text-4xl"
 											style={{
@@ -485,22 +516,24 @@ export default function TentangKamiPage() {
 										style={{ color: colors.textSecondary }}
 									>
 										<p>
-											Olahbola dikelola oleh tim redaksi yang terdiri dari jurnalis
-											olahraga, analis taktikal, dan kreator konten yang memiliki
-											passion mendalam terhadap sepak bola. Kami beroperasi dari
-											Jakarta, Indonesia, dengan cakupan editorial yang menjangkau
-											liga-liga utama dunia.
+											Olahbola dikelola oleh tim redaksi yang terdiri dari
+											jurnalis olahraga, analis taktikal, dan kreator konten
+											yang memiliki passion mendalam terhadap sepak bola. Kami
+											beroperasi dari Jakarta, Indonesia, dengan cakupan
+											editorial yang menjangkau liga-liga utama dunia.
 										</p>
 										<p>
 											Setiap konten melewati proses editing dan fact-checking
-											untuk memastikan standar akurasi dan profesionalisme.
-											Kami juga membuka peluang kolaborasi bagi penulis tamu
-											dan kontributor yang memiliki perspektif unik seputar
-											dunia sepak bola.
+											untuk memastikan standar akurasi dan profesionalisme. Kami
+											juga membuka peluang kolaborasi bagi penulis tamu dan
+											kontributor yang memiliki perspektif unik seputar dunia
+											sepak bola.
 										</p>
 										<p style={{ fontStyle: "italic", opacity: 0.75 }}>
 											Tertarik berkontribusi? Kirimkan tulisan Anda ke{" "}
-											<span style={{ color: colors.primary }}>{process.env.NEXT_PUBLIC_CONTACT_EMAIL}</span>
+											<span style={{ color: colors.primary }}>
+												{process.env.NEXT_PUBLIC_CONTACT_EMAIL}
+											</span>
 										</p>
 									</div>
 								</div>
@@ -520,7 +553,10 @@ export default function TentangKamiPage() {
 									}}
 								>
 									<div className="flex items-center gap-4 mb-6">
-										<Users className="w-8 h-8 shrink-0" style={{ color: colors.primary }} />
+										<Users
+											className="w-8 h-8 shrink-0"
+											style={{ color: colors.primary }}
+										/>
 										<h2
 											className="font-bold italic leading-10 text-3xl md:text-4xl"
 											style={{
@@ -537,21 +573,51 @@ export default function TentangKamiPage() {
 										style={{ color: colors.textSecondary }}
 									>
 										<p>
-											Untuk pertanyaan, kerjasama, atau sekadar ngobrol soal bola,{" "}
-											kami selalu terbuka. Hubungi kami melalui:
+											Untuk pertanyaan, kerjasama, atau sekadar ngobrol soal
+											bola, kami selalu terbuka. Hubungi kami melalui:
 										</p>
 										<ul className="list-none pl-0 space-y-2">
-											<li style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
-												<span style={{ color: colors.text, minWidth: "60px" }}>Email:</span>
-												<span style={{ color: colors.primary }}>{process.env.NEXT_PUBLIC_CONTACT_EMAIL}</span>
+											<li
+												style={{
+													display: "flex",
+													gap: "8px",
+													alignItems: "baseline",
+												}}
+											>
+												<span style={{ color: colors.text, minWidth: "60px" }}>
+													Email:
+												</span>
+												<span style={{ color: colors.primary }}>
+													{process.env.NEXT_PUBLIC_CONTACT_EMAIL}
+												</span>
 											</li>
-											<li style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
-												<span style={{ color: colors.text, minWidth: "60px" }}>WhatsApp:</span>
-												<span style={{ color: colors.primary }}>+62 877-7748-7925</span>
+											<li
+												style={{
+													display: "flex",
+													gap: "8px",
+													alignItems: "baseline",
+												}}
+											>
+												<span style={{ color: colors.text, minWidth: "60px" }}>
+													WhatsApp:
+												</span>
+												<span style={{ color: colors.primary }}>
+													+62 877-7748-7925
+												</span>
 											</li>
-											<li style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
-												<span style={{ color: colors.text, minWidth: "60px" }}>Alamat:</span>
-												<span>Gedung STC Lt.4 Ruang 80, Jakarta, Indonesia</span>
+											<li
+												style={{
+													display: "flex",
+													gap: "8px",
+													alignItems: "baseline",
+												}}
+											>
+												<span style={{ color: colors.text, minWidth: "60px" }}>
+													Alamat:
+												</span>
+												<span>
+													Gedung STC Lt.4 Ruang 80, Jakarta, Indonesia
+												</span>
 											</li>
 										</ul>
 									</div>
@@ -581,7 +647,8 @@ export default function TentangKamiPage() {
 													: "rgba(255, 255, 255, 0.8)",
 											}}
 										>
-											Datang dan nikmati pengalaman membaca dan bermain seputar sepak bola bersama komunitas kami.
+											Datang dan nikmati pengalaman membaca dan bermain seputar
+											sepak bola bersama komunitas kami.
 										</p>
 									</div>
 									<Link

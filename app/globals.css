@@ -406,6 +406,15 @@ body {
 	border-radius: 10px;
 }
 
+/* Sembunyi scrollbar horizontal/vertikal untuk komponen yang butuh swipe tapi tanpa visual scrollbar */
+.scrollbar-none {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+	display: none;
+}
+
 /* Float Animation */
 @keyframes subtle-float {
 	0%,

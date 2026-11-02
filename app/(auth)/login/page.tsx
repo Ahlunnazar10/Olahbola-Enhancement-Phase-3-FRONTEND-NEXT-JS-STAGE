@@ -3,15 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-	Eye,
-	EyeOff,
-	Loader2,
-	Rocket,
-	Settings,
-	Mail,
-	Lock,
-} from "lucide-react";
+import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 import {
 	useLogin,
@@ -20,7 +12,6 @@ import {
 } from "@/hooks/queries/useAuth";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { getLastPathname } from "@/lib/last-path";
 
 // Helper function to determine if input is email or phone
@@ -187,8 +178,6 @@ export default function LoginPage() {
 
 			{/* Main Content */}
 			<main className="min-h-screen flex items-center justify-center px-4 md:px-0 relative z-10">
-				{/* Theme Toggle */}
-				<ThemeToggle />
 				{/* Login Container */}
 				<div className="w-full max-w-6xl grid md:grid-cols-2 items-center gap-16 p-4 mb-10">
 					{/* Left Side: Visual Narrative */}

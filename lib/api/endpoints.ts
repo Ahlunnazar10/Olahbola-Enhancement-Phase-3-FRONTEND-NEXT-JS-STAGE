@@ -64,50 +64,6 @@ export const endpoints = {
 	imageQuizComplete: "/api/v1/image-quiz/complete",
 	imageQuizUserSummary: "/api/v1/image-quiz/user-summary",
 
-	// Quiz - World Cup Event
-	quizWorldCupEvents: "/api/quiz-world-cup/events",
-	quizWorldCupSessions: (eventSlug: string) =>
-		"/api/quiz-world-cup/events/" + eventSlug + "/sessions",
-	quizWorldCupPlay: (sessionId: string) =>
-		"/api/quiz-world-cup/sessions/" + sessionId + "/play",
-	quizWorldCupState: (sessionId: string) =>
-		"/api/quiz-world-cup/sessions/" + sessionId + "/state",
-	quizWorldCupAnswer: (attemptId: string) =>
-		"/api/quiz-world-cup/attempts/" + attemptId + "/answer",
-	quizWorldCupGlobalLeaderboard: (eventSlug: string) =>
-		"/api/quiz-world-cup/leaderboard/global?event_slug=" + eventSlug,
-	quizWorldCupMyRank: (eventSlug: string) =>
-		"/api/quiz-world-cup/my-rank/global?event_slug=" + eventSlug,
-	quizWorldCupSessionLeaderboard: (sessionId: string, eventSlug: string = "world-cup-2026") =>
-		"/api/quiz-world-cup/leaderboard/session/" + sessionId + "?event_slug=" + eventSlug,
-	quizWorldCupMySessionRank: (sessionId: string, eventSlug: string = "world-cup-2026") =>
-		"/api/quiz-world-cup/my-rank/session/" + sessionId + "?event_slug=" + eventSlug,
-
-	// Prediction - Teater Bola Asean 2026
-	teaterBolaAseanPhases: "/api/v1/teater-bola/phases",
-	teaterBolaAseanTeams: "/api/v1/teater-bola/teams",
-	teaterBolaAseanMatches: "/api/v1/teater-bola/matches",
-	teaterBolaAseanMatchDetail: (matchId: string) =>
-		"/api/v1/teater-bola/matches/" + matchId,
-	teaterBolaAseanLeaderboard: "/api/v1/teater-bola/leaderboard",
-	teaterBolaAseanPredict: "/api/v1/teater-bola/predict",
-	teaterBolaAseanPredictions: "/api/v1/teater-bola/predictions",
-	teaterBolaAseanMatchesWithPrediction:
-		"/api/v1/teater-bola/matches-with-prediction",
-	teaterBolaAseanMyRank: "/api/v1/teater-bola/me/rank",
-	teaterBolaAseanMySummary: "/api/v1/teater-bola/me/summary",
-
-	// Super Big Match
-	superBigMatchTeams: "/api/v1/super-big-match/teams",
-	superBigMatchMatches: "/api/v1/super-big-match/matches",
-	superBigMatchMatchDetail: (id: string) => `/api/v1/super-big-match/matches/${id}`,
-	superBigMatchLeaderboard: "/api/v1/super-big-match/leaderboard",
-	superBigMatchPredict: "/api/v1/super-big-match/predict",
-	superBigMatchPredictions: "/api/v1/super-big-match/predictions",
-	superBigMatchMatchesWithPrediction: "/api/v1/super-big-match/matches-with-prediction",
-	superBigMatchMyRank: "/api/v1/super-big-match/me/rank",
-	superBigMatchMySummary: "/api/v1/super-big-match/me/summary",
-
 	// Quiz - Event
 	eventActive: "/api/v1/events/active",
 	eventLevels: (eventId: string) => "/api/v1/events/" + eventId,
@@ -122,7 +78,6 @@ export const endpoints = {
 		"/api/v1/events/leaderboard/" + eventId,
 	eventMyRank: (eventId: string) =>
 		"/api/v1/events/leaderboard/" + eventId + "/me",
-
 
 	// Special Events
 	specialEvents: "/api/v1/special-events",
@@ -165,23 +120,6 @@ export const endpoints = {
 	jerseyRewardClaim: "/api/v1/jersey-reward/claim",
 	jerseyRewardClaimHistory: "/api/v1/jersey-reward/claim-history",
 
-	// Guess Who (proxied via app/api/guess-who/[...path]/route.ts)
-	guessWhoConfig: "/api/guess-who/config",
-	guessWhoDemo: "/api/guess-who/demo",
-	guessWhoLeaderboard: "/api/guess-who/leaderboard",
-	guessWhoStart: (level: number) => `/api/guess-who/start/${level}`,
-	guessWhoAnswer: (sessionId: string) =>
-		`/api/guess-who/session/${sessionId}/answer`,
-	guessWhoClue: (sessionId: string, questionId: string) =>
-		`/api/guess-who/session/${sessionId}/clue/${questionId}`,
-	guessWhoRematch: (level: number) => `/api/guess-who/rematch/${level}`,
-	guessWhoResume: (sessionId: string) => `/api/guess-who/session/${sessionId}`,
-	guessWhoStatus: (sessionId: string) =>
-		`/api/guess-who/session/${sessionId}/status`,
-	guessWhoMySessions: "/api/guess-who/my-sessions",
-	guessWhoMyRank: "/api/guess-who/my-rank",
-	guessWhoLevelProgress: "/api/guess-who/level-progress",
-
 	// Prizes
 	prizes: "/api/v1/prizes",
 
@@ -201,72 +139,13 @@ export const endpoints = {
 	profileUpdateCity: "/api/v1/profile/update-city",
 	profileUpdatePhone: "/api/v1/profile/update-phone",
 
+	// Videos
+	videos: "/api/v1/video",
+	videoFile: (file: string) => "/api/v1/video/file/" + file,
+
 	// Sapa
 	sapa: "/api/v1/sapa",
 	sapaCreate: "/api/v1/sapa",
-
-	// Payment - Midtrans
-	paymentMidtransConfig: "/api/v1/payment/midtrans/config",
-	paymentMidtransSnapToken: "/api/v1/payment/midtrans/snap-token",
-	paymentMidtransStatus: (orderId: string) =>
-		"/api/v1/payment/midtrans/status/" + orderId,
-	paymentAccessCheck: "/api/v1/payment/access/check",
-
-	// ─── Ngolah Bola Game ──────────────────────
-
-	// Profile & HUD
-	ngolahBolaProfile: "/api/v1/ngolah-bola/profile",
-	ngolahBolaFullHUD: "/api/v1/profile",
-
-	// Energy
-	ngolahBolaEnergy: "/api/v1/ngolah-bola/duel/energy",
-	ngolahBolaRefillEnergy: "/api/v1/ngolah-bola/duel/energy/refill",
-
-	// Points
-	ngolahBolaPointsBalance: "/api/v1/ngolah-bola/points/balance",
-	ngolahBolaExchangePoints: "/api/v1/ngolah-bola/points/exchange",
-
-	// Pack Catalog (publik)
-	ngolahBolaPackCatalog: "/api/v1/ngolah-bola/pack/catalog",
-	ngolahBolaOpenPack: (packId: string) =>
-		"/api/v1/ngolah-bola/pack/open/" + packId,
-
-	// Inventory
-	ngolahBolaInventory: "/api/v1/ngolah-bola/inventory",
-
-	// Reference Data (publik)
-	ngolahBolaReferencePlayers: "/api/v1/ngolah-bola/reference/players",
-	ngolahBolaReferenceLeagues: "/api/v1/ngolah-bola/reference/leagues",
-	ngolahBolaReferenceClubs: "/api/v1/ngolah-bola/reference/clubs",
-	ngolahBolaReferenceFormations: "/api/v1/ngolah-bola/reference/formations",
-
-	// Squads
-	ngolahBolaSquads: "/api/v1/ngolah-bola/squads",
-	ngolahBolaSquadDetail: (id: string) =>
-		"/api/v1/ngolah-bola/squads/" + id,
-	ngolahBolaAddPlayerToSquad: (id: string) =>
-		"/api/v1/ngolah-bola/squads/" + id + "/players",
-	ngolahBolaRemovePlayerFromSquad: (squadId: string, slot: string) =>
-		"/api/v1/ngolah-bola/squads/" + squadId + "/players/" + slot,
-	ngolahBolaSquadChemistry: (id: string) =>
-		"/api/v1/ngolah-bola/squads/" + id + "/chemistry",
-	ngolahBolaValidateSquad: (id: string) =>
-		"/api/v1/ngolah-bola/squads/" + id + "/validate-duel",
-
-	// Duel
-	ngolahBolaDuelChallenge: "/api/v1/ngolah-bola/duel/challenge",
-	ngolahBolaDuelHistory: "/api/v1/ngolah-bola/duel/history",
-	ngolahBolaDuelPlaySubmit: "/api/v1/ngolah-bola/duel/play/submit",
-
-	// Daily Reward
-	ngolahBolaDailyRewardStatus: "/api/v1/ngolah-bola/daily-reward/status",
-	ngolahBolaDailyRewardClaim: "/api/v1/ngolah-bola/daily-reward/claim",
-
-	// Share
-	ngolahBolaShareData: (id: string) =>
-		"/api/v1/ngolah-bola/squads/" + id + "/share-data",
-	ngolahBolaShareLog: (id: string) =>
-		"/api/v1/ngolah-bola/squads/" + id + "/share-log",
 };
 
 export type Endpoint = typeof endpoints;

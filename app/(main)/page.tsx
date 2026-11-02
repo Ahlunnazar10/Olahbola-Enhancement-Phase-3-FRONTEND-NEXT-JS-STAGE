@@ -118,7 +118,7 @@ function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
 				/>
 			)}
 
-			<div className="relative flex flex-col px-1 md:px-16 py-4 md:py-6 h-auto md:h-full">
+			<div className="relative flex flex-col px-1 md:px-4 lg:px-18 py-4 md:py-6 h-auto md:h-full">
 				<div className="flex flex-row md:flex-col gap-3 justify-between mb-2">
 					{/* ── Profile header ── */}
 					<div className="flex items-center gap-3">
@@ -295,15 +295,22 @@ function LeagueCardList() {
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
 
+	// Mobile: hanya tampilkan 3 competition, urutan UCL -> EPL -> Bundesliga
+	const mobileSlugs = ["uefa-champions-league", "primer-league", "bundesliga"];
+	const mobileOrdered = mobileSlugs
+		.map((slug) => FD_COMPETITIONS.find((c) => c.slug === slug)!)
+		.filter(Boolean);
+
 	return (
 		<section className="py-5 md:py-8 px-3 md:px-8 lg:px-16">
 			<div className="max-w-7xl mx-auto">
-				<div className="flex items-center justify-center gap-1 md:gap-4 overflow-x-auto scrollbar-none md:overflow-x-visible">
-					{FD_COMPETITIONS.map((comp) => (
+				<div className="flex items-center justify-center gap-1 md:gap-2 lg:gap-4 overflow-x-auto scrollbar-none md:overflow-x-visible">
+					{/* Mobile: 3 card full width, urutan UCL -> EPL -> Bundesliga */}
+					{mobileOrdered.map((comp) => (
 						<Link
-							key={comp.slug}
+							key={`m-${comp.slug}`}
 							href={`/football/${comp.slug}`}
-							className={`glass-card w-[16%] md:w-full h-10 md:h-20 px-0 md:px-6 py-0 md:py-3 flex flex-col items-center justify-center p-4 hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-xl group relative overflow-hidden ${
+							className={`glass-card w-full md:hidden h-20 md:h-20 px-2 md:px-6 py-2 md:py-3 flex flex-col items-center justify-center p-4 hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-xl group relative overflow-hidden ${
 								isDark
 									? ""
 									: "bg-white/70! shadow-[0_4px_20px_rgba(0,0,0,0.08)]! border-[#0a7c6e]/25!"
@@ -317,7 +324,31 @@ function LeagueCardList() {
 								alt={comp.label}
 								width={130}
 								height={130}
-								className="w-12 h-12 md:w-50 md:h-50 relative z-10 object-contain"
+								className="w-44 h-44 md:w-50 md:h-50 relative z-10 object-contain"
+							/>
+						</Link>
+					))}
+
+					{/* Desktop: semua competition */}
+					{FD_COMPETITIONS.map((comp) => (
+						<Link
+							key={comp.slug}
+							href={`/football/${comp.slug}`}
+							className={`glass-card hidden md:flex md:w-full h-10 md:h-20 px-0 lg:px-6 py-0 lg:py-3  md:flex-col items-center justify-center p-4 hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-xl group relative overflow-hidden ${
+								isDark
+									? ""
+									: "bg-white/70! shadow-[0_4px_20px_rgba(0,0,0,0.08)]! border-[#0a7c6e]/25!"
+							}`}
+						>
+							<span
+								className={`absolute inset-0 ${isDark ? "bg-primary/20 opacity-0 group-hover:opacity-100" : "bg-black/50 opacity-80 group-hover:opacity-100"} transition-opacity duration-300 pointer-events-none`}
+							/>
+							<img
+								src={comp.emblem}
+								alt={comp.label}
+								width={130}
+								height={130}
+								className="w-12 h-12 md:w-100 md:h-100 lg:w-50 lg:h-50 relative z-10 object-contain"
 							/>
 						</Link>
 					))}
@@ -678,11 +709,13 @@ export default function HomePage() {
 			/>
 			<main className="relative z-10">
 				{/* Hero Section with Banner Slider */}
-				<section className="relative h-[78vh] md:h-[70vh] flex items-center overflow-hidden">
+				<section className="relative h-[78vh] md:h-[80vh] lg:h-[70vh] flex items-center overflow-hidden">
 					{isAuthenticated ? (
 						// Login state: Banner 70% + User Stat Card 30%
 						<div className="flex flex-col w-full h-full md:flex-row gap-0 md:gap-2">
-							<div className={`w-full md:w-[72%] h-[60vh] md:h-full`}>
+							<div
+								className={`w-full md:w-[60%] lg:w-[72%] h-[60vh] md:h-full`}
+							>
 								<BannerSlider
 									slides={bannerSlides}
 									autoPlay={true}
@@ -1267,12 +1300,7 @@ export default function HomePage() {
 															{index + 4}
 														</div>
 														{player.profilePicture ? (
-															<div
-																className="relative w-10 h-10 rounded-xl overflow-hidden border"
-																style={{
-																	borderColor: heroPlayColors.cardBorder,
-																}}
-															>
+															<div className="relative w-10 h-10 rounded-full border border-white overflow-hidden ">
 																<Image
 																	src={player.profilePicture}
 																	alt={player.name}
@@ -1328,30 +1356,27 @@ export default function HomePage() {
 												))}
 											</div>
 										)}
-
-										<button
-											onClick={() => setShowFullLeaderboard((v) => !v)}
-											className="mx-auto flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105"
-											style={{
-												background: `${heroPlayColors.accent}15`,
-												border: `1px solid ${heroPlayColors.accent}30`,
-												color: heroPlayColors.text,
-											}}
-										>
-											{showFullLeaderboard
-												? "Tutup Daftar"
-												: "Lihat Lebih Banyak"}
-											<ChevronRight
-												className={`size-4 transition-transform duration-300 ${showFullLeaderboard ? "rotate-90" : "rotate-0"}`}
-											/>
-										</button>
 									</div>
 								)}
 								{/* CTA Button */}
-								<div className="text-center mt-10">
+								<div className="flex flex-row gap-2 md:gap-4 justify-center mt-10">
+									<button
+										onClick={() => setShowFullLeaderboard((v) => !v)}
+										className="flex items-center gap-2, px-6 md:px-10 py-4 rounded-full text-xs md:text-base font-semibold transition-all duration-300 hover:scale-105"
+										style={{
+											background: `${heroPlayColors.accent}15`,
+											border: `1px solid ${heroPlayColors.accent}30`,
+											color: heroPlayColors.text,
+										}}
+									>
+										{showFullLeaderboard
+											? "Tutup Daftar"
+											: "Lihat Lebih Banyak"}
+									</button>
+
 									<Link
 										href="/games"
-										className="inline-flex items-center gap-2 px-10 py-4 rounded-full font-bold text-sm md:text-lg hover:scale-105 transition-all duration-300 shadow-lg"
+										className="gap-2 px-6 md:px-10 py-4 rounded-full font-bold text-xs md:text-base hover:scale-105 transition-all duration-300 shadow-lg"
 										style={{
 											background: heroPlayColors.gradientCTA,
 											color: isDark ? "#003732" : "#ffffff",
@@ -1401,7 +1426,7 @@ export default function HomePage() {
 				{/* Article Section - Bento Grid */}
 				<section
 					ref={articleRef}
-					className="py-16 md:py-18 px-6 md:px-16 max-w-480 mx-auto"
+					className="py-16 px-6 md:px-16 max-w-480 mx-auto"
 				>
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8">
 						<div>
@@ -1445,7 +1470,7 @@ export default function HomePage() {
 						</Link>
 					</div>
 					{articlesLoading ? (
-						<div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-auto md:h-200">
+						<div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-auto md:h-250">
 							{[1, 2, 3, 4].map((i) => (
 								<div
 									key={i}
@@ -1456,7 +1481,7 @@ export default function HomePage() {
 							))}
 						</div>
 					) : articles.length > 0 ? (
-						<div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-320 md:h-200">
+						<div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-320 md:h-120">
 							{/* Featured Article */}
 							<Link
 								href={`/${articles[0]?.slug}`}
@@ -1601,7 +1626,7 @@ export default function HomePage() {
 				</section>
 
 				{/* Ads Banner */}
-				{/* <section className="w-full py-4 px-6 md:px-16">
+				<section className="w-full py-4 px-6 md:px-16">
 					<a
 						href="https://heroplay.igvault.id/"
 						target="_blank"
@@ -1617,12 +1642,12 @@ export default function HomePage() {
 							className="rounded-xl"
 						/>
 					</a>
-				</section> */}
+				</section>
 
 				{/* Social Media Section */}
 				<section
 					ref={socmedRef}
-					className={`py-16 md:py-24 px-6 md:px-16 transition-opacity duration-500 ${socmedVisible ? "opacity-100" : "opacity-0"}`}
+					className={`py-16 px-6 md:px-16 transition-opacity duration-500 ${socmedVisible ? "opacity-100" : "opacity-0"}`}
 				>
 					<div className="max-w-480 mx-auto">
 						<h2
@@ -1707,7 +1732,7 @@ export default function HomePage() {
 				</section>
 
 				{/* YouTube Embed Section */}
-				<section ref={youtubeRef} className="py-16 md:py-24 px-6 md:px-16">
+				<section ref={youtubeRef} className="py-16  px-6 md:px-16">
 					<div className="max-w-480 mx-auto" data-aos="fade-up">
 						{youtubeVisible && (
 							<div className="max-w-4xl mx-auto">
@@ -1725,20 +1750,20 @@ export default function HomePage() {
 				</section>
 
 				{/* OlahFlix Section - Vertical Reels */}
-				<section ref={videoRef} className="py-16 md:py-24 px-6 md:px-16">
+				<section ref={videoRef} className="py-16 px-6 md:px-16">
 					<div className="max-w-480 mx-auto" data-aos="fade-up">
-						<div className="mb-12">
+						<div className="mb-6">
 							<h2
-								className={`text-3xl md:text-5xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								className={`text-3xl md:text-4xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 							>
 								OlahFlix
 							</h2>
-							<div className="flex items-center gap-4 mt-4">
+							<div className="flex items-center gap-4 mt-2">
 								<span
 									className={`h-px grow ${isDark ? " bg-white/10" : "bg-on-surface-variant"}`}
 								/>
 								<p className="text-on-surface-variant uppercase tracking-widest text-sm">
-									Video center sepak bola
+									Semua Cerita Sepak Bola, dalam Video.
 								</p>
 								<span
 									className={`h-px grow ${isDark ? "bg-white/10" : "bg-on-surface-variant"}`}
@@ -1792,13 +1817,12 @@ export default function HomePage() {
 							</div>
 						)}
 
-						<div className="mt-10 flex justify-center">
+						<div className="mt-6 flex justify-center">
 							<Link
 								href="/olahflix"
 								className={`inline-flex items-center gap-3 px-8 py-4 glass-panel ${isDark ? "text-primary" : "text-[#0a7c6e]"}  font-bold uppercase tracking-widest text-sm rounded-full hover:bg-primary/10 transition-all group`}
 							>
 								KE OLAHFLIX{" "}
-								<ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
 							</Link>
 						</div>
 					</div>
@@ -1807,7 +1831,7 @@ export default function HomePage() {
 				{/* Partner Logos Section - Brand Showcase */}
 				<section
 					ref={partnerRef}
-					className={`py-20 border-y ${isDark ? "border-white/5 bg-[#141a17]" : "border-black/10 bg-[#e8e8e8]"}`}
+					className={`py-16 border-y ${isDark ? "border-white/5 bg-[#141a17]" : "border-black/10 bg-[#e8e8e8]"}`}
 				>
 					<div className="max-w-480 mx-auto px-6 md:px-16" data-aos="fade-up">
 						<div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end">

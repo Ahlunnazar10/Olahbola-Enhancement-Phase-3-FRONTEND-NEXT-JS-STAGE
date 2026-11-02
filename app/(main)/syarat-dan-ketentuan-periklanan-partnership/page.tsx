@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { useState } from "react";
 import { Megaphone } from "lucide-react";
 
@@ -106,9 +105,6 @@ export default function SyaratDanKetentuanPeriklananPage() {
 						: "rgba(10, 124, 110, 0.05)",
 				}}
 			/>
-
-			{/* Theme Toggle */}
-			<ThemeToggle />
 
 			<main>
 				{/* Hero Section */}

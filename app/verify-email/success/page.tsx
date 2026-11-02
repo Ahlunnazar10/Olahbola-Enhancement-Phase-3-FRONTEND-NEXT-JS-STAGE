@@ -7,7 +7,6 @@ import { Loader2, Mail, CheckCircle, XCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useResendVerification } from "@/hooks/queries/useAuth";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 
 type StatusType = "idle" | "loading" | "success" | "error";
 
@@ -90,7 +89,8 @@ function VerifyEmailContent() {
 			// 2. HTTP 200-299 with isEmailVerified: true anywhere in response
 			// 3. HTTP 400+ but email is already verified (isEmailVerified is true)
 			const isSuccess =
-				(response.status >= 200 && response.status < 300 &&
+				(response.status >= 200 &&
+					response.status < 300 &&
 					(data.status === "success" || isEmailVerifiedInResponse)) ||
 				isEmailVerifiedInResponse;
 
@@ -130,19 +130,27 @@ function VerifyEmailContent() {
 
 		try {
 			await resendMutation.mutateAsync(email);
-			toast.success("Email verifikasi telah dikirim ulang. Silakan cek inbox Anda.");
+			toast.success(
+				"Email verifikasi telah dikirim ulang. Silakan cek inbox Anda.",
+			);
 		} catch {
 			toast.error("Gagal mengirim ulang email verifikasi");
 		}
 	};
 
 	return (
-		<div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#111111]" : "bg-[#f5f5f5]"}`}>
+		<div
+			className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#111111]" : "bg-[#f5f5f5]"}`}
+		>
 			{/* Background Grid Pattern */}
-			<div className={`fixed inset-0 pointer-events-none ${isDark ? "bg-grid-pattern" : "bg-grid-pattern-light"}`} />
+			<div
+				className={`fixed inset-0 pointer-events-none ${isDark ? "bg-grid-pattern" : "bg-grid-pattern-light"}`}
+			/>
 
 			{/* Blobs */}
-			<div className={`blob top-[-10%] left-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`} />
+			<div
+				className={`blob top-[-10%] left-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`}
+			/>
 			<div
 				className={`blob bottom-[-20%] right-[-10%] animate-pulse ${isDark ? "" : "opacity-40"}`}
 				style={{ animationDelay: "2s" }}
@@ -150,8 +158,6 @@ function VerifyEmailContent() {
 
 			{/* Main Content */}
 			<main className="min-h-screen flex items-center justify-center px-4 relative z-10">
-				{/* Theme Toggle */}
-				<ThemeToggle />
 				<div className="relative">
 					{/* Card glow */}
 					<div
@@ -160,16 +166,18 @@ function VerifyEmailContent() {
 								? status === "success"
 									? "bg-linear-to-r from-green-500/50 to-primary/30"
 									: status === "error"
-									? "bg-linear-to-r from-red-500/50 to-orange-500/30"
-									: "bg-linear-to-r from-primary/50 to-[#ff8f63]/30"
+										? "bg-linear-to-r from-red-500/50 to-orange-500/30"
+										: "bg-linear-to-r from-primary/50 to-[#ff8f63]/30"
 								: status === "success"
 									? "bg-linear-to-r from-green-500/30 to-[#0a7c6e]/20"
 									: status === "error"
-									? "bg-linear-to-r from-red-500/30 to-orange-500/20"
-									: "bg-linear-to-r from-[#0a7c6e]/30 to-[#b3461a]/20"
+										? "bg-linear-to-r from-red-500/30 to-orange-500/20"
+										: "bg-linear-to-r from-[#0a7c6e]/30 to-[#b3461a]/20"
 						}`}
 					/>
-					<div className={`p-10 md:p-14 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden text-center ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}>
+					<div
+						className={`p-10 md:p-14 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden text-center ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}
+					>
 						{/* Subtle glass pattern overlay */}
 						<div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
 
@@ -181,17 +189,25 @@ function VerifyEmailContent() {
 								className="w-48 mx-auto mb-6"
 							/>
 
-							<h2 className={`font-headline-lg text-headline-lg italic mb-6 tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}>
+							<h2
+								className={`font-headline-lg text-headline-lg italic mb-6 tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
+							>
 								Verifikasi Email
 							</h2>
 
 							{/* Loading State */}
 							{status === "idle" || status === "loading" ? (
 								<div className="flex flex-col items-center py-6">
-									<Loader2 className={`size-12 animate-spin mb-4 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`} />
-									<p className={isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}>Memverifikasi email Anda...</p>
+									<Loader2
+										className={`size-12 animate-spin mb-4 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+									/>
+									<p className={isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}>
+										Memverifikasi email Anda...
+									</p>
 									{token && (
-										<p className={`text-xs mt-2 ${isDark ? "text-[#bbcac6]/50" : "text-[#5a5a5a]/50"}`}>
+										<p
+											className={`text-xs mt-2 ${isDark ? "text-[#bbcac6]/50" : "text-[#5a5a5a]/50"}`}
+										>
 											Token: {token.substring(0, 20)}...
 										</p>
 									)}
@@ -201,28 +217,48 @@ function VerifyEmailContent() {
 							{/* Success State */}
 							{status === "success" && (
 								<div>
-									<div className={`mb-6 flex justify-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
-										<div className={`w-20 h-20 rounded-full flex items-center justify-center ${isDark ? "bg-primary/20" : "bg-[#0a7c6e]/20"}`}>
-											<CheckCircle className={`size-12 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`} />
+									<div
+										className={`mb-6 flex justify-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+									>
+										<div
+											className={`w-20 h-20 rounded-full flex items-center justify-center ${isDark ? "bg-primary/20" : "bg-[#0a7c6e]/20"}`}
+										>
+											<CheckCircle
+												className={`size-12 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+											/>
 										</div>
 									</div>
-									<p className={`text-lg font-semibold mb-2 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}>
+									<p
+										className={`text-lg font-semibold mb-2 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+									>
 										Verifikasi Berhasil!
 									</p>
-									<p className={`mb-6 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+									<p
+										className={`mb-6 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+									>
 										Email Anda telah berhasil diverifikasi.
 									</p>
 
 									{countdown > 0 && (
 										<div className="mb-6">
-											<p className={`text-sm mb-3 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+											<p
+												className={`text-sm mb-3 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											>
 												Mengarahkan ke halaman login dalam:
 											</p>
 											<div className="flex justify-center items-center gap-2">
-												<div className={`rounded-lg px-3 py-1 text-2xl font-bold min-w-12 ${isDark ? "bg-primary/20 border border-primary/40 text-primary" : "bg-[#0a7c6e]/20 border border-[#0a7c6e]/40 text-[#0a7c6e]"}`}>
+												<div
+													className={`rounded-lg px-3 py-1 text-2xl font-bold min-w-12 ${isDark ? "bg-primary/20 border border-primary/40 text-primary" : "bg-[#0a7c6e]/20 border border-[#0a7c6e]/40 text-[#0a7c6e]"}`}
+												>
 													{countdown.toString().padStart(2, "0")}
 												</div>
-												<span className={isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}>detik</span>
+												<span
+													className={
+														isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"
+													}
+												>
+													detik
+												</span>
 											</div>
 										</div>
 									)}
@@ -255,20 +291,24 @@ function VerifyEmailContent() {
 									<p className="text-lg font-semibold text-red-400 mb-2">
 										Verifikasi Gagal
 									</p>
-									<p className={`mb-6 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}>
+									<p
+										className={`mb-6 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+									>
 										Token tidak valid atau sudah kadaluarsa.
 									</p>
 
 									{/* Email Input for Resend */}
 									<div className="mb-4 space-y-2">
 										<div className="relative">
-											<Mail className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`} />
+											<Mail
+												className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											/>
 											<input
 												type="email"
 												value={email}
 												onChange={(e) => setEmail(e.target.value)}
 												placeholder="Masukkan email untuk kirim ulang"
-						className={`w-full border-b-2 border-x-0 border-t-0 focus:border-primary rounded-t-xl transition-all text-sm ${isDark ? "bg-black/40 border-outline-variant text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-3`}
+												className={`w-full border-b-2 border-x-0 border-t-0 focus:border-primary rounded-t-xl transition-all text-sm ${isDark ? "bg-black/40 border-outline-variant text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-3`}
 											/>
 										</div>
 									</div>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { NavigationBar } from "@/components/layouts/NavigationBar";
+import { Footer } from "@/components/layouts/Footer";
 
 interface ArticleResponse {
 	status: string;
@@ -152,5 +154,13 @@ export async function generateMetadata({
 }
 
 export default function SlugLayout({ children }: { children: React.ReactNode }) {
-	return children;
+	return (
+		<>
+			<NavigationBar />
+			<main className="relative pt-18">
+				{children}
+			</main>
+			<Footer />
+		</>
+	);
 }

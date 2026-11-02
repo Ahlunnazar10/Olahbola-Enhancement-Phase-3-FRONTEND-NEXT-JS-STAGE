@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { useState } from "react";
 import { Shield } from "lucide-react";
 
@@ -109,9 +108,6 @@ export default function KebijakanPrivasiPage() {
 						: "rgba(10, 124, 110, 0.05)",
 				}}
 			/>
-
-			{/* Theme Toggle */}
-			<ThemeToggle />
 
 			<main>
 				{/* Hero Section */}
@@ -384,8 +380,8 @@ export default function KebijakanPrivasiPage() {
 										<p>
 											Olahbola menggunakan layanan dari{" "}
 											<span className="font-semibold">Google</span> sebagai
-											penyedia pihak ketiga untuk berbagai fungsi operasional dan
-											analitik, antara lain:
+											penyedia pihak ketiga untuk berbagai fungsi operasional
+											dan analitik, antara lain:
 										</p>
 										<ul className="list-disc pl-6 space-y-3">
 											<li>
@@ -394,26 +390,26 @@ export default function KebijakanPrivasiPage() {
 												pada situs web kami.
 											</li>
 											<li>
-												<strong>Google Analytics</strong> &mdash; untuk menganalisis
-												lalu lintas pengunjung, perilaku penggunaan, dan
-												kinerja halaman sehingga kami dapat meningkatkan
-												pengalaman pengguna.
+												<strong>Google Analytics</strong> &mdash; untuk
+												menganalisis lalu lintas pengunjung, perilaku
+												penggunaan, dan kinerja halaman sehingga kami dapat
+												meningkatkan pengalaman pengguna.
 											</li>
 											<li>
 												<strong>Google Fonts</strong> &mdash; untuk menampilkan
 												font web yang konsisten di berbagai perangkat pengguna.
 											</li>
 											<li>
-												<strong>Vercel Analytics</strong> &mdash; layanan analitik
-												pihak ketiga yang membantu kami memantau performa dan
-												kecepatan situs.
+												<strong>Vercel Analytics</strong> &mdash; layanan
+												analitik pihak ketiga yang membantu kami memantau
+												performa dan kecepatan situs.
 											</li>
 										</ul>
 										<p>
 											Layanan Google tersebut dapat menempatkan{" "}
 											<strong>cookie</strong> di perangkat Anda untuk tujuan
-											analitik dan pempersonalisasian. Data yang dikumpulkan oleh
-											layanan Google akan tunduk pada{" "}
+											analitik dan pempersonalisasian. Data yang dikumpulkan
+											oleh layanan Google akan tunduk pada{" "}
 											<a
 												href="https://policies.google.com/privacy"
 												target="_blank"
@@ -430,8 +426,8 @@ export default function KebijakanPrivasiPage() {
 										<p>
 											Kami tidak membagikan data pribadi yang dapat
 											mengidentifikasi Anda secara langsung (seperti nama atau
-											alamat email) kepada Google tanpa persetujuan eksplisit dari
-											Anda.
+											alamat email) kepada Google tanpa persetujuan eksplisit
+											dari Anda.
 										</p>
 									</div>
 								</div>

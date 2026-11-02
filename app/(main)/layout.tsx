@@ -1,22 +1,20 @@
-import { NavigationBar } from '@/components/layouts/NavigationBar';
-import { Footer } from '@/components/layouts/Footer';
-import ThemeToggle from '@/components/theme-toggle/ThemeToggle';
-import { LastPathTracker } from '@/components/LastPathTracker';
+import { NavigationBar } from "@/components/layouts/NavigationBar";
+import { Footer } from "@/components/layouts/Footer";
+import { LastPathTracker } from "@/components/LastPathTracker";
 
 export default function MainLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <>
-      <NavigationBar />
-      <main className="pt-21 relative">
-        {children}
-        <ThemeToggle />
-        <LastPathTracker />
-      </main>
-      <Footer />
-    </>
-  );
+	return (
+		<>
+			<NavigationBar />
+			<main className="pt-18 relative">
+				{children}
+				<LastPathTracker />
+			</main>
+			<Footer />
+		</>
+	);
 }

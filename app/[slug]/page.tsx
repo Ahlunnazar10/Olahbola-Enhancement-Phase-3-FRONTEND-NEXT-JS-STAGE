@@ -16,20 +16,9 @@ import {
 import type { RelatedArticleItem } from "@/hooks/queries/useArticles";
 import { getRelatedArticles, extractEntities } from "@/lib/related";
 import { useUIStore } from "@/stores/uiStore";
-import ThemeToggle from "@/components/theme-toggle/ThemeToggle";
 import { trackArticleView } from "@/lib/analytics";
 import { notFound } from "next/navigation";
-import {
-	ArrowLeft,
-	Calendar,
-	Eye,
-	User,
-	Share2,
-	Link2,
-	Clock,
-	TrendingUp,
-	Zap,
-} from "lucide-react";
+import { ArrowLeft, Calendar, Eye, User, Share2, Link2 } from "lucide-react";
 
 // Extract tweet IDs from content HTML and return a clean version without
 // the blockquote (to prevent dangerouslySetInnerHTML from re-rendering them)
@@ -458,23 +447,13 @@ export default function ArticleDetailPage() {
 		<div
 			className={`min-h-screen relative transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
 		>
-			<ThemeToggle />
-
-			<section className={`relative w-full h-[55vh] overflow-hidden`}>
+			<section
+				className={`relative w-full h-[30vh] md:h-[90vh] overflow-hidden`}
+			>
 				<div
 					className={`absolute inset-0 bg-cover bg-top ${isDark ? "grayscale-[0.2] brightness-75" : "grayscale-[0.1] brightness-90"}`}
 					style={{ backgroundImage: `url(${fullImageUrl})` }}
 				/>
-
-				<div className="absolute top-24 left-4 md:left-8 z-30">
-					<Link
-						href="/artikel"
-						className={`flex items-center gap-2 px-4 py-2 backdrop-blur-sm rounded-lg transition-all text-sm font-bold uppercase tracking-widest ${isDark ? "bg-black/40 hover:bg-black/60 text-white/80 hover:text-white" : "bg-white/40 hover:bg-white/60 text-[#1a1a1a]/80 hover:text-[#1a1a1a]"}`}
-					>
-						<ArrowLeft className="size-4" />
-						<span>Back</span>
-					</Link>
-				</div>
 
 				<div
 					className={`absolute bottom-0 left-0 right-0 h-32 z-10 bg-linear-to-t ${colors.overlay}`}
@@ -482,7 +461,7 @@ export default function ArticleDetailPage() {
 			</section>
 
 			<section
-				className={`relative z-30 -mt-1 px-3 md:px-12 pb-24 max-w-screen-2xl mx-auto`}
+				className={`relative z-30 -mt-1 px-3 md:px-10 pb-24 max-w-screen-2xl mx-auto`}
 			>
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 					<article className="lg:col-span-8">
@@ -492,17 +471,14 @@ export default function ArticleDetailPage() {
 							{articleData.category_name && (
 								<Link
 									href={`/artikel?kategori=${articleData.category_slug}`}
-									className={`inline-flex items-center gap-2 px-4 py-1.5 font-bold text-xs rounded-full mb-6 uppercase tracking-widest hover:opacity-90 transition-opacity ${isDark ? "bg-[#E63946] text-white" : "bg-[#d32f3e] text-white"}`}
+									className={`inline-flex items-center gap-2 px-3.5 py-1 font-semibold text-xs rounded-full mb-6 tracking-widest hover:opacity-90 transition-opacity ${isDark ? "bg-[#E63946] text-white" : "bg-[#d32f3e] text-white"}`}
 								>
-									<span
-										className={`w-2 h-2 rounded-full animate-pulse ${isDark ? "bg-white" : "bg-white"}`}
-									/>
 									{articleData.category_name}
 								</Link>
 							)}
 
 							<h1
-								className={`text-2xl md:text-5xl font-black italic uppercase mb-6 leading-tight tracking-tight ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+								className={`text-2xl md:text-4xl font-black italic uppercase mb-6 leading-tight tracking-tight ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 							>
 								{articleData.title}
 							</h1>

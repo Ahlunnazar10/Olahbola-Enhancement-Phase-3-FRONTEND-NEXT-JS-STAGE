@@ -311,7 +311,7 @@ function ArtikelContent() {
 				{!searchQuery && !categorySlug && featuredArticle && (
 					<section className="mb-0 -mt-6 w-screen left-1/2 -translate-x-1/2 relative">
 						<div
-							className={`relative w-full h-100 sm:h-120 md:h-150 lg:h-179 overflow-hidden group border ${isDark ? "border-white/10" : "border-[#0a7c6e]/20"}`}
+							className={`relative w-full h-100 sm:h-120 md:h-145  overflow-hidden group border ${isDark ? "border-white/10" : "border-[#0a7c6e]/20"}`}
 						>
 							<img
 								className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-100"
@@ -359,21 +359,22 @@ function ArtikelContent() {
 
 				{/* Search & Categories Bar with Glassmorphism */}
 				<section
-					className={`flex flex-col md:flex-row gap-6 mt-4 mb-8 items-center p-4 rounded-2xl border ${isDark ? "bg-white/5 backdrop-blur-xl border-white/5" : "bg-white/90 backdrop-blur-md border-[#0a7c6e]/20"}`}
+					className={`flex flex-col md:flex-row gap-6 mb-8 items-center p-4 rounded-2xl border ${isDark ? "bg-white/5 backdrop-blur-xl border-white/5" : "bg-white/90 backdrop-blur-md border-[#0a7c6e]/20"}`}
 				>
-					<div className="relative w-full md:w-1/3 group">
+					<div className="relative w-full md:w-76 group">
 						<Search
 							className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
 						/>
 						<input
-							className={`w-full border rounded-xl py-4 pl-12 pr-4 font-bold text-sm tracking-widest outline-none transition-all backdrop-blur-md ${isDark ? "bg-surface-container-highest/20 border-outline-variant/30 text-white placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#0a7c6e] focus:ring-1 focus:ring-[#0a7c6e]"}`}
+							className={`w-full border rounded-xl py-3 pl-12 pr-4 font-bold text-sm tracking-widest outline-none transition-all backdrop-blur-md ${isDark ? "bg-surface-container-highest/20 border-outline-variant/30 text-white placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#0a7c6e] focus:ring-1 focus:ring-[#0a7c6e]"}`}
 							placeholder="CARI ARTIKEL..."
 							type="text"
 							value={localSearchInput}
 							onChange={handleSearchChange}
 						/>
 					</div>
-					<div className="flex gap-3 overflow-x-auto pb-2 w-full md:w-2/3 custom-scrollbar">
+
+					<div className="flex gap-3 overflow-x-auto w-full md:full custom-scrollbar">
 						<button
 							onClick={() => handleCategoryClick("")}
 							className={`px-6 py-3 rounded-xl border font-bold text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
@@ -524,42 +525,44 @@ function ArtikelContent() {
 													>
 														{article.excerpt}
 													</p>
-													{/* Author Info */}
-													{article.author && (
-														<div className="flex items-center gap-2 mt-3">
-															<div
-																className={`w-6 h-6 rounded-full flex items-center justify-center overflow-hidden ${isDark ? "bg-primary/20" : "bg-[#0a7c6e]/20"}`}
-															>
-																{article.author.avatar ? (
-																	<img
-																		src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${article.author.avatar}`}
-																		alt={article.author.name}
-																		className="w-full h-full object-cover"
-																	/>
-																) : (
-																	<span
-																		className={`text-[10px] font-bold ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-																	>
-																		{article.author.name
-																			?.charAt(0)
-																			?.toUpperCase() || "A"}
-																	</span>
-																)}
-															</div>
-															<span
-																className={`text-[11px] font-bold uppercase tracking-wide ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-															>
-																{article.author.name || "Author"}
-															</span>
-														</div>
-													)}
 												</div>
 												<div className="flex justify-between items-center mt-4">
-													<span
-														className={`text-xs font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-													>
-														{article.created_diff}
-													</span>
+													<div className="flex flex-row gap-3 items-center">
+														{/* Author Info */}
+														{article.author && (
+															<div className="flex items-center gap-2">
+																<div
+																	className={`w-6 h-6 rounded-full flex items-center justify-center overflow-hidden ${isDark ? "bg-primary/20" : "bg-[#0a7c6e]/20"}`}
+																>
+																	{article.author.avatar ? (
+																		<img
+																			src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${article.author.avatar}`}
+																			alt={article.author.name}
+																			className="w-full h-full object-cover"
+																		/>
+																	) : (
+																		<span
+																			className={`text-[10px] font-bold ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+																		>
+																			{article.author.name
+																				?.charAt(0)
+																				?.toUpperCase() || "A"}
+																		</span>
+																	)}
+																</div>
+																<span
+																	className={`text-[11px] font-bold uppercase tracking-wide ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+																>
+																	{article.author.name || "Author"}
+																</span>
+															</div>
+														)}
+														<span
+															className={`text-xs font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+														>
+															{article.created_diff}
+														</span>
+													</div>
 													<div
 														className={`flex items-center gap-1 text-[11px] font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 													>
