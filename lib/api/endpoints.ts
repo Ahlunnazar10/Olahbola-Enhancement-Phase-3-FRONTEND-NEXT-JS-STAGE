@@ -161,6 +161,18 @@ export const endpoints = {
 	guessWhoLevelProgress: "/api/guess-who/level-progress",
 	guessWhoMySessions: "/api/guess-who/my-sessions",
 	guessWhoResume: (sessionId: string) => "/api/guess-who/" + sessionId + "/resume",
+
+	// Quiz World Cup
+	quizWorldCupSessions: (eventSlug: string) => "/api/v1/quiz/world-cup/sessions/" + eventSlug,
+	quizWorldCupState: (sessionId: string) => "/api/v1/quiz/world-cup/" + sessionId + "/state",
+	quizWorldCupPlay: (sessionId: string) => "/api/v1/quiz/world-cup/" + sessionId + "/play",
+	quizWorldCupAnswer: (attemptId: string) => "/api/v1/quiz/world-cup/answer/" + attemptId,
+	quizWorldCupGlobalLeaderboard: (eventSlug: string) => "/api/v1/quiz/world-cup/leaderboard/" + eventSlug,
+	quizWorldCupMyRank: (eventSlug: string) => "/api/v1/quiz/world-cup/rank/" + eventSlug,
+	quizWorldCupSessionLeaderboard: (sessionId: string, eventSlug: string) =>
+		"/api/v1/quiz/world-cup/sessions/" + sessionId + "/leaderboard/" + eventSlug,
+	quizWorldCupMySessionRank: (sessionId: string, eventSlug: string) =>
+		"/api/v1/quiz/world-cup/sessions/" + sessionId + "/my-rank/" + eventSlug,
 };
 
 export type Endpoint = typeof endpoints;
