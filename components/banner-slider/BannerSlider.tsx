@@ -8,7 +8,7 @@ import { Navigation, EffectFade } from "swiper/modules";
 
 import { ChevronRight, ChevronLeft, ArrowRight, Award } from "lucide-react";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 
 // Import Swiper styles - use string path to avoid type resolution issues
 
@@ -218,7 +218,6 @@ export function BannerSlider({
 				{slides.map((slide, index) => (
 					<SwiperSlide key={slide.id} className="w-full! h-full! list-none!">
 						{/* Background - First slide loads eagerly, others lazy */}
-
 						<div className="absolute inset-0 w-full h-full">
 							{(() => {
 								const articleImageUrl =
@@ -264,7 +263,7 @@ export function BannerSlider({
 												}
 												width={1920}
 												height={1080}
-												className={`w-full h-full object-cover object-center ${
+												className={`w-full h-full object-cover object-top ${
 													slide.type === "event"
 														? ""
 														: isDark
@@ -305,34 +304,41 @@ export function BannerSlider({
 						</div>
 
 						{/* Overlays */}
-
 						<div
 							className={`absolute inset-0 ${
 								slide.type === "cta" && slide.videoSrc
 									? isMobile
-										? "bg-linear-to-t from-black/95 via-black/80 to-transparent"
-										: "bg-linear-to-r from-black/95 via-black/70 to-transparent"
+										? isDark
+											? "bg-linear-to-t from-black/95 via-black/80 to-transparent"
+											: "bg-linear-to-t from-white/95 via-white/80 to-transparent"
+										: isDark
+											? "bg-linear-to-r from-black/95 via-black/70 to-transparent"
+											: "bg-linear-to-r from-white/95 via-white/70 to-transparent"
 									: slide.type === "cta"
 										? isMobile
-											? "bg-linear-to-t from-black via-black/60 to-transparent"
-											: "bg-linear-to-l from-black via-black/30 to-transparent"
+											? isDark
+												? "bg-linear-to-t from-black via-black/60 to-transparent"
+												: "bg-linear-to-t from-white via-white/60 to-transparent"
+											: isDark
+												? "bg-linear-to-l from-black via-black/30 to-transparent"
+												: "bg-linear-to-l from-white via-white/30 to-transparent"
 										: slide.type === "article"
 											? isMobile
 												? isDark
 													? "bg-linear-to-t from-black via-black/60 to-transparent"
-													: "bg-linear-to-t from-black/80 via-black/50 to-transparent"
+													: "bg-linear-to-t from-white via-white/60 to-transparent"
 												: isDark
 													? "bg-linear-to-r from-black via-[#0f1412]/60 to-transparent"
 													: "bg-linear-to-r from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
 											: slide.type === "event"
 												? "bg-linear-to-t from-[#050505]/10 via-transparent to-[#050505]/10"
 												: slide.heroPlayLayout
-													? "bg-linear-to-r from-transparent via-transparent to-black/40"
-													: `bg-linear-to-r ${
-															isDark
-																? "from-black via-[#0f1412]/20 to-transparent"
-																: "from-[#f5f5f5]/95 via-[#f5f5f5]/20 to-transparent"
-														}`
+													? isDark
+														? "bg-linear-to-r from-transparent via-transparent to-black/40"
+														: "bg-linear-to-r from-transparent via-transparent to-white/60"
+													: isDark
+														? `bg-linear-to-r from-black via-[#0f1412]/20 to-transparent`
+														: `bg-linear-to-r from-white/95 via-white/20 to-transparent`
 							}`}
 						/>
 
@@ -348,16 +354,15 @@ export function BannerSlider({
 									</>
 								) : (
 									<>
-										<div className="absolute inset-0 bg-linear-to-r from-[#ffffff]/85 via-[#ffffff]/40 to-[#ffffff]/85 pointer-events-none" />
+										<div className="absolute inset-0 bg-linear-to-r from-[#ffffff] via-[#ffffff]/60 to-[#ffffff] pointer-events-none" />
 
-										<div className="absolute inset-0 bg-[#ffffff]/30 pointer-events-none" />
+										<div className="absolute inset-0 bg-[#ffffff]/50 pointer-events-none" />
 									</>
 								)}
 							</>
 						)}
 
 						{/* Static Type */}
-
 						{slide.type === "static" ? (
 							<div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center md:items-center justify-center md:justify-between gap-8 md:gap-4 px-8 sm:px-12 md:px-16 lg:px-24 xl:px-32">
 								<div className="flex flex-col justify-center w-full md:w-1/2 md:max-w-xl lg:max-w-2xl text-center md:text-left order-2 md:order-1">
@@ -415,15 +420,12 @@ export function BannerSlider({
 							</div>
 						) : slide.type === "event" ? (
 							/* Event Type - Bundesliga 2026/2027 */
-
-							<div className="relative z-10 w-full max-w-360 mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-3 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center h-full">
+							<div className="relative z-10 w-full mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-3 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center h-full">
 								{/* Left Content: Typography & CTA */}
-
-								<div className="lg:col-span-6 flex flex-col items-center md:items-start gap-3 md:gap-6">
+								<div className="lg:col-span-6 flex flex-col items-center md:items-start gap-3">
 									{/* Event Title */}
-
 									{slide.eventTitle && (
-										<h1 className="text-2xl md:text-5xl font-extrabold italic uppercase leading-none ">
+										<h1 className="text-2xl md:text-4xl font-extrabold italic uppercase leading-none ">
 											{slide.eventTitle.parts.map((part, i) => (
 												<span
 													key={i}
@@ -442,10 +444,9 @@ export function BannerSlider({
 									)}
 
 									{/* Description */}
-
 									{slide.eventDescription && (
 										<p
-											className={`text-sm md:text-lg font-medium max-w-xl text-center md:text-left px-3 ${isDark ? "text-on-surface-variant" : "text-[#3a3a3a]"}`}
+											className={`text-sm md:text-base font-medium max-w-xl text-center md:text-left ${isDark ? "text-on-surface-variant" : "text-[#3a3a3a]"}`}
 										>
 											{slide.eventDescription}
 										</p>
@@ -453,14 +454,17 @@ export function BannerSlider({
 
 									{/* CTA Buttons */}
 
-									<div className="flex flex-row gap-4 mt-4">
+									<div className="flex flex-row gap-4 mt-2">
 										{slide.eventPrimaryCta && (
-											<a
+											<Link
 												href={slide.eventPrimaryCta.href}
-												className="bg-primary text-on-primary text-[11px] md:text-sm font-extrabold px-4 md:px-8 py-3 md:py-4 rounded-sm hover:shadow-[0_0_20px_rgba(67,222,204,0.6)] transition-all duration-300 active:scale-95 uppercase tracking-widest"
+												className="group relative inline-flex items-center gap-3 px-7 py-3 rounded-2xl text-xs md:text-sm font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-primary-container to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-primary-container/40"
 											>
-												{slide.eventPrimaryCta.text}
-											</a>
+												<span className="relative z-10 flex items-center gap-3">
+													{slide.eventPrimaryCta.text}
+												</span>
+												<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
+											</Link>
 										)}
 
 										{slide.eventSecondaryCta && (
@@ -475,9 +479,8 @@ export function BannerSlider({
 								</div>
 
 								{/* Right Content: Reward Showcase */}
-
 								{slide.eventRewardImage && (
-									<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-0 pb-12 lg:py-20 -mt-27.5 lg:mt-0">
+									<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-8 pb-12 lg:py-20 -mt-27.5 lg:mt-0">
 										{/* Ambient glow */}
 
 										<div className="absolute inset-0 bg-primary/5 rounded-full blur-[120px] opacity-40" />
@@ -519,10 +522,10 @@ export function BannerSlider({
 											<img
 												alt={slide.eventRewardImageAlt || "Prize"}
 												src={slide.eventRewardImage}
-												className="h-100 md:h-155 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
+												className="w-54 h-54 md:w-84 md:h-84 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
+												width={200}
+												height={200}
 												loading="lazy"
-												width={540}
-												height={540}
 												decoding="async"
 											/>
 										</div>
@@ -532,9 +535,9 @@ export function BannerSlider({
 						) : slide.heroPlayLayout ? (
 							/* HeroPlay Right-Aligned Layout */
 							<div className="relative z-10 w-full h-full flex items-center">
-								<div className="relative z-20 w-full px-6 md:px-12 mr-auto ml-4 md:mr-16 lg:mr-32 text-center md:text-right mt-66 md:mt-0">
+								<div className="relative z-20 w-full px-6 md:px-12 mr-auto ml-4 md:mr-16 lg:mr-18 text-center md:text-right mt-30 md:mt-0">
 									{/* Title with highlighted word */}
-									<h2 className="text-3xl md:text-3xl lg:text-[44px] font-bold uppercase leading-none mb-2 md:mb-4">
+									<h2 className="text-3xl md:text-3xl lg:text-[40px] font-bold uppercase leading-none mb-2">
 										{slide.heroPlayLayout.titleLines.map((line, lineIdx) => {
 											const hasHighlight =
 												slide.heroPlayLayout!.highlightedLineIndex === lineIdx;
@@ -551,8 +554,12 @@ export function BannerSlider({
 																key={wordIdx}
 																className={
 																	isHighlighted
-																		? "text-[#1FE6DA]"
-																		: "text-white"
+																		? isDark
+																			? "text-[#1FE6DA]"
+																			: "text-[#0a7c6e]"
+																		: isDark
+																			? "text-white"
+																			: "text-[#1a1a1a]"
 																}
 															>
 																{word}
@@ -566,7 +573,9 @@ export function BannerSlider({
 									</h2>
 									{/* Description */}
 									{slide.heroPlayLayout.description && (
-										<p className="text-base md:text-xl mb-4 md:mb-6 mx-auto md:mx-0">
+										<p
+											className={`text-sm md:text-base mb-4 mx-auto md:mx-0 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+										>
 											{(isMobile && slide.heroPlayLayout.descriptionMobile
 												? slide.heroPlayLayout.descriptionMobile
 												: slide.heroPlayLayout.description
@@ -586,9 +595,13 @@ export function BannerSlider({
 											<a
 												href={slide.heroPlayLayout.buttonHref}
 												target="_blank"
-												className="inline-flex items-center justify-center gap-2 px-12 py-4 rounded-xl font-bold tracking-wide text-sm md:text-base bg-[#1FE6DA] text-black shadow-[0_8px_10px_0_rgba(0,0,0,0.5)] hover:scale-105 active:scale-95 transition-all duration-300"
+												rel="noopener noreferrer"
+												className="group relative inline-flex items-center gap-3 px-7 py-3 rounded-2xl text-xs md:text-sm font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-primary-container to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-primary-container/40"
 											>
-												{slide.heroPlayLayout.buttonText}!
+												<span className="relative z-10 flex items-center gap-3">
+													{slide.heroPlayLayout.buttonText}!
+												</span>
+												<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
 											</a>
 										)}
 								</div>
@@ -597,7 +610,7 @@ export function BannerSlider({
 							/* CTA Type */
 							<div className="relative z-10 w-full h-full flex items-center">
 								<div
-									className={`relative z-20 mt-30 md:mt-0 ${
+									className={`relative z-20 mt-12 md:mt-0 ${
 										slide.videoSrc
 											? "w-full max-w-2xl lg:max-w-4xl px-14 md:px-0 mr-auto ml-4 md:ml-16 lg:ml-32 text-center md:text-left"
 											: "w-full max-w-2xl lg:max-w-4xl px-14 md:px-8 ml-auto mr-4 md:mr-16 lg:mr-32 text-center md:text-right"
@@ -607,7 +620,7 @@ export function BannerSlider({
 										<h2
 											className={`${
 												slide.videoSrc
-													? "text-3xl md:text-[42px] lg:text-[56px] uppercase italic leading-tight md:leading-[1.1] mb-4 md:mb-4"
+													? "text-3xl md:text-[42px] lg:text-[46px] uppercase italic leading-tight md:leading-[1.1] mb-2"
 													: "text-xl md:text-[42px] lg:text-[48px] font-black uppercase leading-tight md:leading-[1.1] mb-4 md:mb-6"
 											}`}
 										>
@@ -617,9 +630,9 @@ export function BannerSlider({
 													className={`block last:mb-0 ${
 														slide.videoSrc
 															? i === 0
-																? "font-black text-primary"
-																: "font-black text-white"
-															: "font-black text-white"
+																? `font-black ${isDark ? "text-primary" : "text-[#0A7C6E]"}`
+																: `font-black ${isDark ? "text-white" : "text-black"}`
+															: `font-black ${isDark ? "text-white" : "text-black"}`
 													}`}
 												>
 													{line}
@@ -628,17 +641,18 @@ export function BannerSlider({
 										</h2>
 									)}
 									{slide.ctaSubtitle && (
-										<p className="text-sm md:text-lg leading-relaxed mb-6 md:mb-8 max-w-lg mr-auto text-white">
+										<p
+											className={`text-sm md:text-base leading-relaxed mb-5 max-w-lg mr-auto ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+										>
 											{slide.ctaSubtitle}
 										</p>
 									)}
 									{slide.ctaCtaText && slide.ctaCtaHref && (
 										<a
-											data-gtm-cta="DAFTAR SEKARANG!"
 											href={slide.ctaCtaHref}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-xs md:text-base font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-primary-container to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-primary-container/40"
+											className="group relative inline-flex items-center gap-3 px-7 py-3 rounded-2xl text-xs md:text-sm font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-primary-container to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-primary-container/40"
 										>
 											<span className="relative z-10 flex items-center gap-3">
 												{slide.ctaCtaText}
@@ -658,10 +672,9 @@ export function BannerSlider({
 							</div>
 						) : (
 							/* Article Type */
-
-							<div className="relative z-10 w-full max-w-4xl px-18 md:px-16 lg:px-24 xl:px-32 mt-20 md:mt-0 h-full flex flex-col justify-center">
+							<div className="relative z-10 w-full max-w-3xl px-16 md:px-16 lg:px-26 mt-20 md:mt-0 h-full flex flex-col justify-center">
 								{slide.title && (
-									<h1 className="text-xl md:text-[46px] lg:text-5xl font-bold uppercase italic leading-none mb-3 md:mb-6">
+									<h1 className="text-xl md:text-[30px] font-bold uppercase italic leading-none mb-2">
 										{slide.title.parts.map((part, i) => {
 											const color =
 												slide.title?.colors?.[i] ||
@@ -692,7 +705,7 @@ export function BannerSlider({
 								)}
 
 								<p
-									className={`text-base md:text-lg max-w-xl mb-6 line-clamp-2 md:line-clamp-3 ${
+									className={`text-sm md:text-base max-w-xl mb-5 line-clamp-2 ${
 										isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"
 									}`}
 								>
@@ -702,11 +715,12 @@ export function BannerSlider({
 								{slide.ctaButtons?.primary?.href && (
 									<Link
 										href={slide.ctaButtons.primary.href}
-										className="inline-flex items-center gap-2 w-fit px-6 py-3 bg-primary text-on-primary font-bold uppercase tracking-widest text-sm rounded-full hover:bg-[#5eebe8] hover:scale-105 transition-all group"
+										className="group relative inline-flex  w-fit items-center gap-3 px-7 py-3 rounded-2xl text-xs md:text-sm font-black uppercase tracking-wide transition-all duration-300 overflow-hidden bg-linear-to-r from-primary-container to-[#00a89a] text-black shadow-[0_0_30px_rgba(0,194,177,0.5)] hover:shadow-[0_0_50px_rgba(0,194,177,0.8)] hover:scale-105 active:scale-95 border border-primary-container/40"
 									>
-										{slide.ctaButtons.primary.text || "Baca Selengkapnya!"}
-
-										<ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+										<span className="relative z-10 flex items-center gap-3">
+											{slide.ctaButtons.primary.text || "Baca Selengkapnya!"}
+										</span>
+										<div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/30 to-transparent" />
 									</Link>
 								)}
 							</div>

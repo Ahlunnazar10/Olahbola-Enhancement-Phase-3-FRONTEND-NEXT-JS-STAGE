@@ -154,6 +154,7 @@ function LeaderboardModal({
 				<>
 					{[...raw]
 						.sort((a, b) => a.rank - b.rank)
+						.slice(0, 5)
 						.map((entry) => {
 							const isCurrentUser =
 								myUserId != null && entry.user_id === myUserId;
