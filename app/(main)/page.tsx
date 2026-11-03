@@ -118,12 +118,12 @@ function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
 				/>
 			)}
 
-			<div className="relative flex flex-col px-1 md:px-4 lg:px-18 py-4 md:py-6 h-auto md:h-full">
+			<div className="relative flex flex-col px-5 md:px-4 lg:px-18 py-3 md:py-6 h-auto md:h-full">
 				<div className="flex flex-row md:flex-col gap-3 justify-between mb-2">
 					{/* ── Profile header ── */}
-					<div className="flex items-center gap-3">
+					<div className="flex items-center gap-2 md:gap-3">
 						<div
-							className={`relative w-10 h-10 md:w-15.5 md:h-15.5 shrink-0 rounded-full overflow-hidden border-2 bg-white ${profileBorder}`}
+							className={`relative w-8.5 h-8.5 md:w-15.5 md:h-15.5 shrink-0 rounded-full overflow-hidden border-2 bg-white ${profileBorder}`}
 						>
 							{user.profilePicture ? (
 								<Image
@@ -145,12 +145,14 @@ function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
 						</div>
 						<div className="min-w-0">
 							<h3
-								className={`font-bold text-lg leading-tight truncate ${textColor}`}
+								className={`font-bold text-sm md:text-lg leading-tight truncate ${textColor}`}
 							>
 								{user.name || "Pemain"}
 							</h3>
 							{user.email && (
-								<p className={`${textSubColor} text-xs truncate`}>
+								<p
+									className={`${textSubColor} text-[10px] md:text-xs truncate`}
+								>
 									{user.email}
 								</p>
 							)}
@@ -160,7 +162,7 @@ function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
 					{/* ── STATISTIK section ── */}
 					<div className="mt-4 flex items-center gap-3">
 						<span
-							className={`text-sm md:text-base font-bold tracking-wide uppercase ${textColor}`}
+							className={`text-xs md:text-base font-bold tracking-wide md:uppercase ${textColor}`}
 						>
 							Statistik Kamu
 						</span>
@@ -169,11 +171,11 @@ function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
 				</div>
 
 				{/* Mobile compact stat strip */}
-				<div className="md:hidden mt-3 flex flex-row gap-2 overflow-x-auto scrollbar-none">
+				<div className="md:hidden mt-3 flex flex-row gap-2 overflow-x-auto scrollbar-none m-auto">
 					{rows.map((r) => (
 						<button
 							key={`m-${r.key}`}
-							className="relative shrink-0 rounded-full border px-3 py-1.5 flex items-center gap-2 cursor-pointer"
+							className="relative shrink-0 rounded-xl md:rounded-full border px-2 md:px-3 py-1 md:py-1.5 flex items-center gap-2 cursor-pointer"
 							style={{
 								background: glassPillBg,
 								borderColor: glassPillBorder,
@@ -192,7 +194,7 @@ function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
 									{r.label}
 								</p>
 								<p
-									className={`text-sm font-black ${r.accent ? "text-[#ffb600]" : textColor}`}
+									className={`text-[12px] md:text-sm font-black ${r.accent ? "text-[#ffb600]" : textColor}`}
 								>
 									{stats.isLoading ? "…" : r.value}
 								</p>
@@ -713,9 +715,7 @@ export default function HomePage() {
 					{isAuthenticated ? (
 						// Login state: Banner 70% + User Stat Card 30%
 						<div className="flex flex-col w-full h-full md:flex-row gap-0 md:gap-2">
-							<div
-								className={`w-full md:w-[60%] lg:w-[72%] h-[60vh] md:h-full`}
-							>
+							<div className={`w-full md:w-[60%] lg:w-[72%] h-full`}>
 								<BannerSlider
 									slides={bannerSlides}
 									autoPlay={true}
@@ -843,7 +843,7 @@ export default function HomePage() {
 						<div className="text-center mb-10">
 							{/* Title */}
 							<h2
-								className="text-3xl md:text-4xl font-black uppercase mb-2"
+								className="text-2xl md:text-4xl font-black uppercase mb-2"
 								style={{
 									color: heroPlayColors.accent,
 								}}
@@ -851,7 +851,7 @@ export default function HomePage() {
 								BUNDESLIGA 2026/2027
 							</h2>
 							<p
-								className="text-base "
+								className="text-sm md:text-base"
 								style={{ color: heroPlayColors.textSecondary }}
 							>
 								Klasemen Sementara Berdasarkan Performa Prediksi Skor Bundesliga
@@ -1426,7 +1426,7 @@ export default function HomePage() {
 				{/* Article Section - Bento Grid */}
 				<section
 					ref={articleRef}
-					className="py-16 px-6 md:px-16 max-w-480 mx-auto"
+					className="py-8 md:py-16 px-6 md:px-16 max-w-480 mx-auto"
 				>
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8">
 						<div>
@@ -1626,7 +1626,7 @@ export default function HomePage() {
 				</section>
 
 				{/* Ads Banner */}
-				<section className="w-full py-4 px-6 md:px-16">
+				<section className="w-full py-0 md:py-4 px-0 md:px-16">
 					<a
 						href="https://heroplay.igvault.id/"
 						target="_blank"
@@ -1647,11 +1647,11 @@ export default function HomePage() {
 				{/* Social Media Section */}
 				<section
 					ref={socmedRef}
-					className={`py-16 px-6 md:px-16 transition-opacity duration-500 ${socmedVisible ? "opacity-100" : "opacity-0"}`}
+					className={`py-8 md:py-16 px-6 md:px-16 transition-opacity duration-500 ${socmedVisible ? "opacity-100" : "opacity-0"}`}
 				>
 					<div className="max-w-480 mx-auto">
 						<h2
-							className={`text-3xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+							className={`text-2xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 							data-aos="fade-up"
 						>
 							Temui OlahBola di Sini!
@@ -1732,7 +1732,7 @@ export default function HomePage() {
 				</section>
 
 				{/* YouTube Embed Section */}
-				<section ref={youtubeRef} className="py-16  px-6 md:px-16">
+				<section ref={youtubeRef} className="py-8 md:py-16  px-6 md:px-16">
 					<div className="max-w-480 mx-auto" data-aos="fade-up">
 						{youtubeVisible && (
 							<div className="max-w-4xl mx-auto">
@@ -1750,7 +1750,7 @@ export default function HomePage() {
 				</section>
 
 				{/* OlahFlix Section - Vertical Reels */}
-				<section ref={videoRef} className="py-16 px-6 md:px-16">
+				{/* <section ref={videoRef} className="py-16 px-6 md:px-16">
 					<div className="max-w-480 mx-auto" data-aos="fade-up">
 						<div className="mb-6">
 							<h2
@@ -1826,12 +1826,12 @@ export default function HomePage() {
 							</Link>
 						</div>
 					</div>
-				</section>
+				</section> */}
 
 				{/* Partner Logos Section - Brand Showcase */}
 				<section
 					ref={partnerRef}
-					className={`py-16 border-y ${isDark ? "border-white/5 bg-[#141a17]" : "border-black/10 bg-[#e8e8e8]"}`}
+					className={`py-8 md:py-16 border-y ${isDark ? "border-white/5 bg-[#141a17]" : "border-black/10 bg-[#e8e8e8]"}`}
 				>
 					<div className="max-w-480 mx-auto px-6 md:px-16" data-aos="fade-up">
 						<div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end">
