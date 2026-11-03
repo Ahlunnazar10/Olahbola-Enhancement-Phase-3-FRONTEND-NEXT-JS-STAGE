@@ -1180,7 +1180,7 @@ export default function HomePage() {
 								</div>
 
 								{/* Top 3 Mobile Card View - Gen-Z Style */}
-								<div className="md:hidden space-y-4 mb-6">
+								<div className="md:hidden space-y-2.5 mb-3">
 									{leaderboardRows.slice(0, 3).map((player, index) => (
 										<div
 											key={player.userId}
@@ -1280,7 +1280,7 @@ export default function HomePage() {
 								{leaderboardRows.length > 3 && (
 									<div>
 										{showFullLeaderboard && (
-											<div className="space-y-3 mb-6">
+											<div className="space-y-2.5 mb-3">
 												{leaderboardRows.slice(3, 10).map((player, index) => (
 													<div
 														key={player.userId}
@@ -1358,11 +1358,12 @@ export default function HomePage() {
 										)}
 									</div>
 								)}
+
 								{/* CTA Button */}
-								<div className="flex flex-row gap-2 md:gap-4 justify-center mt-10">
+								<div className="flex flex-row gap-2 md:gap-4 justify-center mt-6">
 									<button
 										onClick={() => setShowFullLeaderboard((v) => !v)}
-										className="flex items-center gap-2, px-6 md:px-10 py-4 rounded-full text-xs md:text-base font-semibold transition-all duration-300 hover:scale-105"
+										className="flex items-center gap-2, px-4 md:px-10 py-4 rounded-full text-xs md:text-base font-semibold transition-all duration-300 hover:scale-105"
 										style={{
 											background: `${heroPlayColors.accent}15`,
 											border: `1px solid ${heroPlayColors.accent}30`,
@@ -1376,7 +1377,7 @@ export default function HomePage() {
 
 									<Link
 										href="/games"
-										className="gap-2 px-6 md:px-10 py-4 rounded-full font-bold text-xs md:text-base hover:scale-105 transition-all duration-300 shadow-lg"
+										className="gap-2 px-4 md:px-10 py-4 rounded-full font-bold text-xs md:text-base hover:scale-105 transition-all duration-300 shadow-lg"
 										style={{
 											background: heroPlayColors.gradientCTA,
 											color: isDark ? "#003732" : "#ffffff",

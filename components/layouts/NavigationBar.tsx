@@ -99,7 +99,7 @@ export function NavigationBar() {
 				/>
 			)}
 
-			{/* ─── MOBILE NAVBAR ���── */}
+			{/* MOBILE NAVBAR */}
 			<div
 				ref={mobileMenuRef}
 				className={cn(
@@ -221,7 +221,7 @@ export function NavigationBar() {
 								Main City Battle
 							</Link>
 							<Link
-								href="/games"
+								href="/bundesliga-prediksi-skor-2026-2027"
 								className="flex items-center justify-center px-4 py-3 bg-primary text-black font-bold rounded-xl text-[13px] hover:bg-[#1ac9bf] transition-colors"
 							>
 								Prediksi Skor
@@ -413,7 +413,7 @@ export function NavigationBar() {
 									</Link>
 
 									<Link
-										href="/games"
+										href="/bundesliga-prediksi-skor-2026-2027"
 										rel="noopener noreferrer"
 										className={cn(
 											"group relative overflow-hidden px-4 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all duration-300",

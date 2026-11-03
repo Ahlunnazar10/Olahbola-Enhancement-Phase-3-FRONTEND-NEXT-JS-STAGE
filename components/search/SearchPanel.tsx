@@ -84,7 +84,7 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
 				{/* Input form */}
 				<div
 					className={cn(
-						"flex w-100 items-center gap-2.5 rounded-lg px-3 py-2.5 transition-colors",
+						"flex w-full md:w-100 items-center gap-2.5 rounded-lg px-3 py-2.5 transition-colors",
 						isDark
 							? "bg-white/5 border border-primary/15 focus-within:border-primary/40"
 							: "bg-[#0f1412]/5 border border-primary/15 focus-within:border-primary/40",
@@ -184,71 +184,8 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
 											)}
 
 											{/* Content */}
-											<div className="p-2.5 flex-1 flex flex-col justify-between">
+											<div className="p-1.5 flex-1 flex flex-col justify-between">
 												<div>
-													{/* Meta */}
-													<div className="flex flex-row flex-wrap gap-x-2 gap-y-1 mb-1.5">
-														<div className="flex flex-row items-center gap-1">
-															<UserPen
-																className={cn(
-																	"size-3",
-																	isDark ? "text-primary" : "text-[#0a7c6e]",
-																)}
-															/>
-															<p
-																className={cn(
-																	"text-[10px] uppercase tracking-widest",
-																	isDark
-																		? "text-on-surface-variant"
-																		: "text-[#5a5a5a]",
-																)}
-															>
-																{article.author_name?.split(" ")[0]}
-															</p>
-														</div>
-														<div className="flex flex-row items-center gap-1">
-															<Calendar
-																className={cn(
-																	"size-3",
-																	isDark ? "text-primary" : "text-[#0a7c6e]",
-																)}
-															/>
-															<p
-																className={cn(
-																	"text-[10px] uppercase tracking-widest",
-																	isDark
-																		? "text-on-surface-variant"
-																		: "text-[#5a5a5a]",
-																)}
-															>
-																{article.created_diff ||
-																	(article.published_at
-																		? formatRelativeTime(article.published_at)
-																		: "")}
-															</p>
-														</div>
-														{typeof article.views === "number" && (
-															<div className="flex flex-row items-center gap-1">
-																<Eye
-																	className={cn(
-																		"size-3",
-																		isDark ? "text-primary" : "text-[#0a7c6e]",
-																	)}
-																/>
-																<p
-																	className={cn(
-																		"text-[10px] tracking-widest",
-																		isDark
-																			? "text-on-surface-variant"
-																			: "text-[#5a5a5a]",
-																	)}
-																>
-																	{article.views}
-																</p>
-															</div>
-														)}
-													</div>
-
 													{/* Title */}
 													<h3
 														className={cn(
@@ -260,7 +197,6 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
 													>
 														{article.title}
 													</h3>
-
 												</div>
 
 												{/* Footer */}

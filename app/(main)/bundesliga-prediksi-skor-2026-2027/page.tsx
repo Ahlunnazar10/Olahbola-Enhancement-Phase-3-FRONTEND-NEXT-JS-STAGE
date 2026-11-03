@@ -261,17 +261,15 @@ export default function PrediksiSkorPage() {
 	const [showPointsHistoryModal, setShowPointsHistoryModal] = useState(false);
 	const [showPredictionsHistoryModal, setShowPredictionsHistoryModal] =
 		useState(false);
-	const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			setShowLoginPrompt(false);
 			return;
 		}
 		if (typeof window === "undefined") return;
 		const seen = sessionStorage.getItem("ngolah-bola:loginPromptSeen");
 		if (seen) return;
-		setShowLoginPrompt(true);
+
 		sessionStorage.setItem("ngolah-bola:loginPromptSeen", "1");
 	}, [isAuthenticated]);
 
@@ -596,7 +594,7 @@ export default function PrediksiSkorPage() {
 	if (EVENT_STATUS.ngolahBola2026.isEnded) {
 		return (
 			<div
-				className="min-h-screen pb-24 md:pb-12"
+				className="min-h-screen pb-0 md:pb-12"
 				style={{ background: bg, color: text }}
 			>
 				<main className="pt-10 md:pt-18 relative max-w-5xl mx-auto px-6 md:px-8 space-y-12">
@@ -641,7 +639,7 @@ export default function PrediksiSkorPage() {
 	// ============================================================
 	return (
 		<div
-			className="min-h-screen pb-24 md:pb-12"
+			className="min-h-screen pb-0 md:pb-12"
 			style={{ background: bg, color: text }}
 		>
 			{showInitialOverlay && <LoadingOverlay />}
@@ -654,22 +652,22 @@ export default function PrediksiSkorPage() {
 				}}
 			/>
 
-			<main className="pt-10 md:pt-18 relative">
+			<main className="pt-3 md:pt-6 relative">
 				{/* Hero Section */}
-				<section className="max-w-7xl mx-auto px-6 md:px-8 text-center mb-6 relative">
+				<section className="max-w-7xl mx-auto px-6 md:px-8 text-center mb-2 md:mb-4 relative">
 					<div
 						className="absolute -top-12 left-1/2 -translate-x-1/2 w-70 h-70 rounded-full blur-[80px]"
 						style={{ background: primaryAlpha }}
 					/>
 					<h1
-						className="text-4xl md:text-7xl font-bold max-w-3xl mx-auto italic uppercase tracking-tighter mb-4"
+						className="text-3xl md:text-7xl font-bold max-w-3xl mx-auto italic uppercase tracking-tighter mb-1"
 						style={{ color: text, fontFamily: "Space Grotesk, sans-serif" }}
 					>
 						Prediksi Skor <br />
 						<span style={{ color: primary }}>Bundesliga 2026/2027</span>
 					</h1>
 					<p
-						className="text-sm italic font-normal tracking-normal mb-10"
+						className="text-sm italic font-normal tracking-normal mb-5 "
 						style={{ color: textSecondary }}
 					>
 						*Tebak akurat dapat 30 poin, tebak pemenang dapat 15 poin, jika
@@ -677,56 +675,65 @@ export default function PrediksiSkorPage() {
 					</p>
 
 					{/* Stats Bento Grid */}
-					<div className="flex flex-row gap-4 max-w-4xl mx-auto overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
+					<div className="flex flex-row gap-1 md:gap-4 max-w-4xl mx-auto overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
 						<div
-							className="min-w-35 flex-1 p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
+							className="min-w-25 md:min-w-35 flex-1 p-3 md:p-6 rounded-xl md:rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
 							style={{
 								background: colors.primary05,
 								borderColor: colors.primary30,
 							}}
 							onClick={() => setShowPredictionsHistoryModal(true)}
 						>
-							<div className="text-3xl font-bold mb-1" style={{ color: text }}>
+							<div
+								className="text-lg md:text-3xl font-bold mb-0.5 md:mb-1"
+								style={{ color: text }}
+							>
 								{mySummaryData?.total_predictions ?? 0}
 							</div>
 							<div
-								className="text-xs font-semibold uppercase tracking-widest"
+								className="text-[9px] md:text-xs font-semibold uppercase tracking-wide md:tracking-widest leading-tight"
 								style={{ color: outline }}
 							>
 								Total Prediksi Kamu
 							</div>
 						</div>
 						<div
-							className="p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
+							className="min-w-25 md:min-w-0 flex-1 p-3 md:p-6 rounded-xl md:rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
 							style={{
 								background: colors.primary05,
 								borderColor: colors.primary30,
 							}}
 							onClick={() => setShowPointsHistoryModal(true)}
 						>
-							<div className="text-3xl font-bold mb-1" style={{ color: text }}>
+							<div
+								className="text-lg md:text-3xl font-bold mb-0.5 md:mb-1"
+								style={{ color: text }}
+							>
 								{mySummaryData?.total_points?.toLocaleString() ?? 0}
 							</div>
 							<div
-								className="text-xs font-semibold uppercase tracking-widest"
+								className="text-[9px] md:text-xs font-semibold uppercase tracking-wide md:tracking-widest leading-tight"
 								style={{ color: outline }}
 							>
 								Point Didapatkan
 							</div>
 						</div>
 						<div
-							className="p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
+							className="min-w-25 md:min-w-0 flex-1 p-3 md:p-6 rounded-xl md:rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 cursor-pointer"
 							style={{
 								background: colors.primary05,
 								borderColor: colors.primary30,
 							}}
 							onClick={() => setShowLeaderboardModal(true)}
 						>
-							<div className="text-3xl font-bold mb-1" style={{ color: text }}>
+							<div
+								className="text-lg md:text-3xl font-bold mb-0.5 md:mb-1"
+								style={{ color: text }}
+							>
 								#{myRankData?.rank ?? "-"}
 							</div>
 							<div
-								className="text-xs font-semibold uppercase tracking-widest"
+								className="text-[9px] md:text-xs font-semibold uppercase tracking-wide md:tracking-widest leading-tight"
 								style={{ color: outline }}
 							>
 								Klasemen Kamu
@@ -736,14 +743,14 @@ export default function PrediksiSkorPage() {
 				</section>
 
 				{/* Matchday Selector + Tab Navigation */}
-				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-4 md:mb-8">
+				<section className="max-w-7xl mx-auto px-6 md:px-8 mb-4 md:mb-5">
 					<div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-start">
 						{/* Matchday Dropdown */}
 						<div ref={dropdownRef} className="relative w-full sm:w-56 shrink-0">
 							<button
 								type="button"
 								onClick={() => setDropdownOpen((v) => !v)}
-								className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-full font-semibold text-sm transition-all outline-none focus:ring-2 focus:ring-primary/40"
+								className="w-full flex items-center justify-between gap-2 px-4 py-2 md:py-2.5 rounded-full font-semibold text-xs md:text-sm transition-all outline-none focus:ring-2 focus:ring-primary/40"
 								style={{
 									background: colors.badgeInactiveBg,
 									color: colors.badgeInactiveText,
@@ -805,7 +812,7 @@ export default function PrediksiSkorPage() {
 
 						{/* Tab Navigation */}
 						<div
-							className="inline-flex rounded-xl p-1"
+							className="inline-flex rounded-xl p-1 md:p-1 w-fit m-auto md:m-0"
 							style={{ background: whiteAlpha5 }}
 						>
 							{(["matches", "leaderboard"] as const).map((tab) => {
@@ -814,7 +821,7 @@ export default function PrediksiSkorPage() {
 									<button
 										key={tab}
 										onClick={() => setActiveTab(tab)}
-										className="px-6 py-2 rounded-lg font-semibold text-sm transition-all"
+										className="px-6 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all"
 										style={
 											isActive
 												? {
@@ -834,7 +841,7 @@ export default function PrediksiSkorPage() {
 
 				{/* Matches Grid */}
 				{activeTab === "matches" && (
-					<section className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-24 md:mb-16">
+					<section className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 mb-24 md:mb-16">
 						{matchesLoading ? (
 							<>
 								{[1, 2, 3, 4].map((i) => (
@@ -868,14 +875,14 @@ export default function PrediksiSkorPage() {
 								return (
 									<div
 										key={match.id}
-										className="match-card px-3 md:px-8 py-5 md:py-8 rounded-3xl backdrop-blur-xl border transition-all duration-300 group relative overflow-hidden"
+										className="match-card px-3 md:px-8 py-5 md:py-5 rounded-3xl backdrop-blur-xl border transition-all duration-300 group relative overflow-hidden"
 										style={{
 											background: whiteAlpha5,
 											borderColor: whiteAlpha10,
 										}}
 									>
 										{/* Date row */}
-										<div className="flex justify-between items-center mb-8 relative z-10">
+										<div className="flex justify-between items-center mb-4 md:mb-8 relative z-10">
 											<span
 												className="text-[10px] md:text-xs font-semibold uppercase tracking-widest"
 												style={{ color: outline }}
@@ -917,11 +924,11 @@ export default function PrediksiSkorPage() {
 										</div>
 
 										{/* Teams */}
-										<div className="flex items-center justify-between gap-0 mb-10 relative z-10">
+										<div className="flex items-center justify-between gap-0 mb-4 md:mb-10 relative z-10">
 											<div className="flex flex-col items-center gap-3 flex-1">
 												<TeamBadge team={homeTeam} isDark={isDark} />
 												<span
-													className="text-sm font-bold tracking-tight text-center"
+													className="text-sm font-bold tracking-tight text-center max-w-30"
 													style={{ color: text }}
 												>
 													{homeTeam.name.toUpperCase()}
@@ -975,7 +982,7 @@ export default function PrediksiSkorPage() {
 										<div className="relative z-10">
 											{isCompleted && hasPrediction ? (
 												<div
-													className={`w-full py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-1 border`}
+													className={`w-full py-2 md:py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-1 border`}
 													style={{ background: colors.primary15 }}
 												>
 													<span
@@ -987,7 +994,7 @@ export default function PrediksiSkorPage() {
 												</div>
 											) : isCompleted ? (
 												<button
-													className="w-full py-4 text-sm md:text-base rounded-2xl font-bold flex items-center justify-center gap-2"
+													className="w-full py-2 md:py-4 text-sm md:text-base rounded-2xl font-bold flex items-center justify-center gap-2"
 													style={{
 														background: colors.surfaceContainer,
 														color: outline,
@@ -999,7 +1006,7 @@ export default function PrediksiSkorPage() {
 												</button>
 											) : hasPrediction ? (
 												<div
-													className="w-full py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-2"
+													className="w-full py-2 md:py-4 px-4 text-sm md:text-base rounded-2xl flex flex-col items-center justify-center gap-2"
 													style={{
 														background: colors.primary15,
 														border: `1px solid ${primary}40`,
@@ -1021,7 +1028,7 @@ export default function PrediksiSkorPage() {
 											) : isEditable ? (
 												<button
 													onClick={() => openModal(match)}
-													className="w-full py-4 text-sm md:text-base rounded-2xl font-bold text-white/90 flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg group/btn"
+													className="w-full py-2 md:py-4 text-sm md:text-base rounded-2xl font-bold text-white/90 flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg group/btn"
 													style={{
 														background: secondary,
 														boxShadow: `0 4px 20px ${primaryAlpha}`,
@@ -1031,7 +1038,7 @@ export default function PrediksiSkorPage() {
 												</button>
 											) : (
 												<button
-													className="w-full py-4 text-sm md:text-base rounded-2xl font-bold flex items-center justify-center gap-2 cursor-not-allowed opacity-60"
+													className="w-full py-2 md:py-4 text-sm md:text-base rounded-2xl font-bold flex items-center justify-center gap-2 cursor-not-allowed opacity-60"
 													style={{
 														background: whiteAlpha5,
 														color: outline,
@@ -1524,7 +1531,7 @@ export default function PrediksiSkorPage() {
 													{rows.slice(3, 10).map((player, index) => (
 														<div
 															key={player.rank}
-															className="flex items-center justify-between px-5 py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
+															className="flex items-center justify-between px-5 py-2 md:py-4 rounded-2xl backdrop-blur-xl border transition-all duration-300 cursor-pointer group"
 															style={{
 																background: colors.cardBg,
 																borderColor: colors.cardBorder,
@@ -1787,73 +1794,6 @@ export default function PrediksiSkorPage() {
 							>
 								Batal
 							</button>
-						</div>
-					</div>
-				</div>
-			)}
-
-			{/* Login Prompt Modal */}
-			{showLoginPrompt && (
-				<div
-					className="fixed inset-0 z-200 flex items-center justify-center p-4 animate-fadeIn"
-					style={{
-						background: "rgba(0,0,0,0.85)",
-						backdropFilter: "blur(8px)",
-					}}
-					onClick={() => setShowLoginPrompt(false)}
-				>
-					<div
-						className="w-full max-w-sm p-6 rounded-3xl border relative overflow-hidden animate-scaleIn text-center"
-						style={{
-							background: colors.surface,
-							borderColor: colors.primary30,
-							boxShadow: `0 0 40px ${primaryAlpha}, 0 15px 30px rgba(0,0,0,0.4)`,
-						}}
-						onClick={(e) => e.stopPropagation()}
-					>
-						<div
-							className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[60px] pointer-events-none"
-							style={{ background: primaryAlpha }}
-						/>
-						<button
-							onClick={() => setShowLoginPrompt(false)}
-							className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 z-20"
-							style={{ background: whiteAlpha5, color: textSecondary }}
-						>
-							<X className="size-4" />
-						</button>
-						<div className="relative z-10">
-							<div
-								className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-								style={{
-									background: colors.primary15,
-									border: `2px solid ${colors.primary30}`,
-								}}
-							>
-								<Lock className="size-7" style={{ color: primary }} />
-							</div>
-							<h3 className="text-xl font-black mb-2" style={{ color: text }}>
-								<span style={{ color: primary }}>Login Dulu Ya!</span>
-							</h3>
-							<p
-								className="text-sm mb-6 leading-relaxed"
-								style={{ color: textSecondary }}
-							>
-								Kamu belum login sob. Login dulu biar bisa ikut main prediksi
-								skor Ngolah Bola 2026/2027!
-							</p>
-							<Link href="/login">
-								<div
-									className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
-									style={{
-										background: primary,
-										color: "#003732",
-										boxShadow: `0 2px 15px ${primaryAlpha}`,
-									}}
-								>
-									Login Sekarang
-								</div>
-							</Link>
 						</div>
 					</div>
 				</div>

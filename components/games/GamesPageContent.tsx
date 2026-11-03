@@ -132,27 +132,9 @@ export function GamesPageContent() {
 				/>
 			</div>
 
-			<div className="relative max-w-7xl mx-auto px-6 py-12">
+			<div className="relative max-w-7xl mx-auto px-6 py-3">
 				{/* Hero Section */}
-				<section className="text-center mb-10 md:mb-14 space-y-6">
-					<div
-						className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
-						style={{
-							background: `${accent}1a`,
-							border: `1px solid ${accent}33`,
-						}}
-					>
-						<span
-							className="w-2 h-2 rounded-full animate-pulse"
-							style={{ background: accent }}
-						/>
-						<span
-							className="text-[10px] font-black tracking-widest uppercase"
-							style={{ color: accent }}
-						>
-							Olahbola Games
-						</span>
-					</div>
+				<section className="text-center mb-6 space-y-6">
 					<h1 className="text-4xl md:text-[84px] font-black italic tracking-tighter leading-none">
 						<span style={{ color: isDark ? "#ffffff" : "#1a1a1a" }}>
 							PLAY THE GAME
@@ -171,7 +153,7 @@ export function GamesPageContent() {
 						</span>
 					</h1>
 					<p
-						className="max-w-2xl mx-auto font-medium text-lg leading-relaxed"
+						className="max-w-2xl mx-auto font-medium text-sm md:text-lg leading-relaxed"
 						style={{
 							color: isDark
 								? "rgba(255, 255, 255, 0.5)"
@@ -198,19 +180,12 @@ export function GamesPageContent() {
 					/>
 				</section>
 
-				<div className="flex flex-col items-center text-center pt-10 mb-6 md:mb-12">
+				<div className="flex flex-col items-center text-center pt-10 mb-6 ">
 					<h2
 						className={`text-xl md:text-4xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 					>
 						Full-time Events
 					</h2>
-					<p
-						className={`text-sm  tracking-widest mt-2 w-fit md:w-150 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-					>
-						Our most recent matches have ended, but the excitement continues!
-						Check out the results and see who came out on top in our thrilling
-						games.
-					</p>
 				</div>
 
 				{/* Inactive Game Cards Grid - 1 kolom */}
