@@ -218,7 +218,7 @@ function LoadingOverlay() {
 // ============================================================
 // CONFIG — ubah nilai ini untuk geser matchday aktif default
 // ============================================================
-const DEFAULT_ACTIVE_MATCHDAY = 8;
+const DEFAULT_ACTIVE_MATCHDAY = 9;
 
 // ============================================================
 // MAIN PAGE
