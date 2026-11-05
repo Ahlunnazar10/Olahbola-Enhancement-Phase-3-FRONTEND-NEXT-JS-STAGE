@@ -31,6 +31,7 @@ export function NavigationBar() {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isSearchOpen, setIsSearchOpen] = useState(false);
 	const mobileMenuRef = useRef<HTMLDivElement>(null);
+	const searchPanelRef = useRef<HTMLDivElement>(null);
 
 	const handleScroll = useCallback(() => {
 		setIsScrolled(window.scrollY > 0);
@@ -41,22 +42,27 @@ export function NavigationBar() {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, [handleScroll]);
 
-	// Close mobile menu on route change
+	// Close mobile menu on route change.
+	// SearchPanel sengaja tidak ikut ditutup di sini: navigasi dari hasil
+	// pencarian (klik card) tetap membuat panel terbuka sampai user menutup
+	// lewat Esc, tombol X, atau klik di luar panel.
 	useEffect(() => {
 		closeMobileMenu();
-		setIsSearchOpen(false);
 	}, [pathname, closeMobileMenu]);
 
 	// Close mobile menu + search on outside click
 	useEffect(() => {
 		if (!isMobileMenuOpen && !isSearchOpen) return;
 		const handler = (e: MouseEvent | TouchEvent) => {
-			if (
-				mobileMenuRef.current &&
-				!mobileMenuRef.current.contains(e.target as Node)
-			) {
+			const target = e.target as Node;
+			const insideMobile = mobileMenuRef.current?.contains(target);
+			const insidePanel = searchPanelRef.current?.contains(target);
+			if (!insideMobile && !insidePanel) {
 				closeMobileMenu();
 				setIsSearchOpen(false);
+			} else if (insideMobile) {
+				// Klik di area mobile: biarkan, jangan tutup panel
+				return;
 			}
 		};
 		document.addEventListener("mousedown", handler, true);
@@ -157,7 +163,9 @@ export function NavigationBar() {
 				</div>
 
 				{/* Search Panel */}
-				{isSearchOpen && <SearchPanel onClose={() => setIsSearchOpen(false)} />}
+				{isSearchOpen && (
+					<SearchPanel onClose={() => setIsSearchOpen(false)} panelRef={searchPanelRef} />
+				)}
 
 				{/* Dropdown menu from top */}
 				<div
@@ -452,7 +460,7 @@ export function NavigationBar() {
 							</div>
 						</div>
 						{isSearchOpen && (
-							<SearchPanel onClose={() => setIsSearchOpen(false)} />
+							<SearchPanel onClose={() => setIsSearchOpen(false)} panelRef={searchPanelRef} />
 						)}
 					</div>
 				</div>

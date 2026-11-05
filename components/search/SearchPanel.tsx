@@ -5,11 +5,8 @@ import { useRouter } from "next/navigation";
 import {
 	Search,
 	X,
-	Calendar,
-	Eye,
 	ArrowRight,
 	Loader2,
-	UserPen,
 } from "lucide-react";
 import { useArticleSearch } from "@/hooks/queries/useArticles";
 import { getImageUrl, formatRelativeTime } from "@/lib/utils";
@@ -18,6 +15,7 @@ import { useUIStore } from "@/stores/uiStore";
 
 interface SearchPanelProps {
 	onClose: () => void;
+	panelRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 interface SearchArticleItem {
@@ -33,7 +31,7 @@ interface SearchArticleItem {
 	published_at?: string;
 }
 
-export function SearchPanel({ onClose }: SearchPanelProps) {
+export function SearchPanel({ onClose, panelRef }: SearchPanelProps) {
 	const [query, setQuery] = useState("");
 	const [debouncedQuery, setDebouncedQuery] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +62,7 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
 	const handleSelect = useCallback(
 		(slug: string) => {
 			onClose();
-			router.push(`/artikel/${slug}`);
+			router.push(`/${slug}`);
 		},
 		[onClose, router],
 	);
@@ -72,7 +70,7 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
 	const hasSearched = debouncedQuery.trim().length > 0;
 
 	return (
-		<div className="absolute top-full left-0 right-0 z-50">
+		<div className="absolute top-full left-0 right-0 z-50" ref={panelRef}>
 			<div
 				className={cn(
 					"rounded-b-xl border px-3 md:px-8 py-6 md:py-10 shadow-xl",
