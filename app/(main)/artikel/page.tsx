@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect, useMemo } from "react";
+import { Suspense, useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, ArrowRight, Search, Eye, Zap } from "lucide-react";
 import Link from "next/link";
@@ -19,6 +19,46 @@ import { useUIStore } from "@/stores/uiStore";
 
 const ITEMS_PER_PAGE = 9;
 
+// Persist state pagination per context (semua / kategori / search)
+// session-scoped: hilang saat tab ditutup, cocok untuk "kembali dari detail artikel"
+const STORAGE_KEY = "artikel-pagination";
+
+interface SavedState {
+	page: number;
+	articles: any[];
+	hasMore: boolean;
+}
+
+function storageKey(context: string, extra?: string): string {
+	return `${STORAGE_KEY}:${context}${extra ? ":" + extra : ""}`;
+}
+
+function loadSaved(context: string, extra?: string): SavedState | null {
+	if (typeof window === "undefined") return null;
+	try {
+		const raw = sessionStorage.getItem(storageKey(context, extra));
+		return raw ? JSON.parse(raw) : null;
+	} catch {
+		return null;
+	}
+}
+
+function savePage(context: string, extra: string | undefined, state: SavedState) {
+	if (typeof window === "undefined") return;
+	sessionStorage.setItem(storageKey(context, extra), JSON.stringify(state));
+}
+
+function clearSaved(context: string) {
+	if (typeof window === "undefined") return;
+	// Hapus semua key untuk context ini (extra bervariasi per kategori/search)
+	for (let i = sessionStorage.length - 1; i >= 0; i--) {
+		const key = sessionStorage.key(i);
+		if (key && key.startsWith(`${STORAGE_KEY}:${context}:`)) {
+			sessionStorage.removeItem(key);
+		}
+	}
+}
+
 function ArtikelContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -27,11 +67,16 @@ function ArtikelContent() {
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
 
-	const [page, setPage] = useState(1);
-	const [displayedArticles, setDisplayedArticles] = useState<any[]>([]);
+	// Initial value: restore dari sessionStorage jika ada (user kembali dari detail artikel)
+	const context = searchQuery ? "search" : categorySlug ? "category" : "all";
+	const contextExtra = searchQuery || categorySlug || undefined;
+	const saved = loadSaved(context, contextExtra);
+
+	const [page, setPage] = useState(saved?.page ?? 1);
+	const [displayedArticles, setDisplayedArticles] = useState<any[]>(saved?.articles ?? []);
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
-	const [hasMore, setHasMore] = useState(false);
-	const [isInitialized, setIsInitialized] = useState(false);
+	const [hasMore, setHasMore] = useState(saved?.hasMore ?? false);
+	const [isInitialized, setIsInitialized] = useState(!!saved && saved.articles.length > 0);
 	const [localSearchInput, setLocalSearchInput] = useState(searchQuery);
 	const [searchQueryActive, setSearchQueryActive] = useState(searchQuery);
 
@@ -48,9 +93,9 @@ function ArtikelContent() {
 		isFetching,
 	} = useArticles(page, ITEMS_PER_PAGE);
 
-	// For category articles - get all data
+	// For category articles - paginated per page (same pattern as "Semua")
 	const { data: categoryData, isLoading: isCategoryLoading } =
-		useArticleByCategory(categorySlug, 1, 999);
+		useArticleByCategory(categorySlug, page, ITEMS_PER_PAGE);
 
 	// For search - fetch all results at once
 	const { data: searchData, isLoading: isSearchLoading } =
@@ -64,11 +109,6 @@ function ArtikelContent() {
 			: isArticlesLoading;
 
 	// Memoize arrays to prevent infinite loops
-	const categoryAllArticles = useMemo(
-		() => categoryData?.data || [],
-		[categoryData?.data],
-	);
-
 	const apiArticles = useMemo(
 		() => articlesData?.data || [],
 		[articlesData?.data],
@@ -79,11 +119,7 @@ function ArtikelContent() {
 		[searchData?.data],
 	);
 
-	const categoryTotalPages = useMemo(
-		() => Math.max(1, Math.ceil(categoryAllArticles.length / ITEMS_PER_PAGE)),
-		[categoryAllArticles.length],
-	);
-
+	const categoryTotalPages = categoryData?.metadata?.total_pages || 1;
 	const apiTotalPages = articlesData?.metadata?.total_pages || 1;
 	const searchTotalPages = Math.max(
 		1,
@@ -97,11 +133,16 @@ function ArtikelContent() {
 	const totalItems = searchQuery
 		? searchArticles.length
 		: categorySlug
-			? categoryAllArticles.length
+			? categoryData?.metadata?.total || 0
 			: articlesData?.metadata?.total || 0;
 
-	// Reset when category/search changes
+	// Reset when category/search changes — skip saat mount (state sudah di-restore dari storage)
+	const isFirstRender = useRef(true);
 	useEffect(() => {
+		if (isFirstRender.current) {
+			isFirstRender.current = false;
+			return;
+		}
 		setPage(1);
 		setDisplayedArticles([]);
 		setHasMore(false);
@@ -113,6 +154,13 @@ function ArtikelContent() {
 		setLocalSearchInput(searchQuery);
 		setSearchQueryActive(searchQuery);
 	}, [searchQuery]);
+
+	// Persist pagination state ke sessionStorage setiap kali page/artikel berubah
+	// Guard: jangan simpan state kosong (sedang di-reset oleh effect reset)
+	useEffect(() => {
+		if (displayedArticles.length === 0) return;
+		savePage(context, contextExtra, { page, articles: displayedArticles, hasMore });
+	}, [page, displayedArticles, hasMore, context, contextExtra]);
 
 	// Initialize page 1 data
 	useEffect(() => {
@@ -143,9 +191,10 @@ function ArtikelContent() {
 				setIsInitialized(true);
 			}
 		} else if (categorySlug) {
-			if (categoryAllArticles.length > 0) {
-				setDisplayedArticles(categoryAllArticles.slice(0, ITEMS_PER_PAGE));
-				setHasMore(categoryTotalPages > 1);
+			const catArticles = categoryData?.data || [];
+			if (catArticles.length > 0) {
+				setDisplayedArticles(catArticles);
+				setHasMore(page < categoryTotalPages);
 				setIsInitialized(true);
 			}
 		} else {
@@ -159,7 +208,7 @@ function ArtikelContent() {
 		categorySlug,
 		searchQuery,
 		searchQueryActive,
-		categoryAllArticles,
+		categoryData,
 		apiArticles,
 		searchArticles,
 		searchData,
@@ -188,27 +237,24 @@ function ArtikelContent() {
 		}
 	}, [categorySlug, searchQuery, page, apiArticles, isInitialized]);
 
-	// Handle category pagination (page > 1) - client side
+	// Handle category pagination (page > 1) - server side
 	useEffect(() => {
 		if (!categorySlug) return;
 		if (!isInitialized) return;
 		if (page === 1) return;
 
-		const start = (page - 1) * ITEMS_PER_PAGE;
-		const end = start + ITEMS_PER_PAGE;
-		const newPageArticles = categoryAllArticles.slice(start, end);
-
-		if (newPageArticles.length > 0) {
+		const catArticles = categoryData?.data || [];
+		if (catArticles.length > 0) {
 			setDisplayedArticles((prev) => {
 				const existingIds = new Set(prev.map((a: any) => a.id));
-				const uniqueNew = newPageArticles.filter(
+				const uniqueNew = catArticles.filter(
 					(a: any) => !existingIds.has(a.id),
 				);
 				if (uniqueNew.length === 0) return prev;
 				return [...prev, ...uniqueNew];
 			});
 		}
-	}, [categorySlug, page, categoryAllArticles, isInitialized]);
+	}, [categorySlug, page, categoryData, isInitialized]);
 
 	// Handle search pagination (page > 1) - client side
 	useEffect(() => {
@@ -238,38 +284,27 @@ function ArtikelContent() {
 		setPage((p) => p + 1);
 	};
 
-	// Reset hasMore saat "Lebih Banyak" selesai memuat
+	// Reset hasMore + isLoadingMore saat "Lebih Banyak" selesai memuat
+	// Kategori & Semua: pakai isFetching (server-side). Search: pakai isSearchLoading.
 	useEffect(() => {
-		if (!isFetching && isLoadingMore) {
-			setIsLoadingMore(false);
-			setHasMore(page < totalPages);
-		}
-	}, [isFetching, isLoadingMore, page, totalPages]);
-
-	// Reset loading state
-	useEffect(() => {
-		if (!isFetching && isLoadingMore) {
-			setIsLoadingMore(false);
-		}
-	}, [isFetching, isLoadingMore]);
-
-	// Reset isLoadingMore untuk pagination client-side (kategori & search)
-	useEffect(() => {
-		if (isLoadingMore) {
-			const done = categorySlug ? !isCategoryLoading : !isSearchLoading;
-			if (done) {
+		if (!isLoadingMore) return;
+		if (categorySlug) {
+			if (!isCategoryLoading) {
+				setIsLoadingMore(false);
+				setHasMore(page < totalPages);
+			}
+		} else if (searchQueryActive) {
+			if (!isSearchLoading) {
+				setIsLoadingMore(false);
+				setHasMore(page < totalPages);
+			}
+		} else {
+			if (!isFetching) {
 				setIsLoadingMore(false);
 				setHasMore(page < totalPages);
 			}
 		}
-	}, [
-		isLoadingMore,
-		isCategoryLoading,
-		isSearchLoading,
-		page,
-		totalPages,
-		categorySlug,
-	]);
+	}, [isLoadingMore, isCategoryLoading, isSearchLoading, isFetching, page, totalPages, categorySlug, searchQueryActive]);
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -579,20 +614,20 @@ function ArtikelContent() {
 
 						{/* Next Page Button */}
 						{hasMore && (
-							<div className="col-span-full flex justify-center py-8 mt-0 md:mt-4">
+							<div className="col-span-full flex justify-center py-4 md:py-6">
 								<button
 									onClick={handleNextPage}
 									disabled={isLoadingMore}
-									className="group relative px-16 py-6 overflow-hidden rounded-2xl"
+									className="group relative px-8 py-3 overflow-hidden rounded-xl"
 								>
 									<div
-										className={`absolute inset-0 border rounded-2xl backdrop-blur-md group-hover:border-primary/50 transition-all ${isDark ? "border-primary/20 bg-primary/5" : "border-[#0a7c6e]/20 bg-[#0a7c6e]/5"}`}
+										className={`absolute inset-0 border rounded-xl backdrop-blur-md group-hover:border-primary/50 transition-all ${isDark ? "border-primary/20 bg-primary/5" : "border-[#0a7c6e]/20 bg-[#0a7c6e]/5"}`}
 									></div>
 									<div
 										className={`absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform ${isDark ? "bg-primary/10" : "bg-[#0a7c6e]/10"}`}
 									></div>
 									<span
-										className={`relative font-bold text-sm tracking-[0.5em] uppercase ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+										className={`relative font-bold text-xs tracking-[0.4em] uppercase ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 									>
 										{isLoadingMore ? "Loading..." : "Lebih Banyak"}
 									</span>

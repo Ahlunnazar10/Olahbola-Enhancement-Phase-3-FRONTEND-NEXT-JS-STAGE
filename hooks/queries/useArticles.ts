@@ -119,7 +119,7 @@ export function useArticleByCategory(slug: string, page: number = 1, perPage: nu
 	return useQuery({
 		queryKey: ["article-category", slug, page, perPage],
 		queryFn: async () => {
-			const response = await apiClient.get(
+			const response = await apiClient.get<ArticlesResponse>(
 				`/api/v1/article/categories/${slug}`,
 				{
 					params: { page, per_page: perPage },
