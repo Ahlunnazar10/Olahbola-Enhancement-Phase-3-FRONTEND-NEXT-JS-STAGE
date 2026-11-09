@@ -54,14 +54,14 @@ function statusOf(m: FdMatch): Status {
 	return "NOT_STARTED";
 }
 
-async function fetchNextUpcoming(
-	code: string,
-): Promise<{ code: string; match: FdMatch | null }> {
+async function fetchNextUpcoming(code: string): Promise<{ code: string; match: FdMatch | null }> {
+	// Jendela 30 hari — 10 hari terlalu sempit di masa jeda internasional
+	// (skor 9-22 Nov 2026, liga baru main lagi 21 Nov), ticker jadi kosong.
 	const today = new Date();
-	const in10Days = new Date(today.getTime() + 10 * 86400000);
+	const in30Days = new Date(today.getTime() + 30 * 86400000);
 	// football-data.org: dateFrom & dateTo WAJIB berpasangan
 	const res = await fetch(
-		`/api/football-data/competitions/${code}/matches?dateFrom=${today.toISOString().slice(0, 10)}&dateTo=${in10Days.toISOString().slice(0, 10)}`,
+		`/api/football-data/competitions/${code}/matches?dateFrom=${today.toISOString().slice(0, 10)}&dateTo=${in30Days.toISOString().slice(0, 10)}`,
 		{ cache: "no-store" },
 	);
 	if (!res.ok) return { code, match: null };
