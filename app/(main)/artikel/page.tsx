@@ -163,10 +163,10 @@ function ArtikelContent() {
 		savePage(context, contextExtra, { page, articles: displayedArticles, hasMore });
 	}, [page, displayedArticles, hasMore, context, contextExtra]);
 
-	// Initialize page 1 data
+	// Initialize / sync page 1 data — selalu overwrite saat data API fresh tiba
+	// (staleTime 0), tanpa dicek isInitialized — mencegah sessionStorage stale
+	// mengunci halaman di artikel lama.
 	useEffect(() => {
-		if (isInitialized) return;
-
 		// For search, only show results if searchArticles matches the active search
 		if (searchQueryActive) {
 			if (searchArticles.length > 0 && searchData?.data) {
@@ -194,15 +194,20 @@ function ArtikelContent() {
 		} else if (categorySlug) {
 			const catArticles = categoryData?.data || [];
 			if (catArticles.length > 0) {
+				// Selalu overwrite saat kategori aktif — data API lebih fresh dari sessionStorage
 				setDisplayedArticles(catArticles);
 				setHasMore(page < categoryTotalPages);
 				setIsInitialized(true);
 			}
 		} else {
-			if (apiArticles.length > 0) {
-				setDisplayedArticles(apiArticles);
-				setHasMore(page < apiTotalPages);
-				setIsInitialized(true);
+			// Branch "Semua": hanya overwrite saat page masih 1,
+			// karena halaman >1 diurus efek pagination terpisah.
+			if (page === 1) {
+				if (apiArticles.length > 0) {
+					setDisplayedArticles(apiArticles);
+					setHasMore(page < apiTotalPages);
+					setIsInitialized(true);
+				}
 			}
 		}
 	}, [
@@ -215,7 +220,6 @@ function ArtikelContent() {
 		searchData,
 		categoryTotalPages,
 		apiTotalPages,
-		isInitialized,
 		page,
 		isSearchLoading,
 	]);

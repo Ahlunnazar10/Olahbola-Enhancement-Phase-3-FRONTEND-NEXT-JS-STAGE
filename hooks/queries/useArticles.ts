@@ -59,7 +59,8 @@ export function useArticles(page: number = 1, perPage: number = 9) {
 			);
 			return response.data;
 		},
-		staleTime: 5 * 60 * 1000,
+		// Artikel terbaru harus langsung muncul saat refresh — cache 0, selalu fetch
+		staleTime: 0,
 	});
 }
 
@@ -128,7 +129,8 @@ export function useArticleByCategory(slug: string, page: number = 1, perPage: nu
 			return response.data;
 		},
 		enabled: !!slug,
-		staleTime: 5 * 60 * 1000,
+		// Halaman kategori artikel juga butuh data terbaru saat refresh
+		staleTime: 0,
 	});
 }
 
