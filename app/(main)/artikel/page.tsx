@@ -44,7 +44,11 @@ function loadSaved(context: string, extra?: string): SavedState | null {
 	}
 }
 
-function savePage(context: string, extra: string | undefined, state: SavedState) {
+function savePage(
+	context: string,
+	extra: string | undefined,
+	state: SavedState,
+) {
 	if (typeof window === "undefined") return;
 	sessionStorage.setItem(storageKey(context, extra), JSON.stringify(state));
 }
@@ -74,10 +78,14 @@ function ArtikelContent() {
 	const saved = loadSaved(context, contextExtra);
 
 	const [page, setPage] = useState(saved?.page ?? 1);
-	const [displayedArticles, setDisplayedArticles] = useState<any[]>(saved?.articles ?? []);
+	const [displayedArticles, setDisplayedArticles] = useState<any[]>(
+		saved?.articles ?? [],
+	);
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const [hasMore, setHasMore] = useState(saved?.hasMore ?? false);
-	const [isInitialized, setIsInitialized] = useState(!!saved && saved.articles.length > 0);
+	const [isInitialized, setIsInitialized] = useState(
+		!!saved && saved.articles.length > 0,
+	);
 	const [localSearchInput, setLocalSearchInput] = useState(searchQuery);
 	const [searchQueryActive, setSearchQueryActive] = useState(searchQuery);
 
@@ -160,7 +168,11 @@ function ArtikelContent() {
 	// Guard: jangan simpan state kosong (sedang di-reset oleh effect reset)
 	useEffect(() => {
 		if (displayedArticles.length === 0) return;
-		savePage(context, contextExtra, { page, articles: displayedArticles, hasMore });
+		savePage(context, contextExtra, {
+			page,
+			articles: displayedArticles,
+			hasMore,
+		});
 	}, [page, displayedArticles, hasMore, context, contextExtra]);
 
 	// Initialize / sync page 1 data — selalu overwrite saat data API fresh tiba
@@ -309,7 +321,16 @@ function ArtikelContent() {
 				setHasMore(page < totalPages);
 			}
 		}
-	}, [isLoadingMore, isCategoryLoading, isSearchLoading, isFetching, page, totalPages, categorySlug, searchQueryActive]);
+	}, [
+		isLoadingMore,
+		isCategoryLoading,
+		isSearchLoading,
+		isFetching,
+		page,
+		totalPages,
+		categorySlug,
+		searchQueryActive,
+	]);
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -343,7 +364,7 @@ function ArtikelContent() {
 				<MatchScheduleTicker />
 			</div>
 			{/* Spacer tinggi top bar fixed (48px) agar konten tidak tertutup */}
-			<div className="h-18" />
+			<div className="h-16 md:h-18" />
 			<main
 				className={`pb-20 px-4 md:px-16 max-w-screen-2xl mx-auto custom-scrollbar transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
 			>
@@ -351,7 +372,7 @@ function ArtikelContent() {
 				{!searchQuery && !categorySlug && featuredArticle && (
 					<section className="mb-0 -mt-6 w-screen left-1/2 -translate-x-1/2 relative">
 						<div
-							className={`relative w-full h-100 sm:h-120 md:h-145  overflow-hidden group border ${isDark ? "border-white/10" : "border-[#0a7c6e]/20"}`}
+							className={`relative w-full h-100 sm:h-120 md:h-145 overflow-hidden group border ${isDark ? "border-white/10" : "border-[#0a7c6e]/20"}`}
 						>
 							<img
 								className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-100"
@@ -361,30 +382,22 @@ function ArtikelContent() {
 							<div
 								className={`absolute inset-0 ${isDark ? "bg-linear-to-t from-black/90 via-black/60 to-transparent" : "bg-linear-to-t from-black/80 via-black/50 to-transparent"}`}
 							></div>
-							<div className="absolute bottom-24 left-0 p-6 sm:p-8 md:p-12 w-full md:w-4/5 lg:w-3/4">
-								<div className="flex items-center gap-3 mb-3 sm:mb-4">
-									<span
-										className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider ${isDark ? "bg-primary/20 border border-primary/40 text-primary" : "bg-[#0a7c6e]/20 border border-primary/40 text-primary"}`}
-									>
-										{featuredArticle.category?.name || "Article"}
-									</span>
-								</div>
+							<div className="absolute bottom-2 md:bottom-20 left-0 p-6 md:p-10 w-full md:w-4/5 lg:w-160">
 								<h1
-									className={`text-xl sm:text-2xl md:text-4xl lg:text-5xl uppercase font-bold tracking-tighter mb-2 sm:mb-3 md:mb-4 leading-tight ${isDark ? "text-white neon-glow" : "text-white"}`}
+									className={`text-base md:text-4xl lg:text-3xl uppercase font-bold tracking-tighter mb-2 leading-tight ${isDark ? "text-white" : "text-white"}`}
 								>
 									{featuredArticle.title}
 								</h1>
 								<p
-									className={`text-sm sm:text-base md:text-lg max-w-xl sm:max-w-2xl mb-4 sm:mb-6 line-clamp-2 ${isDark ? "text-white/90" : "text-white/80"}`}
+									className={`text-sm md:text-base max-w-xl sm:max-w-2xl mb-3 md:mb-4  line-clamp-2 ${isDark ? "text-white/90" : "text-white/80"}`}
 								>
 									{featuredArticle.excerpt}
 								</p>
 								<Link
 									href={`/${featuredArticle.slug}`}
-									className={`inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 py-2.5 sm:py-4 rounded-full font-bold text-xs sm:text-sm uppercase tracking-widest hover:scale-105 transition-transform ${isDark ? "bg-primary text-on-primary shadow-[0_0_20px_rgba(67,222,204,0.3)]" : "bg-[#0a7c6e] text-white hover:bg-[#095a50] shadow-[0_0_20px_rgba(10,124,110,0.3)]"}`}
+									className={`inline-flex items-center gap-2 sm:gap-3 px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-transform ${isDark ? "bg-primary text-on-primary shadow-[0_0_20px_rgba(67,222,204,0.3)]" : "bg-[#0a7c6e] text-white hover:bg-[#095a50] shadow-[0_0_20px_rgba(10,124,110,0.3)]"}`}
 								>
 									Selengkapnya
-									<ArrowRight className="size-5" />
 								</Link>
 							</div>
 						</div>
@@ -393,7 +406,7 @@ function ArtikelContent() {
 
 				{/* Search & Categories Bar with Glassmorphism */}
 				<section
-					className={`flex flex-col md:flex-row gap-6 mb-8 items-center p-4 rounded-2xl border ${isDark ? "bg-white/5 backdrop-blur-xl border-white/5" : "bg-white/90 backdrop-blur-md border-[#0a7c6e]/20"}`}
+					className={`flex flex-col md:flex-row gap-3 md:gap-6 mb-4 md:mb-8 items-center p-4 rounded-2xl border ${isDark ? "bg-white/5 backdrop-blur-xl border-white/5" : "bg-white/90 backdrop-blur-md border-[#0a7c6e]/20"}`}
 				>
 					<div className="relative w-full md:w-76 group">
 						<Search
@@ -411,7 +424,7 @@ function ArtikelContent() {
 					<div className="flex gap-3 overflow-x-auto w-full md:full custom-scrollbar">
 						<button
 							onClick={() => handleCategoryClick("")}
-							className={`px-6 py-3 rounded-xl border font-bold text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
+							className={`px-3 md:px-6 py-1.5 md:py-3 rounded-xl border font-bold text-xs md:text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
 								!categorySlug
 									? isDark
 										? "border-primary bg-primary text-on-primary"
@@ -427,7 +440,7 @@ function ArtikelContent() {
 							<button
 								key={cat.id}
 								onClick={() => handleCategoryClick(cat.slug)}
-								className={`px-6 py-3 rounded-xl border font-bold text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
+								className={`px-3 md:px-6 py-1.5 md:py-3 rounded-xl border font-bold text-xs md:text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
 									categorySlug === cat.slug
 										? isDark
 											? "border-primary bg-primary/10 text-primary"
@@ -500,7 +513,10 @@ function ArtikelContent() {
 													<img
 														className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
 														src={getArticleImageUrl(largeCardArticle, "banner")}
-														alt={largeCardArticle.image_alt_text || largeCardArticle.title}
+														alt={
+															largeCardArticle.image_alt_text ||
+															largeCardArticle.title
+														}
 													/>
 												</div>
 												<div className="p-8">
