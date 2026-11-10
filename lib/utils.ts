@@ -96,6 +96,36 @@ export function getImageUrl(path: string | null | undefined): string {
 	return `${process.env.NEXT_PUBLIC_API_URL || "https://cms.olahbola.com"}${normalized}`;
 }
 
+/**
+ * URL lengkap (prefix API) untuk gambar artikel per konteks.
+ * - card: `image_card_url` → fallback `image` (format lama)
+ * - detail: `image_detail_url` → fallback `image`
+ * - banner: `image_banner_url` → fallback `image`
+ * Artikel format lama tidak punya field _url, jadi jatuh ke `image`.
+ */
+export function getArticleImageUrl(
+	article:
+		| {
+			image?: string | null;
+			image_card_url?: string | null;
+			image_detail_url?: string | null;
+			image_banner_url?: string | null;
+		}
+		| null
+		| undefined,
+	context: "card" | "detail" | "banner",
+): string {
+	if (!article) return "/placeholder.png";
+	const key =
+		context === "card"
+			? "image_card_url"
+			: context === "detail"
+				? "image_detail_url"
+				: "image_banner_url";
+	const path = article[key] || article.image;
+	return getImageUrl(path);
+}
+
 export function getProfilePictureUrl(path: string | null | undefined): string {
 	if (!path) return "/icons/football-player.png";
 	if (path.startsWith("http")) return path;

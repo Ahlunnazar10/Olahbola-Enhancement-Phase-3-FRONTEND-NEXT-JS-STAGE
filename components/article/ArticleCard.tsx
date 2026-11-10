@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, User, Eye, ArrowRight } from "lucide-react";
+import { getArticleImageUrl } from "@/lib/utils";
 import { useUIStore } from "@/stores/uiStore";
 
 interface Article {
@@ -25,10 +26,7 @@ interface ArticleCardProps {
 export function ArticleCard({ data, index }: ArticleCardProps) {
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
-	const imageUrl = data.image || data.featured_image;
-	const fullImageUrl = imageUrl
-		? `${process.env.NEXT_PUBLIC_API_URL}/storage/${imageUrl}`
-		: "/placeholder.png";
+	const fullImageUrl = getArticleImageUrl(data, "card");
 
 	return (
 		<Link

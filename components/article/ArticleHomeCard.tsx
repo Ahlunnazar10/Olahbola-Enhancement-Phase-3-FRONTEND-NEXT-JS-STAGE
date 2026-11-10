@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar } from 'lucide-react';
+import { getArticleImageUrl } from '@/lib/utils';
 
 interface ArticleHomeCardProps {
   data: {
@@ -21,10 +22,7 @@ interface ArticleHomeCardProps {
 }
 
 export function ArticleHomeCard({ data, index }: ArticleHomeCardProps) {
-  const imageUrl = data.image || data.featured_image;
-  const fullImageUrl = imageUrl
-    ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${imageUrl}`
-    : '/placeholder.png';
+  const fullImageUrl = getArticleImageUrl(data, "card");
 
   return (
     <div className="flex flex-col">

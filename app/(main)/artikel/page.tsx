@@ -6,6 +6,7 @@ import { Loader2, ArrowRight, Search, Eye, Zap } from "lucide-react";
 import Link from "next/link";
 import { ArticleCardSkeleton } from "@/components/article/ArticleCard";
 import { PopularArticleCardSkeleton } from "@/components/article/PopularArticleCard";
+import { getArticleImageUrl } from "@/lib/utils";
 import AdSlot from "@/components/ads/AdSlot";
 import {
 	useArticles,
@@ -350,14 +351,8 @@ function ArtikelContent() {
 						>
 							<img
 								className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-100"
-								src={
-									featuredArticle.image
-										? `${process.env.NEXT_PUBLIC_API_URL}/storage/${featuredArticle.image}`
-										: featuredArticle.featured_image
-											? `${process.env.NEXT_PUBLIC_API_URL}/storage/${featuredArticle.featured_image}`
-											: "/placeholder.png"
-								}
-								alt={featuredArticle.title}
+								src={getArticleImageUrl(featuredArticle, "banner")}
+								alt={featuredArticle.image_alt_text || featuredArticle.title}
 							/>
 							<div
 								className={`absolute inset-0 ${isDark ? "bg-linear-to-t from-black/90 via-black/60 to-transparent" : "bg-linear-to-t from-black/80 via-black/50 to-transparent"}`}
@@ -500,14 +495,8 @@ function ArtikelContent() {
 												<div className="relative h-87.5 overflow-hidden">
 													<img
 														className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-														src={
-															largeCardArticle.image
-																? `${process.env.NEXT_PUBLIC_API_URL}/storage/${largeCardArticle.image}`
-																: largeCardArticle.featured_image
-																	? `${process.env.NEXT_PUBLIC_API_URL}/storage/${largeCardArticle.featured_image}`
-																	: "/placeholder.png"
-														}
-														alt={largeCardArticle.title}
+														src={getArticleImageUrl(largeCardArticle, "banner")}
+														alt={largeCardArticle.image_alt_text || largeCardArticle.title}
 													/>
 												</div>
 												<div className="p-8">
@@ -538,14 +527,8 @@ function ArtikelContent() {
 											<div className="h-48 overflow-hidden">
 												<img
 													className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-													src={
-														article.image
-															? `${process.env.NEXT_PUBLIC_API_URL}/storage/${article.image}`
-															: article.featured_image
-																? `${process.env.NEXT_PUBLIC_API_URL}/storage/${article.featured_image}`
-																: "/placeholder.png"
-													}
-													alt={article.title}
+													src={getArticleImageUrl(article, "card")}
+													alt={article.image_alt_text || article.title}
 												/>
 											</div>
 											<div className="p-6 flex-1 flex flex-col justify-between">

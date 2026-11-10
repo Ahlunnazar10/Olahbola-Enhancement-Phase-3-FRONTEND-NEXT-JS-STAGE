@@ -9,7 +9,7 @@ import {
 	Loader2,
 } from "lucide-react";
 import { useArticleSearch } from "@/hooks/queries/useArticles";
-import { getImageUrl, formatRelativeTime } from "@/lib/utils";
+import { getArticleImageUrl } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/uiStore";
 
@@ -161,10 +161,10 @@ export function SearchPanel({ onClose, panelRef }: SearchPanelProps) {
 											)}
 										>
 											{/* Cover image */}
-											{article.image ? (
+											{getArticleImageUrl(article, "card") !== "/placeholder.png" ? (
 												<div className="h-24 overflow-hidden relative">
 													<img
-														src={getImageUrl(article.image)}
+														src={getArticleImageUrl(article, "card")}
 														alt={article.title}
 														width={256}
 														height={128}

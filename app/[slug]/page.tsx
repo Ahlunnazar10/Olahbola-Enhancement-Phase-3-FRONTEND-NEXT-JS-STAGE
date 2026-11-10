@@ -3,7 +3,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getArticleImageUrl } from "@/lib/utils";
 import { PopularArticleCardSkeleton } from "@/components/article/PopularArticleCard";
 import { RecentScoresSidebar } from "@/components/sidebar/RecentScores";
 import {
@@ -393,9 +393,7 @@ export default function ArticleDetailPage() {
 	}
 
 	const articleData = article.data;
-	const fullImageUrl = articleData.image
-		? `${process.env.NEXT_PUBLIC_API_URL}/storage/${articleData.image}`
-		: "/placeholder.png";
+	const fullImageUrl = getArticleImageUrl(articleData, "detail");
 
 	const colors = isDark
 		? {
