@@ -464,49 +464,49 @@ export default function ArticleDetailPage() {
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 					<article className="lg:col-span-8">
 						<div
-							className={`p-8 md:p-10 rounded-xl mb-8 transition-all duration-300 ${isDark ? "glass-panel shadow-2xl" : "bg-white shadow-lg border border-gray-200"}`}
+							className={`p-4 md:p-10 rounded-xl mb-3 md:mb-8 transition-all duration-300 ${isDark ? "glass-panel shadow-2xl" : "bg-white shadow-lg border border-gray-200"}`}
 						>
 							{articleData.category_name && (
 								<Link
 									href={`/artikel?kategori=${articleData.category_slug}`}
-									className={`inline-flex items-center gap-2 px-3.5 py-1 font-semibold text-xs rounded-full mb-6 tracking-widest hover:opacity-90 transition-opacity ${isDark ? "bg-[#E63946] text-white" : "bg-[#d32f3e] text-white"}`}
+									className={`inline-flex items-center gap-2 px-3.5 py-1 font-semibold text-xs rounded-full mb-2 md:mb-6 tracking-widest hover:opacity-90 transition-opacity ${isDark ? "bg-[#E63946] text-white" : "bg-[#d32f3e] text-white"}`}
 								>
 									{articleData.category_name}
 								</Link>
 							)}
 
 							<h1
-								className={`text-2xl md:text-4xl font-black italic uppercase mb-6 leading-tight tracking-tight ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+								className={`text-lg md:text-4xl font-black italic uppercase mb-3 md:mb-6 leading-tight tracking-tight ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 							>
 								{articleData.title}
 							</h1>
 
 							<div
-								className={`flex flex-wrap items-center gap-6 font-bold text-sm uppercase tracking-widest pb-6 border-b ${isDark ? "text-white/50 border-white/10" : "text-[#5a5a5a] border-gray-200"}`}
+								className={`flex flex-wrap items-center gap-3 md:gap-6 font-bold text-xs md:text-sm tracking-widest pb-3 md:pb-6 border-b ${isDark ? "text-white/50 border-white/10" : "text-[#5a5a5a] border-gray-200"}`}
 							>
-								<span className="flex items-center gap-2">
+								<span className="flex items-center gap-1 md:gap-2">
 									<Calendar
-										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+										className={`size-3 md:size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 									/>
 									{articleData.published_at
 										? formatDate(articleData.published_at)
 										: articleData.created_diff}
 								</span>
-								<span className="flex items-center gap-2">
+								<span className="flex items-center gap-1 md:gap-2">
 									<Eye
-										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+										className={`size-3 md:size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 									/>
 									{articleData.views} Dibaca
 								</span>
-								<span className="flex items-center gap-2">
+								<span className="flex items-center gap-1 md:gap-2">
 									<User
-										className={`size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+										className={`size-3 md:size-5 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 									/>
 									{articleData.author_name}
 								</span>
 							</div>
 
-							<div className="flex items-center gap-3 mt-4">
+							<div className="flex items-center gap-3 mt-2 md:mt-4">
 								<span
 									className={`font-bold text-xs uppercase tracking-widest mr-2 ${isDark ? "text-white/30" : "text-gray-400"}`}
 								>
@@ -534,7 +534,7 @@ export default function ArticleDetailPage() {
 
 						<div
 							ref={contentRef}
-							className={`article-content p-8 md:p-10 rounded-xl shadow-2xl ${isDark ? "glass-panel" : "bg-white shadow-lg border border-gray-200"}`}
+							className={`article-content p-5 md:p-10 rounded-xl shadow-2xl ${isDark ? "glass-panel" : "bg-white shadow-lg border border-gray-200"}`}
 							dangerouslySetInnerHTML={{
 								__html: cleanContentHtml,
 							}}

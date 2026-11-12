@@ -364,13 +364,13 @@ function ArtikelContent() {
 				<MatchScheduleTicker />
 			</div>
 			{/* Spacer tinggi top bar fixed (48px) agar konten tidak tertutup */}
-			<div className="h-16 md:h-18" />
+			<div className="h-12 md:h-18" />
 			<main
-				className={`pb-20 px-4 md:px-16 max-w-screen-2xl mx-auto custom-scrollbar transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
+				className={`pb-20 px-4 md:px-14 max-w-screen-2xl mx-auto custom-scrollbar transition-colors duration-300 ${isDark ? "bg-[#0f1412] text-white" : "bg-[#f5f5f5] text-[#1a1a1a]"}`}
 			>
-				{/* Hero Article - Featured */}
+				{/* Hero Article - Featured — desktop only */}
 				{!searchQuery && !categorySlug && featuredArticle && (
-					<section className="mb-0 -mt-6 w-screen left-1/2 -translate-x-1/2 relative">
+					<section className="hidden md:block mb-0 -mt-6 w-screen left-1/2 -translate-x-1/2 relative">
 						<div
 							className={`relative w-full h-100 sm:h-120 md:h-145 overflow-hidden group border ${isDark ? "border-white/10" : "border-[#0a7c6e]/20"}`}
 						>
@@ -413,7 +413,7 @@ function ArtikelContent() {
 							className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
 						/>
 						<input
-							className={`w-full border rounded-xl py-3 pl-12 pr-4 font-bold text-sm tracking-widest outline-none transition-all backdrop-blur-md ${isDark ? "bg-surface-container-highest/20 border-outline-variant/30 text-white placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#0a7c6e] focus:ring-1 focus:ring-[#0a7c6e]"}`}
+							className={`w-full border rounded-xl py-3 pl-12 pr-4 font-bold text-[10px] md:text-sm tracking-widest outline-none transition-all backdrop-blur-md ${isDark ? "bg-surface-container-highest/20 border-outline-variant/30 text-white placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary" : "bg-gray-100 border-gray-300 text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#0a7c6e] focus:ring-1 focus:ring-[#0a7c6e]"}`}
 							placeholder="CARI ARTIKEL..."
 							type="text"
 							value={localSearchInput}
@@ -421,10 +421,10 @@ function ArtikelContent() {
 						/>
 					</div>
 
-					<div className="flex gap-3 overflow-x-auto w-full md:full custom-scrollbar">
+					<div className="flex gap-1.5 md:gap-3 overflow-x-auto w-full md:full ">
 						<button
 							onClick={() => handleCategoryClick("")}
-							className={`px-3 md:px-6 py-1.5 md:py-3 rounded-xl border font-bold text-xs md:text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
+							className={`px-3 md:px-6 py-1.5 md:py-3 rounded-xl border font-bold text-[10px] md:text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
 								!categorySlug
 									? isDark
 										? "border-primary bg-primary text-on-primary"
@@ -440,7 +440,7 @@ function ArtikelContent() {
 							<button
 								key={cat.id}
 								onClick={() => handleCategoryClick(cat.slug)}
-								className={`px-3 md:px-6 py-1.5 md:py-3 rounded-xl border font-bold text-xs md:text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
+								className={`px-3 md:px-6 py-1.5 md:py-3 rounded-xl border font-bold text-[10px] md:text-sm whitespace-nowrap uppercase tracking-widest transition-colors ${
 									categorySlug === cat.slug
 										? isDark
 											? "border-primary bg-primary/10 text-primary"
@@ -536,82 +536,83 @@ function ArtikelContent() {
 									)}
 
 								{/* Medium Cards - Remaining articles */}
-								{remainingArticles
-									.slice(featuredArticle || categorySlug ? 0 : 1)
-									.map((article: any) => (
-										<Link
-											key={article.id}
-											href={`/${article.slug}`}
-											className={`rounded-2xl overflow-hidden group flex flex-col transition-all duration-300 ${isDark ? "glass-card hover:shadow-[0_0_25px_rgba(67,222,204,0.15)] hover:border-primary/30" : "bg-white shadow-lg border border-gray-200 hover:shadow-xl hover:border-[#0a7c6e]/30"}`}
-										>
-											<div className="h-48 overflow-hidden">
-												<img
-													className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-													src={getArticleImageUrl(article, "card")}
-													alt={article.image_alt_text || article.title}
-												/>
+								{(searchQuery || categorySlug
+									? remainingArticles
+									: displayedArticles
+								).map((article: any, index: number) => (
+									<Link
+										key={article.id}
+										href={`/${article.slug}`}
+										className={`rounded-2xl overflow-hidden group flex flex-col transition-all duration-300 ${isDark ? "glass-card hover:shadow-[0_0_25px_rgba(67,222,204,0.15)] hover:border-primary/30" : "bg-white shadow-lg border border-gray-200 hover:shadow-xl hover:border-[#0a7c6e]/30"} ${!searchQuery && !categorySlug && index === 0 ? "md:hidden" : ""}`}
+									>
+										<div className="h-48 overflow-hidden">
+											<img
+												className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+												src={getArticleImageUrl(article, "card")}
+												alt={article.image_alt_text || article.title}
+											/>
+										</div>
+										<div className="p-4 flex-1 flex flex-col justify-between">
+											<div>
+												<h3
+													className={`font-bold text-sm md:text-base uppercase tracking-tighter leading-tight group-hover:${isDark ? "text-primary" : "text-primary"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+												>
+													{article.title}
+												</h3>
+												<p
+													className={`line-clamp-2 text-xs md:text-sm mt-1 md:mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+												>
+													{article.excerpt}
+												</p>
 											</div>
-											<div className="p-6 flex-1 flex flex-col justify-between">
-												<div>
-													<h3
-														className={`font-bold text-lg uppercase tracking-tighter leading-tight group-hover:${isDark ? "text-primary" : "text-primary"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
-													>
-														{article.title}
-													</h3>
-													<p
-														className={`line-clamp-2 text-sm mt-2 ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-													>
-														{article.excerpt}
-													</p>
-												</div>
-												<div className="flex justify-between items-center mt-4">
-													<div className="flex flex-row gap-3 items-center">
-														{/* Author Info */}
-														{article.author && (
-															<div className="flex items-center gap-2">
-																<div
-																	className={`w-6 h-6 rounded-full flex items-center justify-center overflow-hidden ${isDark ? "bg-primary/20" : "bg-[#0a7c6e]/20"}`}
-																>
-																	{article.author.avatar ? (
-																		<img
-																			src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${article.author.avatar}`}
-																			alt={article.author.name}
-																			className="w-full h-full object-cover"
-																		/>
-																	) : (
-																		<span
-																			className={`text-[10px] font-bold ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
-																		>
-																			{article.author.name
-																				?.charAt(0)
-																				?.toUpperCase() || "A"}
-																		</span>
-																	)}
-																</div>
-																<span
-																	className={`text-[11px] font-bold uppercase tracking-wide ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-																>
-																	{article.author.name || "Author"}
-																</span>
+											<div className="flex justify-between items-center mt-2 md:mt-3">
+												<div className="flex flex-row gap-3 items-center">
+													{/* Author Info */}
+													{article.author && (
+														<div className="flex items-center gap-1.5 md:gap-2">
+															<div
+																className={`w-6 h-6 rounded-full flex items-center justify-center overflow-hidden ${isDark ? "bg-primary/20" : "bg-[#0a7c6e]/20"}`}
+															>
+																{article.author.avatar ? (
+																	<img
+																		src={`${process.env.NEXT_PUBLIC_API_URL}/storage/${article.author.avatar}`}
+																		alt={article.author.name}
+																		className="w-full h-full object-cover"
+																	/>
+																) : (
+																	<span
+																		className={`text-[10px] font-bold ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+																	>
+																		{article.author.name
+																			?.charAt(0)
+																			?.toUpperCase() || "A"}
+																	</span>
+																)}
 															</div>
-														)}
-														<span
-															className={`text-xs font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
-														>
-															{article.created_diff}
-														</span>
-													</div>
-													<div
-														className={`flex items-center gap-1 text-[11px] font-bold ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+															<span
+																className={`text-[11px] font-bold  tracking-wide ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+															>
+																{article.author.name || "Author"}
+															</span>
+														</div>
+													)}
+													<span
+														className={`text-xs ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 													>
-														<Eye className="size-4" />
-														<span>{article.views || 0}</span>
-														<span>Dibaca</span>
-													</div>
+														{article.created_diff}
+													</span>
+												</div>
+												<div
+													className={`flex items-center gap-1 text-[11px]  ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+												>
+													<Eye className="size-4" />
+													<span>{article.views || 0}</span>
+													<span>Dibaca</span>
 												</div>
 											</div>
-										</Link>
-									))}
+										</div>
+									</Link>
+								))}
 							</>
 						)}
 
@@ -665,21 +666,21 @@ function ArtikelContent() {
 					<aside className="lg:col-span-4">
 						<div className="sticky top-26 space-y-8">
 							<div
-								className={`p-8 rounded-2xl border-l-[6px] relative overflow-hidden group/sidebar transition-all duration-300 ${isDark ? "glass-panel" : "bg-white shadow-lg border-l-[#0a7c6e] hover:shadow-xl"}`}
+								className={`p-4 md:p-8 rounded-2xl border-l-[6px] relative overflow-hidden group/sidebar transition-all duration-300 ${isDark ? "glass-panel" : "bg-white shadow-lg border-l-[#0a7c6e] hover:shadow-xl"}`}
 							>
 								<div
 									className={`absolute -right-20 -top-20 w-64 h-64 rounded-full blur-[80px] group-hover/sidebar:opacity-100 transition-all duration-700 ${isDark ? "bg-primary/5 group-hover/sidebar:bg-primary/10" : "bg-[#0a7c6e]/5 group-hover/sidebar:bg-[#0a7c6e]/10"}`}
 								></div>
 								<h2
-									className={`text-3xl uppercase tracking-tighter mb-10 flex items-center gap-3 relative z-10 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+									className={`text-xl md:text-3xl uppercase tracking-tighter mb-5 md:mb-10 flex items-center gap-3 relative z-10 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 								>
 									<Zap
-										className={`float-anim size-7 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+										className={`float-anim size-5 md:size-7 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 										fill="currentColor"
 									/>
 									ARTIKEL POPULER
 								</h2>
-								<div className="space-y-10 relative z-10">
+								<div className="space-y-5 md:space-y-8 relative z-10">
 									{popularLoading ? (
 										<>
 											{[...Array(4)].map((_, i) => (
@@ -693,24 +694,25 @@ function ArtikelContent() {
 												<Link
 													key={article.id}
 													href={`/${article.slug}`}
-													className="flex gap-6 group"
+													className="flex gap-4 md:gap-6 group"
 												>
 													<span
-														className={`text-5xl font-display-xl transition-colors leading-none italic ${isDark ? "text-white/10 group-hover:text-primary/40" : "text-gray-300 group-hover:text-[#0a7c6e]/40"}`}
+														className={`text-5xl md:text-6xl font-extrabold transition-colors leading-none italic ${isDark ? "text-white/10 group-hover:text-primary/40" : "text-gray-300 group-hover:text-[#0a7c6e]/40"}`}
 													>
 														{String(index + 1).padStart(2, "0")}
 													</span>
 													<div>
 														<h4
-															className={`font-bold text-md uppercase tracking-tight leading-tight mt-1 group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+															className={`font-bold text-[11px] md:text-[16px] uppercase tracking-tight leading-tight  group-hover:${isDark ? "text-primary" : "text-[#0a7c6e]"} transition-colors ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 														>
 															{article.title}
 														</h4>
 														<div
-															className={`flex items-center gap-4 mt-3 text-xs font-bold ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
+															className={`flex items-center gap-4 mt-1  text-[10px] md:text-xs font-bold ${isDark ? "text-outline" : "text-[#5a5a5a]"}`}
 														>
 															<span className="flex items-center gap-1">
-																<Eye className="size-4" /> {article.views}
+																<Eye className="size-3 md:size-4" />{" "}
+																{article.views}
 																<span className="hidden md:flex">Dibaca</span>
 															</span>
 														</div>
