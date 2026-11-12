@@ -24,7 +24,6 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
  */
 export function isGA4Available(): boolean {
 	if (!GA_ID) {
-		console.warn("GA4: GA_ID is not configured");
 		return false;
 	}
 	if (typeof window === "undefined" || !window.gtag) {
@@ -55,8 +54,6 @@ export function trackEvent(
 	}
 
 	window.gtag("event", action, eventData);
-
-	console.log(`[GA4] Event tracked: ${action}`, { category, params });
 }
 
 /**
@@ -184,7 +181,6 @@ export function trackArticleView(
 		article_category: articleCategory || "article",
 	});
 
-	console.log(`[GA4] Article view tracked: ${articleTitle}`);
 }
 
 /**
@@ -213,7 +209,6 @@ export function trackQuizAttempt(
 		percentage: percentage,
 	});
 
-	console.log(`[GA4] Quiz attempt tracked: ${quizName} - ${score}/${totalQuestions}`);
 }
 
 /**
@@ -237,7 +232,6 @@ export function trackLeaderboardView(
 		})),
 	});
 
-	console.log(`[GA4] Leaderboard view tracked: ${gameName}`);
 }
 
 /**
@@ -263,7 +257,6 @@ export function trackGameStart(
 		],
 	});
 
-	console.log(`[GA4] Game start tracked: ${gameName}`);
 }
 
 /**
@@ -285,7 +278,6 @@ export function trackSocialShare(
 		item_id: contentId,
 	});
 
-	console.log(`[GA4] Social share tracked: ${contentType} via ${method}`);
 }
 
 /**
@@ -304,7 +296,6 @@ export function trackSearch(
 		number_of_results: resultCount,
 	});
 
-	console.log(`[GA4] Search tracked: "${searchTerm}"`);
 }
 
 /**
@@ -328,7 +319,6 @@ export function trackVideoPlay(
 		...(duration !== undefined && { video_duration: duration }),
 	});
 
-	console.log(`[GA4] Video play tracked: ${videoTitle}`);
 }
 /**
  * Track video pause
@@ -346,7 +336,6 @@ export function trackVideoPause(
 		video_current_time: currentTime,
 		...(duration !== undefined && { video_duration: duration }),
 	});
-	console.log(`[GA4] Video pause tracked: ${videoTitle} @ ${currentTime}s`);
 }
 
 /**
@@ -368,9 +357,6 @@ export function trackVideoProgress(
 		video_duration: duration,
 		video_percent: percent,
 	});
-	console.log(
-		`[GA4] Video progress tracked: ${videoTitle} @ ${currentTime}s (${percent}%)`,
-	);
 }
 
 /**
@@ -387,7 +373,6 @@ export function trackVideoMute(
 		video_title: videoTitle,
 		muted: isMuted,
 	});
-	console.log(`[GA4] Video mute tracked: ${videoTitle} muted=${isMuted}`);
 }
 
 /**
@@ -409,7 +394,6 @@ export function trackVideoSeek(
 		video_duration: duration,
 		video_percent: percent,
 	});
-	console.log(`[GA4] Video seek tracked: ${videoTitle} -> ${seekTime}s`);
 }
 
 /**
@@ -427,7 +411,6 @@ export function trackVideoComplete(
 		video_duration: duration,
 		video_percent: 100,
 	});
-	console.log(`[GA4] Video complete tracked: ${videoTitle}`);
 }
 
 /**
@@ -449,7 +432,6 @@ export function trackVideoClose(
 		video_duration: duration,
 		video_percent: percent,
 	});
-	console.log(`[GA4] Video close tracked: ${videoTitle} @ ${watchedTime}s (${percent}%)`);
 }
 
 /**
@@ -461,5 +443,4 @@ export function trackVideoPreviewPlay(videoId: string, videoTitle: string): void
 		video_id: videoId,
 		video_title: videoTitle,
 	});
-	console.log(`[GA4] Video preview tracked: ${videoTitle}`);
 }

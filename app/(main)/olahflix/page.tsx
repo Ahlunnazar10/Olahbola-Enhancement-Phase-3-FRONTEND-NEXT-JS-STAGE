@@ -191,10 +191,6 @@ function OlahflixContent() {
 	}, [page]);
 
 	useEffect(() => {
-		setModalIndex(null);
-	}, [page]);
-
-	useEffect(() => {
 		if (modalIndex !== null) {
 			const prev = document.body.style.overflow;
 			document.body.style.overflow = "hidden";
@@ -218,7 +214,7 @@ function OlahflixContent() {
 				}
 			`}</style>
 
-			<div className="relative w-full h-350 md:h-150 flex flex-col overflow-hidden select-none justify-between px-4 md:px-6">
+			<div className="relative w-full h-350 md:h-150 flex flex-col overflow-hidden select-none justify-between px-4 md:px-14">
 				{/* ── Header ── */}
 				<div className="relative z-10 flex flex-col gap-2 shrink-0 mt-8 mb-6">
 					<div className="flex items-center justify-between gap-4">
@@ -259,7 +255,7 @@ function OlahflixContent() {
 					 backdrop-blur-md px-4 py-4 rounded-xl shrink-0"
 				>
 					{/* Left: status */}
-					<div className="flex items-center gap-3">
+					<div className="hidden md:flex items-center gap-3">
 						<span className="font-body-md text-[13px] text-on-surface-variant">
 							Menampilkan{" "}
 							<span className="font-label-bold text-on-surface">

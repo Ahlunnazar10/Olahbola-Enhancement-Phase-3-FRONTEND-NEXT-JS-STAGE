@@ -67,17 +67,20 @@ export function OlahflixModal({
 	const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const wasPausedByVisibilityRef = useRef(false);
 
-	// Swipe state
+	// Swipe state — pakai ref untuk offset (always latest), state untuk re-render visual
 	const touchStartY = useRef(0);
 	const touchStartX = useRef(0);
+	const swipeOffsetRef = useRef(0);
 	const [swipeOffset, setSwipeOffset] = useState(0);
+	const isSwipingRef = useRef(false);
 
 	const prevIndex = Math.max(0, activeIndex - 1);
-	const nextIndex = Math.min(videos.length - 1, activeIndex + 1);
+	// Jika di video terakhir page dan masih ada page berikutnya, signal page dengan index out-of-bounds
+	const nextIndex = activeIndex + 1;
 	const canGoPrev = activeIndex > 0;
 	const canGoNext = activeIndex < videos.length - 1 || hasMore;
 
-	// Reset saat activeIndex berubah: replay, track. Mute status = persist (state `muted`)
+	// Reset saat activeIndex berubah: replay, track, reset swipe visual
 	useEffect(() => {
 		const v = videoRef.current;
 		if (!v) return;
@@ -86,6 +89,9 @@ export function OlahflixModal({
 		setCurrentTime(0);
 		setIsBuffering(true);
 		wasPausedByVisibilityRef.current = false;
+		swipeOffsetRef.current = 0;
+		isSwipingRef.current = false;
+		setSwipeOffset(0);
 		v.play().catch(() => {
 			setIsPlaying(false);
 		});
@@ -121,7 +127,13 @@ export function OlahflixModal({
 					setIsPlaying(false);
 					wasPausedByVisibilityRef.current = true;
 					const vid = videos[activeIndex];
-					if (vid) trackVideoPause(vid.id, vid.title, v.currentTime, durationRef.current || undefined);
+					if (vid)
+						trackVideoPause(
+							vid.id,
+							vid.title,
+							v.currentTime,
+							durationRef.current || undefined,
+						);
 				}
 			} else if (wasPausedByVisibilityRef.current) {
 				v.play().catch(() => {});
@@ -154,11 +166,21 @@ export function OlahflixModal({
 			v.play().catch(() => {});
 			setIsPlaying(true);
 			wasPausedByVisibilityRef.current = false;
-			trackVideoPlay(vid.id, vid.title, v.currentTime, durationRef.current || undefined);
+			trackVideoPlay(
+				vid.id,
+				vid.title,
+				v.currentTime,
+				durationRef.current || undefined,
+			);
 		} else {
 			v.pause();
 			setIsPlaying(false);
-			trackVideoPause(vid.id, vid.title, v.currentTime, durationRef.current || undefined);
+			trackVideoPause(
+				vid.id,
+				vid.title,
+				v.currentTime,
+				durationRef.current || undefined,
+			);
 		}
 	}, [videos, activeIndex]);
 
@@ -172,23 +194,31 @@ export function OlahflixModal({
 		trackVideoMute(vid.id, vid.title, next);
 	}, [videos, activeIndex]);
 
-	const handleSeek = useCallback((ratio: number) => {
-		const v = videoRef.current;
-		const vid = videos[activeIndex];
-		if (!v || !vid) return;
-		const d = v.duration || 0;
-		if (!d) return;
-		const toTime = ratio * d;
-		v.currentTime = toTime;
-		setCurrentTime(toTime);
-		trackVideoSeek(vid.id, vid.title, toTime, d);
-	}, [videos, activeIndex]);
+	const handleSeek = useCallback(
+		(ratio: number) => {
+			const v = videoRef.current;
+			const vid = videos[activeIndex];
+			if (!v || !vid) return;
+			const d = v.duration || 0;
+			if (!d) return;
+			const toTime = ratio * d;
+			v.currentTime = toTime;
+			setCurrentTime(toTime);
+			trackVideoSeek(vid.id, vid.title, toTime, d);
+		},
+		[videos, activeIndex],
+	);
 
 	const handleClose = useCallback(() => {
 		const v = videoRef.current;
 		const vid = videos[activeIndex];
 		if (vid) {
-			trackVideoClose(vid.id, vid.title, v?.currentTime || 0, durationRef.current);
+			trackVideoClose(
+				vid.id,
+				vid.title,
+				v?.currentTime || 0,
+				durationRef.current,
+			);
 		}
 		onClose();
 	}, [videos, activeIndex, onClose]);
@@ -268,27 +298,39 @@ export function OlahflixModal({
 		[],
 	);
 
-	// Touch swipe (mobile)
+	// Touch swipe (mobile) — visual: translate Y, snap / pindah video
 	const onTouchStart = (e: React.TouchEvent) => {
 		touchStartY.current = e.touches[0].clientY;
 		touchStartX.current = e.touches[0].clientX;
+		isSwipingRef.current = true;
 	};
 
 	const onTouchMove = (e: React.TouchEvent) => {
+		if (!isSwipingRef.current) return;
 		const dy = e.touches[0].clientY - touchStartY.current;
 		const dx = e.touches[0].clientX - touchStartX.current;
 		if (Math.abs(dy) > Math.abs(dx)) {
+			swipeOffsetRef.current = dy;
 			setSwipeOffset(dy);
+		} else {
+			// Horizontal swipe dominan — batalkan vertical swipe
+			isSwipingRef.current = false;
+			swipeOffsetRef.current = 0;
+			setSwipeOffset(0);
 		}
 	};
 
 	const onTouchEnd = () => {
 		const threshold = 80;
-		if (swipeOffset > threshold) {
+		const offset = swipeOffsetRef.current;
+		if (offset < -threshold && canGoNext) {
 			goNext();
-		} else if (swipeOffset < -threshold) {
+		} else if (offset > threshold && canGoPrev) {
 			goPrev();
 		}
+		swipeOffsetRef.current = 0;
+		isSwipingRef.current = false;
+		// Transition back untuk snap; saat navigate index berubah, reset via useEffect
 		setSwipeOffset(0);
 	};
 
@@ -310,20 +352,17 @@ export function OlahflixModal({
 
 			{/* Content: [title left] [video center with overlay controls] [arrows right] */}
 			<div
-				className="relative flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 p-4 md:p-6 w-full h-full md:h-[80vh]"
+				className="relative flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 p-3 md:p-6 w-full h-dvh md:h-[80vh]"
 				onClick={(e) => e.stopPropagation()}
 				onTouchStart={onTouchStart}
 				onTouchMove={onTouchMove}
 				onTouchEnd={onTouchEnd}
 			>
 				{/* ===== WRAPPER CENTER: membungkus title + video + arrows agar grup selalu rata tengah horizontal ===== */}
-				<div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 w-full max-w-6xl mr-[20%]">
+				<div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 w-full max-w-6xl md:mr-[38%]">
 					{/* ===== TITLE (kiri, desktop) / di atas (mobile) ===== */}
-					<div className="md:w-56 lg:w-80 shrink-0 order-first md:order-0 flex flex-col gap-2 md:justify-center max-h-full overflow-y-auto p-1 md:text-left text-center md:items-start items-center">
-						<p className="text-[10px] uppercase tracking-widest text-white/50">
-							Video {activeIndex + 1} dari {videos.length}
-						</p>
-						<h3 className="text-white font-semibold text-sm md:text-4xl leading-snug line-clamp-4 md:line-clamp-5">
+					<div className="md:w-56 lg:w-150 pl-0 md:pl-50 shrink-0 order-first md:order-0 flex flex-col gap-1.5 md:gap-2 md:justify-center max-h-full overflow-y-auto p-1 md:text-left text-center md:items-start items-center">
+						<h3 className="text-white md:font-semibold text-[14px] md:text-lg leading-snug px-3 md:px-0">
 							{active.title}
 						</h3>
 						<div className="flex items-center gap-2 justify-center md:justify-start">
@@ -337,9 +376,19 @@ export function OlahflixModal({
 					</div>
 
 					{/* ===== VIDEO + ARROWS ===== */}
-					<div className="flex flex-row gap-3 items-center justify-center">
+					<div
+						className="flex flex-col md:flex-row gap-2 md:gap-3 items-center justify-center w-full"
+						style={
+							swipeOffset !== 0
+								? { transform: `translateY(${swipeOffset * 0.4}px)`, transition: "none" }
+								: undefined
+						}
+					>
 						{/* ===== VIDEO PLAYER (tengah, control overlay) ===== */}
-						<div className="relative flex-1 w-90 h-[90vh] max-w-88 max-h-[90vh] rounded-xl overflow-hidden bg-black shadow-2xl">
+						<div
+							className="relative flex-1 min-w-0 aspect-auto w-90 h-[90vh] max-w-88 max-h-[90vh] rounded-xl overflow-hidden bg-black shadow-2xl transition-transform duration-300"
+							style={swipeOffset !== 0 ? { opacity: 0.85 } : undefined}
+						>
 							<video
 								ref={videoRef}
 								src={videoUrl(active.video)}
@@ -377,7 +426,7 @@ export function OlahflixModal({
 								}}
 								onEnded={() => {
 									trackVideoComplete(active.id, active.title, duration);
-									if (activeIndex < videos.length - 1) {
+									if (activeIndex < videos.length - 1 || hasMore) {
 										onNavigate(activeIndex + 1);
 									} else {
 										onClose();
@@ -487,8 +536,8 @@ export function OlahflixModal({
 							)}
 						</div>
 
-						{/* ===== ARROWS (kanan) ===== */}
-						<div className="md:w-14 shrink-0 flex md:flex-col items-center gap-3 md:gap-4 order-last md:order-0">
+						{/* ===== ARROWS (kanan desktop / bawah mobile) ===== */}
+						<div className="md:w-14 shrink-0 flex flex-row md:flex-col items-center justify-center gap-3 md:gap-4 order-last md:order-0">
 							<button
 								aria-label="Video sebelumnya"
 								disabled={!canGoPrev}
@@ -513,9 +562,9 @@ export function OlahflixModal({
 				<button
 					aria-label="Tutup"
 					onClick={handleClose}
-					className="absolute -top-15 right-3 w-12 h-12 rounded-full bg-primary/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-primary transition-colors z-20"
+					className="absolute top-3 right-3 md:-top-15 md:right-3 w-11 h-11 md:w-12 md:h-12 rounded-full bg-white/20 md:bg-primary/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 md:hover:bg-primary transition-colors z-20"
 				>
-					<X className="w-6 h-6" />
+					<X className="w-5 h-5 md:w-6 md:h-6" />
 				</button>
 			</div>
 		</div>

@@ -16,7 +16,7 @@ const navLinks = [
 	{ href: "/", label: "Kickoff" },
 	{ href: "/artikel", label: "Artikel" },
 	{ href: "/games", label: "Games" },
-	// { href: "/olahflix", label: "OlahFlix" },
+	{ href: "/olahflix", label: "OlahFlix" },
 	{ href: "/media-spotlight", label: "Media Spotlight" },
 ];
 
@@ -164,7 +164,10 @@ export function NavigationBar() {
 
 				{/* Search Panel */}
 				{isSearchOpen && (
-					<SearchPanel onClose={() => setIsSearchOpen(false)} panelRef={searchPanelRef} />
+					<SearchPanel
+						onClose={() => setIsSearchOpen(false)}
+						panelRef={searchPanelRef}
+					/>
 				)}
 
 				{/* Dropdown menu from top */}
@@ -460,7 +463,10 @@ export function NavigationBar() {
 							</div>
 						</div>
 						{isSearchOpen && (
-							<SearchPanel onClose={() => setIsSearchOpen(false)} panelRef={searchPanelRef} />
+							<SearchPanel
+								onClose={() => setIsSearchOpen(false)}
+								panelRef={searchPanelRef}
+							/>
 						)}
 					</div>
 				</div>
