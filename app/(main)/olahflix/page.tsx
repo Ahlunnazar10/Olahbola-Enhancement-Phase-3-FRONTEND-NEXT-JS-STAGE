@@ -120,15 +120,15 @@ function VideoPreviewCard({
 
 			{/* Bottom meta */}
 			<div className="relative z-20 p-3 bg-linear-to-t from-surface-container-lowest via-surface-container-lowest/90 to-transparent flex flex-col gap-1.5">
-				<div className="flex items-center justify-between font-label-bold text-[11px] text-on-surface-variant">
+				<div className="flex items-center justify-between font-semibold text-[8px] md:text-[11px] text-on-surface-variant">
 					<span className="flex items-center gap-1 text-primary">
-						<PlayIcon className="w-3.5 h-3.5" />
+						<PlayIcon className="w-2 h-2 md:w-3 md:h-3" />
 						{formatClock(video.duration)}
 					</span>
 					<span className="flex items-center gap-0.5">
 						<svg
-							width="13"
-							height="13"
+							width="12"
+							height="12"
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
@@ -140,10 +140,10 @@ function VideoPreviewCard({
 						{formatViews(video)}
 					</span>
 				</div>
-				<h2 className="text-base font-bold text-on-surface leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+				<h2 className="text-[10px] md:text-sm font-bold text-on-surface leading-snug line-clamp-2 group-hover:text-primary transition-colors">
 					{video.title}
 				</h2>
-				<div className="text-[10px] text-outline font-body-sm">
+				<div className="text-[8px] md:text-[10px]">
 					<span>{formatRelativeTime(video.created_at)}</span>
 				</div>
 			</div>
@@ -220,15 +220,15 @@ function OlahflixContent() {
 					<div className="flex items-center justify-between gap-4">
 						<div className="flex items-center gap-2">
 							<h1
-								className="text-3xl md:text-4xl font-extrabold italic tracking-tight leading-none
-								bg-linear-to-r from-on-surface via-primary-fixed to-primary bg-clip-text text-transparent w-38 md:w-46"
+								className="text-xl md:text-4xl font-extrabold italic tracking-tight leading-none
+								bg-linear-to-r from-on-surface via-primary-fixed to-primary bg-clip-text text-transparent w-26 md:w-46"
 							>
 								OLAHFLIX
 							</h1>
 							<span className="text-outline-variant font-body-md text-base">
 								/
 							</span>
-							<p className="text-xs md:text-base text-on-surface-variant truncate max-w-xl font-bold">
+							<p className="text-[10px] md:text-base max-w-xl ">
 								Semua Cerita Sepak Bola, dalam Video.
 							</p>
 						</div>

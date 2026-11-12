@@ -350,22 +350,45 @@ export function OlahflixModal({
 				onClick={handleClose}
 			/>
 
-			{/* Content: [title left] [video center with overlay controls] [arrows right] */}
+			{/* Content: [title overlay bottom mobile] [video full-screen mobile] [left panel + arrows desktop] */}
 			<div
-				className="relative flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 p-3 md:p-6 w-full h-dvh md:h-[80vh]"
+				className="relative w-full h-dvh md:h-[80vh] flex flex-col md:flex-row items-stretch md:items-center justify-start md:justify-center p-0 md:p-6"
 				onClick={(e) => e.stopPropagation()}
 				onTouchStart={onTouchStart}
 				onTouchMove={onTouchMove}
 				onTouchEnd={onTouchEnd}
 			>
-				{/* ===== WRAPPER CENTER: membungkus title + video + arrows agar grup selalu rata tengah horizontal ===== */}
-				<div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 w-full max-w-6xl md:mr-[38%]">
-					{/* ===== TITLE (kiri, desktop) / di atas (mobile) ===== */}
-					<div className="md:w-56 lg:w-150 pl-0 md:pl-50 shrink-0 order-first md:order-0 flex flex-col gap-1.5 md:gap-2 md:justify-center max-h-full overflow-y-auto p-1 md:text-left text-center md:items-start items-center">
-						<h3 className="text-white md:font-semibold text-[14px] md:text-lg leading-snug px-3 md:px-0">
-							{active.title}
-						</h3>
-						<div className="flex items-center gap-2 justify-center md:justify-start">
+				{/* ===== TITLE MOBILE: overlay di bawah video, hidden di desktop ===== */}
+				<div className="md:hidden absolute inset-x-0 bottom-0 z-20 p-4 pb-18 bg-linear-to-t from-black/80 via-black/40 to-transparent pointer-events-none select-none">
+					<h3 className="text-white text-[10px] leading-snug mb-1.5">
+						{active.title}
+					</h3>
+					<div className="flex items-center gap-2">
+						<span className="text-[#00C2B1] text-[8px] font-bold uppercase tracking-wider">
+							{active.status}
+						</span>
+						<span className="text-white/50 text-[8px]">
+							{formatRelativeTime(active.created_at)}
+						</span>
+					</div>
+				</div>
+
+				{/* ===== WRAPPER: mobile = full screen, desktop = center column ===== */}
+				<div
+					className="flex flex-col md:flex-row items-stretch md:items-center justify-start md:justify-center gap-0 md:gap-6 w-full h-full md:h-auto md:max-w-6xl md:mr-[38%]"
+					style={
+						swipeOffset !== 0
+							? {
+									transform: `translateY(${swipeOffset * 0.4}px)`,
+									transition: "none",
+								}
+							: undefined
+					}
+				>
+					{/* ===== TITLE DESKTOP: left column, hidden di mobile ===== */}
+					<div className="hidden md:flex md:w-56 lg:w-150 md:pl-50 shrink-0 flex-col gap-2 md:justify-center max-h-full overflow-y-auto p-1">
+						<h3 className="text-white  text-lg leading-snug">{active.title}</h3>
+						<div className="flex items-center gap-2">
 							<span className="text-[#00C2B1] text-[10px] font-bold uppercase tracking-wider">
 								{active.status}
 							</span>
@@ -375,197 +398,187 @@ export function OlahflixModal({
 						</div>
 					</div>
 
-					{/* ===== VIDEO + ARROWS ===== */}
+					{/* ===== VIDEO PLAYER — mobile: full screen portrait, desktop: center box ===== */}
 					<div
-						className="flex flex-col md:flex-row gap-2 md:gap-3 items-center justify-center w-full"
-						style={
-							swipeOffset !== 0
-								? { transform: `translateY(${swipeOffset * 0.4}px)`, transition: "none" }
-								: undefined
-						}
+						className="relative flex-1 min-w-0 w-full h-full md:h-auto md:w-90 md:max-w-88 overflow-hidden md:rounded-xl bg-black md:shadow-2xl transition-transform duration-300"
+						style={swipeOffset !== 0 ? { opacity: 0.85 } : undefined}
 					>
-						{/* ===== VIDEO PLAYER (tengah, control overlay) ===== */}
-						<div
-							className="relative flex-1 min-w-0 aspect-auto w-90 h-[90vh] max-w-88 max-h-[90vh] rounded-xl overflow-hidden bg-black shadow-2xl transition-transform duration-300"
-							style={swipeOffset !== 0 ? { opacity: 0.85 } : undefined}
-						>
+						<video
+							ref={videoRef}
+							src={videoUrl(active.video)}
+							poster={thumbnailUrl(active.image)}
+							controls={false}
+							autoPlay
+							muted={muted}
+							playsInline
+							preload="auto"
+							className="w-full h-full object-contain cursor-pointer"
+							onClick={(e) => {
+								e.stopPropagation();
+								togglePlay();
+								resetControlsTimer();
+							}}
+							onMouseMove={resetControlsTimer}
+							onTouchStartCapture={resetControlsTimer}
+							onWaiting={() => setIsBuffering(true)}
+							onPlaying={() => {
+								setIsBuffering(false);
+								setIsPlaying(true);
+							}}
+							onPause={() => {
+								setIsPlaying(false);
+								setShowControls(true);
+							}}
+							onTimeUpdate={(e) => {
+								const v = e.currentTarget;
+								setCurrentTime(v.currentTime);
+							}}
+							onLoadedMetadata={(e) => {
+								const v = e.currentTarget;
+								setDuration(v.duration || 0);
+								setIsBuffering(false);
+							}}
+							onEnded={() => {
+								trackVideoComplete(active.id, active.title, duration);
+								if (activeIndex < videos.length - 1 || hasMore) {
+									onNavigate(activeIndex + 1);
+								} else {
+									onClose();
+								}
+							}}
+							onError={() => setIsBuffering(false)}
+						/>
+
+						{/* Preload next */}
+						{next && (
 							<video
-								ref={videoRef}
-								src={videoUrl(active.video)}
-								poster={thumbnailUrl(active.image)}
-								controls={false}
-								autoPlay
-								muted={muted}
-								playsInline
-								preload="auto"
-								className="w-full h-full object-contain cursor-pointer"
-								onClick={(e) => {
-									e.stopPropagation();
-									togglePlay();
-									resetControlsTimer();
-								}}
-								onMouseMove={resetControlsTimer}
-								onTouchStartCapture={resetControlsTimer}
-								onWaiting={() => setIsBuffering(true)}
-								onPlaying={() => {
-									setIsBuffering(false);
-									setIsPlaying(true);
-								}}
-								onPause={() => {
-									setIsPlaying(false);
-									setShowControls(true);
-								}}
-								onTimeUpdate={(e) => {
-									const v = e.currentTarget;
-									setCurrentTime(v.currentTime);
-								}}
-								onLoadedMetadata={(e) => {
-									const v = e.currentTarget;
-									setDuration(v.duration || 0);
-									setIsBuffering(false);
-								}}
-								onEnded={() => {
-									trackVideoComplete(active.id, active.title, duration);
-									if (activeIndex < videos.length - 1 || hasMore) {
-										onNavigate(activeIndex + 1);
-									} else {
-										onClose();
-									}
-								}}
-								onError={() => setIsBuffering(false)}
+								src={videoUrl(next.video)}
+								preload="metadata"
+								className="hidden"
+								aria-hidden
 							/>
+						)}
 
-							{/* Preload next */}
-							{next && (
-								<video
-									src={videoUrl(next.video)}
-									preload="metadata"
-									className="hidden"
-									aria-hidden
-								/>
-							)}
-
-							{/* Overlay controls: tampil saat paused atau showControls */}
-							{(showControls || !isPlaying) && (
-								<div className="absolute inset-x-0 bottom-0 p-3 bg-linear-to-t from-black/70 to-transparent">
-									{/* Seekbar */}
-									<div
-										ref={seekBarRef}
-										className="relative h-4 flex items-center cursor-pointer mb-1 group/seek touch-none select-none"
-										onPointerDown={onSeekPointerDown}
-										onPointerMove={onSeekPointerMove}
-										onPointerUp={onSeekPointerUp}
-									>
-										<div className="relative w-full h-1 rounded-full bg-white/20 overflow-hidden">
-											<div
-												className="h-full rounded-full bg-[#00C2B1]"
-												style={{
-													width: `${Math.min(100, progress * 100)}%`,
-												}}
-											/>
-										</div>
+						{/* Overlay controls: tampil saat paused atau showControls */}
+						{(showControls || !isPlaying) && (
+							<div className="absolute inset-x-0 bottom-0 p-3 bg-linear-to-t from-black/70 to-transparent">
+								{/* Seekbar */}
+								<div
+									ref={seekBarRef}
+									className="relative h-4 flex items-center cursor-pointer mb-1 group/seek touch-none select-none"
+									onPointerDown={onSeekPointerDown}
+									onPointerMove={onSeekPointerMove}
+									onPointerUp={onSeekPointerUp}
+								>
+									<div className="relative w-full h-1 rounded-full bg-white/20 overflow-hidden">
 										<div
-											className="absolute w-3 h-3 rounded-full bg-white shadow -translate-x-1/2 opacity-0 group-hover/seek:opacity-100 transition-opacity"
+											className="h-full rounded-full bg-[#00C2B1]"
 											style={{
-												left: `${Math.min(100, progress * 100)}%`,
+												width: `${Math.min(100, progress * 100)}%`,
 											}}
 										/>
 									</div>
-
-									{/* Buttons bar */}
-									<div className="flex items-center justify-between">
-										<div className="flex items-center gap-3">
-											<button
-												aria-label={isPlaying ? "Pause" : "Play"}
-												onClick={(e) => {
-													e.stopPropagation();
-													togglePlay();
-												}}
-												className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
-											>
-												{isPlaying ? (
-													<Pause className="w-4 h-4" fill="currentColor" />
-												) : (
-													<Play className="w-4 h-4" fill="currentColor" />
-												)}
-											</button>
-											<button
-												aria-label={muted ? "Unmute" : "Mute"}
-												onClick={(e) => {
-													e.stopPropagation();
-													toggleMute();
-												}}
-												className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
-											>
-												{muted ? (
-													<VolumeX className="w-4 h-4" />
-												) : (
-													<Volume2 className="w-4 h-4" />
-												)}
-											</button>
-										</div>
-										<span className="text-white/70 text-[11px] font-mono">
-											{formatClock(currentTime)} /{" "}
-											{formatClock(duration || active.duration)}
-										</span>
-									</div>
+									<div
+										className="absolute w-3 h-3 rounded-full bg-white shadow -translate-x-1/2 opacity-0 group-hover/seek:opacity-100 transition-opacity"
+										style={{
+											left: `${Math.min(100, progress * 100)}%`,
+										}}
+									/>
 								</div>
-							)}
 
-							{/* Buffering spinner */}
-							{isBuffering && (
-								<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-									<div className="w-10 h-10 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-								</div>
-							)}
-
-							{/* Big play overlay saat paused */}
-							{!isPlaying && !isBuffering && (
-								<button
-									aria-label="Play"
-									className="absolute inset-0 flex items-center justify-center"
-									onClick={(e) => {
-										e.stopPropagation();
-										togglePlay();
-									}}
-								>
-									<div className="w-14 h-14 rounded-full bg-black/50 flex items-center justify-center">
-										<Play className="w-7 h-7 text-white" fill="currentColor" />
+								{/* Buttons bar */}
+								<div className="flex items-center justify-between">
+									<div className="flex items-center gap-3">
+										<button
+											aria-label={isPlaying ? "Pause" : "Play"}
+											onClick={(e) => {
+												e.stopPropagation();
+												togglePlay();
+											}}
+											className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+										>
+											{isPlaying ? (
+												<Pause className="w-4 h-4" fill="currentColor" />
+											) : (
+												<Play className="w-4 h-4" fill="currentColor" />
+											)}
+										</button>
+										<button
+											aria-label={muted ? "Unmute" : "Mute"}
+											onClick={(e) => {
+												e.stopPropagation();
+												toggleMute();
+											}}
+											className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+										>
+											{muted ? (
+												<VolumeX className="w-4 h-4" />
+											) : (
+												<Volume2 className="w-4 h-4" />
+											)}
+										</button>
 									</div>
-								</button>
-							)}
-						</div>
+									<span className="text-white/70 text-[11px] font-mono">
+										{formatClock(currentTime)} /{" "}
+										{formatClock(duration || active.duration)}
+									</span>
+								</div>
+							</div>
+						)}
 
-						{/* ===== ARROWS (kanan desktop / bawah mobile) ===== */}
-						<div className="md:w-14 shrink-0 flex flex-row md:flex-col items-center justify-center gap-3 md:gap-4 order-last md:order-0">
+						{/* Buffering spinner */}
+						{isBuffering && (
+							<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+								<div className="w-10 h-10 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+							</div>
+						)}
+
+						{/* Big play overlay saat paused */}
+						{!isPlaying && !isBuffering && (
 							<button
-								aria-label="Video sebelumnya"
-								disabled={!canGoPrev}
-								onClick={goPrev}
-								className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+								aria-label="Play"
+								className="absolute inset-0 flex items-center justify-center"
+								onClick={(e) => {
+									e.stopPropagation();
+									togglePlay();
+								}}
 							>
-								<ChevronUp className="w-5 h-5" />
+								<div className="w-14 h-14 rounded-full bg-black/50 flex items-center justify-center">
+									<Play className="w-7 h-7 text-white" fill="currentColor" />
+								</div>
 							</button>
-							<button
-								aria-label="Video berikutnya"
-								disabled={!canGoNext}
-								onClick={goNext}
-								className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
-							>
-								<ChevronDown className="w-5 h-5" />
-							</button>
-						</div>
+						)}
 					</div>
-				</div>
 
-				{/* Close button */}
-				<button
-					aria-label="Tutup"
-					onClick={handleClose}
-					className="absolute top-3 right-3 md:-top-15 md:right-3 w-11 h-11 md:w-12 md:h-12 rounded-full bg-white/20 md:bg-primary/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 md:hover:bg-primary transition-colors z-20"
-				>
-					<X className="w-5 h-5 md:w-6 md:h-6" />
-				</button>
+					{/* ===== ARROWS: desktop only, mobile pakai swipe ===== */}
+					<div className="hidden md:w-14 md:shrink-0 md:flex md:flex-col items-center justify-center gap-4">
+						<button
+							aria-label="Video sebelumnya"
+							disabled={!canGoPrev}
+							onClick={goPrev}
+							className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+						>
+							<ChevronUp className="w-5 h-5" />
+						</button>
+						<button
+							aria-label="Video berikutnya"
+							disabled={!canGoNext}
+							onClick={goNext}
+							className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+						>
+							<ChevronDown className="w-5 h-5" />
+						</button>
+					</div>
+
+					{/* Close button */}
+					<button
+						aria-label="Tutup"
+						onClick={handleClose}
+						className="absolute top-3 right-3 md:-top-15 md:right-3 w-11 h-11 md:w-12 md:h-12 rounded-full bg-white/20 md:bg-primary/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 md:hover:bg-primary transition-colors z-20"
+					>
+						<X className="w-5 h-5 md:w-6 md:h-6" />
+					</button>
+				</div>
 			</div>
 		</div>
 	);
