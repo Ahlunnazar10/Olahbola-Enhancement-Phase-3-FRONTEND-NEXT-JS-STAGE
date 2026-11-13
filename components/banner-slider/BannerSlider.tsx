@@ -420,7 +420,7 @@ export function BannerSlider({
 							</div>
 						) : slide.type === "event" ? (
 							/* Event Type - Bundesliga 2026/2027 */
-							<div className="relative z-10 w-full mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-3 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center h-full">
+							<div className="relative z-10 w-full h-full mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24 mt-3 md:mt-0 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-center ">
 								{/* Left Content: Typography & CTA */}
 								<div className="lg:col-span-6 flex flex-col items-center md:items-start gap-3">
 									{/* Event Title */}
@@ -480,7 +480,7 @@ export function BannerSlider({
 
 								{/* Right Content: Reward Showcase */}
 								{slide.eventRewardImage && (
-									<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-8 pb-12 lg:py-20 -mt-27.5 lg:mt-0">
+									<div className="lg:col-span-6 relative flex flex-col items-center justify-center h-full pt-8 pb-12 lg:py-20 -mt-12.5 lg:mt-0">
 										{/* Ambient glow */}
 
 										<div className="absolute inset-0 bg-primary/5 rounded-full blur-[120px] opacity-40" />
@@ -522,7 +522,7 @@ export function BannerSlider({
 											<img
 												alt={slide.eventRewardImageAlt || "Prize"}
 												src={slide.eventRewardImage}
-												className="w-54 h-54 md:w-84 md:h-84 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
+												className="w-46 h-46 md:w-84 md:h-84 object-contain drop-shadow-[0_0_40px_rgba(67,222,204,0.35)]"
 												width={200}
 												height={200}
 												loading="lazy"
@@ -672,7 +672,7 @@ export function BannerSlider({
 							</div>
 						) : (
 							/* Article Type */
-							<div className="relative z-10 w-full max-w-3xl px-16 md:px-16 lg:px-26 mt-20 md:mt-0 h-full flex flex-col justify-center">
+							<div className="relative z-10 w-full h-full max-w-3xl px-16 md:px-16 lg:px-26 mt-20 md:mt-0  flex flex-col justify-center">
 								{slide.title && (
 									<h1 className="text-xl md:text-[30px] font-bold uppercase italic leading-none mb-2">
 										{slide.title.parts.map((part, i) => {

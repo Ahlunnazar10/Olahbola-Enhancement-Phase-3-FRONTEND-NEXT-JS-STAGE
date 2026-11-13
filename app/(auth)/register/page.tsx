@@ -165,10 +165,10 @@ export default function RegisterPage() {
 			/>
 
 			{/* Main Content */}
-			<main className="min-h-screen flex items-center justify-center px-4 md:px-0 relative z-10">
-				<div className="w-full max-w-6xl grid md:grid-cols-2 items-center gap-16 p-4 mb-10">
+			<main className="min-h-screen flex md:items-center justify-center relative z-10">
+				<div className="w-full max-w-6xl grid md:grid-cols-2 md:items-center gap-16 p-4 mb-10 mt-5 md:mt-0">
 					{/* Left Side: Visual Narrative */}
-					<div className="hidden md:flex flex-col gap-8">
+					<div className="hidden md:flex flex-col gap-4">
 						<div className="space-y-2">
 							<h1
 								className={`font-display-xl text-display-xl leading-none italic uppercase ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
@@ -183,7 +183,7 @@ export default function RegisterPage() {
 							</h1>
 						</div>
 						<p
-							className={`font-body-lg max-w-md leading-relaxed ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+							className={`font-body-lg max-w-md leading-relaxed ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 						>
 							Buat akun Olahbola dan mulai tantang dirimu dengan kuis seru,
 							kumpulkan poin, dan rajanya bola di Indonesia!
@@ -210,26 +210,29 @@ export default function RegisterPage() {
 					</div>
 
 					{/* Right Side: Register Card */}
-					<div className="relative">
+					<div className="-mt-8 md:mt-0">
 						{/* Card glow/background elements */}
 						<div
 							className={`absolute -inset-1 ${isDark ? "bg-linear-to-r from-primary/50 to-[#ff8f63]/30 blur opacity-25" : "bg-linear-to-r from-[#0a7c6e]/30 to-[#b3461a]/20 blur opacity-20"} rounded-[2.5rem]`}
 						/>
 						<div
-							className={`p-10 md:p-14 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}
+							className={`p-5 md:p-10 rounded-[2.5rem] w-full max-w-lg mx-auto relative overflow-hidden ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}
 						>
 							{/* Subtle glass pattern overlay */}
 							<div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
 
-							<div className="text-center mb-8 relative z-10">
+							<div className="text-center mb-2 md:mb-5 relative z-10">
 								<h2
-									className={`font-headline-lg text-headline-lg italic mb-2 tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
+									className={`text-2xl md:text-3xl italic tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
 								>
-									Daftar Sekarang!
+									Register Now!
 								</h2>
 							</div>
 
-							<form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+							<form
+								onSubmit={handleSubmit}
+								className="md:space-y-1 relative z-10 "
+							>
 								{/* Register Via Toggle */}
 								<div
 									className={`flex gap-2 mb-2 p-1 rounded-xl ${isDark ? "glass-card" : "bg-white shadow-sm border border-gray-200"}`}
@@ -238,13 +241,13 @@ export default function RegisterPage() {
 										type="button"
 										onClick={() => setRegisterVia("email")}
 										className={cn(
-											"flex-1 py-2 rounded-lg font-label-bold text-[10px] uppercase tracking-widest transition-all",
+											"flex-1 py-1 rounded-lg font-extrabold text-[10px] md:text-sm tracking-widest transition-all",
 											registerVia === "email"
 												? isDark
 													? "bg-primary text-black neon-glow-btn"
 													: "bg-[#0a7c6e] text-white"
 												: isDark
-													? "text-[#bbcac6] hover:text-white"
+													? "text-on-surface-variant hover:text-white"
 													: "text-[#5a5a5a] hover:text-[#1a1a1a]",
 										)}
 									>
@@ -254,13 +257,13 @@ export default function RegisterPage() {
 										type="button"
 										onClick={() => setRegisterVia("phone")}
 										className={cn(
-											"flex-1 py-2 rounded-lg font-label-bold text-[10px] uppercase tracking-widest transition-all",
+											"flex-1 py-1 rounded-lg font-extrabold text-[10px] md:text-sm tracking-widest transition-all",
 											registerVia === "phone"
 												? isDark
 													? "bg-primary text-black neon-glow-btn"
 													: "bg-[#0a7c6e] text-white"
 												: isDark
-													? "text-[#bbcac6] hover:text-white"
+													? "text-on-surface-variant hover:text-white"
 													: "text-[#5a5a5a] hover:text-[#1a1a1a]",
 										)}
 									>
@@ -271,20 +274,21 @@ export default function RegisterPage() {
 								{/* Name Input */}
 								<div className="space-y-2 group">
 									<label
-										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										className={`font-bold text-[10px] md:text-sm tracking-widest ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 									>
 										Nama Lengkap
 									</label>
-									<div className="relative">
+									<div className="relative mt-1">
 										<User
-											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-3 md:size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										/>
 										<input
 											type="text"
 											value={name}
 											onChange={(e) => setName(e.target.value)}
 											placeholder="Nama kamu"
-											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-[#3c4a47] focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-4`}
+											autoComplete="off"
+											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl text-sm placeholder:text-sm transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-1.5 md:py-3`}
 										/>
 									</div>
 								</div>
@@ -293,20 +297,20 @@ export default function RegisterPage() {
 								{registerVia === "email" && (
 									<div className="space-y-2 group">
 										<label
-											className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											className={`font-bold text-[10px] md:text-sm tracking-widest ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										>
 											Alamat Email
 										</label>
-										<div className="relative">
+										<div className="relative mt-1">
 											<Mail
-												className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+												className={`absolute left-4 top-1/2 -translate-y-1/2 size-3 md:size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 											/>
 											<input
 												type="email"
 												value={email}
 												onChange={(e) => setEmail(e.target.value)}
 												placeholder="nama@email.com"
-												className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-[#3c4a47] focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-4`}
+												className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 placeholder:text-sm text-sm rounded-t-xl transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-1.5 md:py-3`}
 											/>
 										</div>
 									</div>
@@ -316,13 +320,13 @@ export default function RegisterPage() {
 								{registerVia === "phone" && (
 									<div className="space-y-2 group">
 										<label
-											className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											className={`font-bold text-[10px] md:text-sm tracking-widest ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										>
 											Nomor Telepon
 										</label>
-										<div className="relative">
+										<div className="relative mt-1">
 											<Phone
-												className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+												className={`absolute left-4 top-1/2 -translate-y-1/2 size-3 md:size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 											/>
 											<input
 												type="tel"
@@ -330,7 +334,7 @@ export default function RegisterPage() {
 												onChange={handlePhoneChange}
 												placeholder="08xxxxxxxxxx"
 												maxLength={14}
-												className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-[#3c4a47] focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-4`}
+												className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 text-sm placeholder:text-sm rounded-t-xl transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-1.5 md:py-3`}
 											/>
 										</div>
 										{phone && !isPhoneValid() && (
@@ -344,13 +348,13 @@ export default function RegisterPage() {
 								{/* City Autocomplete */}
 								<div className="space-y-2 group">
 									<label
-										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										className={`font-bold text-[10px] md:text-sm tracking-widest ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 									>
 										Kota
 									</label>
-									<div className="relative">
+									<div className="relative mt-1">
 										<MapPin
-											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										/>
 										<input
 											type="text"
@@ -364,7 +368,7 @@ export default function RegisterPage() {
 												setTimeout(() => setShowCityDropdown(false), 200);
 											}}
 											placeholder="Ketik nama kota..."
-											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-[#3c4a47] focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-4`}
+											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 text-sm placeholder:text-sm rounded-t-xl transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-1.5 md:py-3`}
 										/>
 									</div>
 									{showCityDropdown && filteredCities.length > 0 && (
@@ -377,7 +381,7 @@ export default function RegisterPage() {
 													key={i}
 													type="button"
 													onClick={() => selectCity(c)}
-													className={`w-full text-left px-4 py-3 text-sm transition-colors border-b last:border-b-0 ${isDark ? "text-[#bbcac6] hover:bg-white/10 hover:text-white border-white/5" : "text-[#5a5a5a] hover:bg-gray-50 hover:text-[#1a1a1a] border-gray-100"}`}
+													className={`w-full text-left px-4 py-3 text-sm transition-colors border-b last:border-b-0 ${isDark ? "text-on-surface-variant hover:bg-white/10 hover:text-white border-white/5" : "text-[#5a5a5a] hover:bg-gray-50 hover:text-[#1a1a1a] border-gray-100"}`}
 												>
 													{c}
 												</button>
@@ -389,25 +393,25 @@ export default function RegisterPage() {
 								{/* Password Input */}
 								<div className="space-y-2 group">
 									<label
-										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										className={`font-bold text-[10px] md:text-sm tracking-widest ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 									>
 										Kata Sandi
 									</label>
-									<div className="relative">
+									<div className="relative mt-1">
 										<Lock
-											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-3 md:size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										/>
 										<input
 											type={showPassword ? "text" : "password"}
 											value={password}
 											onChange={(e) => setPassword(e.target.value)}
 											placeholder="••••••••"
-											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-[#3c4a47] focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-12 py-4`}
+											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl text-sm placeholder:text-sm transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-12 py-1.5 md:py-4`}
 										/>
 										<button
 											type="button"
 											onClick={() => setShowPassword(!showPassword)}
-											className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer transition-colors ${isDark ? "text-[#bbcac6] hover:text-primary" : "text-[#5a5a5a] hover:text-[#0a7c6e]"}`}
+											className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer transition-colors ${isDark ? "text-on-surface-variant hover:text-primary" : "text-[#5a5a5a] hover:text-[#0a7c6e]"}`}
 										>
 											{showPassword ? (
 												<EyeOff className="w-5 h-5" />
@@ -419,7 +423,7 @@ export default function RegisterPage() {
 									{password && (
 										<p
 											className={cn(
-												"text-[10px] ml-1",
+												"text-[10px] md:text-sm ml-1",
 												isPasswordValid ? "text-green-400" : "text-yellow-400",
 											)}
 										>
@@ -433,27 +437,27 @@ export default function RegisterPage() {
 								{/* Confirm Password Input */}
 								<div className="space-y-2 group">
 									<label
-										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										className={`font-bold text-[10px] md:text-sm tracking-widest ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 									>
 										Konfirmasi Password
 									</label>
-									<div className="relative">
+									<div className="relative mt-1">
 										<Timer
-											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										/>
 										<input
 											type={showConfirmPassword ? "text" : "password"}
 											value={confirmPassword}
 											onChange={(e) => setConfirmPassword(e.target.value)}
 											placeholder="••••••••"
-											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-[#3c4a47] focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-12 py-4`}
+											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 text-sm placeholder:text-sm rounded-t-xl transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-12 py-1.5 md:py-4`}
 										/>
 										<button
 											type="button"
 											onClick={() =>
 												setShowConfirmPassword(!showConfirmPassword)
 											}
-											className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer transition-colors ${isDark ? "text-[#bbcac6] hover:text-primary" : "text-[#5a5a5a] hover:text-[#0a7c6e]"}`}
+											className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer transition-colors ${isDark ? "text-on-surface-variant hover:text-primary" : "text-[#5a5a5a] hover:text-[#0a7c6e]"}`}
 										>
 											{showConfirmPassword ? (
 												<EyeOff className="w-5 h-5" />
@@ -465,7 +469,7 @@ export default function RegisterPage() {
 									{password && confirmPassword && (
 										<p
 											className={cn(
-												"text-[10px] ml-1",
+												"text-[10px] md:text-sm ml-1",
 												isPasswordMatch ? "text-green-400" : "text-red-400",
 											)}
 										>
@@ -477,14 +481,14 @@ export default function RegisterPage() {
 								</div>
 
 								{/* Terms Checkbox */}
-								<label className="flex items-start gap-3 cursor-pointer group mt-2">
+								<label className="flex items-center gap-3 cursor-pointer group mt-2">
 									<span
 										className={cn(
 											"w-5 h-5 mt-0.5 rounded flex items-center justify-center transition-all border shrink-0 cursor-pointer",
 											agreeToTerms
 												? "bg-primary border-primary"
 												: isDark
-													? "bg-transparent border-[#3c4a47] group-hover:border-[#bbcac6]"
+													? "bg-transparent border-outline-variant group-hover:border-primary"
 													: "bg-transparent border-gray-300 group-hover:border-gray-500",
 										)}
 										onClick={() => setAgreeToTerms(!agreeToTerms)}
@@ -494,7 +498,7 @@ export default function RegisterPage() {
 										)}
 									</span>
 									<span
-										className={`text-[10px] leading-relaxed text-start select-none ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+										className={`text-[10px] leading-relaxed text-start select-none ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										onClick={() => setAgreeToTerms(!agreeToTerms)}
 									>
 										Dengan membuat akun, saya menyetujui{" "}
@@ -517,7 +521,7 @@ export default function RegisterPage() {
 									type="submit"
 									disabled={!isFormValid() || registerMutation.isPending}
 									className={cn(
-										`w-full py-4 rounded-xl font-label-bold uppercase tracking-[0.2em] transition-all duration-300 active:scale-[0.98] mt-2 shadow-lg`,
+										`w-full py-3 md:py-4 rounded-xl font-label-bold uppercase tracking-[0.2em] transition-all duration-300 active:scale-[0.98] mt-2 shadow-lg`,
 										isDark
 											? "bg-primary text-black neon-glow-btn shadow-primary/20"
 											: "bg-[#0a7c6e] text-white shadow-[#0a7c6e]/30 hover:bg-[#095a50]",
@@ -538,7 +542,7 @@ export default function RegisterPage() {
 
 							{/* Login Link */}
 							<p
-								className={`text-center mt-8 text-[11px] tracking-wider uppercase ${isDark ? "text-[#bbcac6]" : "text-[#5a5a5a]"}`}
+								className={`text-center mt-3 text-[8px] md:text-[11px] tracking-wider ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 							>
 								SUDAH PUNYA AKUN?{" "}
 								<Link

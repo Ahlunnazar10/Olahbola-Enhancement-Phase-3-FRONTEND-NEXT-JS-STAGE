@@ -73,10 +73,8 @@ function TabSwitcher({
 		return (
 			<button
 				onClick={() => onTabChange(tabValue)}
-				className="relative py-4 px-6 cursor-pointer font-bold uppercase tracking-[0.15em] transition-colors"
+				className="relative py-4 px-6 cursor-pointer text-xs md:text-sm font-bold uppercase tracking-[0.15em] transition-colors"
 				style={{
-					fontFamily: "var(--font-plus-jakarta), sans-serif",
-					fontSize: "14px",
 					color: isActive ? primary : text,
 				}}
 			>
@@ -128,15 +126,12 @@ function MediaContent() {
 	return (
 		<div className="relative z-10">
 			{/* Hero area */}
-			<section className="relative flex flex-col items-center justify-center text-center px-6 md:px-8 lg:px-16 py-10 md:py-14">
+			<section className="relative flex flex-col items-center justify-center text-center px-6 md:px-8 lg:px-16 py-6 md:py-14">
 				<div className="relative z-10 max-w-3xl">
 					{/* Heading — two lines, matching sample */}
 					<h1
-						className="font-bold uppercase leading-none mb-6"
+						className="font-bold uppercase leading-none mb-3 text-2xl md:text-5xl lg:text-6xl"
 						style={{
-							fontFamily: "var(--font-plus-jakarta), sans-serif",
-							fontWeight: 700,
-							fontSize: "clamp(28px, 5vw, 60px)",
 							lineHeight: "1.1",
 							color: text,
 						}}
@@ -155,11 +150,8 @@ function MediaContent() {
 
 					{/* Description */}
 					<p
-						className="mx-auto text-base md:text-lg"
+						className="mx-auto text-xs md:text-lg leading-3.5 md:leading-6"
 						style={{
-							fontFamily: "var(--font-plus-jakarta), sans-serif",
-							fontWeight: 400,
-							lineHeight: "1.6",
 							color: textSecondary,
 						}}
 					>
@@ -172,24 +164,20 @@ function MediaContent() {
 			{/* Media Grid Header */}
 			<section className="px-6 md:px-8 lg:px-16 max-w-7xl mx-auto">
 				<div
-					className="flex justify-between items-end mb-6 pb-3 "
+					className="flex justify-between items-end mb-3 md:mb-6 pb-3 "
 					style={{ borderBottom: `1px solid ${outline}` }}
 				>
 					<h3
-						className="text-sm md:text-2xl font-bold tracking-[0.15em]"
+						className="text-[10px] md:text-2xl font-bold tracking-[0.15em]"
 						style={{
-							fontFamily: "var(--font-plus-jakarta), sans-serif",
-							fontWeight: 700,
 							color: textSecondary,
 						}}
 					>
 						SELURUH LIPUTAN MEDIA
 					</h3>
 					<span
-						className="text-xs md:text-lg tracking-[0.05em]"
+						className="text-[8px] md:text-lg tracking-wider font-semibold"
 						style={{
-							fontFamily: "var(--font-lexend), sans-serif",
-							fontWeight: 600,
 							letterSpacing: "0.05em",
 							color: primary,
 						}}
@@ -238,8 +226,8 @@ function MediaContent() {
 							</div>
 
 							{/* Card Content */}
-							<div className="p-6 md:p-8 flex flex-col grow">
-								<div className="flex items-center justify-between mb-4">
+							<div className="p-4 md:p-8 flex flex-col grow">
+								<div className="flex items-center justify-between mb-2 md:mb-4">
 									<span
 										className="text-[10px] font-bold tracking-widest uppercase"
 										style={{
@@ -262,10 +250,8 @@ function MediaContent() {
 								</div>
 
 								<h4
-									className="text-lg md:text-xl font-bold mb-4 leading-tight"
+									className="text-sm md:text-lg font-bold mb-2  leading-tight"
 									style={{
-										fontFamily: "var(--font-plus-jakarta), sans-serif",
-										fontWeight: 700,
 										color: text,
 									}}
 								>
@@ -273,12 +259,8 @@ function MediaContent() {
 								</h4>
 
 								<p
-									className="line-clamp-3 mb-6 grow"
+									className="line-clamp-2 mb-6 grow text-xs  leading-5 md:text-sm"
 									style={{
-										fontFamily: "var(--font-plus-jakarta), sans-serif",
-										fontWeight: 400,
-										fontSize: "14px",
-										lineHeight: "1.6",
 										color: textSecondary,
 									}}
 								>
@@ -415,12 +397,12 @@ function KolaborasiTab() {
 	const textMuted = isDark ? "rgba(255,255,255,0.4)" : "rgba(26,26,26,0.5)";
 
 	return (
-		<div className="relative z-10 px-6 md:px-8 lg:px-16 pb-20 pt-14 max-w-7xl mx-auto">
+		<div className="relative z-10 px-6 md:px-8 lg:px-16 pb-20 pt-6 md:pt-14 max-w-7xl mx-auto">
 			{/* Hero text */}
-			<div className="text-center md:text-left flex flex-col md:flex-row items-center gap-12 mb-16">
-				<div className="flex-1 space-y-6">
+			<div className="text-center md:text-left flex flex-col md:flex-row items-center gap-4 md:gap-12 mb-6 ">
+				<div className="flex-1 space-y-3 md:space-y-6">
 					<h1
-						className="text-3xl md:text-5xl lg:text-6xl font-bold uppercase leading-none"
+						className="text-2xl md:text-5xl lg:text-6xl font-bold uppercase leading-none"
 						style={{
 							fontFamily: "var(--font-plus-jakarta), sans-serif",
 							fontWeight: 700,
@@ -438,10 +420,8 @@ function KolaborasiTab() {
 						</span>
 					</h1>
 					<p
-						className="text-base md:text-lg max-w-xl"
+						className="text-xs md:text-lg max-w-xl"
 						style={{
-							fontFamily: "var(--font-plus-jakarta), sans-serif",
-							fontWeight: 400,
 							color: textSecondary,
 						}}
 					>
@@ -543,7 +523,7 @@ function KolaborasiTab() {
 				<>
 					<div
 						ref={dataSectionRef}
-						className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16"
+						className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 mb-6"
 					>
 						{displayedKolaborasis.map((kolaborasi: any) => (
 							<Link
@@ -607,7 +587,7 @@ function KolaborasiTab() {
 
 			{/* CTA */}
 			<div
-				className="p-12 rounded-4xl text-center relative overflow-hidden mt-16"
+				className="p-8 md:p-12 rounded-4xl text-center relative overflow-hidden mt-6"
 				style={{
 					background: glassBg,
 					backdropFilter: "blur(20px)",
@@ -625,9 +605,9 @@ function KolaborasiTab() {
 							: "linear-gradient(to top right, rgba(10,124,110,0.1), transparent)",
 					}}
 				/>
-				<div className="relative z-10 space-y-8">
+				<div className="relative z-10 space-y-4 md:space-y-8">
 					<h2
-						className="text-3xl md:text-4xl font-bold uppercase italic"
+						className="text-xl md:text-4xl font-bold uppercase italic"
 						style={{
 							fontFamily: "var(--font-plus-jakarta), sans-serif",
 							fontWeight: 700,
@@ -721,7 +701,7 @@ function MediaSpotlightContent() {
 			<PageBackground isDark={isDark} />
 
 			{/* Tab Switcher — di atas content */}
-			<div className="relative z-20 mt-4">
+			<div className="relative z-20 mt-0 md:mt-4">
 				<TabSwitcher
 					activeTab={activeTab}
 					onTabChange={handleTabChange}

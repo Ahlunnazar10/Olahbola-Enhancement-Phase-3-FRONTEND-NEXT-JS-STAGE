@@ -177,9 +177,9 @@ export default function LoginPage() {
 			/>
 
 			{/* Main Content */}
-			<main className="min-h-screen flex items-center justify-center px-4 md:px-0 relative z-10">
+			<main className="min-h-screen flex md:items-center justify-center px-4 md:px-0 relative z-10">
 				{/* Login Container */}
-				<div className="w-full max-w-6xl grid md:grid-cols-2 items-center gap-16 p-4 mb-10">
+				<div className="w-full max-w-6xl grid md:grid-cols-2 md:items-center gap-16 mb-10">
 					{/* Left Side: Visual Narrative */}
 					<div className="hidden md:flex flex-col gap-4">
 						<div className="space-y-2">
@@ -222,26 +222,26 @@ export default function LoginPage() {
 					</div>
 
 					{/* Right Side: Login Card */}
-					<div className="relative">
+					<div className="relative mt-3 md:mt-0">
 						{/* Additional card glow/background elements */}
 						<div
 							className={`absolute -inset-1 ${isDark ? "bg-linear-to-r from-primary/50 to-[#ff8f63]/30 blur opacity-25" : "bg-linear-to-r from-[#0a7c6e]/30 to-[#b3461a]/20 blur opacity-20"} rounded-[2.5rem]`}
 						/>
 						<div
-							className={`p-6 md:p-14 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}
+							className={`p-6 md:p-12 rounded-[2.5rem] w-full max-w-md mx-auto relative overflow-hidden ${isDark ? "glass-card" : "bg-white/90 backdrop-blur-md shadow-xl border border-[#0a7c6e]/20"}`}
 						>
 							{/* Subtle glass pattern overlay */}
 							<div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
 
-							<div className="text-center mb-8 relative z-10">
+							<div className="text-center mb-5 relative z-10">
 								<h2
-									className={`font-headline-lg text-headline-lg italic mb-2 tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
+									className={`text-3xl md:text-4xl italic tracking-widest ${isDark ? "text-primary glitch-text" : "text-[#0a7c6e]"}`}
 								>
 									Login Now!
 								</h2>
 							</div>
 
-							<form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+							<form onSubmit={handleSubmit} className="space-y-2 relative z-10">
 								{/* Email Verification Notice */}
 								{showResendVerification && (
 									<div
@@ -290,17 +290,18 @@ export default function LoginPage() {
 								{/* Email/Phone Input */}
 								<div className="space-y-2 group">
 									<label
-										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+										className={`font-label-bold text-[10px] tracking-widest ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 									>
 										Email atau Nomor Telepon
 									</label>
-									<div className="relative">
+									<div className="relative mt-1.5">
 										<Mail
 											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										/>
 										<input
 											type="text"
 											value={emailOrPhone}
+											autoComplete="off"
 											onChange={(e) => setEmailOrPhone(e.target.value)}
 											placeholder="nama@olahbola.com"
 											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-4 py-4`}
@@ -311,11 +312,11 @@ export default function LoginPage() {
 								{/* Password Input */}
 								<div className="space-y-2 group">
 									<label
-										className={`font-label-bold text-[10px] tracking-widest uppercase ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+										className={`font-label-bold text-[10px] tracking-widest ml-1 group-focus-within:text-primary transition-colors ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 									>
 										Kata Sandi
 									</label>
-									<div className="relative">
+									<div className="relative mt-1.5">
 										<Lock
 											className={`absolute left-4 top-1/2 -translate-y-1/2 size-5 transition-colors group-focus-within:text-primary ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 										/>
@@ -324,6 +325,7 @@ export default function LoginPage() {
 											value={password}
 											onChange={(e) => setPassword(e.target.value)}
 											placeholder="••••••••"
+											autoComplete="current-password"
 											className={`w-full border-b-2 border-x-0 border-t-0 focus:ring-0 rounded-t-xl transition-all ${isDark ? "bg-black/40 border-outline-variant focus:border-primary text-white placeholder:text-white/20" : "bg-gray-100 border-gray-300 focus:border-[#0a7c6e] text-[#1a1a1a] placeholder:text-gray-400"} pl-12 pr-12 py-4`}
 										/>
 										<button
@@ -346,7 +348,7 @@ export default function LoginPage() {
 										type="submit"
 										disabled={loginMutation.isPending}
 										className={cn(
-											`w-full py-4 rounded-xl font-label-bold uppercase tracking-[0.2em] transition-all duration-300 active:scale-[0.98] mt-4 shadow-lg`,
+											`w-full py-4 rounded-xl font-label-bold uppercase tracking-[0.2em] transition-all duration-300 active:scale-[0.98] mt-3 shadow-lg`,
 											isDark
 												? "bg-primary text-black neon-glow-btn shadow-primary/20"
 												: "bg-[#0a7c6e] text-white shadow-[#0a7c6e]/30 hover:bg-[#095a50]",
@@ -367,14 +369,14 @@ export default function LoginPage() {
 
 								{/* Divider */}
 								{!showResendVerification && (
-									<div className="relative flex items-center justify-center my-5">
+									<div className="relative flex items-center justify-center my-3">
 										<div className="absolute inset-0 flex items-center">
 											<div
 												className={`w-full border-t ${isDark ? "border-white/10" : "border-gray-200"}`}
 											/>
 										</div>
 										<span
-											className={`relative px-4 text-[10px] font-label-bold tracking-[0.2em] ${isDark ? "bg-[#1a1a1a] text-on-surface-variant" : "bg-white/90 text-[#5a5a5a]"}`}
+											className={`relative px-2 py-1 text-[10px] font-bold tracking-[0.2em] ${isDark ? "bg-[#1a1a1a] text-on-surface-variant" : "bg-white/90 text-[#5a5a5a]"}`}
 										>
 											ATAU MASUK DENGAN
 										</span>
@@ -419,7 +421,7 @@ export default function LoginPage() {
 							{/* Register Link */}
 							{!showResendVerification && (
 								<p
-									className={`text-center mt-10 text-[11px] tracking-wider uppercase ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
+									className={`text-center mt-4 text-[11px] tracking-wider uppercase ${isDark ? "text-on-surface-variant" : "text-[#5a5a5a]"}`}
 								>
 									BELUM PUNYA AKUN?{" "}
 									<Link

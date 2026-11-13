@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import AOS from "aos";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "@/lib/api/client";
 import { useUIStore } from "@/stores/uiStore";
@@ -18,14 +17,12 @@ import AdSlot from "@/components/ads/AdSlot";
 import { ArrowRight, Play, Circle, ChevronRight } from "lucide-react";
 import type { BannerSlide } from "@/components/banner-slider/BannerSlider";
 import { BannerSlider } from "@/components/banner-slider/BannerSlider";
-import type { UserStats } from "@/hooks/queries/useUserStats";
 import {
 	UserStatModals,
 	type UserStatModalKey,
 } from "@/components/games/UserStatModals";
 import type { EventStats } from "@/hooks/queries/useUserStats";
 
-// User Stat Card Component
 interface UserStatCardProps {
 	user: {
 		name?: string;
@@ -47,7 +44,9 @@ interface UserStatCardProps {
 	) => void;
 }
 
-function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
+// Desktop User Stat Card (original layout)
+
+function UserStatCardDesktop({ user, stats, onRowClick }: UserStatCardProps) {
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
 
@@ -293,6 +292,207 @@ function UserStatCard({ user, stats, onRowClick }: UserStatCardProps) {
 }
 
 // League Card List Component
+// Mobile User Stat Card (new layout)
+function UserStatCardMobile({ user, stats, onRowClick }: UserStatCardProps) {
+	const { theme } = useUIStore();
+	const isDark = theme === "dark";
+
+	if (!user) return null;
+
+	const rank = stats.bundesligaRank?.rank;
+
+	const tileBg = isDark
+		? "linear-gradient(0deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.2) 100%)"
+		: "linear-gradient(0deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.6) 100%)";
+	const tileBorder = isDark ? "#43decc" : "rgba(10,124,110,0.35)";
+	const cardBg = isDark
+		? "linear-gradient(343deg, rgba(1,22,20,1) 0%, rgba(4,71,64,1) 53%, rgba(2,140,127,1) 100%)"
+		: "linear-gradient(343deg, rgba(240,248,246,1) 0%, rgba(210,235,230,1) 53%, rgba(180,225,218,1) 100%)";
+	const cardBorder = isDark ? "rgba(67,222,204,0.25)" : "rgba(10,124,110,0.15)";
+
+	const tiles: {
+		key: "rank" | "points" | "predictions" | "participation";
+		label: string;
+		value: string;
+		accent?: boolean;
+	}[] = [
+		{
+			key: "rank",
+			label: "Leaderboard",
+			value: rank ? `#${rank}` : "-",
+			accent: true,
+		},
+		{
+			key: "points",
+			label: "Total Skor",
+			value: stats.data?.totalPoints?.toLocaleString("id-ID") || "0",
+		},
+		{
+			key: "predictions",
+			label: "Total Prediksi",
+			value: String(stats.data?.totalPredictions || 0),
+		},
+		{
+			key: "participation",
+			label: "Partisipasi Game",
+			value: String(stats.data?.totalParticipation || 0),
+		},
+	];
+
+	const tileMarkup = stats.isLoading ? (
+		<div className="grid grid-cols-2 gap-1.5">
+			{tiles.map((t) => (
+				<div
+					key={t.key}
+					className="h-10 rounded-[10px] animate-pulse bg-white/10 border border-white/20"
+				/>
+			))}
+		</div>
+	) : (
+		<div className="grid grid-cols-2 gap-1.5">
+			{tiles.map((t) => (
+				<button
+					key={t.key}
+					type="button"
+					onClick={() => onRowClick?.(t.key)}
+					className="h-10 w-full rounded-[10px] overflow-hidden flex items-center justify-between px-4 cursor-pointer"
+					style={{
+						background: tileBg,
+						border: `1px solid ${tileBorder}`,
+						backdropFilter: "blur(10px)",
+						WebkitBackdropFilter: "blur(10px)",
+					}}
+				>
+					<span
+						className={`text-[10px] font-medium leading-2.5 whitespace-nowrap ${
+							t.accent
+								? isDark
+									? "text-[#ffb600]"
+									: "text-[#b8860b]"
+								: isDark
+									? "text-white"
+									: "text-[#4a4a4a]"
+						}`}
+					>
+						{t.label}
+					</span>
+					<span
+						className={`text-lg md:text-xl font-black leading-5 ${
+							t.accent
+								? isDark
+									? "text-[#ffb600]"
+									: "text-[#b8860b]"
+								: isDark
+									? "text-white"
+									: "text-[#1a1a1a]"
+						}`}
+					>
+						{t.value}
+					</span>
+				</button>
+			))}
+		</div>
+	);
+
+	return (
+		<div
+			className="relative w-full overflow-hidden rounded-2xl border"
+			style={{ background: cardBg, borderColor: cardBorder }}
+		>
+			{/* Vignette gradients */}
+			<div
+				className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+				style={{
+					background: isDark
+						? "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%)"
+						: "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%)",
+				}}
+			/>
+			<div
+				className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
+				style={{
+					background: isDark
+						? "linear-gradient(0deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%)"
+						: "linear-gradient(0deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 100%)",
+				}}
+			/>
+
+			{/* Background art (dark only) */}
+			{isDark && (
+				<Image
+					src="/images/home/stats-bg.png"
+					alt=""
+					fill
+					className="object-cover opacity-40"
+					priority
+				/>
+			)}
+
+			{/* Profile bar */}
+			<div
+				className="relative px-4 mx-3 mt-4 h-16 flex items-center rounded-[10px] overflow-hidden border"
+				style={{
+					borderColor: isDark ? "#43decc" : "rgba(10,124,110,0.35)",
+					background: isDark
+						? "linear-gradient(0deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.2) 100%)"
+						: "linear-gradient(0deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.6) 100%)",
+					backdropFilter: "blur(10px)",
+					WebkitBackdropFilter: "blur(10px)",
+				}}
+			>
+				<div
+					className="relative w-12.5 h-12.5 shrink-0 rounded-full overflow-hidden border-2 bg-white"
+					style={{ borderColor: isDark ? "#43decc" : "rgba(10,124,110,0.4)" }}
+				>
+					{user.profilePicture ? (
+						<Image
+							src={user.profilePicture}
+							alt={user.name || "User"}
+							fill
+							sizes="64px"
+							style={{ objectFit: "cover" }}
+						/>
+					) : (
+						<Image
+							src="/icons/football-player-new.svg"
+							alt="User"
+							fill
+							sizes="64px"
+							style={{ objectFit: "cover" }}
+						/>
+					)}
+				</div>
+				<div className="ml-3 min-w-0">
+					<h3
+						className={`font-bold text-sm md:text-base leading-tight truncate ${
+							isDark ? "text-white" : "text-[#1a1a1a]"
+						}`}
+					>
+						{user.name || "Pemain"}
+					</h3>
+					{user.email && (
+						<p
+							className={`text-[10px] md:text-xs truncate ${
+								isDark ? "text-white/60" : "text-[#5a5a5a]"
+							}`}
+						>
+							{user.email}
+						</p>
+					)}
+				</div>
+				<span
+					className="ml-auto w-2 h-2 mr-4 rounded-full"
+					style={{ background: isDark ? "#43decc" : "#0a7c6e" }}
+				/>
+			</div>
+
+			{/* Stat tiles */}
+			<div className="relative px-3 py-3">{tileMarkup}</div>
+		</div>
+	);
+}
+
+// League Card List Component
 function LeagueCardList() {
 	const { theme } = useUIStore();
 	const isDark = theme === "dark";
@@ -304,7 +504,7 @@ function LeagueCardList() {
 		.filter(Boolean);
 
 	return (
-		<section className="py-5 md:py-8 px-3 md:px-8 lg:px-16">
+		<section className="py-3 md:py-8 px-3 md:px-8 lg:px-16">
 			<div className="max-w-7xl mx-auto">
 				<div className="flex items-center justify-center gap-1 md:gap-2 lg:gap-4 overflow-x-auto scrollbar-none md:overflow-x-visible">
 					{/* Mobile: 3 card full width, urutan UCL -> EPL -> Bundesliga */}
@@ -312,7 +512,7 @@ function LeagueCardList() {
 						<Link
 							key={`m-${comp.slug}`}
 							href={`/football/${comp.slug}`}
-							className={`glass-card w-full md:hidden h-20 md:h-20 px-2 md:px-6 py-2 md:py-3 flex flex-col items-center justify-center p-4 hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-xl group relative overflow-hidden ${
+							className={`glass-card w-full md:hidden h-14 md:h-20 px-2 md:px-6 py-2 md:py-3 flex flex-col items-center justify-center p-4 hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-xl group relative overflow-hidden ${
 								isDark
 									? ""
 									: "bg-white/70! shadow-[0_4px_20px_rgba(0,0,0,0.08)]! border-[#0a7c6e]/25!"
@@ -552,24 +752,6 @@ export default function HomePage() {
 			eventRewardImageAlt: "Mystery World Cup Jersey",
 		});
 
-		// // Slide 3: HeroPlay Kickoff Banner
-		slides.push({
-			id: "hero-play-kickoff",
-			type: "cta" as const,
-			imageFallback: "/images/heroplay-banner/banner-tetris.webp",
-			imageMobileFallback: "/images/heroplay-banner/banner-tetris-mobile.webp",
-			heroPlayLayout: {
-				highlightedWord: "Pertarungan",
-				titleLines: ["Pertarungan", "Belum Selesai!"],
-				highlightedLineIndex: 0,
-				description: "Terus bermain, karena setiap skor menentukan kemenangan!",
-				descriptionMobile:
-					"Terus bermain, karena setiap skor menentukan kemenangan",
-				buttonText: "Main Sekarang",
-				buttonHref: "https://www.mainhero.id",
-			},
-		});
-
 		// // Slide 4: Article banner (if available)
 		if (featuredArticle) {
 			slides.push({
@@ -711,11 +893,11 @@ export default function HomePage() {
 			/>
 			<main className="relative z-10">
 				{/* Hero Section with Banner Slider */}
-				<section className="relative h-[78vh] md:h-[80vh] lg:h-[70vh] flex items-center overflow-hidden">
+				<section className="relative h-auto md:h-[80vh] lg:h-[70vh] flex items-center overflow-hidden">
 					{isAuthenticated ? (
 						// Login state: Banner 70% + User Stat Card 30%
 						<div className="flex flex-col w-full h-full md:flex-row gap-0 md:gap-2">
-							<div className={`w-full md:w-[60%] lg:w-[72%] h-full`}>
+							<div className={`w-full md:w-[60%] lg:w-[72%] h-95 md:h-full`}>
 								<BannerSlider
 									slides={bannerSlides}
 									autoPlay={true}
@@ -726,14 +908,14 @@ export default function HomePage() {
 								/>
 							</div>
 							<div className="md:hidden w-full">
-								<UserStatCard
+								<UserStatCardMobile
 									user={user}
 									stats={userStats}
 									onRowClick={handleRowClick}
 								/>
 							</div>
 							<div className="hidden md:block w-full h-full  items-center justify-center">
-								<UserStatCard
+								<UserStatCardDesktop
 									user={user}
 									stats={userStats}
 									onRowClick={handleRowClick}
@@ -742,7 +924,7 @@ export default function HomePage() {
 						</div>
 					) : (
 						// Loginless: Banner full width
-						<div className="w-full h-full">
+						<div className="w-full h-95 md:h-full">
 							<BannerSlider
 								slides={bannerSlides}
 								autoPlay={true}
@@ -840,7 +1022,7 @@ export default function HomePage() {
 						data-aos="fade-up"
 					>
 						{/* Header */}
-						<div className="text-center mb-10">
+						<div className="text-center mb-5 md:mb-10">
 							{/* Title */}
 							<h2
 								className="text-2xl md:text-4xl font-black uppercase mb-2"
@@ -1184,7 +1366,7 @@ export default function HomePage() {
 									{leaderboardRows.slice(0, 3).map((player, index) => (
 										<div
 											key={player.userId}
-											className="relative flex items-center gap-4 p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
+											className="relative flex items-center gap-2 md:gap-4 p-2 md:p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
 											style={{
 												background:
 													index === 0
@@ -1201,7 +1383,7 @@ export default function HomePage() {
 											}}
 										>
 											<div
-												className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-lg"
+												className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-lg"
 												style={{
 													background:
 														index === 0
@@ -1432,7 +1614,7 @@ export default function HomePage() {
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8">
 						<div>
 							<h2
-								className={`text-3xl md:text-4xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								className={`text-2xl md:text-4xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 								data-aos="fade-up"
 							>
 								Fresh Off the Pitch
@@ -1482,7 +1664,7 @@ export default function HomePage() {
 							))}
 						</div>
 					) : articles.length > 0 ? (
-						<div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-320 md:h-120">
+						<div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-3 md:gap-6 h-320 md:h-120">
 							{/* Featured Article */}
 							<Link
 								href={`/${articles[0]?.slug}`}
@@ -1504,19 +1686,19 @@ export default function HomePage() {
 								/>
 								<div className="absolute bottom-0 p-8">
 									<h3
-										className={`text-lg md:text-3xl font-bold uppercase mb-2 md:mb-4 ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
+										className={`text-sm md:text-2xl font-bold leading-tight uppercase mb-1  ${isDark ? "text-white" : "text-[#1a1a1a]"}`}
 									>
 										{articles[0]?.title}
 									</h3>
 									<p
-										className={`mb-2 md:mb-6 line-clamp-2 ${isDark ? "text-on-surface-variant" : "text-[#4a4a4a]"}`}
+										className={`mb-2 md:mb-3 text-xs md:text-sm	 line-clamp-2 text-[#4a4a4a`}
 									>
 										{articles[0]?.excerpt}
 									</p>
 									<button
 										className={`font-black uppercase tracking-widest text-sm flex items-center gap-2 group-hover:gap-4 transition-all ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 									>
-										Read More{" "}
+										Read More
 										<ArrowRight
 											className={`size-5 mt-1 ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 										/>
@@ -1531,8 +1713,8 @@ export default function HomePage() {
 									className="md:col-span-2 glass-panel relative group overflow-hidden rounded-xl cursor-pointer"
 								>
 									<div className="flex h-full">
-										<div className="w-1/2 p-6 flex flex-col justify-center">
-											<h3 className="text-base md:text-2xl font-bold uppercase mb-2">
+										<div className="w-1/2 p-3 md:p-6 flex flex-col justify-center">
+											<h3 className="text-sm md:text-2xl font-bold uppercase mb-2">
 												{articles[1]?.title}
 											</h3>
 											<button
@@ -1627,7 +1809,7 @@ export default function HomePage() {
 				</section>
 
 				{/* Ads Banner */}
-				<section className="w-full py-0 md:py-4 px-0 md:px-16">
+				<section className="w-full h-30 md:h-full py-0 md:py-4 px-0 md:px-16">
 					<a
 						href="https://heroplay.igvault.id/"
 						target="_blank"
@@ -1652,7 +1834,7 @@ export default function HomePage() {
 				>
 					<div className="max-w-480 mx-auto">
 						<h2
-							className={`text-2xl md:text-5xl font-bold uppercase italic  mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+							className={`text-2xl md:text-5xl font-bold uppercase italic mb-5 md:mb-10 text-center ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 							data-aos="fade-up"
 						>
 							Temui OlahBola di Sini!
@@ -1733,10 +1915,10 @@ export default function HomePage() {
 				</section>
 
 				{/* YouTube Embed Section */}
-				<section ref={youtubeRef} className="py-8 md:py-16  px-6 md:px-16">
+				<section ref={youtubeRef} className="py-0 md:py-6 px-6 md:px-16">
 					<div className="max-w-480 mx-auto" data-aos="fade-up">
 						{youtubeVisible && (
-							<div className="max-w-4xl mx-auto">
+							<div className="max-w-6xl mx-auto">
 								<iframe
 									className="w-full aspect-video rounded-xl"
 									src="https://www.youtube.com/embed/Sh616w1CtjE"
@@ -1751,19 +1933,19 @@ export default function HomePage() {
 				</section>
 
 				{/* OlahFlix Section - Vertical Reels */}
-				{/* <section ref={videoRef} className="py-16 px-6 md:px-16">
+				<section ref={videoRef} className="py-16 px-6 md:px-16">
 					<div className="max-w-480 mx-auto" data-aos="fade-up">
-						<div className="mb-6">
+						<div className="mb-4 md:mb-6">
 							<h2
-								className={`text-3xl md:text-4xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
+								className={`text-2xl md:text-4xl font-bold uppercase italic ${isDark ? "text-primary" : "text-[#0a7c6e]"}`}
 							>
 								OlahFlix
 							</h2>
-							<div className="flex items-center gap-4 mt-2">
+							<div className="flex items-center gap-2 md:gap-4 mt-2">
 								<span
 									className={`h-px grow ${isDark ? " bg-white/10" : "bg-on-surface-variant"}`}
 								/>
-								<p className="text-on-surface-variant uppercase tracking-widest text-sm">
+								<p className="text-on-surface-variant uppercase tracking-widest text-[8px] md:text-sm">
 									Semua Cerita Sepak Bola, dalam Video.
 								</p>
 								<span
@@ -1782,7 +1964,7 @@ export default function HomePage() {
 								))}
 							</div>
 						) : (
-							<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+							<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6">
 								{videos.slice(0, videoDisplayCount).map((video) => (
 									<Link
 										key={video.id}
@@ -1806,12 +1988,9 @@ export default function HomePage() {
 										</div>
 
 										<div className="absolute bottom-4 left-4 right-4">
-											<h4 className="font-semibold text-sm leading-tight uppercase">
+											<h4 className="text-[9px] md:text-sm leading-tight line-clamp-3 md:line-clamp-5 md:font-semibold">
 												{video.title}
 											</h4>
-											<p className="text-xs text-primary mt-1 font-bold">
-												@OlahBola
-											</p>
 										</div>
 									</Link>
 								))}
@@ -1821,13 +2000,13 @@ export default function HomePage() {
 						<div className="mt-6 flex justify-center">
 							<Link
 								href="/olahflix"
-								className={`inline-flex items-center gap-3 px-8 py-4 glass-panel ${isDark ? "text-primary" : "text-[#0a7c6e]"}  font-bold uppercase tracking-widest text-sm rounded-full hover:bg-primary/10 transition-all group`}
+								className={`inline-flex items-center gap-3 px-6 md:px-8 py-2 md:py-4 glass-panel ${isDark ? "text-primary" : "text-[#0a7c6e]"}  font-bold uppercase tracking-widest text-[10px] md:text-sm rounded-full hover:bg-primary/10 transition-all group`}
 							>
 								KE OLAHFLIX{" "}
 							</Link>
 						</div>
 					</div>
-				</section> */}
+				</section>
 
 				{/* Partner Logos Section - Brand Showcase */}
 				<section
