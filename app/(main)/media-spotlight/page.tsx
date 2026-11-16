@@ -547,7 +547,7 @@ function KolaborasiTab() {
 							<button
 								onClick={handleNextPage}
 								disabled={isLoadingMore}
-								className="px-12 py-4 border-2 font-semibold uppercase tracking-widest transition-all duration-300 rounded-sm flex items-center gap-2 cursor-pointer"
+								className="px-6 md:px-12 py-2 md:py-4 border-2 font-semibold md:uppercase tracking-widest transition-all duration-300 rounded-sm flex items-center gap-2 cursor-pointer"
 								style={{
 									backgroundColor: "transparent",
 									borderColor: primary,

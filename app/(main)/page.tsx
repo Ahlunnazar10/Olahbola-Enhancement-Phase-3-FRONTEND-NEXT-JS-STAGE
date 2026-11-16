@@ -914,7 +914,7 @@ export default function HomePage() {
 									onRowClick={handleRowClick}
 								/>
 							</div>
-							<div className="hidden md:block w-full h-full  items-center justify-center">
+							<div className="hidden md:block w-[30%] h-full  items-center justify-center">
 								<UserStatCardDesktop
 									user={user}
 									stats={userStats}
@@ -1466,7 +1466,7 @@ export default function HomePage() {
 												{leaderboardRows.slice(3, 10).map((player, index) => (
 													<div
 														key={player.userId}
-														className="flex items-center gap-4 p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
+														className="flex items-center gap-2 md:gap-4 p-2 md:p-4 rounded-2xl backdrop-blur-xl border transition-all duration-300"
 														style={{
 															background: heroPlayColors.cardBg,
 															borderColor: heroPlayColors.cardBorder,
